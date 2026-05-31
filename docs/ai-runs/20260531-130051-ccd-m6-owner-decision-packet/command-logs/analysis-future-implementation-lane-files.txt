@@ -1,0 +1,16 @@
+M7-safeStorage-codec-foundation
+  likely: packages/contracts/src/storage.ts; packages/shared-utils/src/storageCodec.ts; optional packages/shared-utils/src/storageCompression.ts; apps/web-demo/src/utils/safeStorage/{core,lzstring,index,safeStorage,piniaSerializer,storageMaintenance}.ts; apps/web-demo/src/plugins/modules/proform.ts
+M8-theme-size-resolver-foundation
+  likely: packages/design-tokens/src/{index.ts,size.ts,sizeScale.ts,breakpoints.ts,theme-engine/**}; packages/vue-app-platform/src/themeRuntime.ts; apps/web-demo/src/utils/theme/{engine,sizeEngine,mode,transitions,lottieThemeUtils}.ts
+M9-device-runtime-resolver-foundation
+  likely: packages/design-tokens/src/breakpoints.ts; optional packages/design-tokens/src/device-resolvers.ts; packages/vue-app-platform/src/layoutRuntime.ts; apps/web-demo/src/utils/deviceSync.ts; apps/web-demo/src/stores/modules/system/device.ts
+M10-system-store-pure-state-extraction
+  likely: apps/web-demo/src/stores/modules/system/{theme,size,device,layout,locale,index}.ts; packages/vue-app-platform/src/layoutRuntime.ts; packages/design-tokens/src/**
+M11-hook-facade-convergence
+  likely: apps/web-demo/src/hooks/modules/{useAutoMitt,useDialog,useProTableUrlSync}.ts*; apps/web-demo/src/plugins/modules/{proform,protable}.ts; packages/vue-hooks/src/createAutoMittHook.ts; packages/vue-ui/src/{PrimeDialog,ProTable,ProForm}/**
+M12-primevue-allowlist-reduction
+  likely: scripts/ai-architecture-guard.mjs; packages/vue-ui/src/**; packages/vue-primevue-adapter/src/**; apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue; apps/web-demo/src/views/dashboard/index.vue; apps/web-demo/src/views/example/**; apps/web-demo/src/types/components.d.ts only by generator
+M13-tsconfig-build-boundary-repair
+  likely: apps/web-demo/tsconfig.json; apps/desktop/tsconfig.json; package tsconfigs/references; scripts/validate-token-contrast.ts; scripts/upgrade-all-themes.mjs; package public exports if approved
+M14-status-and-ledger-reconciliation
+  likely: docs/ai-plan/{ARCHITECTURE_ISSUE_REPAIR_LOG.md,DECISIONS.md,STATUS.md}; .ai/runtime/repair_list.md; .ai/runtime/owner_decisions.md only with owner approval; generated docs only by commands

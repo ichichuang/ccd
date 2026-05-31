@@ -1,0 +1,39 @@
+README.md:- 最新接受基线：`M14_STATUS_LEDGER_RECONCILED_NO_GO`
+README.md:- M14 验证矩阵已通过，但整体架构修复集尚未达到 full GO。
+README.md:- 未经证据解决阻塞项并完成验证前，不授权 full GO。
+README.md:- `apps/web-demo/src/layouts/runtime/layoutRuntime.ts`
+docs/ai-plan/FINAL_GO_NO_GO.md:- Current accepted baseline: `M14_STATUS_LEDGER_RECONCILED_NO_GO`
+docs/ai-plan/FINAL_GO_NO_GO.md:- Prior synchronization lane: `M15_NO_GO_SURFACE_SYNCHRONIZED`
+docs/ai-plan/FINAL_GO_NO_GO.md:The final state is `NO_GO`. `M14_STATUS_LEDGER_RECONCILED_NO_GO` is accepted, but `B-07`, `B-08`, `C-06`, `D-016`, `D-017`, `G-03`, and 80 open repair-ledger tasks prevent full GO.
+docs/ai-plan/CHANGE_SUMMARY.md:Final validation for the implementable P1 scope passed on 2026-05-29. The final state is `CONDITIONAL_GO_FOR_IMPLEMENTABLE_P1`: all implementable P1 tasks are complete; HTTP-001, HTTP-007, UI-001, and GOV-003 remain blocked by explicit approval gates.
+docs/ai-plan/CHANGE_SUMMARY.md:The final decision is `CONDITIONAL_GO_FOR_IMPLEMENTABLE_P1`. Residual risks are approval-gated P1 items and broader non-P1 work: Vite 8 migration, dependency modernization, Login Diorama, and remote GitHub governance.
+docs/ai-plan/STATUS.md:- Current accepted baseline: `M14_STATUS_LEDGER_RECONCILED_NO_GO`.
+docs/ai-plan/STATUS.md:- Prior synchronization lane: `M15_NO_GO_SURFACE_SYNCHRONIZED`.
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:- M14 reconciled lane status, issue status, blockers, generated outputs, and dirty-tree classification after M1-M13a. Required validation passed, but `pnpm ai:doctor --open` still reports 80 open tasks; `B-07`, `B-08`, `C-06`, `D-016`, `D-017`, and `G-03` remain unresolved. Final status is `M14_STATUS_LEDGER_RECONCILED_NO_GO`; do not treat the architecture repair set as complete.
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:| B-02 | B | P1 | OPEN | dialog facade | `@ccd/vue-ui` plus app i18n adapter | `apps/web-demo/src/hooks/modules/useDialog.tsx` | `packages/vue-ui`, app i18n adapter | App owns dialog convenience API and i18n coupling. | Shared UI behavior remains app-local. | M11 | `pnpm --filter @ccd/vue-ui test`, web-demo type-check | `docs/ai-runs/20260531-121402-ccd-m5-cleanup-planning/reports/system-store-and-hook-facade-plan.md` | `packages/vue-ui/src/PrimeDialog/**` |  | Keep app translations in facade; only reusable dialog primitives belong in vue-ui. |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:| B-12 | B | P1 | OPEN | ProTable URL sync facade | `@ccd/vue-ui` plus app router adapter | `apps/web-demo/src/hooks/modules/useProTableUrlSync.ts`, `apps/web-demo/src/plugins/modules/protable.ts` | app router adapter injected into `@ccd/vue-ui` | ProTable URL sync is public-looking app hook code and depends on app router state. | Router coupling may leak into `packages/vue-ui` or become hidden app platform API. | M11 | web-demo type-check, focused ProTable URL sync tests if changed | `docs/ai-runs/20260531-121402-ccd-m5-cleanup-planning/reports/system-store-and-hook-facade-plan.md` | `packages/vue-ui/src/ProTable/engine/hooks/useProTableUrlSync.ts` |  | M5 confirms it remains an app-local router adapter facade. |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:| D-08 | D | P1 | DONE | ownership docs | docs/vue-ui | `README.md`, `docs/architecture/ownership-boundaries.md`, `docs/zh/02-architecture.md`, `docs/ai-plan/PLAN.md`, `docs/zh/04-project-control-center.md`, `docs/zh/08-release.md` | docs | Docs no longer name removed app component paths as app-local candidates in non-historical surfaces. | Codex may migrate backwards or inspect nonexistent paths. | M14, M15, M16 | `pnpm docs:commands` | M16 stale path grep | `packages/vue-ui/src/PrimeDialog/**`, `packages/vue-ui/src/ProForm/**`, `packages/vue-ui/src/ProTable/**` |  | M15 fixed README; M16 fixed PLAN and Chinese contributor/release docs. Historical `docs/ai-runs/**` evidence is intentionally preserved. |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:- Related files: `packages/vue-ui/src/PrimeDialog/**`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:- Related files: `packages/vue-ui/src/ProTable/engine/hooks/useProTableUrlSync.ts`, `apps/web-demo/src/plugins/modules/protable.ts`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:- Problem: Some docs still list `apps/web-demo/src/components/PrimeDialog|ProForm|ProTable` as app-local candidates or do-not-move paths.
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:- Related files: `packages/vue-ui/src/PrimeDialog/**`, `packages/vue-ui/src/ProForm/**`, `packages/vue-ui/src/ProTable/**`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:| `packages/vue-ui/src/PrimeDialog/**` | dialog primitive | vue-ui | B-02, D-08 | platform-package-public-api | UI primitive | UI primitive edits | no app i18n hardcoding | package tests |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:| `packages/vue-ui/src/ProForm/**` | ProForm primitive | vue-ui | D-08, D-11 | platform-package-public-api | UI primitive | UI primitive edits | no app-local import aliases | package tests |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:| `packages/vue-ui/src/ProTable/**` | ProTable primitive | vue-ui | B-12, D-08, D-11 | platform-package-public-api | UI primitive plus injected app adapters | UI primitive edits | no app-local import aliases or router coupling in package | package tests |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:| `apps/web-demo/src/layouts/runtime/layoutRuntime.ts` | layout compatibility facade | web app | A-03 | app-local-compat-facade | facade over vue-app-platform | keep thin facade | no new logic | layout tests |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:- implementation result: `M14_STATUS_LEDGER_RECONCILED_NO_GO`. Required validation passed and the ledger is now explicit, but `B-07`, `B-08`, `C-06`, `D-016`, `D-017`, `G-03`, and 80 `pnpm ai:doctor --open` tasks remain unresolved or blocked/deferred. No source migration, blocker approval, generated manual edit, staging, or commit was performed.
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:- implementation result: top-level README/status/final NO_GO surfaces now state M14 reconciliation passed, full GO is not authorized, `B-07`, `B-08`, `C-06`, `D-016`, `D-017`, and `G-03` remain unresolved, and `pnpm ai:doctor --open` still reports 80 open tasks.
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:- final status: `M15_NO_GO_SURFACE_SYNCHRONIZED`.
+docs/ai-plan/FINAL_ARTIFACTS_REQUIRED.md:- final status: `GO`, `CONDITIONAL_GO`, or `NO_GO`;
+docs/ai-plan/PLAN.md:- `packages/vue-ui/src/ProForm/**`
+docs/ai-plan/PLAN.md:- Expected files or modules: `packages/vue-ui/src/ProForm/**`, `apps/web-demo/src/plugins/modules/proform.ts`.
+docs/ai-plan/PLAN.md:- Inspect `packages/vue-ui/src/ProTable/**` and app integration facades.
+docs/ai-plan/PLAN.md:- `packages/vue-ui/src/ProTable/**`
+docs/ai-plan/PLAN.md:- Expected files or modules: `packages/vue-ui/src/ProTable/**`, `apps/web-demo/src/plugins/modules/protable.ts`, `apps/web-demo/src/hooks/modules/useProTableUrlSync.ts`.
+docs/ai-plan/PLAN.md:- Expected files or modules: `packages/vue-ui/src/ProTable/index.ts`, `apps/web-demo/src/plugins/modules/protable.ts`.
+docs/zh/02-architecture.md:- `apps/web-demo/src/layouts/runtime/layoutRuntime.ts`
+docs/zh/04-project-control-center.md:- `apps/web-demo/src/layouts/runtime/layoutRuntime.ts`
+docs/zh/08-release.md:- `apps/web-demo/src/layouts/runtime/layoutRuntime.ts`
+docs/en/architecture-contract.md:- `apps/web-demo/src/layouts/runtime/layoutRuntime.ts`
+docs/architecture/ownership-boundaries.md:- `apps/web-demo/src/layouts/runtime/layoutRuntime.ts`
+docs/runtime/web-runtime.md:- `apps/web-demo/src/layouts/runtime/layoutRuntime.ts`

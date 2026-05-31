@@ -190,7 +190,8 @@ Out-of-scope:
 
 Files or areas likely affected:
 
-- `apps/web-demo/src/components/ProForm/**`
+- `packages/vue-ui/src/ProForm/**`
+- `apps/web-demo/src/plugins/modules/proform.ts` (app integration facade)
 - `turbo.json`
 - package metadata only if inspection proves required.
 
@@ -206,7 +207,7 @@ Dependencies:
 - Objective: Verify P1 CoreTypes work did not introduce `any` or unsafe assertion-driven logic.
 - Preconditions: M0 complete.
 - Implementation approach: Inspect changed ProForm/Core type files and record findings.
-- Expected files or modules: `apps/web-demo/src/components/ProForm/**`.
+- Expected files or modules: `packages/vue-ui/src/ProForm/**`, `apps/web-demo/src/plugins/modules/proform.ts`.
 - Acceptance criteria: No new business-code `any`; assertions are boundary-only and justified.
 - Validation command or method:
   - targeted grep/AST inspection
@@ -370,8 +371,8 @@ Preconditions:
 
 Scope:
 
-- Inspect `apps/web-demo/src/components/ProTable/**`.
-- Verify `useProTableInfiniteScroll` and `useProTableUrlSync` existence.
+- Inspect `packages/vue-ui/src/ProTable/**` and app integration facades.
+- Verify `useProTableInfiniteScroll` in `@ccd/vue-ui` and `useProTableUrlSync` in `apps/web-demo/src/hooks/modules/useProTableUrlSync.ts`.
 - Decide whether helpers should be exported from local component index or remain internal.
 - Reduce improper coupling in props shape where safe.
 - Validate table examples/views.
@@ -384,8 +385,10 @@ Out-of-scope:
 
 Files or areas likely affected:
 
-- `apps/web-demo/src/components/ProTable/**`
-- local ProTable index/types files.
+- `packages/vue-ui/src/ProTable/**`
+- `apps/web-demo/src/plugins/modules/protable.ts`
+- `apps/web-demo/src/hooks/modules/useProTableUrlSync.ts`
+- package ProTable index/types files.
 - tests/examples only if needed.
 
 Dependencies:
@@ -401,7 +404,7 @@ Dependencies:
 - Objective: Determine helper presence, imports, exports, and type usage.
 - Preconditions: M0 complete.
 - Implementation approach: Search files and inspect public API.
-- Expected files or modules: `apps/web-demo/src/components/ProTable/**`.
+- Expected files or modules: `packages/vue-ui/src/ProTable/**`, `apps/web-demo/src/plugins/modules/protable.ts`, `apps/web-demo/src/hooks/modules/useProTableUrlSync.ts`.
 - Acceptance criteria: Inventory distinguishes internal-only helpers from public helpers.
 - Validation command or method: repository search and type-check.
 - Evidence to collect: inventory report.
@@ -414,7 +417,7 @@ Dependencies:
 - Objective: Export only approved helpers/types from the correct boundary.
 - Preconditions: M3-T1 complete.
 - Implementation approach: Update local index/types only after inventory.
-- Expected files or modules: `apps/web-demo/src/components/ProTable/index.ts`.
+- Expected files or modules: `packages/vue-ui/src/ProTable/index.ts`, `apps/web-demo/src/plugins/modules/protable.ts`.
 - Acceptance criteria: Public API is explicit; internal hooks are not accidentally exposed unless justified.
 - Validation command or method:
   - `pnpm --filter @ccd/web-demo type-check`

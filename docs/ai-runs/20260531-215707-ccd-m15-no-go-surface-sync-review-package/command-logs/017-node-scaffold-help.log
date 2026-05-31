@@ -1,0 +1,15 @@
+$ node scripts/ai-route-view-scaffold.mjs --help
+started_at=2026-05-31T14:08:15Z
+file:///Users/cc/MyPorject/ccd/scripts/ai-route-view-scaffold.mjs:29
+    throw new Error(`missing value for --${key}`)
+          ^
+
+Error: missing value for --help
+    at file:///Users/cc/MyPorject/ccd/scripts/ai-route-view-scaffold.mjs:29:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:377:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:671:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.11.1
+ended_at=2026-05-31T14:08:15Z
+exit_code=1

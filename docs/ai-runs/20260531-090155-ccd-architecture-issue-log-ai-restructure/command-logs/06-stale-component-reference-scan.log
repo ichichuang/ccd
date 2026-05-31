@@ -1,0 +1,42 @@
+README.md:98:- `apps/web-demo/src/components/PrimeDialog`
+README.md:99:- `apps/web-demo/src/components/ProForm`
+README.md:100:- `apps/web-demo/src/components/ProTable`
+README.md:121:- `apps/web-demo/src/components/ProForm/**`
+README.md:122:- `apps/web-demo/src/components/ProTable/**`
+docs/architecture/ownership-boundaries.md:43:- `apps/web-demo/src/components/PrimeDialog`
+docs/architecture/ownership-boundaries.md:44:- `apps/web-demo/src/components/ProForm`
+docs/architecture/ownership-boundaries.md:45:- `apps/web-demo/src/components/ProTable`
+docs/architecture/ownership-boundaries.md:63:- `apps/web-demo/src/components/ProForm/**`
+docs/architecture/ownership-boundaries.md:64:- `apps/web-demo/src/components/ProTable/**`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:152:| D-11 | D | P1 | OPEN | AI scaffolds/guards | scripts/docs | `scripts/ai-route-view-scaffold.mjs`, `scripts/ai-architecture-guard.mjs`, `docs/ai-plan/PLAN.md` | current package public APIs | AI scaffold templates and guard allowlists still reference removed `apps/web-demo/src/components/ProForm|ProTable|PrimeDialog` paths. | Generated code or guards can target nonexistent app APIs. | M2, M7 | `pnpm codex:preflight`, `pnpm ai:guard` | stale path scan | `packages/vue-ui/src/index.ts` |  | New scan finding. |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:745:- Problem: Docs still list `apps/web-demo/src/components/PrimeDialog|ProForm|ProTable` as app-local candidates or do-not-move paths.
+docs/ai-plan/STATUS.md:164:- `apps/web-demo/src/components/ProTable/index.ts`
+docs/ai-plan/STATUS.md:165:- `apps/web-demo/src/components/ProTable/engine/types/props.ts`
+docs/ai-plan/STATUS.md:166:- `apps/web-demo/src/components/ProTable/engine/config/apiAdapter.ts`
+docs/ai-plan/STATUS.md:167:- `apps/web-demo/src/components/ProTable/README.md`
+docs/ai-plan/PLAN.md:193:- `apps/web-demo/src/components/ProForm/**`
+docs/ai-plan/PLAN.md:209:- Expected files or modules: `apps/web-demo/src/components/ProForm/**`.
+docs/ai-plan/PLAN.md:373:- Inspect `apps/web-demo/src/components/ProTable/**`.
+docs/ai-plan/PLAN.md:387:- `apps/web-demo/src/components/ProTable/**`
+docs/ai-plan/PLAN.md:404:- Expected files or modules: `apps/web-demo/src/components/ProTable/**`.
+docs/ai-plan/PLAN.md:417:- Expected files or modules: `apps/web-demo/src/components/ProTable/index.ts`.
+scripts/ai-route-view-scaffold.mjs:302:    return `import type { FormSchema } from '@/components/ProForm'
+scripts/ai-route-view-scaffold.mjs:441:  return `import type { ProTableColumn } from '@/components/ProTable'
+scripts/ai-architecture-guard.mjs:103:  'apps/web-demo/src/components/ProForm/engine/persistence/**',
+scripts/ai-architecture-guard.mjs:104:  'apps/web-demo/src/components/ProTable/engine/hooks/useProTableColumnSettingsStorage.ts',
+scripts/ai-architecture-guard.mjs:110:  'apps/web-demo/src/components/ProTable/engine/hooks/useProTableColumnSettingsStorage.ts',
+scripts/ai-architecture-guard.mjs:499:  'apps/web-demo/src/components/ProForm/engine/core/FormController.ts',
+scripts/ai-architecture-guard.mjs:500:  'apps/web-demo/src/components/ProForm/engine/validation/ValidationEngine.ts',
+scripts/ai-architecture-guard.mjs:513:  'apps/web-demo/src/components/PrimeDialog/useDialog.ts',
+docs/zh/08-release.md:26:- `apps/web-demo/src/components/PrimeDialog`
+docs/zh/08-release.md:27:- `apps/web-demo/src/components/ProForm`
+docs/zh/08-release.md:28:- `apps/web-demo/src/components/ProTable`
+docs/zh/08-release.md:45:- `apps/web-demo/src/components/ProForm/**`
+docs/zh/08-release.md:46:- `apps/web-demo/src/components/ProTable/**`
+docs/zh/04-project-control-center.md:33:- `apps/web-demo/src/components/PrimeDialog`
+docs/zh/04-project-control-center.md:34:- `apps/web-demo/src/components/ProForm`
+docs/zh/04-project-control-center.md:35:- `apps/web-demo/src/components/ProTable`
+docs/zh/04-project-control-center.md:52:- `apps/web-demo/src/components/ProForm/**`
+docs/zh/04-project-control-center.md:53:- `apps/web-demo/src/components/ProTable/**`
+docs/zh/02-architecture.md:89:- `apps/web-demo/src/components/ProForm/**`
+docs/zh/02-architecture.md:90:- `apps/web-demo/src/components/ProTable/**`

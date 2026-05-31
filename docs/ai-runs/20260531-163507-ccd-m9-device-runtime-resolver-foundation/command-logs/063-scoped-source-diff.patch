@@ -1,0 +1,254 @@
+diff --git a/apps/web-demo/src/stores/modules/system/device.ts b/apps/web-demo/src/stores/modules/system/device.ts
+index 2c10f190..d08d00b7 100644
+--- a/apps/web-demo/src/stores/modules/system/device.ts
++++ b/apps/web-demo/src/stores/modules/system/device.ts
+@@ -1,6 +1,11 @@
+ // src/stores/modules/device.ts
+ import { defineStore } from 'pinia'
+-import { BREAKPOINTS, type BreakpointKey } from '@ccd/design-tokens'
++import {
++  type BreakpointKey,
++  resolveBreakpointFromWidth,
++  resolveOrientationFromViewport,
++  resolveViewportMetrics,
++} from '@ccd/design-tokens'
+ import { useEventListener } from '@vueuse/core'
+ import { debounceFn } from '@ccd/shared-utils'
+ import { useMitt } from '@/utils/mitt'
+@@ -25,36 +30,35 @@ let lastResizeViewportHeight = typeof window === 'undefined' ? 0 : window.innerH
+ let cleanupDeviceRuntime: (() => void) | undefined
+ let viewportRafId: number | undefined
+ 
+-/** 模块级缓存：断点按阈值降序排列，避免每次 resize 重复排序 */
+-const SORTED_BREAKPOINTS: [string, number][] = [...Object.entries(BREAKPOINTS)].sort(
+-  (a, b) => b[1] - a[1]
+-)
+-
+-/** 根据宽度同步计算断点（使用缓存的排序结果） */
+-function resolveBreakpoint(width: number): BreakpointKey {
+-  const match = SORTED_BREAKPOINTS.find(([, val]) => width >= val)
+-  return match ? (match[0] as BreakpointKey) : 'xs'
+-}
+-
+ /** SSR 安全的初始视口宽度 */
+ const INITIAL_WIDTH: number = typeof window === 'undefined' ? 0 : window.innerWidth
+ const INITIAL_HEIGHT: number = typeof window === 'undefined' ? 0 : window.innerHeight
++const INITIAL_SCREEN_WIDTH: number = typeof window === 'undefined' ? 0 : window.screen.width
++const INITIAL_SCREEN_HEIGHT: number = typeof window === 'undefined' ? 0 : window.screen.height
++const INITIAL_PIXEL_RATIO: number = typeof window === 'undefined' ? 1 : window.devicePixelRatio || 1
+ const INITIAL_DEVICE_TYPE = getDeviceTypeSync()
+ const INITIAL_OS_TYPE = getOsTypeSync()
++const INITIAL_VIEWPORT_METRICS = resolveViewportMetrics({
++  width: INITIAL_WIDTH,
++  height: INITIAL_HEIGHT,
++  screenWidth: INITIAL_SCREEN_WIDTH,
++  screenHeight: INITIAL_SCREEN_HEIGHT,
++  pixelRatio: INITIAL_PIXEL_RATIO,
++})
+ 
+ export const useDeviceStore = defineStore('device', {
+   state: (): DeviceState => ({
+     width: INITIAL_WIDTH,
+     height: INITIAL_HEIGHT,
+-    currentBreakpoint: resolveBreakpoint(INITIAL_WIDTH),
++    currentBreakpoint: resolveBreakpointFromWidth(INITIAL_WIDTH),
+     type: INITIAL_DEVICE_TYPE,
+     os: INITIAL_OS_TYPE,
+-    orientation: INITIAL_WIDTH >= INITIAL_HEIGHT ? 'horizontal' : 'vertical',
+-    pixelRatio: typeof window === 'undefined' ? 1 : window.devicePixelRatio || 1,
+-    screenWidth: typeof window === 'undefined' ? 0 : window.screen.width,
+-    screenHeight: typeof window === 'undefined' ? 0 : window.screen.height,
+-    screenShortSide: Math.min(INITIAL_WIDTH, INITIAL_HEIGHT),
+-    screenLongSide: Math.max(INITIAL_WIDTH, INITIAL_HEIGHT),
++    orientation: INITIAL_VIEWPORT_METRICS.orientation,
++    pixelRatio: INITIAL_VIEWPORT_METRICS.pixelRatio,
++    screenWidth: INITIAL_VIEWPORT_METRICS.screenWidth,
++    screenHeight: INITIAL_VIEWPORT_METRICS.screenHeight,
++    screenShortSide: INITIAL_VIEWPORT_METRICS.screenShortSide,
++    screenLongSide: INITIAL_VIEWPORT_METRICS.screenLongSide,
+     navHeight: 0,
+     tabHeight: 0,
+     isResizing: false,
+@@ -139,28 +143,33 @@ export const useDeviceStore = defineStore('device', {
+      * 仅计算与窗口尺寸相关的值
+      */
+     detectViewportInfo() {
+-      const pageW = window.innerWidth
+-      const pageH = window.innerHeight
+-
+-      this.width = pageW
+-      this.height = pageH
+-      this.screenWidth = window.screen.width
+-      this.screenHeight = window.screen.height
+-      this.pixelRatio = window.devicePixelRatio || 1
+-
+-      this.orientation = pageW >= pageH ? 'horizontal' : 'vertical'
+-      this.screenShortSide = Math.min(pageW, pageH)
+-      this.screenLongSide = Math.max(pageW, pageH)
++      const metrics = resolveViewportMetrics({
++        width: window.innerWidth,
++        height: window.innerHeight,
++        screenWidth: window.screen.width,
++        screenHeight: window.screen.height,
++        pixelRatio: window.devicePixelRatio || 1,
++      })
++
++      this.width = metrics.width
++      this.height = metrics.height
++      this.screenWidth = metrics.screenWidth
++      this.screenHeight = metrics.screenHeight
++      this.pixelRatio = metrics.pixelRatio
++
++      this.orientation = resolveOrientationFromViewport(metrics.width, metrics.height)
++      this.screenShortSide = metrics.screenShortSide
++      this.screenLongSide = metrics.screenLongSide
+ 
+       this.updateBreakpoint()
+-      useMitt().emit('windowResize', { width: pageW, height: pageH })
++      useMitt().emit('windowResize', { width: metrics.width, height: metrics.height })
+     },
+ 
+     /**
+      * 更新断点 (v2.0 标准)
+      */
+     updateBreakpoint() {
+-      this.currentBreakpoint = resolveBreakpoint(this.width)
++      this.currentBreakpoint = resolveBreakpointFromWidth(this.width)
+     },
+ 
+     /**
+diff --git a/apps/web-demo/src/utils/deviceSync.ts b/apps/web-demo/src/utils/deviceSync.ts
+index 724fa471..920af1c1 100644
+--- a/apps/web-demo/src/utils/deviceSync.ts
++++ b/apps/web-demo/src/utils/deviceSync.ts
+@@ -3,53 +3,30 @@
+  * 供 mount 前逻辑（如 sizeEngine.preload）使用，与 stores/modules/device.ts 判定一致
+  */
+ import {
+-  BREAKPOINTS,
+-  TABLET_DETECTION_MIN_SHORT_SIDE,
+   type BreakpointKey,
++  resolveBreakpointFromWidth,
++  resolveDeviceTypeFromInputs,
++  resolveOsTypeFromUserAgent,
+ } from '@ccd/design-tokens'
+ import type { DeviceType, OsType } from '@/types/systems/device'
+ 
+-/** 模块级缓存：断点按阈值降序排列，避免每次调用重复排序 */
+-const SORTED_BREAKPOINTS: [string, number][] = [...Object.entries(BREAKPOINTS)].sort(
+-  (a, b) => b[1] - a[1]
+-)
+-
+ /**
+  * 根据 UA 与屏幕短边同步计算设备类型（与 device store initHardwareInfo 一致）
+  * 使用 screen.width/height（物理屏幕尺寸），与 device.ts:initHardwareInfo 对齐
+  */
+ export function getDeviceTypeSync(): DeviceType {
+   if (typeof navigator === 'undefined' || typeof window === 'undefined') return 'PC'
+-  const ua: string = navigator.userAgent
+-  const screenShortSide: number = Math.min(window.screen.width, window.screen.height)
+-
+-  const isMobileUA: boolean = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua)
+-
+-  // iPadOS 13+ Safari 会将 UA 混淆为 Macintosh 桌面端，需要用多触点能力来兜底识别
+-  const isMac: boolean = /Macintosh/i.test(ua)
+-  const isIPadOS: boolean = isMac && navigator.maxTouchPoints > 1
+-
+-  const isTabletUA: boolean =
+-    /iPad/i.test(ua) ||
+-    isIPadOS ||
+-    (isMobileUA && screenShortSide >= TABLET_DETECTION_MIN_SHORT_SIDE)
+-
+-  if (isTabletUA) return 'Tablet'
+-  if (isMobileUA) return 'Mobile'
+-  return 'PC'
++  return resolveDeviceTypeFromInputs({
++    userAgent: navigator.userAgent,
++    maxTouchPoints: navigator.maxTouchPoints ?? 0,
++    screenWidth: window.screen.width,
++    screenHeight: window.screen.height,
++  })
+ }
+ 
+ export function getOsTypeSync(): OsType {
+   if (typeof navigator === 'undefined') return 'Unknown'
+-  const ua: string = navigator.userAgent
+-  const isIPadOS: boolean = /Macintosh/i.test(ua) && navigator.maxTouchPoints > 1
+-
+-  if (/Windows/i.test(ua)) return 'Windows'
+-  if (/Android/i.test(ua)) return 'Android'
+-  if (/iPhone|iPad|iPod/i.test(ua) || isIPadOS) return 'iOS'
+-  if (/Mac OS|Macintosh/i.test(ua)) return 'MacOS'
+-  if (/Linux/i.test(ua)) return 'Linux'
+-  return 'Unknown'
++  return resolveOsTypeFromUserAgent(navigator.userAgent, navigator.maxTouchPoints ?? 0)
+ }
+ 
+ /**
+@@ -59,6 +36,5 @@ export function getOsTypeSync(): OsType {
+ export function getBreakpointSync(width?: number): BreakpointKey {
+   if (typeof window === 'undefined') return 'xs'
+   const w: number = width ?? window.innerWidth
+-  const match = SORTED_BREAKPOINTS.find(([, val]) => w >= val)
+-  return (match ? match[0] : 'xs') as BreakpointKey
++  return resolveBreakpointFromWidth(w)
+ }
+diff --git a/packages/design-tokens/src/breakpoints.ts b/packages/design-tokens/src/breakpoints.ts
+index f387652b..92dbb983 100644
+--- a/packages/design-tokens/src/breakpoints.ts
++++ b/packages/design-tokens/src/breakpoints.ts
+@@ -1,6 +1,6 @@
+ /* eslint-disable @typescript-eslint/naming-convention */
+ 
+-import type { SizeScaleKey } from './sizeScale'
++import type { SizeScaleKey } from './sizeScale.js'
+ 
+ /**
+  * 全站响应式断点定义 (v2.0 Standard · Single Source of Truth)
+diff --git a/packages/design-tokens/src/index.ts b/packages/design-tokens/src/index.ts
+index 5fafc824..66a1233f 100644
+--- a/packages/design-tokens/src/index.ts
++++ b/packages/design-tokens/src/index.ts
+@@ -30,6 +30,42 @@ export type {
+   TransitionCssVarName,
+ } from './types'
+ 
++export {
++  createSortedBreakpoints,
++  resolveBreakpointFromWidth,
++  resolveDeviceTypeFromInputs,
++  resolveOrientationFromViewport,
++  resolveOsTypeFromUserAgent,
++  resolveViewportMetrics,
++  SORTED_BREAKPOINTS,
++} from './deviceResolver.js'
++export type {
++  BreakpointResolverSource,
++  BreakpointThresholdMap,
++  DeviceResolverDeviceType,
++  DeviceResolverOrientation,
++  DeviceResolverOsType,
++  DeviceTypeResolverInput,
++  SortedBreakpointEntry,
++  ViewportMetrics,
++  ViewportMetricsInput,
++} from './deviceResolver.js'
++
++export {
++  SIZE_FONT_VAR_PREFIX,
++  decideLayoutDimensions,
++  decideRootFontSize,
++  deriveRuntimeFontSizeVars,
++  generateSizeVars,
++  getScopedContentSizeVars,
++  resolveSizePreset,
++} from './sizeResolver.js'
++export type {
++  RootFontSizeContext,
++  RootFontSizeDecision,
++  SizeResolverDeviceType,
++} from './sizeResolver.js'
++
+ /**
+  * 尺寸阶梯键名定义 (xs -> 5xl)
+  * 保持与 Breakpoints 命名一致，降低心智负担

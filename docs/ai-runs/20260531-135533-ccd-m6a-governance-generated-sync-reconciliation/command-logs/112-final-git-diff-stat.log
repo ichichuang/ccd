@@ -1,0 +1,26 @@
+$ git diff --stat
+ .ai/generated/governance-report.json               |   16 +-
+ .ai/governance/policies/api.json                   |    1 +
+ .ai/governance/policies/runtime.json               | 2232 +++++++++++++++++++-
+ .ai/governance/policies/topology.json              |   20 +-
+ .ai/rules/components/00-primevue-ecosystem.mdc     |    4 +-
+ .ai/rules/components/01-primevue-pt-styling.mdc    |    2 +-
+ .ai/rules/components/02-pro-components.mdc         |    4 +-
+ docs/ai-plan/DECISIONS.md                          |  136 +-
+ docs/architecture/ownership-boundaries.md          |   62 +-
+ docs/en/architecture-contract.md                   |   47 +-
+ docs/generated/api-surface-report.json             |   41 +
+ docs/generated/api-surface-report.md               |    6 +
+ docs/generated/governance-report.md                |   12 +-
+ docs/generated/graphs/README.md                    |    2 +-
+ docs/generated/graphs/dependency-graph.json        |   18 +-
+ docs/generated/graphs/package-dependency-graph.mmd |   11 +-
+ docs/runtime/desktop-runtime.md                    |    6 +-
+ docs/runtime/runtime-isolation.md                  |   37 +-
+ docs/runtime/web-runtime.md                        |   48 +-
+ docs/zh/02-architecture.md                         |   56 +-
+ scripts/architecture/check-api-surface.mjs         |   60 +-
+ scripts/architecture/check-runtime-leaks.mjs       |  600 +++++-
+ scripts/architecture/validate-boundaries.mjs       |   40 +-
+ scripts/normalize-generated-output.mjs             |   33 +-
+ 24 files changed, 3374 insertions(+), 120 deletions(-)

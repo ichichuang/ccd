@@ -1,0 +1,8 @@
+$ pnpm api:report
+
+> ccd@1.0.38 api:report /Users/cc/MyPorject/ccd
+> node scripts/architecture/check-api-surface.mjs
+
+API surface report generated: docs/generated/api-surface-report.json
+
+[exit 0]

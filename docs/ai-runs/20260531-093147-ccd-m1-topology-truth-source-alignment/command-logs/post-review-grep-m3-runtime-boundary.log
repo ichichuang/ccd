@@ -1,0 +1,81 @@
+1308:### M3 runtime boundary policy expansion
+1309-
+1310-- objective: Encode runtime-neutral, web-library, node-build, web-app, and desktop-app runtime classes.
+1311-- allowed paths: `.ai/governance/policies/runtime.json`, `scripts/architecture/**`, `scripts/ai-architecture-guard.mjs`, non-generated runtime docs
+1312-- forbidden paths: implementation migration, broad false-positive guards, contracts/core runtime code
+1313-- issues covered: C-01, C-02, C-04, C-05, C-06
+1314-- prerequisites: exception policy and owner signoff on guard strictness
+1315-- commands to run before changes: runtime surface scan, `pnpm arch:runtime`, `pnpm ai:guard`
+1316-- commands to run after changes: `pnpm arch:runtime`, `pnpm arch:boundaries`, `pnpm ai:guard`, `pnpm validate:governance`
+1317-- expected evidence: explicit runtime classes and exception list
+1318-- rollback plan: revert policy/guard changes as one lane
+1319-- residual risk: initial guard expansion can break on intentional web-library runtime use
+1320-
+1321-### M4 app-local shared candidate classification
+1322-
+1323-- objective: Classify app-local hooks, utils, stores, plugin wrappers, and facades as app-only, compatibility facade, or migration candidate.
+1324-- allowed paths: docs/plans first; source paths only in later approved lanes
+1325-- forbidden paths: implementation extraction in classification-only run, `packages/core`
+1326-- issues covered: A-03, B-01, B-02, B-05, B-06, B-07, B-08, C-06
+1327-- prerequisites: M1/M3 policy clarity
+1328-- commands to run before changes: import inventory, consumer graph, focused tests inventory
+1329-- commands to run after changes: docs checks for classification-only; targeted tests if source later changes
+1330-- expected evidence: candidate list with owner package and compatibility status
+1331-- rollback plan: revert classification doc changes
+1332-- residual risk: classification can become stale if source moves first
+1333-
+1334-### M5 safeStorage/theme/size/device extraction planning
+1335-
+1336-- objective: Plan extraction of safeStorage, theme, size, device, and theme-switch capabilities without changing behavior.
+1337-- allowed paths: planning docs and future source lanes scoped to owner packages/app adapters
+1338-- forbidden paths: `packages/core`, auth/HTTP behavior changes, broad UI rewrites
+1339-- issues covered: B-03, B-04, B-06, B-07, B-08, B-09, B-10, B-11
+1340-- prerequisites: owner approval and test plan
+1341-- commands to run before changes: focused storage/theme/size/device tests, visual baseline
+1342-- commands to run after changes: `pnpm test:run`, `pnpm e2e:layout`, `pnpm e2e:visual`, `pnpm build:web-demo`
+1343-- expected evidence: no persisted data regression and visual layout stability
+1344-- rollback plan: revert source extraction and compatibility facade changes together
+1345-- residual risk: persisted storage and theme visual behavior are high-blast-radius
+1346-
+1347-### M6 TypeScript build boundary repair
+1348-
+1349-- objective: Remove package source include bypasses and root script app-source imports.
+1350-- allowed paths: `apps/*/tsconfig.json`, package tsconfigs/references, root tooling scripts, package public APIs if approved
+1351-- forbidden paths: root global `@ccd/*` aliases, dependency changes, lockfile changes
+1352-- issues covered: F-01, F-02, F-03, F-04
+1353-- prerequisites: package builds emit required declarations; app builds can consume outputs
+1354-- commands to run before changes: `pnpm ci:prepare-internal`, app type-checks
+1355-- commands to run after changes: `pnpm type-check`, `pnpm build:web-demo`, `pnpm build:desktop`, `pnpm arch:boundaries`
+1356-- expected evidence: app configs no longer include package `src/**`
+1357-- rollback plan: revert TS config/tooling changes
+1358-- residual risk: previously masked missing declarations surface
+1359-
+1360-### M7 blocker and status reconciliation
+1361-
+1362-- objective: Align docs, status, ADRs, blockers, and final go/no-go state with current evidence.
+1363-- allowed paths: non-generated docs under `README.md`, `docs/**`, `.ai/runtime/owner_decisions.md` only if owner approves
+1364-- forbidden paths: source implementation, generated manual edits, blocked lane implementation
+1365-- issues covered: A-01, A-02, A-03, D-05, D-06, D-07, D-08, D-10, G-01, G-02, G-03
+1366-- prerequisites: owner/operator decisions for status changes
+1367-- commands to run before changes: `pnpm ai:doctor --open`, stale doc grep
+1368-- commands to run after changes: `pnpm docs:commands`, `pnpm ai:doctor --open`, `pnpm codex:preflight`, `pnpm validate:governance`
+1369-- expected evidence: status table names blockers and no false DONE/GO state
+1370-- rollback plan: revert status/doc edits
+1371-- residual risk: status changes without owner evidence are invalid
+1372-
+1373-## 11. Validation Matrix
+1374-
+1375-| command | validates issue types | expected use | generated output risk |
+1376-|---|---|---|---|
+1377-| `pnpm docs:commands` | A, D, G docs command references | M0/M7 docs lanes | none expected |
+1378-| `pnpm project:doctor` | root project metadata, package/workspace consistency | M1 prerequisite | may sync project metadata only if command does so; inspect diff |
+1379-| `pnpm ai:doctor --open` | G status/open task inventory, AI governance health | M0/M7 | none expected |
+1380-| `pnpm codex:preflight` | AI protocol and required files | M0/M2/M7 | none expected |
+1381-| `pnpm validate:governance` | governance gate, generated sync checks, architecture gate | M0/M1/M2/M3/M7 | should not generate; may fail on drift |
+1382-| `pnpm arch:runtime` | C runtime-neutral leaks and root decommission checks | M3/M5 | none expected |
+1383-| `pnpm arch:boundaries` | C/E/F boundary checks, depcruise, topology manifest/policy edge enforcement | M1/M3/M6 | none expected |
+1384-| `pnpm arch:report` | D/E generated governance report from topology policy | M1 | writes `docs/generated/governance-report.md` and `.ai/generated/governance-report.json` |
+1385-| `pnpm api:report` | D API surface, public package exports | M2 | writes `docs/generated/api-surface-report.*` and snapshots if policy changes |
+1386-| `pnpm governance:refresh` | D/E generated governance outputs | M1 only if intentionally regenerating | writes generated reports/graphs/SBOM |
+1387-| `pnpm type-check` | F TS boundary, package/app type health | M5/M6/source lanes | none expected |
+1388-| `pnpm test:run` | B source extraction behavior | M5/source lanes | none expected |

@@ -1,0 +1,137 @@
+diff --git a/.ai/governance/policies/topology.json b/.ai/governance/policies/topology.json
+index 1482152b..56e5f3aa 100644
+--- a/.ai/governance/policies/topology.json
++++ b/.ai/governance/policies/topology.json
+@@ -22,7 +22,7 @@
+       "layer": "contracts",
+       "criticality": "critical",
+       "responsibility": "Cross-runtime interfaces and DTO contracts only.",
+-      "allowedWorkspaceDependencies": ["@ccd/design-tokens"],
++      "allowedWorkspaceDependencies": [],
+       "publicApi": true
+     },
+     {
+@@ -71,7 +71,7 @@
+       "layer": "frontend-platform",
+       "criticality": "protected",
+       "responsibility": "Shared Vue/browser composables.",
+-      "allowedWorkspaceDependencies": [],
++      "allowedWorkspaceDependencies": ["@ccd/shared-utils"],
+       "publicApi": true,
+       "runtime": "web-library"
+     },
+@@ -81,7 +81,7 @@
+       "layer": "frontend-platform",
+       "criticality": "protected",
+       "responsibility": "Shared frontend app bootstrap lifecycle and platform orchestration primitives.",
+-      "allowedWorkspaceDependencies": [],
++      "allowedWorkspaceDependencies": ["@ccd/design-tokens"],
+       "publicApi": true,
+       "runtime": "web-library"
+     },
+@@ -91,7 +91,11 @@
+       "layer": "frontend-platform",
+       "criticality": "protected",
+       "responsibility": "Shared Vue UI primitives.",
+-      "allowedWorkspaceDependencies": [],
++      "allowedWorkspaceDependencies": [
++        "@ccd/design-tokens",
++        "@ccd/shared-utils",
++        "@ccd/vue-hooks"
++      ],
+       "publicApi": true,
+       "runtime": "web-library"
+     },
+@@ -111,7 +115,7 @@
+       "layer": "frontend-platform",
+       "criticality": "protected",
+       "responsibility": "Shared chart runtime and helpers.",
+-      "allowedWorkspaceDependencies": [],
++      "allowedWorkspaceDependencies": ["@ccd/design-tokens"],
+       "publicApi": true,
+       "runtime": "web-library"
+     },
+@@ -146,8 +150,12 @@
+         "@ccd/contracts",
+         "@ccd/core",
+         "@ccd/design-tokens",
++        "@ccd/shared-utils",
+         "@ccd/unocss-preset",
+-        "@ccd/vue-app-platform"
++        "@ccd/vue-app-platform",
++        "@ccd/vue-hooks",
++        "@ccd/vue-primevue-adapter",
++        "@ccd/vue-ui"
+       ],
+       "publicApi": false,
+       "runtime": "desktop",
+diff --git a/scripts/architecture/validate-boundaries.mjs b/scripts/architecture/validate-boundaries.mjs
+index fc95aab7..63d4760c 100755
+--- a/scripts/architecture/validate-boundaries.mjs
++++ b/scripts/architecture/validate-boundaries.mjs
+@@ -27,6 +27,7 @@ const packageExportSubpaths = new Map(
+     return [item.name, new Set(Object.keys(manifest.exports ?? {}))]
+   })
+ )
++const workspacePackageNames = new Set(workspacePackages(topology).map(item => item.name))
+ 
+ function walk(dir) {
+   if (!existsSync(dir)) return []
+@@ -53,6 +54,25 @@ function report(file, message) {
+   findings.push(`${relative(root, file)}: ${message}`)
+ }
+ 
++function workspaceDependencyNames(manifestSection = {}) {
++  return Object.entries(manifestSection)
++    .filter(
++      ([name, specifier]) =>
++        workspacePackageNames.has(name) &&
++        typeof specifier === 'string' &&
++        specifier.startsWith('workspace:')
++    )
++    .map(([name]) => name)
++}
++
++function uniqueSorted(values) {
++  return [...new Set(values)].sort((a, b) => a.localeCompare(b))
++}
++
++function formatList(values) {
++  return values.length > 0 ? values.join(', ') : 'none'
++}
++
+ for (const sourceRoot of sourceRoots) {
+   for (const file of walk(join(root, sourceRoot))) {
+     const content = readFileSync(file, 'utf8')
+@@ -116,12 +136,30 @@ for (const sourceRoot of sourceRoots) {
+ }
+ 
+ for (const packageInfo of workspacePackages(topology)) {
+-  if (packageInfo.publicApi === false) continue
+   const packageDir = join(root, packageInfo.path)
+   if (!statSync(packageDir).isDirectory()) continue
+   const manifestPath = join(packageDir, 'package.json')
+   if (!existsSync(manifestPath)) continue
+   const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'))
++  const manifestWorkspaceDependencies = uniqueSorted([
++    ...workspaceDependencyNames(manifest.dependencies),
++    ...workspaceDependencyNames(manifest.devDependencies),
++  ])
++  const allowedWorkspaceDependencies = uniqueSorted(packageInfo.allowedWorkspaceDependencies ?? [])
++
++  if (
++    manifestWorkspaceDependencies.length !== allowedWorkspaceDependencies.length ||
++    manifestWorkspaceDependencies.some(
++      (name, index) => name !== allowedWorkspaceDependencies[index]
++    )
++  ) {
++    report(
++      manifestPath,
++      `workspace dependency policy mismatch for ${packageInfo.name}: manifest=[${formatList(manifestWorkspaceDependencies)}], topology=[${formatList(allowedWorkspaceDependencies)}]`
++    )
++  }
++
++  if (packageInfo.publicApi === false) continue
+   if (topology.exportPolicy.requireExplicitRootExport && !manifest.exports?.['.']) {
+     findings.push(
+       `${relative(root, manifestPath)}: package must expose only an explicit root export entry`

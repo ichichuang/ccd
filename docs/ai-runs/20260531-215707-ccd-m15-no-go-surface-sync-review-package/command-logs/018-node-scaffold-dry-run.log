@@ -1,0 +1,13 @@
+$ node scripts/ai-route-view-scaffold.mjs --segment m15/scaffold-check --title-key router.m15.scaffoldCheck --dry-run
+started_at=2026-05-31T14:08:15Z
+AI route/view scaffold
+======================
+segment: m15/scaffold-check
+kind: table
+route: /m15/scaffold-check -> M15ScaffoldCheck
+[DRY-RUN] apps/web-demo/src/hooks/modules/m15/useM15ScaffoldCheckPage.ts
+[DRY-RUN] apps/web-demo/src/views/m15/scaffold-check/index.vue
+[DRY-RUN] apps/web-demo/src/router/modules/m15-scaffold-check.ts
+Next steps: run pnpm ai:guard && pnpm ai:doctor
+ended_at=2026-05-31T14:08:15Z
+exit_code=0

@@ -1,0 +1,199 @@
+{
+  "name": "@ccd/contracts",
+  "path": "packages/contracts",
+  "layer": "contracts",
+  "policyAllowed": [
+    "@ccd/design-tokens"
+  ],
+  "actualWorkspaceDependencies": [],
+  "missingFromPolicy": [],
+  "allowedButNotActual": [
+    "@ccd/design-tokens"
+  ],
+  "publicApi": true
+}
+{
+  "name": "@ccd/core",
+  "path": "packages/core",
+  "layer": "core",
+  "policyAllowed": [
+    "@ccd/contracts"
+  ],
+  "actualWorkspaceDependencies": [
+    "@ccd/contracts"
+  ],
+  "missingFromPolicy": [],
+  "allowedButNotActual": [],
+  "publicApi": true
+}
+{
+  "name": "@ccd/design-tokens",
+  "path": "packages/design-tokens",
+  "layer": "frontend-platform",
+  "policyAllowed": [],
+  "actualWorkspaceDependencies": [],
+  "missingFromPolicy": [],
+  "allowedButNotActual": [],
+  "publicApi": true
+}
+{
+  "name": "@ccd/unocss-preset",
+  "path": "packages/unocss-preset",
+  "layer": "frontend-platform",
+  "policyAllowed": [
+    "@ccd/design-tokens"
+  ],
+  "actualWorkspaceDependencies": [
+    "@ccd/design-tokens"
+  ],
+  "missingFromPolicy": [],
+  "allowedButNotActual": [],
+  "publicApi": true
+}
+{
+  "name": "@ccd/shared-utils",
+  "path": "packages/shared-utils",
+  "layer": "frontend-platform",
+  "policyAllowed": [],
+  "actualWorkspaceDependencies": [],
+  "missingFromPolicy": [],
+  "allowedButNotActual": [],
+  "publicApi": true
+}
+{
+  "name": "@ccd/vue-hooks",
+  "path": "packages/vue-hooks",
+  "layer": "frontend-platform",
+  "policyAllowed": [],
+  "actualWorkspaceDependencies": [
+    "@ccd/shared-utils"
+  ],
+  "missingFromPolicy": [
+    "@ccd/shared-utils"
+  ],
+  "allowedButNotActual": [],
+  "publicApi": true
+}
+{
+  "name": "@ccd/vue-app-platform",
+  "path": "packages/vue-app-platform",
+  "layer": "frontend-platform",
+  "policyAllowed": [],
+  "actualWorkspaceDependencies": [
+    "@ccd/design-tokens"
+  ],
+  "missingFromPolicy": [
+    "@ccd/design-tokens"
+  ],
+  "allowedButNotActual": [],
+  "publicApi": true
+}
+{
+  "name": "@ccd/vue-ui",
+  "path": "packages/vue-ui",
+  "layer": "frontend-platform",
+  "policyAllowed": [],
+  "actualWorkspaceDependencies": [
+    "@ccd/design-tokens",
+    "@ccd/shared-utils",
+    "@ccd/vue-hooks"
+  ],
+  "missingFromPolicy": [
+    "@ccd/design-tokens",
+    "@ccd/shared-utils",
+    "@ccd/vue-hooks"
+  ],
+  "allowedButNotActual": [],
+  "publicApi": true
+}
+{
+  "name": "@ccd/vue-primevue-adapter",
+  "path": "packages/vue-primevue-adapter",
+  "layer": "frontend-platform",
+  "policyAllowed": [
+    "@ccd/design-tokens"
+  ],
+  "actualWorkspaceDependencies": [
+    "@ccd/design-tokens"
+  ],
+  "missingFromPolicy": [],
+  "allowedButNotActual": [],
+  "publicApi": true
+}
+{
+  "name": "@ccd/vue-charts",
+  "path": "packages/vue-charts",
+  "layer": "frontend-platform",
+  "policyAllowed": [],
+  "actualWorkspaceDependencies": [
+    "@ccd/design-tokens"
+  ],
+  "missingFromPolicy": [
+    "@ccd/design-tokens"
+  ],
+  "allowedButNotActual": [],
+  "publicApi": true
+}
+{
+  "name": "@ccd/web-demo",
+  "path": "apps/web-demo",
+  "layer": "apps",
+  "policyAllowed": [
+    "@ccd/contracts",
+    "@ccd/core",
+    "@ccd/design-tokens",
+    "@ccd/shared-utils",
+    "@ccd/unocss-preset",
+    "@ccd/vue-app-platform",
+    "@ccd/vue-charts",
+    "@ccd/vue-hooks",
+    "@ccd/vue-primevue-adapter",
+    "@ccd/vue-ui"
+  ],
+  "actualWorkspaceDependencies": [
+    "@ccd/contracts",
+    "@ccd/core",
+    "@ccd/design-tokens",
+    "@ccd/shared-utils",
+    "@ccd/unocss-preset",
+    "@ccd/vue-app-platform",
+    "@ccd/vue-charts",
+    "@ccd/vue-hooks",
+    "@ccd/vue-primevue-adapter",
+    "@ccd/vue-ui"
+  ],
+  "missingFromPolicy": [],
+  "allowedButNotActual": [],
+  "publicApi": false
+}
+{
+  "name": "@ccd/desktop",
+  "path": "apps/desktop",
+  "layer": "apps",
+  "policyAllowed": [
+    "@ccd/contracts",
+    "@ccd/core",
+    "@ccd/design-tokens",
+    "@ccd/unocss-preset",
+    "@ccd/vue-app-platform"
+  ],
+  "actualWorkspaceDependencies": [
+    "@ccd/contracts",
+    "@ccd/core",
+    "@ccd/design-tokens",
+    "@ccd/shared-utils",
+    "@ccd/unocss-preset",
+    "@ccd/vue-app-platform",
+    "@ccd/vue-hooks",
+    "@ccd/vue-primevue-adapter",
+    "@ccd/vue-ui"
+  ],
+  "missingFromPolicy": [
+    "@ccd/shared-utils",
+    "@ccd/vue-hooks",
+    "@ccd/vue-primevue-adapter",
+    "@ccd/vue-ui"
+  ],
+  "allowedButNotActual": [],
+  "publicApi": false
+}

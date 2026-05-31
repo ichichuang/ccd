@@ -1,0 +1,23 @@
+$ pnpm --filter @ccd/shared-utils test
+
+> @ccd/shared-utils@1.0.38 test /Users/cc/MyPorject/ccd/packages/shared-utils
+> vitest run --passWithNoTests
+
+
+ RUN  v4.0.18 /Users/cc/MyPorject/ccd/packages/shared-utils
+
+No test files found, exiting with code 0
+
+
+|node| 
+
+include: apps/**/*.spec.ts, apps/**/*.spec.tsx, apps/**/*.test.ts, apps/**/*.test.tsx, packages/**/*.spec.ts, packages/**/*.spec.tsx, packages/**/*.test.ts, packages/**/*.test.tsx, scripts/**/*.spec.ts
+exclude:  node_modules, **/node_modules/**, dist, **/*.dom.spec.ts, **/*.dom.spec.tsx, **/*.dom.test.ts, **/*.dom.test.tsx
+
+|jsdom| 
+
+include: apps/**/*.dom.spec.ts, apps/**/*.dom.spec.tsx, apps/**/*.dom.test.ts, apps/**/*.dom.test.tsx, packages/**/*.dom.spec.ts, packages/**/*.dom.spec.tsx, packages/**/*.dom.test.ts, packages/**/*.dom.test.tsx
+exclude:  node_modules, **/node_modules/**, dist
+
+
+[exit=0]

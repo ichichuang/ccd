@@ -21,16 +21,23 @@ project.config.json
 - `apps/web-demo`：浏览器应用外壳、路由、页面、stores、应用适配层，以及暂时仍留在应用内的共享候选模块
 - `apps/desktop`：Tauri 桌面外壳与桌面适配层
 
+`PrimeDialog`、`ProForm`、`ProTable` 的公共 UI 原语当前归 `packages/vue-ui` 所有；`apps/web-demo` 仅保留插件与 compatibility facade 集成层。
+
 当前应仅将以下路径记录为“应用内共享候选模块”，不要在发布准备阶段直接迁移：
 
-- `apps/web-demo/src/components/PrimeDialog`
-- `apps/web-demo/src/components/ProForm`
-- `apps/web-demo/src/components/ProTable`
 - `apps/web-demo/src/layouts/runtime/layoutRuntime.ts`
-- `apps/web-demo/src/infra/shared/createCapabilityBridge.ts`
 - `apps/web-demo/src/hooks/modules/useAutoMitt.ts`
+- `apps/web-demo/src/hooks/modules/useDialog.tsx`
+- `apps/web-demo/src/hooks/modules/useProTableUrlSync.ts`
+- `apps/web-demo/src/plugins/modules/primevue.ts`
+- `apps/web-demo/src/plugins/modules/proform.ts`
+- `apps/web-demo/src/plugins/modules/protable.ts`
+- `apps/web-demo/src/utils/http/**`
 - `apps/web-demo/src/utils/theme/engine.ts`
+- `apps/web-demo/src/utils/theme/sizeEngine.ts`
+- `apps/web-demo/src/utils/deviceSync.ts`
 - `apps/web-demo/src/utils/safeStorage`
+- `apps/web-demo/src/stores/modules/system/**`
 
 发布前仍应保持以下区域不动：
 
@@ -42,8 +49,7 @@ project.config.json
 - `apps/web-demo/src/views/**`
 - `apps/web-demo/src/utils/date/dateUtils.ts`
 - `apps/web-demo/src/utils/theme/engine.ts`
-- `apps/web-demo/src/components/ProForm/**`
-- `apps/web-demo/src/components/ProTable/**`
+- 注入 router/store/i18n/browser capabilities 的 app-local compatibility facades
 
 相关元数据通过以下命令同步：
 

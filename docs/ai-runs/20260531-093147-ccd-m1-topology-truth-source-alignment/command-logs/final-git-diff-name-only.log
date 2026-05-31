@@ -1,0 +1,12 @@
+.ai/generated/governance-report.json
+.ai/governance/policies/topology.json
+docs/architecture/ownership-boundaries.md
+docs/en/architecture-contract.md
+docs/generated/governance-report.md
+docs/generated/graphs/README.md
+docs/generated/graphs/dependency-graph.json
+docs/generated/graphs/package-dependency-graph.mmd
+docs/runtime/desktop-runtime.md
+docs/runtime/web-runtime.md
+docs/zh/02-architecture.md
+scripts/architecture/validate-boundaries.mjs

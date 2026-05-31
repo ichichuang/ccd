@@ -1,0 +1,4 @@
+$ rg -n from ['"]@primeuix(?:/[^'"]*)?['"]|import\(['"]@primeuix(?:/[^'"]*)?['"]\)|export .* from ['"]@primeuix(?:/[^'"]*)?['"] apps packages scripts .ai docs --hidden --glob !node_modules/** --glob !**/dist/** --glob !docs/ai-runs/** --glob !docs/generated/** --glob !.ai/generated/** --glob !coverage/**
+packages/vue-primevue-adapter/src/theme/primevuePreset.ts:1:import { definePreset } from '@primeuix/themes'
+packages/vue-primevue-adapter/src/theme/primevuePreset.ts:2:import type { ComponentsDesignTokens } from '@primeuix/themes/types'
+packages/vue-primevue-adapter/src/theme/primevuePreset.ts:3:import Aura from '@primeuix/themes/aura'

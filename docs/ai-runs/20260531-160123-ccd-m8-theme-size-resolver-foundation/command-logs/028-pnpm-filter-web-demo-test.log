@@ -1,0 +1,27 @@
+$ pnpm --filter @ccd/web-demo test
+
+> @ccd/web-demo@1.0.38 test /Users/cc/MyPorject/ccd/apps/web-demo
+> vitest run --passWithNoTests
+
+failed to load config from /Users/cc/MyPorject/ccd/apps/web-demo/vite.config.ts
+
+⎯⎯⎯⎯⎯⎯⎯ Startup Error ⎯⎯⎯⎯⎯⎯⎯⎯
+Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/Users/cc/MyPorject/ccd/packages/design-tokens/dist/sizeResolver' imported from /Users/cc/MyPorject/ccd/packages/design-tokens/dist/index.js
+    at finalizeResolution (node:internal/modules/esm/resolve:274:11)
+    at moduleResolve (node:internal/modules/esm/resolve:864:10)
+    at defaultResolve (node:internal/modules/esm/resolve:990:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:737:20)
+    at ModuleLoader.resolve (node:internal/modules/esm/loader:714:38)
+    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:293:38)
+    at #link (node:internal/modules/esm/module_job:208:49) {
+  code: 'ERR_MODULE_NOT_FOUND',
+  url: 'file:///Users/cc/MyPorject/ccd/packages/design-tokens/dist/sizeResolver'
+}
+
+
+
+/Users/cc/MyPorject/ccd/apps/web-demo:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @ccd/web-demo@1.0.38 test: `vitest run --passWithNoTests`
+Exit status 1
+
+[exit:1]

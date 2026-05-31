@@ -1,0 +1,50 @@
+$ find docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation -maxdepth 3 -type f | sort
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/001-git-diff-check.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/002-pnpm-docs-commands.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/003-pnpm-project-doctor.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/004-pnpm-ai-doctor-open.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/005-pnpm-codex-preflight.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/006-pnpm-ci-prepare-internal.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/007-pnpm-ci-smoke-packages.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/008-pnpm-arch-runtime.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/009-pnpm-arch-boundaries.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/010-pnpm-api-report.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/011-pnpm-ai-guard-format-json.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/012-pnpm-validate-governance.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/013-pnpm-type-check.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/014-pnpm-test-run.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/015-pnpm-web-demo-test.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/016-pnpm-build-web-demo.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/017-pnpm-build-desktop.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/018-final-git-diff-check.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/019-post-summary-git-diff-check.exit
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/019-post-summary-git-diff-check.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/020-post-summary-pnpm-docs-commands.exit
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/020-post-summary-pnpm-docs-commands.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/021-final-post-summary-git-diff-check.exit
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/021-final-post-summary-git-diff-check.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/022-final-post-summary-pnpm-docs-commands.exit
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/022-final-post-summary-pnpm-docs-commands.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/023-final-git-diff-check.exit
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/023-final-git-diff-check.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/baseline-generated-diff-name-status.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/baseline-git-branch.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/baseline-git-diff-check.exit
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/baseline-git-diff-check.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/baseline-git-diff-name-status.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/baseline-git-diff-stat.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/baseline-git-head.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/baseline-git-status-short.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/post-validation-generated-diff-name-status.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/post-validation-git-diff-stat.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/post-validation-git-status-short.log
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/logs/validation-summary.tsv
+docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/reports/summary.md
+
+$ test required M14 report files
+FOUND docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/reports/summary.md
+MISSING docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/reports/final-go-no-go.md
+MISSING docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/reports/blocker-register.md
+MISSING docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/reports/issue-status-reconciliation.md
+
+exit_code=0

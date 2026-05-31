@@ -1,0 +1,10 @@
+=== §0 before (from M16 evidence baseline) ===
+partially_obsolete: [B-03, C-04, D-09, D-10]
+done: missing D-08
+=== §0 after (current) ===
+document_version: 2026-05-31.m16a
+current_lane: M16a ledger evidence polish lane
+  partially_obsolete: [B-03, C-04, D-09, D-10, D-11]
+  done: [C-01, C-02, C-03, C-05, D-01, D-02, D-03, D-04, D-05, D-07, D-08, E-01, E-02, E-03, E-04, E-05, E-06, E-07, F-01, F-02, F-03, F-04, G-01]
+=== G-02 table row ===
+| G-02 | G | P1 | OPEN | open tasks | runtime ledger/status | `docs/ai-plan/STATUS.md`, `.ai/runtime/repair_list.md` | task ledger | `pnpm ai:doctor --open` still reports open tasks in prior evidence. | Incomplete work hidden by summary. | M14, M15, M16 | `pnpm ai:doctor --open` | M16 status scan | `.ai/runtime/repair_list.md` |  | M14, M15, and M16 all report 80 open tasks; no ledger closure occurred in M16. |

@@ -1,0 +1,3 @@
+$ git diff -- package manifests and lockfile
+
+[exit:0]

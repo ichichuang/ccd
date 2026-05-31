@@ -1,363 +1,79 @@
 # CCD Architecture Repair Status
 
-## Current execution state
+## Current Execution State
 
-- Current milestone: P4 planning-only lane
-- Current task: classify P4 strategic deferred work without implementation.
-- Baseline: `main` at `0cc9d3835c77f554782ee9d80fde2684bf178596`.
-- Governance context: GitHub governance planning sealed; CI Guardian `26682295113` PASS per operator baseline.
-- Validation status: P4_PLANNING_ONLY_VALIDATED
-- Evidence directory: `docs/ai-runs/20260530-192455-ccd-p4-planning-only/`
-- Final completion state: PLANNING_ONLY_DONE
+- Current program: `CCD post-M16 NO_GO blocker-resolution program`
+- Current milestone: P10 `P10_HOOK_BLOCKED_PRECOMMIT` — pre-commit hook blocks commits while repo-root `.cursor` exists.
+- Current accepted baseline: `M14_STATUS_LEDGER_RECONCILED_NO_GO`.
+- Prior cleanup lane: `M16_STALE_REFERENCES_CLEANED` / `M16A_LEDGER_EVIDENCE_POLISHED`.
+- Baseline branch: `main`.
+- Baseline commit: `cc255d1a`.
+- P8 evidence directory: `docs/ai-runs/20260601-106000-ccd-p8-final-go-no-go-reconciliation/`.
+- P0–P7 evidence roots: `docs/ai-runs/20260601-100000-ccd-p0-post-m16-blocker-baseline/` through `docs/ai-runs/20260601-105000-ccd-p7-repair-ledger-reconciliation/`.
+- Runtime source changed in P4: comment-only in `apps/web-demo/src/utils/safeStorage/index.ts`.
+- Package manifests or lockfile changed in P0–P8: no.
+- Stage/commit/push/clean/reset/rebase in P0–P8: no.
+- P10 local commit attempt (2026-06-01): **blocked by pre-commit hook** (`pnpm ai:doctor` fails on repo-root `.cursor`); see `docs/ai-runs/20260601-121000-ccd-p10-local-commits/reports/summary.md`.
 
-Current HTTP-007 decision state:
+## Top-Level Status
 
-- 401/token-expired/invalid-token restore failures are terminal: no retry, immediate logout/clear through the existing auth boundary, and router-guard login redirect.
-- 403 permission failures do not retry and preserve existing business/route error handling.
-- 5xx/network/timeout restore failures are transient: future implementation may retry the idempotent current-user restore request three times with 1000/2000/4000 ms exponential backoff and 5000 ms per-attempt timeout.
-- Retry exhaustion fails closed: clear the untrusted session, redirect to login, and do not expose protected route, store, or cached-data access.
-- Offline read-only mode remains blocked and is not approved by HTTP-007.
-- User messaging must be single-shot and non-sensitive; no per-retry toast spam or duplicate interceptor messages.
-- No runtime auth behavior, dependencies, Vite, GitHub remote, Login Diorama, P4, generated governance files, or HTTP migration code were changed.
+- P8 reconciliation: `P8_FINAL_NO_GO`.
+- Overall final status remains **`NO_GO`**.
+- Full GO is not authorized.
+- `pnpm ai:doctor --open` still reports **80 open tasks** (P7 classified all; 0 closed).
+- Workspace remains intentionally dirty with inherited M1–M16a artifacts plus P0–P9 evidence.
 
-Current P4 planning-only classification:
+## Post-M16 Program Results (P0–P8)
 
-| P4 item                     | Classification        | Owner                      | Evidence                                                                    |
-| --------------------------- | --------------------- | -------------------------- | --------------------------------------------------------------------------- |
-| DOC-004 P4 umbrella         | `DEFERRED`            | Owner / Architect          | `ccd-architecture-optimization-plan/plans/04-P4-strategic-deferred-work.md` |
-| P4-NewOrganization-Deferred | `OUT_OF_SCOPE`        | Owner / Operator           | `docs/ai-plan/SPEC.md`; active P4 report                                    |
-| P4-Starter-Deferred         | `APPROVAL_REQUIRED`   | Owner / Architect          | active P4 report                                                            |
-| P4-DesignSystem-Deferred    | `APPROVAL_REQUIRED`   | Owner / Architect          | active P4 report                                                            |
-| P4-RekaUI-Deferred          | `BLOCKED_BY_OWNER`    | Owner / Architect          | active P4 report                                                            |
-| P4-TanStackQuery-Deferred   | `BLOCKED_BY_PRODUCT`  | Product / Owner / Security | active P4 report                                                            |
-| P4-DesktopDriftCI           | `BLOCKED_BY_OPERATOR` | Operator / Desktop owner   | `.ai/runtime/owner_decisions.md`; active P4 report                          |
+| Phase | Status                                | Key outcome                                                   |
+| ----- | ------------------------------------- | ------------------------------------------------------------- |
+| P0    | `P0_BLOCKER_BASELINE_CONFIRMED`       | Baseline + blocker table; M16a evidence gap noted             |
+| P1    | `P1_D016_APPROVED`                    | D-016 Option A; B-07 DONE (app-owned)                         |
+| P2    | `P2_B08_APP_OWNED_DECIDED`            | D-019 Option A; B-08 DONE (app-owned)                         |
+| P3    | `P3_D017_APPROVED`                    | Options A+D; C-06 OPEN; M12 blocked                           |
+| P4    | `P4_SAFE_STORAGE_NOOP_CONFIRMED`      | Facade boundary comment only                                  |
+| P5    | skipped                               | compression app-owned                                         |
+| P6    | skipped                               | no allowlist reduction authorized                             |
+| P7    | `P7_REPAIR_LEDGER_CLASSIFIED_NONZERO` | 80 tasks classified                                           |
+| P8    | `P8_FINAL_NO_GO`                      | validation matrix mostly pass; codex:preflight fail inherited |
+| P9    | `P9_REVIEW_PACKAGE_READY`             | commit grouping prepared; no commit                           |
+| P9a   | `P9A_EVIDENCE_RECONCILED`             | M16a path verified; codex exception documented                |
+| P10   | `P10_HOOK_BLOCKED_PRECOMMIT`          | 0 commits; hook fails on `.cursor`                            |
 
-No P4 source, dependency, package, remote GitHub, `.github/**`, auth, HTTP runtime, runtime UI, package manifest, or generated governance implementation was performed in this planning lane.
+## Issue Status After P1–P3
 
-Current P4 planning-only validation:
+| Issue ID | Status     | Notes                                             |
+| -------- | ---------- | ------------------------------------------------- |
+| `B-07`   | `DONE`     | App-owned crypto terminal boundary (D-016 A)      |
+| `B-08`   | `DONE`     | App-owned compression terminal boundary (D-019 A) |
+| `D-016`  | `APPROVED` | Option A, 2026-06-01                              |
+| `D-017`  | `APPROVED` | Options A+D, 2026-06-01                           |
+| `D-019`  | `APPROVED` | B-08 compression Option A (new)                   |
+| `C-06`   | `OPEN`     | Allowlist debt; guard posture approved            |
+| `G-02`   | `OPEN`     | 80 classified open tasks                          |
+| `G-03`   | `BLOCKED`  | Completion gate                                   |
 
-| Command                                    | Result                                                   | Evidence                                                                                               |
-| ------------------------------------------ | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `pnpm docs:commands`                       | PASS                                                     | `docs/ai-runs/20260530-192455-ccd-p4-planning-only/command-logs/01-pnpm-docs-commands.log`             |
-| `pnpm ai:doctor --open`                    | PASS, 80 open tasks                                      | `docs/ai-runs/20260530-192455-ccd-p4-planning-only/command-logs/02-pnpm-ai-doctor-open.log`            |
-| `pnpm codex:preflight`                     | PASS                                                     | `docs/ai-runs/20260530-192455-ccd-p4-planning-only/command-logs/03-pnpm-codex-preflight.log`           |
-| `pnpm validate:governance`                 | PASS                                                     | `docs/ai-runs/20260530-192455-ccd-p4-planning-only/command-logs/04-pnpm-validate-governance.log`       |
-| `git diff --check`                         | PASS                                                     | `docs/ai-runs/20260530-192455-ccd-p4-planning-only/command-logs/05-git-diff-check.log`                 |
-| `git status --short --untracked-files=all` | PASS, expected planning docs and active P4 evidence only | `docs/ai-runs/20260530-192455-ccd-p4-planning-only/command-logs/06-git-status-short-untracked-all.log` |
+## Unresolved Blockers And Decisions
 
-Current HTTP-001 decision state:
+| ID            | Status    | Required next action                                                                                     |
+| ------------- | --------- | -------------------------------------------------------------------------------------------------------- |
+| `C-06`        | `OPEN`    | Future M12 lane if owner approves Option E staged reduction                                              |
+| `G-02`        | `OPEN`    | Owner/operator accept deferred ledger debt or approve implementation lanes                               |
+| `G-03`        | `BLOCKED` | Resolve G-02/C-06 or accept continued NO_GO                                                              |
+| `M12`         | `BLOCKED` | Owner approve staged PrimeVue reduction                                                                  |
+| review/commit | `OPEN`    | Remove/rename repo-root `.cursor`, authorize `--no-verify`, or update hook policy; then re-run P10 G1–G6 |
 
-- `packages/contracts/src/http/**` is approved only for a future type-only, runtime-neutral contracts implementation lane.
-- `packages/core/src/http/**` remains blocked pending a proven multi-runtime orchestration need.
-- `apps/web-demo/src/utils/http/**` remains canonical app HTTP infrastructure for now.
-- HTTP-001 remains sealed at `de55e2e0`.
+## M16a Evidence Path (P9a reconciled)
 
-Sealed Vue-hooks TSX baseline supplied by owner:
+- `docs/ai-runs/20260531-230000-ccd-m16a-ledger-evidence-polish/` **exists on disk** with `reports/` and `command-logs/` (verified P9a 2026-06-01).
+- Prior P0 "missing on disk" note was superseded; see `docs/ai-runs/20260601-120000-ccd-p9a-evidence-path-validation-reconciliation/reports/m16a-evidence-path-reconciliation.md`.
 
-- Commit: `8b958c8a test(vue-hooks): 启用 createAutoMittHook TSX 测试 harness`
-- Branch: `main`
-- Remote validation: CI Guardian `26678951041` PASS; Core Quality PASS; E2E QA PASS.
-- Final status: clean at seal point.
-- CCD Vue constraints remain active: no manual Vue API imports covered by auto-imports, no `import { h } from 'vue'`, no `h()`, and TSX files must use TSX render/return.
+## Validation Status
 
-Previous P3 run summary:
+P8 full matrix logs: `docs/ai-runs/20260601-106000-ccd-p8-final-go-no-go-reconciliation/command-logs/`
 
-Implemented in the active P3 run:
+P9 review package (when complete): `docs/ai-runs/20260601-107000-ccd-p9-review-package/`
 
-- No source implementation was performed because no P3 item is currently actionable without approval.
-- Created the P3 evidence directory and captured baseline/status logs.
-- Verified `pnpm ai:doctor --open` reports 80 open tasks, all blocked/deferred categories.
-- Verified the P3 actionable scan returned no unblocked P3 task from the P3 plan, issue ledger, task ledger, or runtime repair ledger.
+P10 commit attempt: `docs/ai-runs/20260601-121000-ccd-p10-local-commits/reports/summary.md`
 
-P3 items intentionally left blocked or deferred:
-
-- DEPS-004 (`BLOCKED_BY_REVIEW`) — PrimeVue upgrade requires dependency-review approval and adapter/visual validation lane.
-- DEPS-005 (`BLOCKED_BY_HTTP_CONTRACT`) — alova upgrade requires HTTP contract/request-test prerequisite resolution and approval.
-- DOC-003 (`DEFERRED`) — Login Diorama remains deferred pending product/owner approval and prerequisite stability.
-- Runtime-ledger `P3-Login-*` tasks remain blocked pending M11 operator approval and prerequisite stability.
-- P4 strategic work remains deferred and was not executed.
-
-Focused validation already captured in the active P3 run:
-
-- `git status --short --untracked-files=all` — PASS, showing only the newly created P3 run logs at capture time.
-- `git log -10 --oneline` — PASS, baseline head is `5cb4fd8c`.
-- `git branch --show-current` — PASS, branch `main`.
-- `git diff --check` — PASS.
-- `pnpm ai:doctor --open` — PASS, 80 open tasks.
-- P3 actionable scan — PASS, zero unblocked P3 tasks found.
-
-Final validation for this P3 run:
-
-- `pnpm install --frozen-lockfile` — PASS
-- `pnpm ci:prepare-internal` — PASS
-- `pnpm ai:doctor` — PASS
-- `pnpm codex:preflight` — PASS
-- `pnpm validate:governance` — PASS
-- `pnpm type-check` — PASS
-- `pnpm test:run` — PASS
-- `pnpm lint:check` — PASS with two existing warnings in `packages/vue-hooks/src/createAutoMittHook.spec.ts`
-- `pnpm build:web-demo` — PASS
-- `pnpm build:desktop` — PASS
-- `pnpm budget:desktop` — PASS
-- `pnpm e2e:smoke` — PASS
-- `pnpm e2e:layout` — PASS
-- `pnpm e2e:perf` — PASS
-- `pnpm e2e:visual` — PASS
-- `pnpm e2e:qa:prepared` — PASS
-- `pnpm build:ci` — PASS
-- `git diff --check` — PASS
-- `git status --short --untracked-files=all` — PASS; dirty state recorded in the active P3 final status log.
-
-## Current baseline
-
-- Branch: `main`
-- Baseline commit: `de55e2e0`
-- Local ahead/behind: `main...origin/main` with no ahead/behind marker in local status output.
-- Dirty files: HTTP-007 decision docs and evidence files from `docs/ai-runs/20260530-173553-ccd-http-007-product-decision/`.
-- Last commit captured: `de55e2e0 docs(http): 批准 HTTP-001 合同类型边界`
-- Decision-lane validation: PASS in `docs/ai-runs/20260530-173553-ccd-http-007-product-decision/command-logs/`.
-- Latest known assumption: no dependency, Vite 8, auth-flow, `.github/**`, remote GitHub, commit, stage, push, reset, clean, branch switch, or force operation was performed.
-
-## Blockers
-
-| ID    | Description                                                                                                                                         | Blocking milestone/task | Required action                                                                                                  | Status  |
-| ----- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------- | ------- |
-| B-001 | Current local status not captured in active run evidence                                                                                            | M0-T1                   | Run baseline inspection                                                                                          | DONE    |
-| B-002 | Post-7 checkpoint initially failed at `pnpm validate:governance`; the planning doc command reference was rephrased and governance was rerun cleanly | M0-T3                   | No action required                                                                                               | DONE    |
-| B-003 | UI boundary guard would create broad false positives without approved D-003 policy and exception list                                               | M4-T4                   | Operator review/approval before guard implementation                                                             | BLOCKED |
-| B-004 | HTTP-001 contract package shape required owner approval                                                                                             | M5-T2                   | Resolved by `.ai/runtime/owner_decisions.md` and `docs/ai-plan/DECISIONS.md` D-014; implementation not started.  | DONE    |
-| B-005 | Guard enforcement scope, rule contradictions, and design-token canonical file require owner/architect decisions                                     | M6-T2/M6-T3             | Resolve `.ai/runtime/owner_decisions.md` Decisions 2, 3, 4, and 5                                                | BLOCKED |
-| B-006 | `.github/**` CODEOWNERS/template edits and remote branch-protection changes require operator approval                                               | M7-T2                   | Operator approval before local `.github/**` mutation or remote configuration                                     | BLOCKED |
-| B-007 | M8 table-heavy production screenshot and two e2e checks fail independently of the pxtorem patch                                                     | M8-T2                   | Separate ProTable/AppContainer layout validation lane for `.p-datatable` height `0` and scroll-memory regression | BLOCKED |
-| B-008 | Vite 8 migration requires isolated branch/worktree and dependency/toolchain approval                                                                | M9-T2                   | Operator approval before branch/worktree creation, dependency changes, or Vite 8 validation                      | BLOCKED |
-| B-009 | Dependency modernization requires explicit per-lane approval before package or lockfile mutation                                                    | M10-T2                  | Operator approval for exactly one dependency lane, then isolated validation                                      | BLOCKED |
-| B-010 | Login Diorama requires operator approval and stable P1/P2 prerequisites before UI/auth-flow work                                                    | M11                     | Operator approval plus prerequisite resolution before editing login files                                        | BLOCKED |
-| B-011 | Final go/no-go cannot be `GO` while B-003 through B-010 remain unresolved                                                                           | M14                     | Operator either resolves/approves blockers or accepts `NO_GO` status                                             | BLOCKED |
-
-## Decisions made
-
-| Decision ID | Summary                                                                                                                                                                 | Source              | Date       | Status   |
-| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | ---------- | -------- |
-| D-000       | Planning system will not directly edit root `AGENTS.md`; use `docs/ai-plan/AGENTS_DRAFT.md` unless operator approves `.ai/protocol/AI.entry.md` update and regeneration | Plan                | 2026-05-29 | ACTIVE   |
-| D-001       | First implementation lane should be M2 Capability Bridge generics after baseline checkpoint                                                                             | Plan                | 2026-05-29 | PROPOSED |
-| D-002       | `docs/ai-runs/.gitignore` keeps command logs and reports visible despite root ignore patterns for `*.log` and `reports/`                                                | Materialization run | 2026-05-29 | ACTIVE   |
-| D-003       | PrimeVue boundary policy proposed; guard enforcement waits for operator approval                                                                                        | M4                  | 2026-05-29 | PROPOSED |
-| D-004       | HTTP boundary proposal keeps alova and current app infrastructure path; contracts/core HTTP paths require owner approval                                                | M5                  | 2026-05-29 | PROPOSED |
-| D-006       | Dependency modernization policy remains lane-based; no blind latest upgrades on main                                                                                    | M7                  | 2026-05-29 | PROPOSED |
-| D-008       | GitHub repository governance posture documented; remote/.github changes approval-gated                                                                                  | M7                  | 2026-05-29 | PROPOSED |
-| D-013       | P3 source lanes remain blocked/deferred without dependency, HTTP contract implementation, product, or owner approval                                                    | P3 audit            | 2026-05-30 | ACTIVE   |
-| D-014       | HTTP-001 approves future `packages/contracts/src/http/**` type-only contracts; `packages/core/src/http/**` remains blocked and app `utils/http/**` remains canonical    | HTTP-001 decision   | 2026-05-30 | APPROVED |
-| D-015       | HTTP-007 approves fail-closed restore-login retry/timeout/messaging policy; 403 stays business-handled; offline read-only mode remains blocked                          | HTTP-007 decision   | 2026-05-30 | APPROVED |
-
-## Files changed summary
-
-Planning system materialized under:
-
-- `docs/ai-plan/**`
-- `docs/ai-runs/README.md`
-- `docs/ai-runs/.gitignore`
-- `docs/ai-runs/_template-YYYYMMDD-HHMMSS-ccd-architecture-repair/**`
-- `docs/ai-runs/20260529-070550-ccd-architecture-repair/**`
-
-M3 ProTable boundary update:
-
-- `apps/web-demo/src/components/ProTable/index.ts`
-- `apps/web-demo/src/components/ProTable/engine/types/props.ts`
-- `apps/web-demo/src/components/ProTable/engine/config/apiAdapter.ts`
-- `apps/web-demo/src/components/ProTable/README.md`
-- `apps/web-demo/src/views/example/components/primevue-collection/pro-table/shared/apiExecutor.ts`
-- `docs/generated/api-surface-report.json` generated by `pnpm api:report`
-
-M4 UI boundary evidence update:
-
-- `docs/ai-plan/DECISIONS.md`
-- `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M4-T1-primevue-import-audit.md`
-- `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M4-complete.md`
-
-M5 HTTP boundary evidence update:
-
-- `.ai/runtime/owner_decisions.md`
-- `docs/ai-plan/DECISIONS.md`
-- `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M5-T1-http-boundary-inventory.md`
-- `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M5-complete.md`
-
-HTTP-007 product decision update:
-
-- `.ai/runtime/owner_decisions.md`
-- `docs/ai-plan/DECISIONS.md`
-- `docs/ai-plan/STATUS.md`
-- `docs/ai-runs/20260530-173553-ccd-http-007-product-decision/**`
-
-M6 guard/owner evidence update:
-
-- `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M6-T1-guard-owner-inventory.md`
-- `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M6-complete.md`
-
-M7 governance/GitHub evidence update:
-
-- `docs/ai-plan/DECISIONS.md`
-- `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M7-governance-github.md`
-
-M8 CSS/pxtorem evidence update:
-
-- `apps/web-demo/vite.config.ts`
-- `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M8-css-pxtorem.md`
-- `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M8-production-screenshot-metrics.json`
-- `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M8-table-production-hidden-diagnostic.json`
-- `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M8-ab-baseline-table-diagnostic.json`
-- `docs/ai-runs/20260529-070550-ccd-architecture-repair/screenshots/M8-*.png`
-
-M9 Vite 8 approval-gate evidence update:
-
-- `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M9-vite8-approval-gate.md`
-
-M10 dependency approval-gate evidence update:
-
-- `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M10-dependency-approval-gate.md`
-
-M11 Login Diorama approval-gate evidence update:
-
-- `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M11-login-diorama-approval-gate.md`
-
-M12 secondary test/casing update:
-
-- `apps/web-demo/src/utils/date/index.ts`
-- `apps/web-demo/src/views/example/utils/http-advanced.vue`
-- `apps/web-demo/src/views/example/architecture/router-meta/keep-alive.vue`
-- `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M12-secondary-test-casing.md`
-
-M13 P4 deferred evidence update:
-
-- `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M13-p4-deferred.md`
-
-## Validation summary
-
-| Command or check                             |                 Last run | Result                                                                                    | Evidence                                                                                                                                        |
-| -------------------------------------------- | -----------------------: | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `git status --short --untracked-files=all`   |     2026-05-29 07:07 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/git-status-short-untracked.log`                                              |
-| `git log -10 --oneline`                      |     2026-05-29 07:07 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/git-log-10-oneline.log`                                                      |
-| `git branch --show-current`                  |     2026-05-29 07:07 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/git-branch-show-current.log`                                                 |
-| `git diff --check`                           |     2026-05-29 07:07 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/git-diff-check.log`                                                          |
-| `pnpm install --frozen-lockfile`             |     2026-05-29 07:25 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072550-pnpm-install-frozen-lockfile.log`                      |
-| `pnpm ci:prepare-internal`                   |     2026-05-29 07:26 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072610-pnpm-ci-prepare-internal.log`                          |
-| `pnpm ci:smoke:packages`                     |     2026-05-29 07:26 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072631-pnpm-ci-smoke-packages.log`                            |
-| `pnpm ai:doctor`                             |     2026-05-29 07:26 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072642-pnpm-ai-doctor.log`                                    |
-| `pnpm codex:preflight`                       |     2026-05-29 07:26 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072658-pnpm-codex-preflight.log`                              |
-| `pnpm type-check`                            |     2026-05-29 07:27 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072713-pnpm-type-check.log`                                   |
-| `pnpm lint:check`                            |     2026-05-29 07:27 CST | PASS with 2 warnings                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072723-pnpm-lint-check.log`                                   |
-| `pnpm test:run`                              |     2026-05-29 07:27 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072743-pnpm-test-run.log`                                     |
-| `pnpm build:web-demo`                        |     2026-05-29 07:28 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072802-pnpm-build-web-demo.log`                               |
-| `pnpm build:desktop`                         |     2026-05-29 07:28 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072842-pnpm-build-desktop.log`                                |
-| `pnpm budget:desktop`                        |     2026-05-29 07:29 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072907-pnpm-budget-desktop.log`                               |
-| `pnpm docs:commands`                         |     2026-05-29 07:32 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-073212-pnpm-docs-commands.log`                                |
-| `pnpm validate:governance`                   |     2026-05-29 07:32 CST | PASS after generated sync rerun                                                           | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-073245-pnpm-validate-governance-generated-sync-rerun.log`     |
-| `pnpm build:ci`                              |     2026-05-29 07:33 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-073307-pnpm-build-ci.log`                                     |
-| `git diff --check`                           |     2026-05-29 07:33 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-073340-final-git-diff-check.log`                              |
-| `git status --short --untracked-files=all`   |     2026-05-29 07:33 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-073345-final-git-status.log`                                  |
-| M1 CoreTypes no-any audit                    |     2026-05-29 07:35 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M1-T1-20260529-073523-coretypes-no-any-audit.log`                            |
-| `pnpm --filter @ccd/web-demo type-check`     |     2026-05-29 07:35 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M1-T2-20260529-073532-web-demo-type-check.log`                               |
-| ProForm focused Vitest                       |     2026-05-29 07:35 CST | PASS, 4 files / 8 tests                                                                   | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M1-T2-20260529-073549-proform-focused-vitest.log`                            |
-| `pnpm ci:prepare-internal`                   |     2026-05-29 07:36 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M1-T3-20260529-073608-pnpm-ci-prepare-internal.log`                          |
-| `pnpm build:shared-config`                   |     2026-05-29 07:36 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M1-T3-20260529-073622-pnpm-build-shared-config.log`                          |
-| M1 Turbo output warning scan                 |     2026-05-29 07:36 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M1-T3-20260529-073648-turbo-output-warning-scan.log`                         |
-| `pnpm ai:ledger:json`                        |     2026-05-29 07:37 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M1-20260529-073736-pnpm-ai-ledger-json.log`                                  |
-| `pnpm ai:doctor --open`                      |     2026-05-29 07:37 CST | PASS, 117 open tasks                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M1-20260529-073744-pnpm-ai-doctor-open.log`                                  |
-| M2 bridge usage inventory                    |     2026-05-29 07:39 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M2-T1-20260529-073913-bridge-usage-inventory.log`                            |
-| `pnpm --filter @ccd/shared-utils type-check` |     2026-05-29 07:39 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M2-T2-20260529-073924-shared-utils-type-check.log`                           |
-| `pnpm --filter @ccd/web-demo type-check`     |     2026-05-29 07:39 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M2-T2-20260529-073930-web-demo-type-check.log`                               |
-| Bridge focused Vitest                        |     2026-05-29 07:39 CST | PASS, 3 files / 19 tests                                                                  | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M2-T3-20260529-073950-bridge-focused-vitest.log`                             |
-| M3 ProTable helper inventory                 |     2026-05-29 07:43 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M3-T1-20260529-074338-protable-helper-inventory.log`                         |
-| `pnpm --filter @ccd/web-demo type-check`     |     2026-05-29 07:44 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M3-T2-20260529-074407-web-demo-type-check.log`                               |
-| ProTable focused Vitest                      |     2026-05-29 07:44 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M3-T3-20260529-074417-protable-focused-vitest.log`                           |
-| `pnpm api:report`                            |     2026-05-29 07:44 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M3-T2-20260529-074425-pnpm-api-report.log`                                   |
-| `pnpm ai:ledger:json`                        |     2026-05-29 07:45 CST | PASS, 145 tasks                                                                           | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M3-20260529-074528-pnpm-ai-ledger-json.log`                                  |
-| `pnpm ai:doctor --open`                      |     2026-05-29 07:45 CST | PASS, 111 open tasks                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M3-20260529-074535-pnpm-ai-doctor-open.log`                                  |
-| `pnpm docs:commands`                         |     2026-05-29 07:45 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M3-20260529-074549-post-update-pnpm-docs-commands.log`                       |
-| `git diff --check`                           |     2026-05-29 07:45 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M3-20260529-074552-post-update-git-diff-check.log`                           |
-| M4 PrimeVue import audit                     |     2026-05-29 07:47 CST | PASS, 37 direct source files classified                                                   | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M4-T1-20260529-074704-primevue-import-audit.log`                             |
-| `pnpm arch:boundaries`                       |     2026-05-29 07:48 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M4-20260529-074814-pnpm-arch-boundaries.log`                                 |
-| Targeted UI boundary type-checks             |     2026-05-29 07:48 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M4-20260529-074821-ui-adapter-type-check.log`                                |
-| `pnpm api:report`                            |     2026-05-29 07:48 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M4-20260529-074829-pnpm-api-report.log`                                      |
-| Focused UI tests                             |     2026-05-29 07:48 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M4-20260529-074835-focused-ui-tests.log`                                     |
-| M5 HTTP boundary inventory                   |     2026-05-29 07:51 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M5-T1-20260529-075115-http-boundary-inventory.log`                           |
-| `pnpm arch:runtime`                          |     2026-05-29 07:52 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M5-20260529-075212-pnpm-arch-runtime.log`                                    |
-| `pnpm api:report`                            |     2026-05-29 07:52 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M5-20260529-075216-pnpm-api-report.log`                                      |
-| `pnpm type-check`                            |     2026-05-29 07:52 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M5-20260529-075219-pnpm-type-check.log`                                      |
-| Request-layer focused Vitest                 |     2026-05-29 07:52 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M5-20260529-075232-request-layer-focused-vitest.log`                         |
-| M6 guard/owner inventory                     |     2026-05-29 07:54 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M6-T1-20260529-075435-guard-owner-inventory.log`                             |
-| `pnpm ai:ledger:json`                        |     2026-05-29 07:55 CST | PASS, 145 tasks                                                                           | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M6-20260529-075536-pnpm-ai-ledger-json.log`                                  |
-| `pnpm ai:guard`                              |     2026-05-29 07:55 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M6-20260529-075540-pnpm-ai-guard.log`                                        |
-| `pnpm ai:doctor --open`                      |     2026-05-29 07:55 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M6-20260529-075544-pnpm-ai-doctor-open.log`                                  |
-| `pnpm docs:commands`                         |     2026-05-29 07:55 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M6-20260529-075550-post-update-pnpm-docs-commands.log`                       |
-| `git diff --check`                           |     2026-05-29 07:55 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M6-20260529-075554-post-update-git-diff-check.log`                           |
-| M7 governance/GitHub inventory               |     2026-05-29 07:57 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M7-T1-20260529-075728-governance-github-inventory.log`                       |
-| `pnpm governance:refresh`                    |     2026-05-29 07:57 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M7-20260529-075736-pnpm-governance-refresh.log`                              |
-| `pnpm governance:gate`                       |     2026-05-29 07:57 CST | FAIL, generated sync required                                                             | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M7-20260529-075746-pnpm-governance-gate.log`                                 |
-| `pnpm governance:gate` generated-sync rerun  |     2026-05-29 07:58 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M7-20260529-075806-pnpm-governance-gate-generated-sync-rerun.log`            |
-| M8 px-to-rem audit                           |     2026-05-29 08:01 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M8-T1-20260529-080113-css-pxtorem-audit.log`                                 |
-| `pnpm --filter @ccd/web-demo type-check`     |     2026-05-29 08:15 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M8-20260529-081500-final-web-demo-type-check.log`                            |
-| `pnpm build:web-demo`                        |     2026-05-29 08:15 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M8-20260529-081515-final-pnpm-build-web-demo.log`                            |
-| `pnpm lint:check`                            |     2026-05-29 08:15 CST | PASS with 2 existing warnings                                                             | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M8-20260529-081540-pnpm-lint-check.log`                                      |
-| `pnpm e2e:qa`                                |     2026-05-29 08:03 CST | FAIL, 34 passed / 2 failed                                                                | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M8-20260529-080320-pnpm-e2e-qa.log`                                          |
-| M8 focused e2e failure rerun                 |     2026-05-29 08:06 CST | FAIL, same 2 failures reproduced                                                          | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M8-20260529-080600-e2e-failure-rerun.log`                                    |
-| M8 production screenshot matrix              |     2026-05-29 08:09 CST | PARTIAL: login/dashboard/chart captured; table-heavy blocked by `.p-datatable` height `0` | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M8-20260529-080930-production-screenshot-check-rerun.log`                    |
-| M8 table-heavy A/B diagnostic                |     2026-05-29 08:13 CST | BLOCKED: same table zero-height failure with original pxtorem exclude                     | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M8-20260529-081355-ab-baseline-table-diagnostic.log`                         |
-| M9 Vite/Rollup/esbuild inventory             |     2026-05-29 08:18 CST | PASS, migration blocked pending approval                                                  | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M9-T1-20260529-081820-vite-inventory.log`                                    |
-| `pnpm deps:outdated`                         |     2026-05-29 08:19 CST | INVENTORY, exit 1 because outdated packages exist                                         | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M10-T1-20260529-081950-pnpm-deps-outdated.log`                               |
-| `pnpm outdated --format json`                |     2026-05-29 08:20 CST | INVENTORY, exit 1 because outdated packages exist                                         | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M10-T1-20260529-082010-pnpm-outdated-json.log`                               |
-| M11 Login Diorama approval gate              |     2026-05-29 08:22 CST | BLOCKED pending approval and prerequisite stability                                       | `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M11-login-diorama-approval-gate.md`                                               |
-| M12 directive/date noise scan                |     2026-05-29 08:24 CST | PASS, no focused `expect-error` or direct dateUtils imports remain                        | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M12-T1-20260529-082430-directive-dateutils-noise-scan.log`                   |
-| M12 focused directive Vitest                 |     2026-05-29 10:09 CST | PASS, 8 files / 25 tests                                                                  | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M12-T1-20260529-082500-focused-directive-vitest.log`                         |
-| `pnpm --filter @ccd/web-demo type-check`     |     2026-05-29 10:10 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M12-T2-20260529-082520-web-demo-type-check.log`                              |
-| `pnpm build:web-demo`                        |     2026-05-29 10:10 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M12-T2-20260529-082535-pnpm-build-web-demo.log`                              |
-| `pnpm lint:check`                            |     2026-05-29 10:10 CST | PASS with 2 existing warnings                                                             | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M12-T1-20260529-082555-pnpm-lint-check.log`                                  |
-| `pnpm check`                                 |     2026-05-29 10:10 CST | PASS with 2 existing warnings                                                             | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M12-T3-20260529-082620-pnpm-check.log`                                       |
-| M13 P4 deferred classification               |     2026-05-29 10:12 CST | PASS, documentation-only                                                                  | `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M13-p4-deferred.md`                                                               |
-| `pnpm install --frozen-lockfile`             |     2026-05-29 10:12 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101210-pnpm-install-frozen-lockfile.log`                  |
-| `pnpm ci:prepare-internal`                   |     2026-05-29 10:12 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101220-pnpm-ci-prepare-internal.log`                      |
-| `pnpm ci:smoke:packages`                     |     2026-05-29 10:12 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101230-pnpm-ci-smoke-packages.log`                        |
-| `pnpm ai:doctor`                             |     2026-05-29 10:12 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101240-pnpm-ai-doctor.log`                                |
-| `pnpm codex:preflight`                       |     2026-05-29 10:12 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101250-pnpm-codex-preflight.log`                          |
-| `pnpm type-check`                            |     2026-05-29 10:13 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101300-pnpm-type-check.log`                               |
-| `pnpm lint:check`                            |     2026-05-29 10:13 CST | PASS with 2 existing warnings                                                             | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101310-pnpm-lint-check.log`                               |
-| `pnpm test:run`                              |     2026-05-29 10:20 CST | PASS, 67 files / 386 tests                                                                | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101320-pnpm-test-run.log`                                 |
-| `pnpm build:web-demo`                        |     2026-05-29 10:20 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101330-pnpm-build-web-demo.log`                           |
-| `pnpm build:desktop`                         |     2026-05-29 10:21 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101340-pnpm-build-desktop.log`                            |
-| `pnpm budget:desktop`                        |     2026-05-29 10:21 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101350-pnpm-budget-desktop.log`                           |
-| `pnpm validate:governance`                   |     2026-05-29 10:24 CST | PASS after generated-sync rerun                                                           | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101409-pnpm-validate-governance-generated-sync-rerun.log` |
-| `pnpm build:ci`                              |     2026-05-29 10:26 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101410-pnpm-build-ci.log`                                 |
-| M14 final report                             |     2026-05-29 10:26 CST | NO_GO because blockers remain                                                             | `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M14-final-validation.md`                                                          |
-| `pnpm docs:commands`                         | 2026-05-29 final refresh | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101451-pnpm-docs-commands.log`                            |
-| `pnpm ai:doctor --open`                      | 2026-05-29 final refresh | PASS, 82 open tasks all BLOCKED/DEFERRED                                                  | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101440-pnpm-ai-doctor-open.log`                           |
-| Open actionable scan                         | 2026-05-29 final refresh | PASS, no unchecked task lacks BLOCKED/DEFERRED                                            | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101442-open-actionable-unblocked-scan.log`                |
-| `git diff --check`                           | 2026-05-29 final refresh | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101420-git-diff-check.log`                                |
-| `git branch --show-current`                  | 2026-05-29 final refresh | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101455-git-branch-show-current.log`                       |
-| `git log -10 --oneline`                      | 2026-05-29 final refresh | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101456-git-log-10-oneline.log`                            |
-| `git status --short --untracked-files=all`   | 2026-05-29 final refresh | PASS, dirty state reported                                                                | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101430-git-status-short-untracked.log`                    |
-| AI runtime ignored status                    | 2026-05-29 final refresh | PASS, ignored repair ledger reported                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101457-git-status-ai-runtime-ignored.log`                 |
-
-## Remaining risks
-
-- M8 `P2-CSS-Validation` remains blocked by ProTable/AppContainer layout debt unrelated to the pxtorem patch.
-- P1 guard decisions remain blocked pending owner signoff.
-- Vite 8 migration remains blocked pending isolated branch/worktree approval.
-- Dependency lanes remain blocked pending explicit per-lane operator approval.
-- Login Diorama remains blocked pending operator approval and P1/P2 prerequisite stability.
-- Final go/no-go remains `NO_GO` until blockers are resolved or explicitly accepted.
-- Generated adapter drift may occur if root `AGENTS.md` is edited directly.
-- Post-P3 lint cleanup resolved the two existing `vue/one-component-per-file` warnings in `packages/vue-hooks/src/createAutoMittHook.spec.ts`; evidence is in `docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/`.
-- P4 strategic work remains deferred or blocked pending owner approval.
-
-## Next action
-
-Choose one bounded follow-up lane: HTTP-001 contracts-only implementation, Login Diorama M11 product/owner lane, PrimeVue dependency review lane, or alova lane after HTTP contract implementation prerequisites.
-
-## Update requirements
-
-Update this file after:
-
-- every completed milestone;
-- every `BLOCKED` task;
-- every failed validation;
-- every owner decision;
-- final go/no-go.
+P9a reconciliation: `docs/ai-runs/20260601-120000-ccd-p9a-evidence-path-validation-reconciliation/reports/summary.md`

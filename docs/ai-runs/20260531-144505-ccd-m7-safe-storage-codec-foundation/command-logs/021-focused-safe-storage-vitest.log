@@ -1,0 +1,17 @@
+$ pnpm exec vitest run packages/shared-utils/src/storageCodec.spec.ts apps/web-demo/src/utils/safeStorage/piniaSerializer.spec.ts
+
+ RUN  v4.0.18 /Users/cc/MyPorject/ccd
+
+ ✓ |node| packages/shared-utils/src/storageCodec.spec.ts (3 tests) 1ms
+stderr | apps/web-demo/src/utils/safeStorage/piniaSerializer.spec.ts
+[SafeStorage] Using hardcoded fallback key. Set VITE_PUBLIC_STORAGE_OBFUSCATION_KEY in your .env for client-visible storage obfuscation.
+
+ ✓ |node| apps/web-demo/src/utils/safeStorage/piniaSerializer.spec.ts (3 tests) 4ms
+
+ Test Files  2 passed (2)
+      Tests  6 passed (6)
+   Start at  14:50:48
+   Duration  276ms (transform 82ms, setup 0ms, import 235ms, tests 5ms, environment 0ms)
+
+
+[exit=0]

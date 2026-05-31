@@ -1,0 +1,10 @@
+$ git diff --stat -- docs/generated .ai/generated .ai/governance/api-snapshots scripts/normalize-generated-output.mjs
+ .ai/generated/governance-report.json               | 16 +++++----
+ docs/generated/api-surface-report.json             | 41 ++++++++++++++++++++++
+ docs/generated/api-surface-report.md               |  6 ++++
+ docs/generated/governance-report.md                | 12 +++----
+ docs/generated/graphs/README.md                    |  2 +-
+ docs/generated/graphs/dependency-graph.json        | 18 ++++++----
+ docs/generated/graphs/package-dependency-graph.mmd | 11 +++++-
+ scripts/normalize-generated-output.mjs             | 33 +++++++++++++++--
+ 8 files changed, 116 insertions(+), 23 deletions(-)

@@ -1,0 +1,481 @@
+$ rg -n useAutoMitt|useDialog|useProTableUrlSync|utils/theme|safeStorage|deviceSync|utils/http|stores/modules/system|plugins/modules/(proform|protable|primevue)|layouts/runtime apps packages scripts .ai docs --hidden --glob !node_modules/** --glob !**/dist/** --glob !docs/ai-runs/** --glob !docs/generated/** --glob !.ai/generated/** --glob !coverage/**
+.ai/manifests/rule-index.json:33:        "src/utils/theme/**/*.ts",
+.ai/manifests/rule-index.json:302:      "description": "Bans all native browser storage APIs for business data. Mandates AES+LZ-String encrypted wrappers from @/utils/safeStorage and createPiniaEncryptedSerializer for Pinia persistence.",
+.ai/manifests/rule-index.json:608:    "src/utils/theme/**/*.ts": [
+scripts/upgrade-all-themes.mjs:11:} from '../apps/web-demo/src/utils/theme/color.ts'
+docs/ai-plan/DECISIONS.md:127:- `apps/web-demo/src/plugins/modules/primevue.ts`
+docs/ai-plan/DECISIONS.md:185:- Keep current app HTTP infrastructure under `apps/web-demo/src/utils/http/**` unless the owner approves a broad move to `apps/web-demo/src/adapters/http/**`; existing rules already name `@/utils/http/**` as the canonical infrastructure path.
+docs/ai-plan/DECISIONS.md:190:- Preserve documented raw transport exceptions. Current inventory adds `utils/http/connection.ts#performHealthCheck` as an infrastructure exception candidate because it sits below the alova instance and cannot import `methods.ts` without a cycle.
+docs/ai-plan/DECISIONS.md:214:- `apps/web-demo/src/utils/http/**` owns the current alova implementation, retry/cache/deduplication/timeout behavior, raw transport exceptions, and auth bridge wiring.
+docs/ai-plan/DECISIONS.md:225:- `apps/web-demo/src/utils/http/**` remains the canonical app HTTP infrastructure path for now. No move to `apps/web-demo/src/adapters/http/**` is approved in this decision.
+docs/ai-plan/DECISIONS.md:256:- `pnpm exec vitest run apps/web-demo/src/adapters/http.adapter.spec.ts apps/web-demo/src/utils/http`
+docs/ai-plan/DECISIONS.md:279:- `apps/web-demo/src/utils/http/**` already classifies 401/403 as `AUTH`, 5xx as retryable server errors, and network/timeout errors as retryable HTTP errors.
+docs/ai-plan/DECISIONS.md:333:- `apps/web-demo/src/utils/http/**`
+packages/vue-primevue-adapter/src/theme/primevuePreset.ts:45://    - PT 层（ptPresets/* + plugins/modules/primevue.ts）:
+scripts/ai-architecture-guard.mjs:82:  'apps/web-demo/src/utils/http/methods.ts',
+scripts/ai-architecture-guard.mjs:83:  'apps/web-demo/src/utils/http/interceptors.ts',
+scripts/ai-architecture-guard.mjs:84:  'apps/web-demo/src/utils/http/connection.ts',
+scripts/ai-architecture-guard.mjs:94:  'apps/web-demo/src/stores/modules/system/layout.ts',
+scripts/ai-architecture-guard.mjs:95:  'apps/web-demo/src/stores/modules/system/size.ts',
+scripts/ai-architecture-guard.mjs:96:  'apps/web-demo/src/utils/theme/engine.ts',
+scripts/ai-architecture-guard.mjs:97:  'apps/web-demo/src/utils/theme/sizeEngine.ts',
+scripts/ai-architecture-guard.mjs:102:  'apps/web-demo/src/utils/safeStorage/**',
+scripts/ai-architecture-guard.mjs:105:  'apps/web-demo/src/stores/modules/system/theme.ts',
+scripts/ai-architecture-guard.mjs:106:  'apps/web-demo/src/stores/modules/system/locale.ts',
+scripts/ai-architecture-guard.mjs:146:  'apps/web-demo/src/plugins/modules/primevue.ts',
+scripts/ai-architecture-guard.mjs:427:    fail('raw-storage', relPath, 'raw browser storage is only allowed in safeStorage/runtime bootstrap exceptions')
+scripts/ai-architecture-guard.mjs:441:    fail('vueuse-storage-restricted', relPath, 'business persistence must use safeStorage or approved Pinia persistence instead of VueUse storage composables')
+scripts/ai-architecture-guard.mjs:481:  'apps/web-demo/src/utils/http/connection.ts',
+scripts/ai-architecture-guard.mjs:482:  'apps/web-demo/src/utils/http/uploadManager.ts',
+scripts/ai-architecture-guard.mjs:501:  'apps/web-demo/src/utils/http/connection.ts',
+scripts/ai-architecture-guard.mjs:502:  'apps/web-demo/src/utils/http/methods.ts',
+scripts/ai-architecture-guard.mjs:503:  'apps/web-demo/src/utils/http/interceptors.ts',
+scripts/ai-architecture-guard.mjs:513:  'apps/web-demo/src/components/PrimeDialog/useDialog.ts',
+scripts/ai-architecture-guard.mjs:515:  'apps/web-demo/src/stores/modules/system/device.ts',
+scripts/ai-architecture-guard.mjs:548:    'apps/web-demo/src/utils/theme/ptPresets/**/*.ts',
+scripts/ai-architecture-guard.mjs:549:    'apps/web-demo/src/utils/theme/presetComponents/**/*.ts',
+scripts/ai-architecture-guard.mjs:560:const layoutStorePath = 'apps/web-demo/src/stores/modules/system/layout.ts'
+scripts/ai-architecture-guard.mjs:570:const sizeStorePath = 'apps/web-demo/src/stores/modules/system/size.ts'
+scripts/ai-architecture-guard.mjs:632:    if (moduleText !== '@/utils/http/methods') continue
+docs/ai-plan/PLAN.md:374:- Verify `useProTableInfiniteScroll` and `useProTableUrlSync` existence.
+docs/ai-plan/PLAN.md:604:- `apps/web-demo/src/utils/http/**`
+.ai/runtime/repair_list.template.md:172:- [ ] [P1-ProTable] Restore missing ProTable typings and helper availability, including `useProTableInfiniteScroll`, `useProTableUrlSync`, props shape, and related imports after the SFC parse fix.
+.ai/runtime/repair_list.template.md:226:- [ ] [P1-Guard-AutoMitt] Add guard coverage for `useAutoMitt` enforcement where event bus patterns are expected.
+.ai/runtime/repair-ledger.json:439:      "title": "Restored ProTable typing boundary: verified `useProTableInfiniteScroll` and `useProTableUrlSync` exist and are internal-only, introduced local `ProTableApiConfig`, and removed ProTable's type dependency on `@/utils/http/types` while preserving injected `apiExecutor` behavior.",
+.ai/runtime/repair-ledger.json:441:        "@/utils/http/types"
+.ai/runtime/repair-ledger.json:624:      "title": "Verified alova implementation remains in approved app infrastructure path `apps/web-demo/src/utils/http/**`, with `apps/web-demo/src/adapters/http.adapter.ts` owning Zod/route payload validation; no broad move to `apps/web-demo/src/adapters/http/**` was attempted.",
+.ai/runtime/repair-ledger.json:626:        "apps/web-demo/src/utils/http/**",
+.ai/runtime/repair-ledger.json:814:      "title": "Kept browser `localStorage` / `sessionStorage` policy and adapter implementation in `apps/web-demo/src/utils/safeStorage/**`; `packages/core` remains untouched.",
+.ai/runtime/repair-ledger.json:816:        "apps/web-demo/src/utils/safeStorage/**",
+.ai/runtime/repair_list.md:175:- [x] [P1-ProTable] Restored ProTable typing boundary: verified `useProTableInfiniteScroll` and `useProTableUrlSync` exist and are internal-only, introduced local `ProTableApiConfig`, and removed ProTable's type dependency on `@/utils/http/types` while preserving injected `apiExecutor` behavior.
+.ai/runtime/repair_list.md:218:- [x] [P1-HttpContract-Adapter] Verified alova implementation remains in approved app infrastructure path `apps/web-demo/src/utils/http/**`, with `apps/web-demo/src/adapters/http.adapter.ts` owning Zod/route payload validation; no broad move to `apps/web-demo/src/adapters/http/**` was attempted.
+.ai/runtime/repair_list.md:242:Rationale: safeStorage has cross-app value, but browser storage access and obfuscation policy must not leak into `packages/core` or `packages/contracts`.
+.ai/runtime/repair_list.md:248:- [x] [P2-AppStorage-AppAdapter] Kept browser `localStorage` / `sessionStorage` policy and adapter implementation in `apps/web-demo/src/utils/safeStorage/**`; `packages/core` remains untouched.
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:106:| Theme/color/size/breakpoint token primitives | `packages/design-tokens` | runtime-neutral package | `apps/web-demo/src/utils/theme/**`, `packages/core` | `pnpm --filter @ccd/design-tokens test`, `pnpm api:report` | B-03, B-04, B-09, B-10, B-11, F-04 |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:137:| B-01 | B | P1 | OPEN | event hook | `@ccd/vue-hooks` plus app binding | `apps/web-demo/src/hooks/modules/useAutoMitt.ts` | `packages/vue-hooks` with app event map binding | App exposes generic event hook wrapper. | App-local shared hook grows. | M4 | `pnpm --filter @ccd/vue-hooks test`, web-demo type-check | hook scan | `packages/vue-hooks/src/createAutoMittHook.ts`, `apps/web-demo/src/utils/mitt.ts` |  | Thin binding currently exists. |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:138:| B-02 | B | P1 | OPEN | dialog facade | `@ccd/vue-ui` plus app i18n adapter | `apps/web-demo/src/hooks/modules/useDialog.tsx` | `packages/vue-ui`, app i18n adapter | App owns dialog convenience API and i18n coupling. | Shared UI behavior remains app-local. | M4 | `pnpm --filter @ccd/vue-ui test`, web-demo type-check | hook scan | `packages/vue-ui/src/PrimeDialog/**` |  | Keep i18n in app if extracted. |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:139:| B-03 | B | P0 | PARTIALLY_OBSOLETE | theme facade | design-tokens, vue-app-platform, app adapter | `apps/web-demo/src/utils/theme/engine.ts` | `packages/design-tokens`, `packages/vue-app-platform`, app storage adapter | Facade now delegates pure/theme runtime work but still directly uses `document` and `localStorage`. | Runtime boundary remains unclear. | M5 | `pnpm arch:runtime`, `pnpm e2e:visual` | source scan | `packages/design-tokens/src/theme-engine/**`, `packages/vue-app-platform/src/themeRuntime.ts` |  | Existing issue improved but not closed. |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:140:| B-04 | B | P0 | OPEN | size system | design-tokens, vue-app-platform | `apps/web-demo/src/utils/theme/sizeEngine.ts` | `packages/design-tokens`, `packages/vue-app-platform`, app adapter | Size calculation, DOM CSS writes, storage, and device sync are mixed. | Size/breakpoint system cannot be governed cleanly. | M5 | `pnpm e2e:layout`, `pnpm e2e:visual` | source scan | `apps/web-demo/src/stores/modules/system/size.ts`, `apps/web-demo/src/utils/deviceSync.ts` |  | Split pure calculation from runtime application. |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:141:| B-05 | B | P0 | OPEN | safeStorage barrel | contracts/shared-utils/app adapter | `apps/web-demo/src/utils/safeStorage/index.ts` | `packages/contracts`, `packages/shared-utils`, app storage adapter | App has package-like safeStorage public barrel. | Apps directory becomes common package. | M5 | `pnpm arch:boundaries`, focused storage tests | source scan | `apps/web-demo/src/utils/safeStorage/**` |  | Must not become app public API. |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:142:| B-06 | B | P0 | OPEN | safeStorage core | contracts/shared-utils/app adapter | `apps/web-demo/src/utils/safeStorage/core.ts` | `packages/contracts`, `packages/shared-utils`, app adapter | Codec, obfuscation, key resolution, env, DOM, and logger are mixed. | Runtime-neutral helpers remain trapped in app. | M5 | `pnpm test:run`, focused safeStorage tests | source scan | `packages/shared-utils/src/storageCodec.ts` |  | Extract only pure helpers. |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:143:| B-07 | B | P1 | OPEN | crypto helper | app adapter or web-library package | `apps/web-demo/src/utils/safeStorage/crypto.ts` | app-only adapter or approved web-library package | Web Crypto fallback helper is app-local and logger-coupled. | Could be moved to core incorrectly. | M5 | `pnpm arch:runtime`, web-demo tests | source scan | `packages/contracts/src/crypto.ts` |  | Do not move to `packages/core`. |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:144:| B-08 | B | P1 | OPEN | compression helper | shared-utils or app-private helper | `apps/web-demo/src/utils/safeStorage/lzstring.ts` | `packages/shared-utils` if reused | Pure compression helper sits in app utils. | Pure helper duplication. | M5 | shared-utils tests, web-demo type-check | source scan | `apps/web-demo/src/utils/safeStorage/index.ts` |  | Decide reusable vs app-private. |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:145:| B-09 | B | P0 | OPEN | size store | app store plus platform APIs | `apps/web-demo/src/stores/modules/system/size.ts` | app store, `packages/design-tokens`, `packages/vue-app-platform` | Pinia store owns size platform logic and runtime side effects. | Store becomes platform implementation. | M5 | size store specs, `pnpm e2e:layout` | store scan | `apps/web-demo/src/utils/theme/sizeEngine.ts` |  | Keep concrete state in app. |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:146:| B-10 | B | P0 | OPEN | device breakpoint runtime | design-tokens/vue-app-platform plus app adapter | `apps/web-demo/src/stores/modules/system/device.ts`, `apps/web-demo/src/utils/deviceSync.ts` | pure resolver packages plus app browser listener | Device/breakpoint logic directly uses browser globals. | Breakpoint system remains app-bound. | M5 | device specs, layout e2e | runtime scan | `packages/design-tokens/src/breakpoints.ts` |  | Browser listeners stay app-side. |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:147:| B-11 | B | P1 | OPEN | theme switch hook | vue-app-platform plus app adapter | `apps/web-demo/src/hooks/modules/useThemeSwitch.ts` | `packages/vue-app-platform`, app UI integration | Theme transition hook manipulates DOM, timers, view transitions, and `localStorage`. | Reusable theme runtime remains app-local. | M5 | `pnpm e2e:visual`, `pnpm arch:runtime` | runtime scan | `apps/web-demo/src/utils/theme/transitions.ts`, `apps/web-demo/src/utils/theme/mode.ts` |  | New scan finding. |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:163:| D-10 | D | P1 | PARTIALLY_OBSOLETE | HTTP boundary docs | contracts/core/apps | `docs/ai-plan/DECISIONS.md`, `packages/contracts/src/http/**`, `apps/web-demo/src/utils/http/**` | contracts for types, app infra for runtime | Older wording says HTTP contracts are future/blocked, but type-only HTTP contracts now exist and core remains blocked. | Agents may either duplicate or migrate runtime to core. | M7 | `pnpm arch:runtime`, HTTP tests | contracts scan | `packages/core/src/index.ts`, `docs/runtime/web-runtime.md` |  | Reconcile status with D-014 and current source. |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:175:| F-04 | F | P1 | OPEN | root scripts import app source | tooling/build boundary | `scripts/upgrade-all-themes.mjs`, `scripts/validate-token-contrast.ts` | `packages/design-tokens` public APIs or dedicated tooling package | Root validation scripts deep-import app theme utilities. | Tooling depends on app-local facades and bypasses owner packages. | M6 | `pnpm validate:tokens`, `pnpm arch:boundaries` | import scan | `apps/web-demo/src/utils/theme/color.ts`, `apps/web-demo/src/utils/theme/engine.ts`, `apps/web-demo/src/utils/theme/validate.ts` |  | New scan finding. |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:239:- Related files: `apps/web-demo/src/hooks/modules/useAutoMitt.ts`, `apps/web-demo/src/utils/safeStorage/index.ts`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:251:- Current paths: `apps/web-demo/src/hooks/modules/useAutoMitt.ts`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:259:- Evidence to capture: imports from `useAutoMitt` and `createAutoMittHook`.
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:272:- Current paths: `apps/web-demo/src/hooks/modules/useDialog.tsx`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:283:- Repair notes: `useDialogCore` already lives in `packages/vue-ui`.
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:293:- Current paths: `apps/web-demo/src/utils/theme/engine.ts`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:314:- Current paths: `apps/web-demo/src/utils/theme/sizeEngine.ts`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:323:- Related files: `apps/web-demo/src/stores/modules/system/size.ts`, `apps/web-demo/src/utils/deviceSync.ts`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:335:- Current paths: `apps/web-demo/src/utils/safeStorage/index.ts`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:344:- Related files: `apps/web-demo/src/utils/safeStorage/core.ts`, `apps/web-demo/src/utils/safeStorage/safeStorage.ts`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:356:- Current paths: `apps/web-demo/src/utils/safeStorage/core.ts`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:363:- Validation commands: `pnpm test:run`, focused safeStorage tests
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:377:- Current paths: `apps/web-demo/src/utils/safeStorage/crypto.ts`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:398:- Current paths: `apps/web-demo/src/utils/safeStorage/lzstring.ts`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:407:- Related files: `apps/web-demo/src/utils/safeStorage/index.ts`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:419:- Current paths: `apps/web-demo/src/stores/modules/system/size.ts`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:428:- Related files: `apps/web-demo/src/utils/theme/sizeEngine.ts`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:440:- Current paths: `apps/web-demo/src/stores/modules/system/device.ts`, `apps/web-demo/src/utils/deviceSync.ts`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:470:- Related files: `apps/web-demo/src/utils/theme/transitions.ts`, `apps/web-demo/src/utils/theme/mode.ts`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:797:- Current paths: `docs/ai-plan/DECISIONS.md`, `packages/contracts/src/http/**`, `apps/web-demo/src/utils/http/**`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1051:- Problem: Root scripts import `apps/web-demo/src/utils/theme/**` directly.
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1058:- Related files: `apps/web-demo/src/utils/theme/color.ts`, `apps/web-demo/src/utils/theme/engine.ts`, `apps/web-demo/src/utils/theme/validate.ts`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1133:| Browser runtime outside adapters | B-03, B-04, B-09, B-10, B-11, C-02, C-05 | web-demo app runtime | `apps/web-demo/src/utils/theme/**`, `apps/web-demo/src/stores/modules/system/**`, classified app views/hooks/layouts | app adapters plus platform packages | M5 | M3 exact exceptions registered; source cleanup remains |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1213:| `apps/web-demo/src/hooks/modules/useAutoMitt.ts` | app hook facade | web app | B-01 | app-local-compat-facade | app binding over vue-hooks | keep thin binding | do not grow generic hook logic | web-demo type-check |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1214:| `apps/web-demo/src/hooks/modules/useDialog.tsx` | app dialog facade | web app | B-02 | app-local-compat-facade | app i18n adapter | keep app i18n binding | no raw public UI barrel | web-demo type-check |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1218:| `apps/web-demo/src/utils/http/**` | app HTTP infra | web app | D-10, C-02 | app-runtime-infrastructure | app HTTP infrastructure | edit only in HTTP lane | no behavior change in M0 | focused HTTP tests |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1219:| `apps/web-demo/src/utils/theme/engine.ts` | theme facade | web app | B-03, F-04 | app-local-compat-facade | app adapter facade | keep compatibility thin | no DOM/storage in core | e2e visual |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1220:| `apps/web-demo/src/utils/theme/sizeEngine.ts` | size runtime | web app | B-04, B-09, F-04 | app-local-shared-candidate | platform primitive plus app adapter | classify and plan | no source change in M0 | e2e layout/visual |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1221:| `apps/web-demo/src/utils/theme/color.ts` | theme color helper | web app | F-04 | app-local-shared-candidate | design-tokens public API | move only in source lane | no script deep import long-term | token validation |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1222:| `apps/web-demo/src/utils/theme/validate.ts` | theme validation helper | web app | F-04 | app-local-shared-candidate | design-tokens public API | move only in source lane | no script deep import long-term | token validation |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1223:| `apps/web-demo/src/utils/theme/transitions.ts` | theme transitions | web app | B-11 | app-local-shared-candidate | vue-app-platform primitive | classify and plan | no source change in M0 | e2e visual |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1224:| `apps/web-demo/src/utils/theme/mode.ts` | theme mode helper | web app | B-11 | app-local-shared-candidate | platform/app adapter split | classify and plan | no source change in M0 | e2e visual |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1225:| `apps/web-demo/src/utils/deviceSync.ts` | device sync helper | web app | B-10 | app-local-shared-candidate | pure resolver plus app adapter | classify and plan | no browser globals in packages/core | device/layout tests |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1226:| `apps/web-demo/src/utils/safeStorage/index.ts` | app safeStorage barrel | web app | B-05 | app-local-compat-facade | app adapter/private facade | classify compatibility | no public app export | storage tests |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1227:| `apps/web-demo/src/utils/safeStorage/core.ts` | safeStorage core | web app | B-06, F-04 | app-local-shared-candidate | shared-utils plus app adapter | split in source lane | no secrets/log output | storage tests |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1228:| `apps/web-demo/src/utils/safeStorage/crypto.ts` | crypto helper | web app | B-07 | app-adapter-candidate | app adapter or web-library | classify first | no core move | storage/crypto tests |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1229:| `apps/web-demo/src/utils/safeStorage/lzstring.ts` | compression helper | web app | B-08 | app-local-shared-candidate | shared-utils or app-private | migrate if pure/reused | no runtime coupling | storage tests |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1230:| `apps/web-demo/src/utils/safeStorage/safeStorage.ts` | storage adapter facade | web app | B-05, B-06 | app-runtime-infrastructure | app adapter/private facade | edit in storage lane | no package export from app | storage tests |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1231:| `apps/web-demo/src/utils/safeStorage/piniaSerializer.ts` | Pinia serializer | web app | B-05 | app-runtime-infrastructure | app serializer | edit in storage lane | no shared public app barrel | storage tests |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1232:| `apps/web-demo/src/utils/safeStorage/storageMaintenance.ts` | storage maintenance | web app | B-05, B-06 | app-runtime-infrastructure | app adapter/private facade | edit in storage lane | no core move | storage tests |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1233:| `apps/web-demo/src/stores/modules/system/size.ts` | size store | web app | B-09 | app-store | app store | app state edits only in source lane | no platform logic expansion | store tests, e2e layout |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1234:| `apps/web-demo/src/stores/modules/system/device.ts` | device store | web app | B-10 | app-store | app store plus browser adapter | app state edits only in source lane | no browser logic in core | device tests |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1235:| `apps/web-demo/src/stores/modules/system/theme.ts` | theme store | web app | B-11, C-02 | app-store | app store | app state edits only in source lane | no platform runtime expansion | store/visual tests |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1238:| `apps/web-demo/src/layouts/runtime/layoutRuntime.ts` | layout compatibility facade | web app | A-03 | app-local-compat-facade | facade over vue-app-platform | keep thin facade | no new logic | layout tests |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1274:| `localStorage` / `sessionStorage` | app storage adapters or exact app infrastructure exceptions; not contracts/core | M3 exact exceptions include theme, store, and safeStorage paths | B-03, B-04, B-05, B-06, B-09, B-11, C-02, C-05 | storage contracts + shared codecs + app adapter | `pnpm arch:runtime`, storage tests |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1275:| `fetch` / `XMLHttpRequest` | exact HTTP infrastructure exceptions; not business views/stores; not contracts/core | M3 exact exceptions include `apps/web-demo/src/utils/http/**` and approved recovery/runtime paths | C-02, C-05, D-10 | app HTTP infra plus contracts types | `pnpm arch:runtime`, HTTP focused tests |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1278:| crypto / Web Crypto | app adapter or exact app infrastructure exception; type contracts only in contracts | M3 exact exceptions include sync/socket, HTTP methods/upload manager, and safeStorage crypto | B-07, C-02 | crypto contract + runtime adapter | `pnpm arch:runtime`, storage tests |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1351:### M5 safeStorage/theme/size/device extraction planning
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1353:- objective: Plan extraction of safeStorage, theme, size, device, and theme-switch capabilities without changing behavior.
+docs/ai-plan/STATUS.md:52:- `apps/web-demo/src/utils/http/**` remains canonical app HTTP infrastructure for now.
+docs/ai-plan/STATUS.md:149:| D-014       | HTTP-001 approves future `packages/contracts/src/http/**` type-only contracts; `packages/core/src/http/**` remains blocked and app `utils/http/**` remains canonical    | HTTP-001 decision   | 2026-05-30 | APPROVED |
+docs/ai-plan/STATUS.md:225:- `apps/web-demo/src/views/example/utils/http-advanced.vue`
+apps/web-demo/src/router/modules/example.ts:570:            titleKey: 'router.example.hooks.composables.useAutoMitt',
+apps/web-demo/src/router/modules/example.ts:718:      meta: { titleKey: 'router.example.utils.safeStorage', rank: 0, icon: 'i-lucide-lock' },
+apps/web-demo/src/router/modules/example.ts:721:      path: '/example/utils/http-advanced',
+apps/web-demo/src/router/modules/example.ts:723:      component: () => import('@/views/example/utils/http-advanced.vue'),
+apps/web-demo/src/router/modules/example.ts:736:      meta: { titleKey: 'router.example.utils.deviceSync', rank: 3, icon: 'i-lucide-smartphone' },
+scripts/validate-token-contrast.ts:2:import { generateThemeVars } from '../apps/web-demo/src/utils/theme/engine'
+scripts/validate-token-contrast.ts:7:} from '../apps/web-demo/src/utils/theme/validate'
+docs/ai-plan/RISK_REGISTER.md:26:| R-022   | P1 platform extraction leaves app compatibility facades in place                                                                                       |      Medium | Medium | imports still target `apps/web-demo/src/utils/theme/engine.ts` or app-local hooks                                                                          | shared logic moved to owning packages; app facades limited to capability injection/backward compatibility                                                                                                                                  | Codex                    | MITIGATED | Low           | facade grows new business logic                                     |
+scripts/drift-check.mjs:198:      content.includes("'src/stores/modules/system'") &&
+scripts/drift-check.mjs:205:        'apps/web-demo/build/plugins.ts: AutoImport.dirs 需显式包含 "src/stores/modules/system"、"src/stores/modules/session"、"src/stores/modules/ui" 与 "src/hooks/**/*"。'
+apps/web-demo/src/router/utils/guardEffects.ts:16:import { useLayoutStoreWithOut } from '@/stores/modules/system'
+docs/ai-plan/CHANGE_SUMMARY.md:44:| HTTP app policies            | `apps/web-demo/src/utils/http/policies/**`                                                                                              | Split app-local HTTP policies without moving browser/runtime code into contracts/core. | HTTP-004                                 |
+docs/runtime/web-runtime.md:26:- `apps/web-demo/src/hooks/modules/useAutoMitt.ts`
+docs/runtime/web-runtime.md:27:- `apps/web-demo/src/hooks/modules/useDialog.tsx`
+docs/runtime/web-runtime.md:28:- `apps/web-demo/src/utils/theme/engine.ts` (compatibility facade only)
+docs/runtime/web-runtime.md:29:- `apps/web-demo/src/utils/theme/sizeEngine.ts`
+docs/runtime/web-runtime.md:30:- `apps/web-demo/src/utils/safeStorage`
+docs/runtime/web-runtime.md:55:- app-local compatibility facades such as theme and safeStorage
+apps/web-demo/src/router/utils/permission.ts:11:import { isHttpRequestError } from '@/utils/http/errors'
+docs/theme-presets.md:12:- Engine tests: `src/utils/theme`
+docs/theme-presets.md:16:Theme Engine v5 modules under `src/utils/theme/**` should not be changed for palette-only work.
+docs/theme-presets.md:79:pnpm exec vitest run src/constants/theme.spec.ts src/utils/theme
+docs/en/architecture-contract.md:83:- `apps/web-demo/src/hooks/modules/useAutoMitt.ts`
+docs/en/architecture-contract.md:84:- `apps/web-demo/src/hooks/modules/useDialog.tsx`
+docs/en/architecture-contract.md:85:- `apps/web-demo/src/utils/theme/engine.ts` (compatibility facade only)
+docs/en/architecture-contract.md:86:- `apps/web-demo/src/utils/theme/sizeEngine.ts`
+docs/en/architecture-contract.md:87:- `apps/web-demo/src/utils/safeStorage` (browser adapter and compatibility helpers only; pure codec helpers belong in `packages/shared-utils`)
+docs/zh/08-release.md:29:- `apps/web-demo/src/layouts/runtime/layoutRuntime.ts`
+docs/zh/08-release.md:31:- `apps/web-demo/src/hooks/modules/useAutoMitt.ts`
+docs/zh/08-release.md:32:- `apps/web-demo/src/utils/theme/engine.ts`
+docs/zh/08-release.md:33:- `apps/web-demo/src/utils/safeStorage`
+docs/zh/08-release.md:44:- `apps/web-demo/src/utils/theme/engine.ts`
+apps/web-demo/src/main.ts:19:import { useLayoutStoreWithOut } from '@/stores/modules/system'
+apps/web-demo/src/main.ts:21:import { preload } from '@/utils/theme/sizeEngine'
+docs/zh/04-project-control-center.md:36:- `apps/web-demo/src/layouts/runtime/layoutRuntime.ts`
+docs/zh/04-project-control-center.md:38:- `apps/web-demo/src/hooks/modules/useAutoMitt.ts`
+docs/zh/04-project-control-center.md:39:- `apps/web-demo/src/utils/theme/engine.ts`
+docs/zh/04-project-control-center.md:40:- `apps/web-demo/src/utils/safeStorage`
+docs/zh/04-project-control-center.md:51:- `apps/web-demo/src/utils/theme/engine.ts`
+docs/zh/02-architecture.md:75:- `apps/web-demo/src/hooks/modules/useAutoMitt.ts`
+docs/zh/02-architecture.md:76:- `apps/web-demo/src/hooks/modules/useDialog.tsx`
+docs/zh/02-architecture.md:77:- `apps/web-demo/src/utils/theme/engine.ts`（兼容 facade）
+docs/zh/02-architecture.md:78:- `apps/web-demo/src/utils/theme/sizeEngine.ts`
+docs/zh/02-architecture.md:79:- `apps/web-demo/src/utils/safeStorage`
+docs/zh/02-architecture.md:94:- `apps/web-demo/src/utils/theme/engine.ts`
+.ai/governance/policies/runtime.json:725:      "path": "apps/web-demo/src/plugins/modules/proform.ts",
+.ai/governance/policies/runtime.json:842:      "path": "apps/web-demo/src/stores/modules/system/device.ts",
+.ai/governance/policies/runtime.json:864:      "path": "apps/web-demo/src/stores/modules/system/layout.ts",
+.ai/governance/policies/runtime.json:881:      "path": "apps/web-demo/src/stores/modules/system/locale.ts",
+.ai/governance/policies/runtime.json:899:      "path": "apps/web-demo/src/stores/modules/system/size.ts",
+.ai/governance/policies/runtime.json:916:      "path": "apps/web-demo/src/stores/modules/system/theme.ts",
+.ai/governance/policies/runtime.json:1017:      "path": "apps/web-demo/src/utils/deviceSync.ts",
+.ai/governance/policies/runtime.json:1034:      "path": "apps/web-demo/src/utils/http/connection.ts",
+.ai/governance/policies/runtime.json:1058:      "path": "apps/web-demo/src/utils/http/instance.ts",
+.ai/governance/policies/runtime.json:1074:      "path": "apps/web-demo/src/utils/http/interceptors.ts",
+.ai/governance/policies/runtime.json:1090:      "path": "apps/web-demo/src/utils/http/methods.ts",
+.ai/governance/policies/runtime.json:1111:      "path": "apps/web-demo/src/utils/http/policies/authRefreshPolicy.ts",
+.ai/governance/policies/runtime.json:1127:      "path": "apps/web-demo/src/utils/http/policies/notificationPolicy.ts",
+.ai/governance/policies/runtime.json:1143:      "path": "apps/web-demo/src/utils/http/uploadManager.ts",
+.ai/governance/policies/runtime.json:1181:      "path": "apps/web-demo/src/utils/safeStorage/core.ts",
+.ai/governance/policies/runtime.json:1201:      "path": "apps/web-demo/src/utils/safeStorage/crypto.ts",
+.ai/governance/policies/runtime.json:1220:      "path": "apps/web-demo/src/utils/safeStorage/piniaSerializer.ts",
+.ai/governance/policies/runtime.json:1237:      "path": "apps/web-demo/src/utils/safeStorage/storageMaintenance.ts",
+.ai/governance/policies/runtime.json:1255:      "path": "apps/web-demo/src/utils/theme/engine.ts",
+.ai/governance/policies/runtime.json:1273:      "path": "apps/web-demo/src/utils/theme/lottieThemeUtils.ts",
+.ai/governance/policies/runtime.json:1290:      "path": "apps/web-demo/src/utils/theme/mode.ts",
+.ai/governance/policies/runtime.json:1309:      "path": "apps/web-demo/src/utils/theme/observability.ts",
+.ai/governance/policies/runtime.json:1325:      "path": "apps/web-demo/src/utils/theme/sizeEngine.ts",
+.ai/governance/policies/runtime.json:1344:      "path": "apps/web-demo/src/utils/theme/transitions.ts",
+.ai/governance/policies/runtime.json:2127:      "path": "packages/vue-ui/src/PrimeDialog/useDialog.ts",
+apps/web-demo/build/plugins.ts:142:        'src/stores/modules/system',
+docs/architecture/ownership-boundaries.md:49:- `apps/web-demo/src/layouts/runtime/layoutRuntime.ts`
+docs/architecture/ownership-boundaries.md:50:- `apps/web-demo/src/hooks/modules/useAutoMitt.ts`
+docs/architecture/ownership-boundaries.md:51:- `apps/web-demo/src/utils/theme/engine.ts`
+docs/architecture/ownership-boundaries.md:52:- `apps/web-demo/src/utils/safeStorage`
+docs/architecture/ownership-boundaries.md:71:- `apps/web-demo/src/utils/theme/engine.ts`
+apps/web-demo/build/html.ts:5:import { generateThemeVars } from '../src/utils/theme/engine'
+apps/web-demo/.eslintrc-auto-import.json:190:    "useAutoMitt": "readonly",
+apps/web-demo/.eslintrc-auto-import.json:301:    "useProTableUrlSync": "readonly",
+packages/vue-ui/src/ProTable/index.ts:5:export { PRO_TABLE_URL_SYNC_ADAPTER_KEY } from './engine/hooks/useProTableUrlSync'
+packages/vue-ui/src/ProTable/index.ts:11:} from './engine/hooks/useProTableUrlSync'
+apps/web-demo/src/types/auto-imports.d.ts:201:  const useAutoMitt: typeof import('../hooks/modules/useAutoMitt').useAutoMitt
+apps/web-demo/src/types/auto-imports.d.ts:231:  const useDeviceStore: typeof import('../stores/modules/system/device').useDeviceStore
+apps/web-demo/src/types/auto-imports.d.ts:233:  const useDialog: typeof import('../hooks/modules/useDialog').useDialog
+apps/web-demo/src/types/auto-imports.d.ts:271:  const useLayoutStore: typeof import('../stores/modules/system/layout').useLayoutStore
+apps/web-demo/src/types/auto-imports.d.ts:272:  const useLayoutStoreWithOut: typeof import('../stores/modules/system/layout').useLayoutStoreWithOut
+apps/web-demo/src/types/auto-imports.d.ts:277:  const useLocaleStore: typeof import('../stores/modules/system/locale').useLocaleStore
+apps/web-demo/src/types/auto-imports.d.ts:278:  const useLocaleStoreWithOut: typeof import('../stores/modules/system/locale').useLocaleStoreWithOut
+apps/web-demo/src/types/auto-imports.d.ts:318:  const useProTableUrlSync: typeof import('../hooks/modules/useProTableUrlSync').useProTableUrlSync
+apps/web-demo/src/types/auto-imports.d.ts:332:  const useSizeStore: typeof import('../stores/modules/system/size').useSizeStore
+apps/web-demo/src/types/auto-imports.d.ts:352:  const useThemeStore: typeof import('../stores/modules/system/theme').useThemeStore
+apps/web-demo/src/locales/lang/core/en-US.ts:123:      'Declarative columns (valueEnum), toolbar fullscreen/export, :request pagination, useDialog + ProForm + async permission linkage — gold-standard CRUD.',
+apps/web-demo/src/locales/lang/example/en-US.ts:63:          useAutoMitt: 'useAutoMitt',
+apps/web-demo/src/locales/lang/example/en-US.ts:84:        safeStorage: 'SafeStorage',
+apps/web-demo/src/locales/lang/example/en-US.ts:86:        deviceSync: 'Device Sync',
+apps/web-demo/src/locales/lang/core/zh-CN.ts:122:      '声明式列（valueEnum）、工具栏全屏/导出、:request 分页、useDialog + ProForm 与异步权限联动 —— 企业级 CRUD 黄金样例。',
+apps/web-demo/src/locales/lang/example/zh-CN.ts:63:          useAutoMitt: '自动卸载事件总线',
+apps/web-demo/src/locales/lang/example/zh-CN.ts:84:        safeStorage: '安全加密存储',
+apps/web-demo/src/locales/lang/example/zh-CN.ts:86:        deviceSync: '设备探测与同步',
+packages/vue-ui/src/ProTable/README.md:340:import { get } from '@/utils/http/methods'
+apps/web-demo/src/api/system/system.api.ts:7:import { get } from '@/utils/http/methods'
+packages/vue-ui/src/ProTable/ProTable.vue:59:} from './engine/hooks/useProTableUrlSync'
+apps/web-demo/src/types/systems/theme.d.ts:3: * 作用范围：src/utils/theme/engine.ts 及相关 Store
+apps/web-demo/src/api/system/preferences.api.ts:1:import type { alovaInstance } from '@/utils/http/instance'
+apps/web-demo/src/adapters/http.adapter.ts:8:import { ErrorType, HttpRequestError } from '@/utils/http/errors'
+apps/web-demo/src/views/login/index.vue:3:import { useDeviceStore } from '@/stores/modules/system'
+apps/web-demo/src/api/README.md:20:- Imperative one-shot action：可以导出 `request<Domain><Feature>` 便捷函数，但必须在注释中说明使用场景，并继续走 `@/utils/http`。
+apps/web-demo/src/api/README.md:27:- fetch/axios（必须使用 Alova / `@/utils/http`）
+apps/web-demo/src/adapters/http.adapter.spec.ts:9:import { ErrorType, isHttpRequestError } from '@/utils/http/errors'
+apps/web-demo/src/stores/modules/session/user.ts:4:import { useLayoutStore } from '@/stores/modules/system/layout'
+apps/web-demo/src/stores/modules/session/user.ts:5:import { useThemeStore } from '@/stores/modules/system/theme'
+apps/web-demo/src/stores/modules/session/user.ts:6:import { useSizeStore } from '@/stores/modules/system/size'
+apps/web-demo/src/stores/modules/session/user.ts:7:import { useLocaleStore } from '@/stores/modules/system/locale'
+apps/web-demo/src/stores/modules/session/user.ts:9:import { createPiniaEncryptedSerializer, removeLocalStorageKeysWhere } from '@/utils/safeStorage'
+apps/web-demo/src/api/example/users.ts:7:import { get, post, put, del } from '@/utils/http/methods'
+apps/web-demo/src/api/example/users.ts:10:import type { RequestConfig } from '@/utils/http/types'
+apps/web-demo/src/api/example/users.ts:11:import type { alovaInstance } from '@/utils/http/instance'
+apps/web-demo/src/stores/modules/session/permission.ts:6:import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
+apps/web-demo/src/stores/modules/system/theme.spec.ts:33:vi.mock('@/utils/theme/engine', () => ({
+apps/web-demo/src/stores/modules/system/theme.spec.ts:37:vi.mock('@/utils/theme/mode', () => ({
+apps/web-demo/src/stores/modules/system/theme.spec.ts:42:vi.mock('@/utils/theme/transitions', () => ({
+apps/web-demo/src/stores/modules/system/theme.spec.ts:45:vi.mock('@/utils/safeStorage/piniaSerializer', () => ({
+apps/web-demo/src/adapters/charts/UseEcharts.vue:13:import { useThemeStore, useSizeStore } from '@/stores/modules/system'
+apps/web-demo/src/stores/modules/session/permission.spec.ts:86:vi.mock('@/utils/safeStorage/piniaSerializer', () => ({
+apps/web-demo/src/api/example/todos.ts:2:import type { alovaInstance } from '@/utils/http/instance'
+apps/web-demo/src/stores/modules/system/theme.ts:10:import { generateThemeVars, applyTheme } from '@/utils/theme/engine'
+apps/web-demo/src/stores/modules/system/theme.ts:15:} from '@/utils/theme/mode'
+apps/web-demo/src/stores/modules/system/theme.ts:16:import { isThemeLocked } from '@/utils/theme/transitions'
+apps/web-demo/src/stores/modules/system/theme.ts:17:import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
+apps/web-demo/src/stores/modules/session/user.spec.ts:30:vi.mock('@/stores/modules/system/theme', () => ({
+apps/web-demo/src/stores/modules/session/user.spec.ts:33:vi.mock('@/stores/modules/system/size', () => ({
+apps/web-demo/src/stores/modules/session/user.spec.ts:36:vi.mock('@/stores/modules/system/locale', () => ({
+apps/web-demo/src/stores/modules/session/user.spec.ts:39:vi.mock('@/stores/modules/system/layout', () => ({
+apps/web-demo/src/stores/modules/session/user.spec.ts:45:vi.mock('@/utils/safeStorage', () => ({
+apps/web-demo/src/stores/modules/session/user.spec.ts:52:vi.mock('@/utils/safeStorage/piniaSerializer', () => ({
+apps/web-demo/src/stores/modules/session/user.spec.ts:151:      const { removeLocalStorageKeysWhere } = await import('@/utils/safeStorage')
+packages/vue-hooks/src/createAutoMittHook.ts:16:  return function useAutoMitt(): UseAutoMittReturn<Events> {
+apps/web-demo/src/views/dashboard/hooks/useChartOptions.ts:3:import { useThemeStore, useSizeStore } from '@/stores/modules/system'
+apps/web-demo/src/stores/modules/system/device.ts:8:import { getDeviceTypeSync, getOsTypeSync } from '@/utils/deviceSync'
+apps/web-demo/src/api/example/users.spec.ts:26:vi.mock('@/utils/http/methods', () => ({
+apps/web-demo/src/App.vue:6:} from '@/utils/theme/sizeEngine'
+packages/vue-hooks/src/createAutoMittHook.spec.tsx:30:    const useAutoMitt = createAutoMittHook<TestEvents>(emitter)
+packages/vue-hooks/src/createAutoMittHook.spec.tsx:36:        const hook = useAutoMitt()
+packages/vue-hooks/src/createAutoMittHook.spec.tsx:59:    const useAutoMitt = createAutoMittHook<TestEvents>(emitter)
+packages/vue-hooks/src/createAutoMittHook.spec.tsx:63:        const hook = useAutoMitt()
+apps/web-demo/src/utils/safeStorage/piniaSerializer.ts:7: * 使用 safeStorage 的加密和压缩逻辑
+apps/web-demo/src/views/dashboard/index.vue:4:import { useDialog } from '@/hooks/modules/useDialog'
+apps/web-demo/src/views/dashboard/index.vue:324:const { openDialog, closeDialogByIndex } = useDialog()
+apps/web-demo/src/hooks/modules/useAuth.spec.ts:5:import { ErrorType, HttpRequestError } from '@/utils/http/errors'
+apps/web-demo/src/hooks/modules/useAuth.spec.ts:47:vi.mock('@/stores/modules/system/theme', () => ({
+apps/web-demo/src/hooks/modules/useAuth.spec.ts:50:vi.mock('@/stores/modules/system/size', () => ({
+apps/web-demo/src/hooks/modules/useAuth.spec.ts:53:vi.mock('@/stores/modules/system/locale', () => ({
+apps/web-demo/src/hooks/modules/useAuth.spec.ts:56:vi.mock('@/stores/modules/system/layout', () => ({
+apps/web-demo/src/hooks/modules/useAuth.spec.ts:62:vi.mock('@/utils/safeStorage', () => ({
+apps/web-demo/src/stores/modules/system/layout.ts:6:import { useDeviceStore } from '@/stores/modules/system/device'
+apps/web-demo/src/stores/modules/system/layout.ts:8:import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
+apps/web-demo/src/stores/modules/system/size.spec.ts:53:vi.mock('@/utils/theme/sizeEngine', () => ({
+apps/web-demo/src/stores/modules/system/size.spec.ts:57:vi.mock('@/utils/safeStorage/piniaSerializer', () => ({
+apps/web-demo/src/stores/modules/system/size.spec.ts:81:      const { applySizeTheme } = await import('@/utils/theme/sizeEngine')
+apps/web-demo/src/layouts/modules/LayoutAdmin.spec.ts:148:vi.mock('@/stores/modules/system', () => ({
+apps/web-demo/src/layouts/modules/LayoutAdmin.spec.ts:181:vi.mock('@/hooks/modules/useDialog', () => ({
+apps/web-demo/src/layouts/modules/LayoutAdmin.spec.ts:182:  useDialog: () => ({ openDialog: layoutState.openDialog }),
+apps/web-demo/src/stores/modules/system/layout.spec.ts:12:vi.mock('@/stores/modules/system/device', () => ({
+apps/web-demo/src/stores/modules/system/layout.spec.ts:19:vi.mock('@/utils/safeStorage/piniaSerializer', () => ({
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:8:import { useThemeStore } from '@/stores/modules/system'
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:13:import { generateThemeVars, applyTheme } from '@/utils/theme/engine'
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:19:} from '@/utils/theme/mode'
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:27:} from '@/utils/theme/transitions'
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:49:// 过渡锁已抽离至 @/utils/theme/transitions，避免 theme store ↔ useThemeSwitch 循环依赖
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:50:export { isThemeLocked } from '@/utils/theme/transitions'
+apps/web-demo/src/utils/safeStorage/index.ts:4:export * from './safeStorage'
+apps/web-demo/src/layouts/modules/LayoutRatio.vue:5:import { useLayoutStore } from '@/stores/modules/system'
+apps/web-demo/src/hooks/modules/useHttpRequest.ts:6:import { alovaInstance } from '@/utils/http/instance'
+apps/web-demo/src/hooks/modules/useHttpRequest.ts:7:import { isHttpRequestError } from '@/utils/http/errors'
+apps/web-demo/src/hooks/modules/useHttpRequest.ts:8:import type { HttpRequestError } from '@/utils/http/types'
+apps/web-demo/src/hooks/modules/useHttpRequest.ts:9:import { validateResponse } from '@/utils/http/validation'
+apps/web-demo/src/hooks/modules/useHttpRequest.ts:10:import type { HttpResponseSchema } from '@/utils/http/validation'
+apps/web-demo/src/layouts/modules/LayoutAdmin.tsx:6:import { useLayoutStore } from '@/stores/modules/system'
+packages/vue-ui/src/index.ts:122:  useDialogCore,
+apps/web-demo/src/stores/modules/system/size.ts:4:import { generateSizeVars, applySizeTheme } from '@/utils/theme/sizeEngine'
+apps/web-demo/src/stores/modules/system/size.ts:5:import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
+apps/web-demo/src/stores/modules/system/size.ts:11: * - 不在此 store 内做 `spacingBase * n`；若需 px 请用 `@/utils/theme/sizeMetrics` + `currentPreset`。
+apps/web-demo/src/hooks/modules/useDialog.tsx:2: * useDialog Composable
+apps/web-demo/src/hooks/modules/useDialog.tsx:4: * 动态弹窗请使用 PrimeVue useDialog().open()；确认弹窗请使用 useConfirm().require()
+apps/web-demo/src/hooks/modules/useDialog.tsx:9:  useDialogCore,
+apps/web-demo/src/hooks/modules/useDialog.tsx:17:  dialogStore: ReturnType<typeof useDialogCore>['dialogStore']
+apps/web-demo/src/hooks/modules/useDialog.tsx:48:export function useDialog(): UseDialogReturn {
+apps/web-demo/src/hooks/modules/useDialog.tsx:56:  } = useDialogCore()
+apps/web-demo/src/utils/safeStorage/core.ts:199:export const safeStorageSyncCodec: SyncStorageCodec<unknown> = {
+apps/web-demo/src/utils/safeStorage/core.ts:204:export const safeStorageCodec: StorageCodec<unknown> = {
+apps/web-demo/src/layouts/modules/LayoutFullScreen.vue:5:import { useLayoutStore } from '@/stores/modules/system'
+apps/web-demo/src/sync/systemPreferences/localPersist.ts:1:import { packDataSync, unpackDataSync } from '@/utils/safeStorage'
+apps/web-demo/src/sync/systemPreferences/localPersist.ts:4:import { readLocalStorageValue, writeLocalStorageValue } from '@/utils/safeStorage'
+apps/web-demo/src/hooks/modules/useRecordOverlay.tsx:9:import { useDialog } from '@/hooks/modules/useDialog'
+apps/web-demo/src/hooks/modules/useRecordOverlay.tsx:109:  const { openDialog, closeDialog } = useDialog()
+apps/web-demo/src/constants/theme.spec.ts:3:import { parseColor, contrastRatio } from '@/utils/theme/color'
+apps/web-demo/src/constants/theme.spec.ts:4:import { assessTokenContrast, classifyToken } from '@/utils/theme/validate'
+apps/web-demo/src/hooks/modules/useAuth.ts:11:} from '@/utils/http/errors'
+apps/web-demo/src/views/example/hooks/layout-breadcrumbs.vue:11:import { useLayoutStore } from '@/stores/modules/system'
+apps/web-demo/src/layouts/components/LoadingLottie.vue:12:import { applyThemeToLottieJson } from '@/utils/theme/lottieThemeUtils'
+apps/web-demo/src/layouts/components/LoadingLottie.vue:13:import { useThemeStore } from '@/stores/modules/system'
+apps/web-demo/src/sync/systemPreferences/register.ts:7:} from '@/stores/modules/system'
+apps/web-demo/src/layouts/index.vue:12:import { useLayoutStore } from '@/stores/modules/system'
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:98:    const { useThemeStore } = await import('@/stores/modules/system/theme')
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:175:    const { useThemeStore } = await import('@/stores/modules/system/theme')
+apps/web-demo/src/utils/http/instance.ts:1:// src/utils/http/instance.ts
+apps/web-demo/src/hooks/modules/useDateUtils.ts:24:import { useLocaleStore } from '@/stores/modules/system'
+apps/web-demo/src/layouts/components/AnimateRouterView.vue:7:import { useLayoutStore } from '@/stores/modules/system'
+apps/web-demo/src/views/example/hooks/use-auto-mitt.vue:4:const { emit } = useAutoMitt()
+apps/web-demo/src/views/example/hooks/use-auto-mitt.vue:24:    const { on } = useAutoMitt()
+apps/web-demo/src/views/example/hooks/use-auto-mitt.vue:60:                  <span class="text-lg font-bold text-foreground text-no-wrap">useAutoMitt</span>
+apps/web-demo/src/utils/http/requestLayer.spec.ts:108:vi.mock('@/utils/safeStorage', () => ({
+apps/web-demo/src/utils/http/requestLayer.spec.ts:384:      ...collectSourceFiles(path.join(repoRoot, 'apps/web-demo/src/utils/http')),
+apps/web-demo/src/sync/systemPreferences/model.ts:10:} from '@/stores/modules/system'
+apps/web-demo/src/hooks/modules/useLocale.ts:16:import { useLocaleStore } from '@/stores/modules/system'
+apps/web-demo/src/views/example/hooks/use-chart-theme.vue:7:import { useThemeStore, useSizeStore } from '@/stores/modules/system'
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:5: *       useToast 封装并挂到 window；PrimeVue locale 同步；useDialog + PrimeDialog
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:18:import { useLocaleStore } from '@/stores/modules/system'
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:25:import { useDialog } from '@/hooks/modules/useDialog'
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:28:const { dialogStore, closeDialog, removeDialog, closeAll } = useDialog()
+apps/web-demo/src/constants/runtime.ts:5: * Business persistence must still follow safeStorage and Pinia serializer rules.
+apps/web-demo/src/utils/http/index.ts:1:/** 仅做聚合导出，无逻辑；类型请从 ./types 或 @/utils/http/types 引用以避免循环 */
+apps/web-demo/src/hooks/modules/useAutoMitt.ts:6: * useAutoMitt — 带生命周期自动清理的事件总线 hook（推荐在组件内使用）
+apps/web-demo/src/hooks/modules/useAutoMitt.ts:14:const useAutoMittBase = createAutoMittHook<Events>(emitter)
+apps/web-demo/src/hooks/modules/useAutoMitt.ts:16:export const useAutoMitt = (): {
+apps/web-demo/src/hooks/modules/useAutoMitt.ts:21:  const { on, off } = useAutoMittBase()
+apps/web-demo/src/sync/systemPreferences/model.spec.ts:21:vi.mock('@/utils/theme/engine', () => ({
+apps/web-demo/src/sync/systemPreferences/model.spec.ts:26:vi.mock('@/utils/theme/mode', () => ({
+apps/web-demo/src/sync/systemPreferences/model.spec.ts:32:vi.mock('@/utils/theme/transitions', () => ({
+apps/web-demo/src/sync/systemPreferences/model.spec.ts:74:vi.mock('@/utils/theme/sizeEngine', () => ({
+apps/web-demo/src/sync/systemPreferences/model.spec.ts:92:vi.mock('@/utils/safeStorage/piniaSerializer', () => ({
+apps/web-demo/src/sync/systemPreferences/model.spec.ts:113:      await import('@/stores/modules/system')
+apps/web-demo/src/utils/http/methods.ts:1:// src/utils/http/methods.ts
+apps/web-demo/src/hooks/modules/useHttpRequest.spec.ts:5:import { ErrorType } from '@/utils/http/errors'
+apps/web-demo/src/hooks/modules/useHttpRequest.spec.ts:15:vi.mock('@/utils/http/instance', () => ({
+apps/web-demo/src/layouts/components/AppContainer.vue:6:import { useLayoutStore } from '@/stores/modules/system'
+apps/web-demo/src/layouts/components/GlobalSetting/useGlobalSettingsDialog.tsx:2:import { useDialog } from '@/hooks/modules/useDialog'
+apps/web-demo/src/layouts/components/GlobalSetting/useGlobalSettingsDialog.tsx:21:  const { openDialog } = useDialog()
+apps/web-demo/src/hooks/modules/useProTableUrlSync.ts:58:export function useProTableUrlSync<T extends Record<string, unknown>>(
+apps/web-demo/src/utils/http/interceptors.ts:6:import { compressAndEncryptSync, decryptAndDecompressSync } from '@/utils/safeStorage'
+apps/web-demo/src/layouts/components/GlobalSetting/SettingsContent.vue:3:import { useThemeStore } from '@/stores/modules/system'
+apps/web-demo/src/layouts/components/GlobalSetting/SettingsContent.vue:4:import { useSizeStore } from '@/stores/modules/system'
+apps/web-demo/src/layouts/components/GlobalSetting/SettingsContent.vue:5:import { useLayoutStore } from '@/stores/modules/system'
+apps/web-demo/src/utils/http/types.ts:1:// src/utils/http/types.ts
+apps/web-demo/src/hooks/layout/useLoading.ts:50:import { useLayoutStoreWithOut } from '@/stores/modules/system'
+apps/web-demo/src/layouts/components/admin/AdminSidebarMenu.tsx:10:import { useLayoutStore } from '@/stores/modules/system'
+apps/web-demo/src/layouts/components/admin/AdminSidebarMenuInline.tsx:19:import { useLayoutStore } from '@/stores/modules/system'
+apps/web-demo/src/hooks/layout/useAdminTabs.spec.ts:48:vi.mock('@/utils/safeStorage/piniaSerializer', () => ({
+packages/vue-ui/src/PrimeDialog/index.ts:4:export { useDialogCore } from './useDialog'
+apps/web-demo/src/views/example/utils/safe-storage.vue:4:import { compressAndEncryptSync, decryptAndDecompressSync } from '@/utils/safeStorage'
+packages/vue-ui/src/PrimeDialog/useDialog.spec.ts:2:import { useDialogCore } from './useDialog'
+packages/vue-ui/src/PrimeDialog/useDialog.spec.ts:5:  useDialogCore().closeAllDialog()
+packages/vue-ui/src/PrimeDialog/useDialog.spec.ts:9:describe('useDialogCore', () => {
+packages/vue-ui/src/PrimeDialog/useDialog.spec.ts:11:    const dialog = useDialogCore()
+packages/vue-ui/src/PrimeDialog/useDialog.spec.ts:30:    const dialog = useDialogCore()
+apps/web-demo/src/hooks/layout/useLayoutRuntime.ts:7:import { useLayoutStore } from '@/stores/modules/system'
+apps/web-demo/src/hooks/layout/useLayoutRuntime.ts:8:import { useDeviceStore } from '@/stores/modules/system'
+apps/web-demo/src/views/example/utils/http-advanced.vue:3:import { get, getCacheStats, getRequestStats, clearCache, clearRequests } from '@/utils/http'
+apps/web-demo/src/views/example/utils/http-advanced.vue:4:import type { CacheStats, RequestStats, RetryConfig } from '@/utils/http'
+apps/web-demo/src/hooks/layout/useLoading.spec.ts:58:    import('@/stores/modules/system/layout'),
+apps/web-demo/src/views/example/utils/device-sync.vue:4:import { getBreakpointSync, getDeviceTypeSync } from '@/utils/deviceSync'
+apps/web-demo/src/utils/http/interceptors.spec.ts:20:vi.mock('@/utils/safeStorage', () => ({
+packages/vue-ui/src/PrimeDialog/utils/types.ts:46:  /** 默认尺寸类（UnoCSS），由 useDialogCore 与 class 合并后透传给 Dialog */
+apps/web-demo/src/plugins/modules/primevue.spec.ts:41:vi.mock('@/stores/modules/system', () => ({
+apps/web-demo/src/views/example/common/types.vue:98:      '这是请求层的配置与响应"变体"：src/types/api.ts 的 ApiResponse<T> 是后端通用包装，src/utils/http/types.ts 的 ApiResponse<T> 是 HTTP 拦截器可识别的 success/data/message 包装。RequestConfig 决定缓存、重试、去重、静默错误与 schema 校验边界。',
+packages/vue-ui/src/PrimeDialog/useDialog.ts:40:export function useDialogCore(): UseDialogCoreReturn {
+.ai/skills/core/vueuse-functions/references/createTemplatePromise.md:188:const dialog = useDialog()
+apps/web-demo/src/plugins/modules/protable.ts:3:import { useProTableUrlSync } from '@/hooks/modules/useProTableUrlSync'
+apps/web-demo/src/plugins/modules/protable.ts:6:  app.provide(PRO_TABLE_URL_SYNC_ADAPTER_KEY, useProTableUrlSync)
+apps/web-demo/src/views/example/common/enums.vue:4:import { ErrorType } from '@/utils/http/errors'
+apps/web-demo/src/plugins/modules/proform.ts:10:import { packDataSync, unpackDataSync } from '@/utils/safeStorage'
+.ai/rules/integrations/01-http-alova.mdc:33:All HTTP traffic MUST flow through `alovaInstance` from `@/utils/http/instance`. This instance is pre-configured with:
+.ai/rules/integrations/01-http-alova.mdc:42:- `src/utils/http/interceptors.ts#defaultRefreshTokenExecutor`: refresh-token bootstrap fallback. It cannot call `alovaInstance` from inside the response interceptor without risking recursive 401 handling. The normal path should inject `setRefreshTokenExecutor()` when an app-specific refresh method is available.
+.ai/rules/integrations/01-http-alova.mdc:43:- `src/utils/http/methods.ts#getRaw`: header-preserving GET for endpoints where callers must inspect `Headers`. It must manually preserve auth token injection, unified `HttpRequestError`, abort handling, cache policy, and global error behavior.
+.ai/rules/integrations/01-http-alova.mdc:44:- `src/utils/http/connection.ts#performHealthCheck`: connection probe infrastructure below the Alova instance.
+.ai/rules/integrations/01-http-alova.mdc:56:import type { alovaInstance } from '@/utils/http/instance'
+.ai/rules/integrations/01-http-alova.mdc:123:`TokenRefreshCoordinator` inside `@/utils/http/interceptors.ts` exclusively owns 401 handling. **You MUST NOT:**
+.ai/rules/integrations/01-http-alova.mdc:139:import type { HttpRequestError } from '@/utils/http/types'
+.ai/rules/integrations/01-http-alova.mdc:140:import { ErrorType, isHttpRequestError } from '@/utils/http/errors'
+apps/web-demo/src/plugins/modules/stores.ts:2:import { useThemeStore } from '@/stores/modules/system'
+apps/web-demo/src/plugins/modules/stores.ts:3:import { useSizeStore } from '@/stores/modules/system'
+apps/web-demo/src/plugins/modules/stores.ts:4:import { useLocaleStore } from '@/stores/modules/system'
+.ai/rules/design-system/02-size-density-system.mdc:16:- Engine: `src/utils/theme/sizeEngine.ts`
+.ai/rules/design-system/02-size-density-system.mdc:138:- `src/utils/theme/sizeEngine.ts` injects `--sidebar-collapsed-width`.
+.ai/rules/integrations/00-network-routing-guardrails.mdc:214:使用 `ConnectionManager` (`src/utils/http/connection.ts`) 提供的单例 API 感知网络状态。
+.ai/rules/integrations/00-network-routing-guardrails.mdc:217:import { getConnectionState, addConnectionListener } from '@/utils/http/connection'
+.ai/rules/integrations/00-network-routing-guardrails.mdc:277:import { uploadFile, uploadFiles, downloadFile } from '@/utils/http/methods'
+.ai/rules/integrations/00-network-routing-guardrails.mdc:315:| 1 | HTTP Client | `axios` / `fetch` / `XMLHttpRequest` | `@/utils/http/methods` 或 `useHttpRequest` | `01-http-alova` |
+.ai/rules/integrations/00-network-routing-guardrails.mdc:343:- [ ] No `axios` / `fetch` / `XMLHttpRequest` — 仅 `@/utils/http/methods` 或 `useHttpRequest`
+apps/web-demo/src/utils/theme/sizeEngine.ts:16:import { unpackDataSync } from '@/utils/safeStorage/core'
+apps/web-demo/src/utils/theme/sizeEngine.ts:17:import { getDeviceTypeSync, getBreakpointSync } from '@/utils/deviceSync'
+apps/web-demo/src/utils/theme/sizeEngine.ts:373:    // Payload is still safeStorage-packed by useSizeStore's encrypted serializer.
+.ai/rules/design-system/01-design-tokens.mdc:27:- `src/utils/theme/**` — color parsing, conversion, derivation, validation, and compiler internals.
+.ai/rules/design-system/01-design-tokens.mdc:34:- After changing preset data, run `pnpm exec tsx scripts/upgrade-all-themes.mjs`, `pnpm exec vitest run src/constants/theme.spec.ts src/utils/theme`, and ESLint for the touched theme files.
+.ai/rules/design-system/01-design-tokens.mdc:115:**SSOT**: `src/utils/theme/metadata.ts` (`COLOR_FAMILIES`)
+apps/web-demo/src/plugins/modules/primevue.ts:7:import { useDeviceStore, useLocaleStore } from '@/stores/modules/system'
+apps/web-demo/src/plugins/modules/primevue.ts:8:import { useSizeStore } from '@/stores/modules/system'
+.ai/rules/design-system/05-semantic-color-usage-contract.mdc:12:  - `src/utils/theme/metadata.ts`
+.ai/rules/design-system/05-semantic-color-usage-contract.mdc:40:- `src/utils/theme/presetPrimitive.ts` may keep primitive key `warning` as compatibility bridge.
+.ai/rules/integrations/05-date-time.mdc:115:| `src/utils/http/interceptors.ts` | `Date.now()` | Request timestamp stamping |
+.ai/rules/integrations/04-safe-storage.mdc:2:description: Bans all native browser storage APIs for business data. Mandates AES+LZ-String encrypted wrappers from @/utils/safeStorage and createPiniaEncryptedSerializer for Pinia persistence.
+.ai/rules/integrations/04-safe-storage.mdc:14:| `localStorage.setItem(k, v)` | `packDataSync(value, secret)` then store result | `@/utils/safeStorage` |
+.ai/rules/integrations/04-safe-storage.mdc:15:| `localStorage.getItem(k)` | `unpackDataSync<T>(raw, secret)` | `@/utils/safeStorage` |
+.ai/rules/integrations/04-safe-storage.mdc:16:| `sessionStorage.setItem/getItem` | Same wrappers | `@/utils/safeStorage` |
+.ai/rules/integrations/04-safe-storage.mdc:17:| `JSON.stringify(x)` for storage | `packDataSync` (handles JSON + compress + encrypt) | `@/utils/safeStorage` |
+.ai/rules/integrations/04-safe-storage.mdc:18:| `JSON.parse(raw)` from storage | `unpackDataSync` (handles decrypt + decompress + parse) | `@/utils/safeStorage` |
+.ai/rules/integrations/04-safe-storage.mdc:25:import { packDataSync, unpackDataSync } from '@/utils/safeStorage'
+.ai/rules/integrations/04-safe-storage.mdc:61:`src/utils/theme/engine.ts` may write plaintext `theme-primary` and `theme-background`. This is an intentional preload-only cache used by `index.html` to paint the native preloader with the latest resolved theme before Vue mounts.
+.ai/rules/integrations/04-safe-storage.mdc:85:`src/utils/theme/sizeEngine.ts` may synchronously read `SIZE_PERSIST_KEY` before Vue/Pinia mounts to avoid first-frame layout/size flash.
+.ai/rules/integrations/04-safe-storage.mdc:102:import type { alovaInstance } from '@/utils/http/instance'
+.ai/rules/architecture/04-store-organization.mdc:14:- `src/stores/modules/system/`
+.ai/rules/architecture/04-store-organization.mdc:27:  - `@/stores/modules/system`
+apps/web-demo/src/utils/theme/transitions.ts:8:import { getDeviceTypeSync } from '@/utils/deviceSync'
+.ai/rules/integrations/03-layout-architecture.mdc:28:- `src/layouts/runtime/layoutRuntime.ts`
+apps/web-demo/src/plugins/setupPlugins.spec.ts:26:vi.mock('@/plugins/modules/primevue', () => ({
+apps/web-demo/src/plugins/setupPlugins.spec.ts:34:vi.mock('@/plugins/modules/proform', () => ({
+.ai/rules/core/08-vue-template-strictness.mdc:120:- `src/utils/http/interceptors.ts`
+.ai/rules/core/08-vue-template-strictness.mdc:121:- `src/utils/safeStorage/**`
+.ai/rules/architecture/05-runtime-bootstrap.mdc:3:globs: ["index.html", "build/**/*.ts", "src/main.ts", "src/constants/**/*.ts", "src/utils/theme/**/*.ts", "src/stores/**/*.ts"]
+apps/web-demo/src/plugins/index.ts:3:import { setupProForm } from '@/plugins/modules/proform'
+apps/web-demo/src/plugins/index.ts:7:import { setupPrimeVue } from '@/plugins/modules/primevue'
+apps/web-demo/src/plugins/index.ts:10:import { setupProTable } from '@/plugins/modules/protable'
+.ai/rules/components/01-primevue-pt-styling.mdc:13:Our PrimeVue integration uses **Styled Mode** with a custom preset (`createCustomPreset`) defined in `src/utils/theme/primevuePreset`. This preset maps our CSS variable design tokens directly onto PrimeVue's internal theme contract. All PrimeVue components inherit brand colors, spacing, border radius, and dark mode variants automatically through this system.
+.ai/rules/components/01-primevue-pt-styling.mdc:15:Global pass-through presets live in `src/utils/theme/ptPresets/` (e.g., `formControlsPt.ts`). These are registered at the app level and apply to every instance of a given component type. **Always check if a global PT already covers your use case before writing a local one.**
+.ai/rules/components/01-primevue-pt-styling.mdc:30:src/utils/theme/ptPresets/
+.ai/rules/core/06-utils-hooks.mdc:14:2. **Common Utilities:** Check the root `@/utils/` directory first (e.g., `strings.ts`, `lodashes.ts`, `typeCasters.ts`), then inspect targeted sub-directories like `@/utils/http/`, `@/utils/date/`, and `@/utils/theme/`.
+.ai/rules/core/06-utils-hooks.mdc:84:- **Components (`<script setup>`):** MUST ALWAYS use `useAutoMitt()` to prevent memory leaks.
+.ai/rules/core/06-utils-hooks.mdc:115:- Event bus: `@/utils/mitt` (`useAutoMitt` in components)
+.ai/rules/core/06-utils-hooks.mdc:116:- Secure storage: `@/utils/safeStorage`
+.ai/rules/core/06-utils-hooks.mdc:177:## Law 6 — Use `useAutoMitt` for Component Event Subscriptions
+.ai/rules/core/06-utils-hooks.mdc:179:**Source**: `src/hooks/modules/useAutoMitt.ts`
+.ai/rules/core/06-utils-hooks.mdc:181:When subscribing to the Mitt event bus **inside a component**, ALWAYS use `useAutoMitt` instead of `useMitt`. `useAutoMitt` registers an `onUnmounted` hook that automatically cancels all subscriptions when the component is destroyed — preventing memory leaks and Vue warnings from stale handlers.
+.ai/rules/core/06-utils-hooks.mdc:185:const { on, emit } = useAutoMitt()
+.ai/rules/core/06-utils-hooks.mdc:201:**When to use `useMitt` directly** (NOT `useAutoMitt`):
+.ai/rules/core/06-utils-hooks.mdc:208:| Vue `<script setup>` | `useAutoMitt()` — auto-cleanup |
+.ai/rules/core/06-utils-hooks.mdc:213:## Law 7 — `deviceSync` vs `useDeviceStore`: Know the Timing Boundary
+.ai/rules/core/06-utils-hooks.mdc:215:**Source**: `src/utils/deviceSync.ts`
+.ai/rules/core/06-utils-hooks.mdc:224:### When to use `deviceSync` (REQUIRED in pre-mount contexts)
+.ai/rules/core/06-utils-hooks.mdc:236:import { getDeviceTypeSync, getBreakpointSync } from '@/utils/deviceSync'
+.ai/rules/core/04-type-safety-mutations.mdc:40:- `src/utils/http/interceptors.ts`
+.ai/rules/core/04-type-safety-mutations.mdc:41:- `src/utils/safeStorage/**`
+.ai/rules/components/00-primevue-ecosystem.mdc:24:- raw business `<Dialog>` / `<Drawer>` declarations -> use `useDialog` + `PrimeDialog`
+.ai/rules/components/00-primevue-ecosystem.mdc:50:| `<dialog>` | `<Dialog>` | Or `useDialog()` composable |
+.ai/rules/components/00-primevue-ecosystem.mdc:81:- **Dialogs (ARCHITECTURAL PRIORITY):** Prefer the internal dialog abstraction (`@/components/PrimeDialog` or equivalent architecture-approved wrapper / `useDialog`) over raw PrimeVue `Dialog` declarations when implementing business dialogs, so lifecycle orchestration, layout constraints, and close behaviors remain centralized.
+.ai/rules/components/00-primevue-ecosystem.mdc:102:3. **Cross-check** with the project's PT presets in `src/utils/theme/ptPresets/` and `src/utils/theme/presetComponents/` to confirm global configuration coverage
+.ai/rules/components/00-primevue-ecosystem.mdc:131:- Replace ad-hoc business dialogs with the internal dialog wrapper path (`PrimeDialog` / `useDialog`) where applicable.
+.ai/rules/components/00-primevue-ecosystem.mdc:156:- `src/utils/theme/ptPresets/formControlsPt.ts` — InputText, InputNumber, InputChips, Password, Textarea, DatePicker, Select, MultiSelect, AutoComplete, SelectButton
+.ai/rules/components/00-primevue-ecosystem.mdc:157:- `src/utils/theme/ptPresets/menuPt.ts` — TieredMenu, PanelMenu
+.ai/rules/components/00-primevue-ecosystem.mdc:158:- `src/utils/theme/presetComponents/` — Preset-level styling for all component categories (base, form, overlay, data, menuNavMisc)
+.ai/rules/components/00-primevue-ecosystem.mdc:184:1. Check `src/utils/theme/ptPresets/formControlsPt.ts` and `menuPt.ts`.
+.ai/rules/components/00-primevue-ecosystem.mdc:185:2. Check `src/utils/theme/presetComponents/`.
+.ai/rules/core/01-global-preflight.mdc:15:- [ ] **Event Bus:** Vue component subscriptions use `useAutoMitt()` only. No direct `useMitt().on` in `<script setup>`.
+.ai/rules/core/01-global-preflight.mdc:19:- [ ] **Network/Storage:** Alova is used (No raw `fetch`/`axios`). `safeStorage` is used (No raw `localStorage`).
+.ai/rules/components/02-pro-components.mdc:44:| `<Dialog>` / `<Drawer>` for business flows | `useDialog().openDialog()` / `useDialog().confirm*()` |
+.ai/rules/components/02-pro-components.mdc:54:| Confirm / Delete confirm / Info prompt | `useDialog` |
+.ai/rules/components/02-pro-components.mdc:68:<!-- useDialog().openDialog(...) / useDialog().confirm(...) -->
+.ai/rules/core/00-root-gatekeeper.mdc:20:- **FORBIDDEN:** Using plaintext `localStorage` or `sessionStorage` in business logic. You MUST use `@/utils/safeStorage`.
+.ai/rules/core/00-root-gatekeeper.mdc:21:- **FORBIDDEN:** Subscribing to events directly via `useMitt().on` inside Vue components. You MUST use `useAutoMitt`.
+.ai/rules/core/07-vue-auto-imports.mdc:34:> **⚠️ `.ts` utility files outside `src/hooks/` and `src/stores/`** (e.g. `src/utils/http/*.ts`) are NOT covered by auto-import. In those files, `$t` is undefined at module load time due to race conditions with Vue app mount. Always use explicit `import { t } from '@/locales'` in plain `.ts` files.
+apps/web-demo/src/views/example/components/primevue-collection/prime-dialog/index.vue:3:import { useDialog } from '@/hooks/modules/useDialog'
+apps/web-demo/src/views/example/components/primevue-collection/prime-dialog/index.vue:20:} = useDialog()
+apps/web-demo/src/views/example/components/primevue-collection/prime-dialog/index.vue:423:                  全功能演示：基于 useDialog 的二次封装，涵盖所有 Props 控制与交互模式。

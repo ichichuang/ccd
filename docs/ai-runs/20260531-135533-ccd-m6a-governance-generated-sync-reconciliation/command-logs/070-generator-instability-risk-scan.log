@@ -1,0 +1,40 @@
+$ rg -n "docs/ai-runs|ai-runs|reports/|command-logs|Date\(|new Date|toISOString|process.cwd|Math.random|sort\(" scripts/governance scripts/architecture scripts/normalize-generated-output.mjs
+scripts/normalize-generated-output.mjs:43:  for (const entry of readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+scripts/architecture/generate-dependency-graphs.mjs:8:const root = process.cwd()
+scripts/governance/utils.mjs:6:const cwd = process.cwd()
+scripts/governance/check-doc-commands.mjs:6:const root = process.cwd()
+scripts/governance/policy-utils.mjs:6:const root = process.cwd()
+scripts/architecture/check-release-governance.mjs:7:const root = process.cwd()
+scripts/architecture/validate-boundaries.mjs:7:const root = process.cwd()
+scripts/architecture/validate-boundaries.mjs:69:  return [...new Set(values)].sort((a, b) => a.localeCompare(b))
+scripts/architecture/check-root-runtime-decommissioned.mjs:6:const root = process.cwd()
+scripts/governance/snapshot.mjs:6:const entries = fs.readdirSync(paths.cwd, { withFileTypes: true }).map(entry => entry.name).sort()
+scripts/governance/snapshot.mjs:7:const docs = fs.existsSync(path.join(paths.cwd, 'docs')) ? fs.readdirSync(path.join(paths.cwd, 'docs')).sort() : []
+scripts/governance/snapshot.mjs:8:const ai = fs.existsSync(path.join(paths.cwd, '.ai')) ? fs.readdirSync(path.join(paths.cwd, '.ai')).sort() : []
+scripts/governance/snapshot.mjs:9:const scripts = fs.existsSync(path.join(paths.cwd, 'scripts')) ? fs.readdirSync(path.join(paths.cwd, 'scripts')).sort() : []
+scripts/architecture/check-desktop-size.mjs:6:const root = process.cwd()
+scripts/architecture/check-api-surface.mjs:8:const root = process.cwd()
+scripts/architecture/check-api-surface.mjs:31:  return [...names].sort((a, b) => a.localeCompare(b))
+scripts/architecture/check-api-surface.mjs:41:  return Object.keys(exportsField).sort()
+scripts/governance/gate.mjs:72:    cwd: process.cwd(),
+scripts/governance/gate.mjs:77:    cwd: process.cwd(),
+scripts/governance/gate.mjs:86:    cwd: process.cwd(),
+scripts/governance/gate.mjs:99:    cwd: process.cwd(),
+scripts/governance/gate.mjs:125:      cwd: process.cwd(),
+scripts/governance/gate.mjs:134:      cwd: process.cwd(),
+scripts/architecture/check-supply-chain.mjs:7:const root = process.cwd()
+scripts/governance/validate.mjs:6:const cwd = process.cwd()
+scripts/governance/check-github-workflow-registry.mjs:8:const root = process.cwd()
+scripts/governance/check-github-workflow-registry.mjs:23:    .sort()
+scripts/governance/check-github-workflow-registry.mjs:38:const expected = [...registryPolicy.allowedActiveWorkflowFiles].sort()
+scripts/governance/protocol-migrate.mjs:6:const cwd = process.cwd()
+scripts/governance/drift-repair.mjs:6:const cwd = process.cwd()
+scripts/governance/drift-repair.mjs:9:fs.writeFileSync(target, `${JSON.stringify({ schemaVersion: 1, generatedBy: 'scripts/governance/drift-repair.mjs', repairedAt: new Date(0).toISOString(), actions: ['deterministic-placeholder'] }, null, 2)}\n`, 'utf8')
+scripts/architecture/release-audit.mjs:8:const root = process.cwd()
+scripts/architecture/release-audit.mjs:24:files.sort()
+scripts/governance/adapters-validate.mjs:6:const cwd = process.cwd()
+scripts/governance/orchestration-validate.mjs:6:const cwd = process.cwd()
+scripts/architecture/check-runtime-leaks.mjs:9:const root = process.cwd()
+scripts/architecture/check-runtime-leaks.mjs:341:    .sort((a, b) => b.path.length - a.path.length)[0]
+scripts/architecture/check-runtime-leaks.mjs:478:  return [...rows.values()].sort(
+scripts/architecture/check-runtime-leaks.mjs:541:    .sort(

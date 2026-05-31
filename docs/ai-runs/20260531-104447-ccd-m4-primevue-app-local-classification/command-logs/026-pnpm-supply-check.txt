@@ -1,0 +1,5 @@
+
+> ccd@1.0.38 supply:check /Users/cc/MyPorject/ccd
+> node scripts/architecture/check-supply-chain.mjs
+
+Supply chain validation passed.

@@ -1,0 +1,26 @@
+{
+  "primevue": {
+    "rows": 163,
+    "current_classification": {
+      "approved-app-plugin-integration": 2,
+      "approved-build-plugin-integration": 1,
+      "approved-exact-app-allowlist": 70,
+      "approved-app-global-ui-shell": 10,
+      "showcase-exception": 12,
+      "primevue-adapter-owned": 8,
+      "vue-ui-internal-primevue-composition": 60
+    }
+  },
+  "appLocal": {
+    "rows": 71,
+    "proposed_classification": {
+      "app-local-compat-facade": 6,
+      "test-only": 15,
+      "app-plugin-integration": 3,
+      "app-store": 6,
+      "migration-candidate": 23,
+      "app-adapter": 17,
+      "needs-owner-decision": 1
+    }
+  }
+}

@@ -1,0 +1,10 @@
+$ node .ai/skills/codex/task-orchestrator/scripts/skill_router.mjs M7 safeStorage codec foundation: move or establish only non-crypto runtime-neutral codec/compression helpers in packages/shared-utils, preserve web-demo compatibility, no manifests or crypto/runtime movement
+matched_routes: default
+selected_skills: .ai/skills/codex/task-orchestrator
+prechecks: pnpm codex:preflight
+token_strategy:
+- Load only AGENTS.core and the selected skill SKILL.md first
+- Avoid loading unrelated skill references until a route is chosen
+- Prefer machine-readable summaries before screenshots, logs, or large docs
+
+[exit=0]

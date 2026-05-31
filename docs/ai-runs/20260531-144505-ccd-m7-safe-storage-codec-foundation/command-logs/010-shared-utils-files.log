@@ -1,0 +1,19 @@
+$ find packages/shared-utils/src -maxdepth 3 -type f
+packages/shared-utils/src/storageCodec.ts
+packages/shared-utils/src/strings.ts
+packages/shared-utils/src/ids.ts
+packages/shared-utils/src/recordGuards.spec.ts
+packages/shared-utils/src/lodashes.ts
+packages/shared-utils/src/storageCodec.spec.ts
+packages/shared-utils/src/typeCasters.ts
+packages/shared-utils/src/idGenerator.ts
+packages/shared-utils/src/stableFingerprint.ts
+packages/shared-utils/src/createCapabilityBridge.ts
+packages/shared-utils/src/createCapabilityBridge.spec.ts
+packages/shared-utils/src/index.ts
+packages/shared-utils/src/typeCasters.spec.ts
+packages/shared-utils/src/recordGuards.ts
+packages/shared-utils/src/stableFingerprint.spec.ts
+packages/shared-utils/src/import-meta.d.ts
+
+[exit=0]

@@ -1,0 +1,13 @@
+# M16 complete changed-files reconciliation (retroactive bookkeeping)
+# Recorded by M16a to align with reports/summary.md changed files table.
+
+M	docs/ai-plan/PLAN.md
+M	docs/zh/04-project-control-center.md
+M	docs/zh/08-release.md
+M	docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md
+M	docs/ai-plan/STATUS.md
+M	docs/ai-plan/FINAL_GO_NO_GO.md
+A	docs/ai-runs/20260531-223500-ccd-m16-stale-doc-tooling-reference-cleanup/**
+
+# Note: 018-m16-file-diff-name-status.log captured an incomplete subset before
+# ARCHITECTURE_ISSUE_REPAIR_LOG.md and evidence directory were included.

@@ -1,0 +1,889 @@
+apps/desktop/src/router/index.ts:6:  history: createWebHashHistory(),
+packages/contracts/src/index.ts:1:export type { CryptoProvider } from './crypto'
+apps/web-demo/src/router/modules/core.ts:5:    redirect: import.meta.env.VITE_ROOT_REDIRECT,
+packages/core/src/index.ts:32:  crypto?: CryptoProvider
+packages/vue-charts/src/chartUtils.ts:409:  if (typeof window === 'undefined') return null
+packages/vue-charts/src/chartUtils.ts:410:  return getComputedStyle(document.documentElement)
+packages/vue-ui/src/ProTable/engine/hooks/useProTableInfiniteScroll.ts:54:    _scrollTarget.addEventListener('scroll', _scrollHandler, { passive: true })
+packages/vue-ui/src/ProTable/engine/hooks/useProTableInfiniteScroll.ts:60:      _scrollTarget.removeEventListener('scroll', _scrollHandler)
+packages/vue-app-platform/src/bootstrap.ts:3:  if (typeof document !== 'undefined') return document
+packages/vue-app-platform/src/bootstrap.ts:8:  const raf = globalThis.requestAnimationFrame
+packages/vue-app-platform/src/bootstrap.ts:16:  if (typeof globalThis.setTimeout === 'function') {
+packages/vue-app-platform/src/bootstrap.ts:18:      globalThis.setTimeout(resolve, 0)
+packages/vue-app-platform/src/bootstrap.ts:28:  activeDocument.documentElement.dataset.appReady = 'false'
+packages/vue-app-platform/src/bootstrap.ts:29:  activeDocument.documentElement.dataset.runtimeLoading = 'true'
+packages/vue-app-platform/src/bootstrap.ts:36:  activeDocument.documentElement.dataset.appReady = 'true'
+packages/vue-app-platform/src/bootstrap.ts:37:  activeDocument.documentElement.dataset.runtimeLoading = 'false'
+apps/desktop/src/views/DesktopHome.vue:25:    class="min-h-screen col-center gap-lg bg-background text-foreground font-sans p-xl"
+packages/unocss-preset/src/shortcuts/semanticShortcuts.ts:20:  'layout-screen': 'w-screen h-100dvh overflow-hidden', // 全屏布局容器（动态视口高度，避免移动端地址栏裁切）
+packages/design-tokens/src/size.ts:101: * 禁止加入 presetUno 已占用的类名片段（如 full / screen / min / max），否则会覆盖默认 w-full、w-screen 等，导致布局异常。
+packages/vue-primevue-adapter/src/theme/colorAdapter.ts:150:        console.warn(`[colorAdapter] getAlpha: unexpected format "${val}", expected "rgb(...)"`)
+packages/vue-app-platform/src/preloader.ts:4:  document?: Document
+packages/vue-app-platform/src/preloader.ts:13:  if (typeof document !== 'undefined') return document
+packages/vue-app-platform/src/preloader.ts:18:  const activeDocument = resolveDocument(options.document)
+packages/vue-app-platform/src/preloader.ts:31:  activeDocument.documentElement.dataset.preloaderState = 'hidden'
+packages/vue-app-platform/src/preloader.ts:37:  globalThis.setTimeout(() => {
+packages/shared-utils/src/createCapabilityBridge.spec.ts:121:      const mutableEnv = import.meta.env as { MODE?: string }
+apps/desktop/src/theme/index.ts:136:  if (typeof document === 'undefined') return
+apps/desktop/src/theme/index.ts:138:  const root = document.documentElement
+apps/web-demo/src/router/modules/example.ts:128:      path: '/example/router-meta/reuse-window',
+apps/web-demo/src/router/modules/example.ts:130:      component: () => import('@/views/example/architecture/router-meta/reuse-window.vue'),
+apps/web-demo/src/router/modules/example.ts:134:        icon: 'i-lucide-app-window',
+packages/shared-utils/src/createCapabilityBridge.ts:54:      if (import.meta.env.MODE !== 'test') {
+packages/design-tokens/src/index.ts:311: * 禁止加入 presetUno 已占用的类名片段（如 full / screen / min / max），否则会覆盖默认 w-full、w-screen 等，导致布局异常。
+packages/vue-app-platform/src/preloader.dom.spec.ts:8:    document.body.innerHTML = ''
+packages/vue-app-platform/src/preloader.dom.spec.ts:9:    document.documentElement.removeAttribute('data-app-ready')
+packages/vue-app-platform/src/preloader.dom.spec.ts:10:    document.documentElement.removeAttribute('data-runtime-loading')
+packages/vue-app-platform/src/preloader.dom.spec.ts:11:    document.documentElement.removeAttribute('data-preloader-state')
+packages/vue-app-platform/src/preloader.dom.spec.ts:14:  it('marks the document ready and removes the native preloader from the DOM', () => {
+packages/vue-app-platform/src/preloader.dom.spec.ts:16:    document.body.innerHTML = '<div id="preloader-bg"></div>'
+packages/vue-app-platform/src/preloader.dom.spec.ts:20:    const preloader = document.getElementById('preloader-bg')
+packages/vue-app-platform/src/preloader.dom.spec.ts:21:    expect(document.documentElement.dataset.appReady).toBe('true')
+packages/vue-app-platform/src/preloader.dom.spec.ts:22:    expect(document.documentElement.dataset.runtimeLoading).toBe('false')
+packages/vue-app-platform/src/preloader.dom.spec.ts:23:    expect(document.documentElement.dataset.preloaderState).toBe('hidden')
+packages/vue-app-platform/src/preloader.dom.spec.ts:28:    expect(document.getElementById('preloader-bg')).toBeNull()
+apps/desktop/src/adapters/index.ts:8:import { invoke } from '@tauri-apps/api/core'
+apps/desktop/src/adapters/index.ts:33:    return invoke('http_request', { request })
+apps/desktop/src/adapters/index.ts:39:    globalThis.console.debug(message, context)
+apps/desktop/src/adapters/index.ts:42:    globalThis.console.info(message, context)
+apps/desktop/src/adapters/index.ts:45:    globalThis.console.warn(message, context)
+apps/desktop/src/adapters/index.ts:48:    globalThis.console.error(message, context)
+apps/web-demo/src/router/index.ts:78:  // history 模式
+apps/web-demo/src/router/index.ts:79:  history:
+apps/web-demo/src/router/index.ts:80:    import.meta.env.VITE_ROUTER_MODE === 'hash'
+apps/web-demo/src/router/index.ts:81:      ? createWebHashHistory(import.meta.env.VITE_PUBLIC_PATH)
+apps/web-demo/src/router/index.ts:82:      : createWebHistory(import.meta.env.VITE_PUBLIC_PATH),
+packages/vue-charts/src/UseEcharts/echarts-render-core.spec.ts:101:      requestAnimationFrame:
+packages/vue-charts/src/UseEcharts/echarts-render-core.spec.ts:102:        requestAnimationFrameMock as unknown as typeof globalThis.requestAnimationFrame,
+packages/vue-charts/src/UseEcharts/echarts-render-core.spec.ts:103:      cancelAnimationFrame:
+packages/vue-charts/src/UseEcharts/echarts-render-core.spec.ts:104:        cancelAnimationFrameMock as unknown as typeof globalThis.cancelAnimationFrame,
+packages/vue-app-platform/src/bootstrap.spec.ts:9:  it('waits for two animation frames when requestAnimationFrame is available', async () => {
+packages/vue-app-platform/src/bootstrap.spec.ts:13:    vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
+packages/vue-app-platform/src/bootstrap.spec.ts:32:  it('falls back when requestAnimationFrame is unavailable', async () => {
+packages/vue-app-platform/src/bootstrap.spec.ts:33:    vi.stubGlobal('requestAnimationFrame', undefined)
+packages/vue-app-platform/src/bootstrap.spec.ts:37:  it('marks app bootstrapping and ready states on the document element', () => {
+packages/vue-app-platform/src/bootstrap.spec.ts:39:      documentElement: {
+packages/vue-app-platform/src/bootstrap.spec.ts:45:    expect(documentStub.documentElement.dataset.appReady).toBe('false')
+packages/vue-app-platform/src/bootstrap.spec.ts:46:    expect(documentStub.documentElement.dataset.runtimeLoading).toBe('true')
+packages/vue-app-platform/src/bootstrap.spec.ts:49:    expect(documentStub.documentElement.dataset.appReady).toBe('true')
+packages/vue-app-platform/src/bootstrap.spec.ts:50:    expect(documentStub.documentElement.dataset.runtimeLoading).toBe('false')
+packages/vue-charts/src/UseEcharts/useChartElementSize.spec.ts:38:      requestAnimationFrameMock as unknown as typeof globalThis.requestAnimationFrame,
+packages/vue-charts/src/UseEcharts/useChartElementSize.spec.ts:39:      cancelAnimationFrameMock as unknown as typeof globalThis.cancelAnimationFrame
+packages/vue-charts/src/UseEcharts/useChartElementSize.spec.ts:65:      requestAnimationFrameMock as unknown as typeof globalThis.requestAnimationFrame,
+packages/vue-charts/src/UseEcharts/useChartElementSize.spec.ts:66:      cancelAnimationFrameMock as unknown as typeof globalThis.cancelAnimationFrame
+packages/design-tokens/src/theme-engine/observability.ts:66:      console?: {
+packages/design-tokens/src/theme-engine/observability.ts:71:  ).console
+apps/desktop/src/main.ts:25:  if (typeof document !== 'undefined') {
+apps/desktop/src/main.ts:26:    document.documentElement.dataset.preloaderState = 'visible'
+apps/desktop/src/main.ts:43:  const preloader = document.getElementById('preloader-bg')
+apps/desktop/src/main.ts:48:  const container = document.createElement('div')
+apps/desktop/src/main.ts:54:  const title = document.createElement('p')
+apps/desktop/src/main.ts:59:  const detail = document.createElement('p')
+apps/desktop/src/main.ts:64:  const retryButton = document.createElement('button')
+apps/desktop/src/main.ts:74:  retryButton.addEventListener('click', () => {
+apps/desktop/src/main.ts:75:    window.location.reload()
+packages/vue-ui/src/ProTable/engine/engines/export.ts:55:  const link = document.createElement('a')
+packages/vue-ui/src/ProTable/engine/engines/export.ts:59:  document.body.appendChild(link)
+packages/vue-ui/src/ProTable/engine/engines/export.ts:61:  document.body.removeChild(link)
+apps/desktop/src/App.vue:2:  <div class="layout-screen layout-full bg-background text-foreground font-sans antialiased">
+apps/web-demo/src/router/utils/guardEffects.ts:45:    if (typeof document !== 'undefined') {
+apps/web-demo/src/router/utils/guardEffects.ts:46:      document.title = stableTitle
+apps/web-demo/src/router/utils/guardEffects.ts:56:  let routePageLoadingTimer: ReturnType<typeof setTimeout> | null = null
+apps/web-demo/src/router/utils/guardEffects.ts:57:  let routePageLoadingReleaseTimer: ReturnType<typeof setTimeout> | null = null
+apps/web-demo/src/router/utils/guardEffects.ts:64:    clearTimeout(routePageLoadingTimer)
+apps/web-demo/src/router/utils/guardEffects.ts:70:    clearTimeout(routePageLoadingReleaseTimer)
+apps/web-demo/src/router/utils/guardEffects.ts:79:      typeof document !== 'undefined' && document.getElementById('preloader-bg') !== null
+apps/web-demo/src/router/utils/guardEffects.ts:104:    routePageLoadingTimer = setTimeout(activateRoutePageLoading, ROUTE_PAGE_LOADING_DELAY_MS)
+apps/web-demo/src/router/utils/guardEffects.ts:115:    routePageLoadingReleaseTimer = setTimeout(() => {
+packages/vue-app-platform/src/preloadError.spec.ts:6:interface FakeWindow extends Pick<Window, 'addEventListener' | 'removeEventListener'> {
+packages/vue-app-platform/src/preloadError.spec.ts:7:  location: {
+packages/vue-app-platform/src/preloadError.spec.ts:34:      addEventListener(type: string, listener: EventListenerOrEventListenerObject) {
+packages/vue-app-platform/src/preloadError.spec.ts:37:      removeEventListener(type: string) {
+packages/vue-app-platform/src/preloadError.spec.ts:41:      location: {
+packages/vue-app-platform/src/preloadError.spec.ts:46:    vi.stubGlobal('window', fakeWindow)
+packages/vue-app-platform/src/preloadError.spec.ts:69:  it('returns a no-op cleanup when window is unavailable', () => {
+packages/vue-app-platform/src/preloadError.spec.ts:70:    vi.stubGlobal('window', undefined)
+packages/vue-hooks/src/directives/tap.spec.ts:57:    const el = document.createElement('div')
+packages/vue-hooks/src/directives/tap.spec.ts:66:    const el = document.createElement('div')
+packages/vue-hooks/src/directives/tap.spec.ts:74:    const el = document.createElement('div')
+packages/vue-charts/src/UseEcharts/UseEcharts.vue:65:const chartReadyTimer = ref<ReturnType<typeof globalThis.setTimeout> | null>(null)
+packages/vue-charts/src/UseEcharts/UseEcharts.vue:421:    globalThis.clearTimeout(chartReadyTimer.value)
+packages/vue-charts/src/UseEcharts/UseEcharts.vue:432:  chartReadyTimer.value = globalThis.setTimeout(() => {
+packages/vue-hooks/src/useAppElementSize.ts:14: * - targetRef 为 `false` 时：默认监听 `document.documentElement` 尺寸（全局视口）
+packages/vue-hooks/src/useAppElementSize.ts:31:  let observer: ResizeObserver | null = null
+packages/vue-hooks/src/useAppElementSize.ts:58:    if (typeof ResizeObserver === 'undefined') {
+packages/vue-hooks/src/useAppElementSize.ts:59:      // 环境不支持 ResizeObserver，仅初始化一次宽高，不做后续监听
+packages/vue-hooks/src/useAppElementSize.ts:71:    const ro = new ResizeObserver(entries => {
+packages/vue-hooks/src/useAppElementSize.ts:90:      // 直接监听 document.documentElement
+packages/vue-hooks/src/useAppElementSize.ts:91:      setupObserver(document.documentElement)
+packages/vue-app-platform/src/preloader.spec.ts:26:      documentElement: {
+packages/vue-app-platform/src/preloader.spec.ts:35:      document: documentStub,
+packages/vue-app-platform/src/preloader.spec.ts:39:    expect(documentStub.documentElement.dataset.appReady).toBe('true')
+packages/vue-app-platform/src/preloader.spec.ts:40:    expect(documentStub.documentElement.dataset.runtimeLoading).toBe('false')
+packages/vue-app-platform/src/preloader.spec.ts:41:    expect(documentStub.documentElement.dataset.preloaderState).toBe('hidden')
+packages/vue-app-platform/src/preloader.spec.ts:51:      documentElement: {
+packages/vue-app-platform/src/preloader.spec.ts:63:      document: documentStub,
+packages/vue-app-platform/src/preloader.spec.ts:67:    expect(documentStub.documentElement.dataset.appReady).toBe('false')
+packages/vue-app-platform/src/preloader.spec.ts:68:    expect(documentStub.documentElement.dataset.runtimeLoading).toBe('true')
+packages/vue-app-platform/src/preloader.spec.ts:69:    expect(documentStub.documentElement.dataset.preloaderState).toBe('hidden')
+packages/vue-charts/src/UseEcharts/echarts-render-core.ts:16:  requestAnimationFrame?: typeof globalThis.requestAnimationFrame
+packages/vue-charts/src/UseEcharts/echarts-render-core.ts:17:  cancelAnimationFrame?: typeof globalThis.cancelAnimationFrame
+packages/vue-charts/src/UseEcharts/echarts-render-core.ts:58:  const requestFrame = options.requestAnimationFrame ?? globalThis.requestAnimationFrame
+packages/vue-charts/src/UseEcharts/echarts-render-core.ts:59:  const cancelFrame = options.cancelAnimationFrame ?? globalThis.cancelAnimationFrame
+packages/vue-hooks/src/directives/swipe.spec.ts:58:    const el = document.createElement('div')
+packages/vue-hooks/src/directives/swipe.spec.ts:67:    const el = document.createElement('div')
+packages/vue-hooks/src/directives/swipe.spec.ts:76:    const el = document.createElement('div')
+packages/vue-hooks/src/directives/swipe.spec.ts:85:    const el = document.createElement('div')
+packages/vue-app-platform/src/themeRuntime.spec.ts:14:    const target = document.createElement('div')
+packages/vue-app-platform/src/themeRuntime.spec.ts:25:    const target = document.createElement('div')
+packages/vue-app-platform/src/preloadError.ts:11:  if (typeof window === 'undefined') {
+packages/vue-app-platform/src/preloadError.ts:15:  const storage = options.storage ?? window.sessionStorage
+packages/vue-app-platform/src/preloadError.ts:16:  const reload = options.reload ?? (() => window.location.reload())
+packages/vue-app-platform/src/preloadError.ts:17:  const logger = options.logger ?? console
+packages/vue-app-platform/src/preloadError.ts:32:  window.addEventListener('vite:preloadError', listener as EventListener)
+packages/vue-app-platform/src/preloadError.ts:35:    window.removeEventListener('vite:preloadError', listener as EventListener)
+packages/vue-hooks/src/directives/longPress.spec.ts:61:    const el = document.createElement('div')
+packages/vue-hooks/src/directives/longPress.spec.ts:70:    const el = document.createElement('div')
+packages/vue-hooks/src/directives/longPress.spec.ts:79:    const el = document.createElement('div')
+packages/vue-hooks/src/directives/longPress.spec.ts:87:    const el = document.createElement('div')
+packages/vue-ui/src/ProTable/engine/core/TableController.ts:86:  /** True when ProTable is in request mode (autonomous fetch). */
+packages/vue-ui/src/ProTable/engine/core/TableController.ts:127:      fetch: { ...FETCH_STATE_DEFAULTS },
+packages/vue-ui/src/ProTable/engine/core/TableController.ts:166:        // Legacy mode: emit @load for parent-driven fetch
+packages/vue-ui/src/ProTable/engine/core/TableController.ts:182:        // Request mode (standard pagination): auto-fetch on any state change
+packages/vue-ui/src/ProTable/engine/core/TableController.ts:204:            this.state.fetch = { ...this.state.fetch, hasMore: true }
+packages/vue-ui/src/ProTable/engine/core/TableController.ts:346:   * Internal fetch executor. Handles loading state, error, data assignment,
+packages/vue-ui/src/ProTable/engine/core/TableController.ts:361:    this.state.fetch = { ...this.state.fetch, loading: true, error: false, errorMessage: '' }
+packages/vue-ui/src/ProTable/engine/core/TableController.ts:374:      // Stale response guard: ignore if a newer fetch was started
+packages/vue-ui/src/ProTable/engine/core/TableController.ts:385:      this.state.fetch = {
+packages/vue-ui/src/ProTable/engine/core/TableController.ts:386:        ...this.state.fetch,
+packages/vue-ui/src/ProTable/engine/core/TableController.ts:396:      this.state.fetch = {
+packages/vue-ui/src/ProTable/engine/core/TableController.ts:397:        ...this.state.fetch,
+packages/vue-ui/src/ProTable/engine/core/TableController.ts:412:   * Trigger the initial fetch (called from ProTable onMounted when immediate=true).
+packages/vue-ui/src/ProTable/engine/core/TableController.ts:424:    if (this.state.fetch.loading || !this.state.fetch.hasMore) return
+packages/vue-ui/src/ProTable/engine/core/TableController.ts:425:    // In accumulate mode, page watch is not active — increment and fetch manually
+packages/vue-ui/src/ProTable/engine/core/TableController.ts:441:      this.state.fetch = { ...this.state.fetch, hasMore: true }
+packages/vue-ui/src/PrimeDialog/PrimeDialog.vue:254:if (typeof window !== 'undefined') {
+packages/vue-ui/src/PrimeDialog/PrimeDialog.vue:255:  useEventListener(window, 'locale-changed', handleLocaleChange)
+packages/vue-ui/src/PrimeDialog/PrimeDialog.vue:257:if (typeof document !== 'undefined') {
+packages/vue-ui/src/PrimeDialog/PrimeDialog.vue:258:  useEventListener(document, 'keydown', handleEscapeKeydown)
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:64:let memoryThrottleTimer: ReturnType<typeof setTimeout> | undefined
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:65:let memoryRestoreTimer: ReturnType<typeof setTimeout> | undefined
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:67:let memoryRestoreReleaseTimer: ReturnType<typeof setTimeout> | undefined
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:111:  memoryRestoreElement.removeEventListener('wheel', handleMemoryRestoreUserInterruption)
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:112:  memoryRestoreElement.removeEventListener('touchstart', handleMemoryRestoreUserInterruption)
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:113:  memoryRestoreElement.removeEventListener('pointerdown', handleMemoryRestoreUserInterruption)
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:121:  scrollEl.addEventListener('wheel', handleMemoryRestoreUserInterruption, { passive: true })
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:122:  scrollEl.addEventListener('touchstart', handleMemoryRestoreUserInterruption, { passive: true })
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:123:  scrollEl.addEventListener('pointerdown', handleMemoryRestoreUserInterruption, { passive: true })
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:128:  if (memoryRestoreTimer) clearTimeout(memoryRestoreTimer)
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:129:  if (memoryRestoreReleaseTimer) clearTimeout(memoryRestoreReleaseTimer)
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:130:  if (memoryRestoreRaf) cancelAnimationFrame(memoryRestoreRaf)
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:190:      memoryRestoreRaf = requestAnimationFrame(step)
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:203:  memoryRestoreRaf = requestAnimationFrame(step)
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:240:    memoryRestoreRaf = requestAnimationFrame(() => {
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:241:      memoryRestoreRaf = requestAnimationFrame(() => {
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:243:        memoryRestoreTimer = setTimeout(() => {
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:259:    clearTimeout(memoryThrottleTimer)
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:282:  memoryThrottleTimer = setTimeout(
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:411:  documentDark.value = globalThis.document?.documentElement.classList.contains('dark') ?? false
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:414:let darkObserver: MutationObserver | undefined
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:418:  if (props.dark === undefined && globalThis.document?.documentElement) {
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:419:    darkObserver = new MutationObserver(syncDocumentDark)
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:420:    darkObserver.observe(globalThis.document.documentElement, {
+packages/vue-ui/src/ProTable/engine/types/tableState.ts:42:  fetch: FetchState
+packages/vue-ui/src/Icons/Icons.vue:48:  console.warn(`[Icons] ${message}`)
+packages/vue-ui/src/PrimeDialog/useDialog.ts:30:const _pendingOpenTimers = new Map<string, ReturnType<typeof globalThis.setTimeout>>()
+packages/vue-ui/src/PrimeDialog/useDialog.ts:35:    globalThis.clearTimeout(timerId)
+packages/vue-ui/src/PrimeDialog/useDialog.ts:63:      const timerId = globalThis.setTimeout(() => {
+packages/vue-ui/src/PrimeDialog/useDialog.ts:105:      globalThis.clearTimeout(timerId)
+packages/vue-ui/src/ProForm/engine/utils/logger.ts:3:    console.error(`[ProForm Error]: ${msg}`, ...args)
+packages/vue-ui/src/ProForm/engine/utils/logger.ts:6:    console.warn(`[ProForm Warn]: ${msg}`, ...args)
+packages/vue-ui/src/ProTable/engine/types/props.ts:18: * The callback ProTable calls to fetch data.
+packages/vue-ui/src/ProTable/engine/types/props.ts:228:   * （如 `fetch(url, { signal })` 或 `axios.get(url, { signal })`）
+apps/web-demo/src/router/utils/helper.ts:32:    windowChannel = new BroadcastChannel('route-window-channel')
+apps/web-demo/src/router/utils/helper.ts:33:    windowChannel.addEventListener('message', e => {
+apps/web-demo/src/router/utils/helper.ts:34:      if (e.data?.type === 'window-closed') {
+apps/web-demo/src/router/utils/helper.ts:68:    windowChannel?.postMessage({ type: 'window-closed', key })
+apps/web-demo/src/router/utils/helper.ts:82:    win.addEventListener('beforeunload', () => {
+apps/web-demo/src/router/utils/helper.ts:86:      windowChannel?.postMessage({ type: 'window-closed', key })
+apps/web-demo/src/router/utils/helper.ts:93:if (typeof window !== 'undefined') {
+apps/web-demo/src/router/utils/helper.ts:107:  if (import.meta.env.VITE_ROUTER_MODE === 'hash') {
+apps/web-demo/src/router/utils/helper.ts:108:    const location = window.location
+apps/web-demo/src/router/utils/helper.ts:109:    const publicPath = import.meta.env.VITE_PUBLIC_PATH
+apps/web-demo/src/router/utils/helper.ts:110:    url = location.origin + publicPath + '#' + targetRoute.path
+apps/web-demo/src/router/utils/helper.ts:117:    const publicPath = import.meta.env.VITE_PUBLIC_PATH
+apps/web-demo/src/router/utils/helper.ts:139:  if (history.state?.back) {
+apps/web-demo/src/router/utils/helper.ts:193:    const urlPath = location.pathname
+apps/web-demo/src/router/utils/helper.ts:226:    router.push(import.meta.env.VITE_ROOT_REDIRECT)
+apps/web-demo/src/router/utils/helper.ts:264:      window.open(url, '_blank')
+apps/web-demo/src/router/utils/helper.ts:304:    const win = window.open(url, '_blank')
+apps/web-demo/src/router/utils/helper.ts:385:  if (!hasChildren && !item.name && item.path && import.meta.env.DEV) {
+apps/web-demo/src/router/utils/helper.ts:509:  return history.length
+packages/vue-charts/src/UseEcharts/useChartElementSize.ts:26:  requestAnimationFrameImpl: typeof globalThis.requestAnimationFrame = globalThis.requestAnimationFrame,
+packages/vue-charts/src/UseEcharts/useChartElementSize.ts:27:  cancelAnimationFrameImpl: typeof globalThis.cancelAnimationFrame = globalThis.cancelAnimationFrame
+packages/vue-charts/src/UseEcharts/useChartElementSize.ts:65:  let observer: ResizeObserver | null = null
+packages/vue-charts/src/UseEcharts/useChartElementSize.ts:87:    if (typeof ResizeObserver === 'undefined') return
+packages/vue-charts/src/UseEcharts/useChartElementSize.ts:89:    observer = new ResizeObserver(entries => {
+packages/vue-ui/src/CScrollbar/utils/types.ts:61:   * Defaults to the document `html.dark` class when omitted.
+packages/vue-ui/src/ProForm/engine/validation/ValidationEngine.ts:17:  private readonly validationTimers = new Map<string, ReturnType<typeof globalThis.setTimeout>>()
+packages/vue-ui/src/ProForm/engine/validation/ValidationEngine.ts:76:      globalThis.clearTimeout(existingTimer)
+packages/vue-ui/src/ProForm/engine/validation/ValidationEngine.ts:83:      const timerId = globalThis.setTimeout(async () => {
+packages/vue-ui/src/ProForm/engine/validation/ValidationEngine.ts:189:      globalThis.clearTimeout(timerId)
+packages/vue-ui/src/ProTable/VirtualGridRenderer.vue:144:      console.warn(
+packages/vue-ui/src/ProTable/VirtualGridRenderer.vue:303:    requestAnimationFrame(() => {
+packages/vue-ui/src/ProTable/VirtualGridRenderer.vue:304:      requestAnimationFrame(() => {
+packages/vue-ui/src/ProForm/engine/config.ts:62:   * ResizeObserver / 容器宽度返回 0 时的回退宽度
+packages/vue-ui/src/ProForm/engine/config.ts:72:   * - `index.vue` 内部对 ResizeObserver 回调做节流/防抖，避免窗口拖拽或容器抖动时频繁触发 `resize()`。
+packages/vue-ui/src/ProForm/engine/config.ts:109:   * - 降低 localStorage（或其它存储）写入频率，同时确保用户停止输入后能较快落盘。
+packages/vue-ui/src/CScrollbar/CScrollbar.spec.ts:93:    vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
+packages/vue-ui/src/CScrollbar/CScrollbar.spec.ts:98:    vi.stubGlobal('cancelAnimationFrame', (id: number) => {
+packages/vue-ui/src/ProForm/engine/core/FormController.ts:34:type TimerHandle = ReturnType<typeof globalThis.setTimeout>
+packages/vue-ui/src/ProForm/engine/core/FormController.ts:166:      globalThis.clearTimeout(timerId)
+packages/vue-ui/src/ProForm/engine/core/FormController.ts:305:        globalThis.clearTimeout(this.saveDraftTimer)
+packages/vue-ui/src/ProForm/engine/core/FormController.ts:308:      this.saveDraftTimer = globalThis.setTimeout(() => {
+packages/vue-ui/src/ProForm/engine/core/FormController.ts:696:      globalThis.clearTimeout(existingTimer)
+packages/vue-ui/src/ProForm/engine/core/FormController.ts:699:    const timerId = globalThis.setTimeout(() => {
+packages/vue-ui/src/ProForm/engine/core/FormController.ts:840:      globalThis.clearTimeout(this.saveDraftTimer)
+packages/vue-ui/src/ProForm/engine/core/FormController.ts:846:      globalThis.clearTimeout(timerId)
+apps/web-demo/src/utils/safeStorage/piniaSerializer.ts:31:        if (import.meta.env.DEV) {
+apps/web-demo/src/utils/safeStorage/piniaSerializer.ts:43:      if (import.meta.env.DEV) {
+apps/web-demo/src/utils/safeStorage/index.ts:1:export * from './crypto'
+packages/vue-ui/src/ProTable/ProTable.vue:184:  console.error(
+packages/vue-ui/src/ProTable/ProTable.vue:245:/** Resolved loading: request-mode uses internal fetch state, otherwise uses prop. */
+packages/vue-ui/src/ProTable/ProTable.vue:247:  ctrl.requestMode ? ctrl.state.fetch.loading : props.loading
+packages/vue-ui/src/ProTable/ProTable.vue:271:  // Request mode: trigger initial fetch
+packages/vue-ui/src/ProTable/ProTable.vue:428:  if (typeof document !== 'undefined') {
+packages/vue-ui/src/ProTable/ProTable.vue:429:    document.body.style.overflow = isFullscreen.value ? 'hidden' : ''
+packages/vue-ui/src/ProTable/ProTable.vue:434:  if (typeof document !== 'undefined') {
+packages/vue-ui/src/ProTable/ProTable.vue:435:    document.body.style.overflow = ''
+packages/vue-ui/src/ProTable/ProTable.vue:590:  /** Read-only: current fetch state (only meaningful in request mode) */
+packages/vue-ui/src/ProTable/ProTable.vue:591:  getFetchState: () => ({ ...ctrl.state.fetch }),
+packages/vue-ui/src/ProTable/ProTable.vue:609:          ? 'fixed inset-0 z-overlay h-screen w-screen m-0 flex flex-col gap-sm overflow-hidden rounded-none! bg-card p-md shadow-none'
+packages/vue-ui/src/ProTable/ProTable.vue:617:        <Transition name="pro-table-fetch-error">
+packages/vue-ui/src/ProTable/ProTable.vue:619:            v-if="ctrl.requestMode && ctrl.state.fetch.error"
+packages/vue-ui/src/ProTable/ProTable.vue:629:                {{ ctrl.state.fetch.errorMessage || t('proTable.requestFailed') }}
+packages/vue-ui/src/ProTable/ProTable.vue:860:.pro-table-fetch-error-enter-active,
+packages/vue-ui/src/ProTable/ProTable.vue:861:.pro-table-fetch-error-leave-active {
+packages/vue-ui/src/ProTable/ProTable.vue:869:.pro-table-fetch-error-enter-from,
+packages/vue-ui/src/ProTable/ProTable.vue:870:.pro-table-fetch-error-leave-to {
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:14:  if (typeof window === 'undefined') return undefined
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:15:  if (scope === 'local') return window.localStorage
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:16:  if (scope === 'session') return window.sessionStorage
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:38: * Safe-storage infrastructure boundary for bulk localStorage maintenance.
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:43:  if (typeof localStorage === 'undefined') return []
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:47:  for (let index = localStorage.length - 1; index >= 0; index -= 1) {
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:48:    const key = localStorage.key(index)
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:55:    localStorage.removeItem(key)
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:62:  if (typeof localStorage === 'undefined') return
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:63:  localStorage.setItem(key, value)
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:67:  if (typeof localStorage === 'undefined') return null
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:68:  return localStorage.getItem(key)
+apps/web-demo/src/views/login/components/HeaderActions.vue:90:  document.addEventListener('mousedown', onDocumentPointerDown, true)
+apps/web-demo/src/views/login/components/HeaderActions.vue:91:  window.addEventListener('keydown', onWindowKeydown)
+apps/web-demo/src/views/login/components/HeaderActions.vue:95:  document.removeEventListener('mousedown', onDocumentPointerDown, true)
+apps/web-demo/src/views/login/components/HeaderActions.vue:96:  window.removeEventListener('keydown', onWindowKeydown)
+apps/web-demo/src/utils/safeStorage/core.ts:4:import * as Crypto from './crypto'
+apps/web-demo/src/utils/safeStorage/core.ts:5:import { ENCRYPTION_FAILED } from './crypto'
+apps/web-demo/src/utils/safeStorage/core.ts:14: * ⚠️ 前端“加密”本质仍是客户端可见混淆，不是真正的 secret 管理。此设计仅防止 localStorage 裸奔。
+apps/web-demo/src/utils/safeStorage/core.ts:20:  const injected = import.meta.env.VITE_PUBLIC_STORAGE_OBFUSCATION_KEY?.trim()
+apps/web-demo/src/utils/safeStorage/core.ts:23:  if (typeof window !== 'undefined') {
+apps/web-demo/src/utils/safeStorage/core.ts:26:    // VITE_APP_TITLE is set at build time; document.title is the runtime fallback.
+apps/web-demo/src/utils/safeStorage/core.ts:27:    const appName = import.meta.env.VITE_APP_TITLE || document?.title || 'ccd'
+apps/web-demo/src/utils/safeStorage/core.ts:28:    return `obfs:${window.location.origin}:${appName}:${STORAGE_KEY_VERSION}`
+apps/web-demo/src/utils/safeStorage/core.ts:32:  if (!import.meta.env.PROD) {
+apps/web-demo/src/utils/safeStorage/core.ts:46:if (import.meta.env.PROD && typeof window !== 'undefined') {
+apps/web-demo/src/utils/safeStorage/core.ts:47:  const injected = import.meta.env.VITE_PUBLIC_STORAGE_OBFUSCATION_KEY?.trim()
+apps/web-demo/src/utils/safeStorage/core.ts:64:  const prev = import.meta.env.VITE_PUBLIC_STORAGE_OBFUSCATION_KEY_PREVIOUS?.trim()
+packages/vue-ui/src/ProForm/index.vue:107:    console.warn('[ProForm] schema.fields is empty or missing — form will render nothing.')
+apps/web-demo/src/utils/safeStorage/crypto.ts:2:import { AES, HmacSHA256, Utf8 } from 'crypto-es'
+apps/web-demo/src/utils/safeStorage/crypto.ts:10: * Compute HMAC-SHA256 using Web Crypto API (browser) with crypto-es fallback.
+apps/web-demo/src/utils/safeStorage/crypto.ts:14:  if (typeof crypto !== 'undefined' && crypto.subtle) {
+apps/web-demo/src/utils/safeStorage/crypto.ts:16:    const key = await crypto.subtle.importKey(
+apps/web-demo/src/utils/safeStorage/crypto.ts:23:    const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(data))
+apps/web-demo/src/utils/safeStorage/crypto.ts:32: * Synchronous HMAC-SHA256 via crypto-es.
+apps/web-demo/src/utils/safeStorage/crypto.ts:41: * **注意：** crypto-es 的 AES.encrypt/decrypt 底层是同步实现，
+apps/web-demo/src/utils/safeStorage/crypto.ts:43: * 当 Web Crypto 不可用时（如旧浏览器/SSR），回退到同步 crypto-es HMAC，
+apps/web-demo/src/utils/safeStorage/crypto.ts:46: * - crypto-es 会自动生成随机 Salt 和 IV，并将其编码到字符串中
+apps/web-demo/src/utils/safeStorage/crypto.ts:71: * **注意：** 同 encrypt，crypto-es 底层同步实现，async 仅为 HMAC Web Crypto 路径。
+apps/web-demo/src/utils/runtime/e2e.ts:18:  if (typeof document === 'undefined') {
+apps/web-demo/src/utils/runtime/e2e.ts:22:  const htmlMode = document.documentElement.dataset.e2eMode
+apps/web-demo/src/utils/runtime/e2e.ts:27:  if (typeof window === 'undefined') {
+apps/web-demo/src/utils/runtime/e2e.ts:31:  const queryMode = resolveRuntimeE2EModeFromLocation(window.location.search)
+apps/web-demo/src/utils/runtime/e2e.ts:37:    return normalizeRuntimeE2EMode(window.localStorage.getItem(RUNTIME_STORAGE_KEYS.e2eMode))
+apps/web-demo/src/utils/runtime/e2e.ts:48:  if (typeof document === 'undefined') {
+apps/web-demo/src/utils/runtime/e2e.ts:52:  if (document.documentElement.dataset.e2ePreloaderHold === 'true') {
+apps/web-demo/src/utils/runtime/e2e.ts:56:  if (typeof window === 'undefined') {
+apps/web-demo/src/utils/runtime/e2e.ts:60:  const params = new URLSearchParams(window.location.search)
+apps/web-demo/src/utils/runtime/e2e.ts:68:  if (typeof window === 'undefined') {
+apps/web-demo/src/utils/runtime/e2e.ts:72:  if (typeof window.performance !== 'undefined') {
+apps/web-demo/src/utils/runtime/e2e.ts:73:    window.performance.mark(name)
+apps/web-demo/src/utils/runtime/e2e.ts:76:  window.dispatchEvent(
+apps/web-demo/src/constants/router.ts:12:export const AUTH_ENABLED = import.meta.env.VITE_AUTH_ENABLED !== 'false'
+apps/web-demo/src/main.ts:29:  if (typeof document !== 'undefined') preload()
+apps/web-demo/src/main.ts:54:  const preloader = document.getElementById('preloader-bg')
+apps/web-demo/src/main.ts:58:    const container = document.createElement('div')
+apps/web-demo/src/main.ts:64:    const title = document.createElement('p')
+apps/web-demo/src/main.ts:69:    const detail = document.createElement('p')
+apps/web-demo/src/main.ts:74:    const retryButton = document.createElement('button')
+apps/web-demo/src/main.ts:84:    retryButton.addEventListener('click', () => {
+apps/web-demo/src/main.ts:85:      window.location.reload()
+apps/web-demo/src/utils/deviceSync.ts:19: * 使用 screen.width/height（物理屏幕尺寸），与 device.ts:initHardwareInfo 对齐
+apps/web-demo/src/utils/deviceSync.ts:22:  if (typeof navigator === 'undefined' || typeof window === 'undefined') return 'PC'
+apps/web-demo/src/utils/deviceSync.ts:23:  const ua: string = navigator.userAgent
+apps/web-demo/src/utils/deviceSync.ts:24:  const screenShortSide: number = Math.min(window.screen.width, window.screen.height)
+apps/web-demo/src/utils/deviceSync.ts:30:  const isIPadOS: boolean = isMac && navigator.maxTouchPoints > 1
+apps/web-demo/src/utils/deviceSync.ts:43:  if (typeof navigator === 'undefined') return 'Unknown'
+apps/web-demo/src/utils/deviceSync.ts:44:  const ua: string = navigator.userAgent
+apps/web-demo/src/utils/deviceSync.ts:45:  const isIPadOS: boolean = /Macintosh/i.test(ua) && navigator.maxTouchPoints > 1
+apps/web-demo/src/utils/deviceSync.ts:60:  if (typeof window === 'undefined') return 'xs'
+apps/web-demo/src/utils/deviceSync.ts:61:  const w: number = width ?? window.innerWidth
+apps/web-demo/src/utils/safeStorage/piniaSerializer.spec.ts:16:    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+apps/web-demo/src/utils/safeStorage/piniaSerializer.spec.ts:27:    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+apps/web-demo/src/constants/mock.ts:8:  import.meta.env.DEV || import.meta.env.VITE_DEMO_MOCK_ENABLED === 'true'
+apps/web-demo/src/views/login/composables/useLoginSubmit.ts:59:      const fallbackPath = import.meta.env.VITE_ROOT_REDIRECT || '/'
+apps/web-demo/src/views/login/composables/useLoginSubmit.ts:71:      if (window.$toast?.dangerIn) {
+apps/web-demo/src/views/login/composables/useLoginSubmit.ts:72:        window.$toast.dangerIn('top-center', t('login.errorTitle'), message)
+apps/web-demo/src/locales/index.ts:145:  missingWarn: import.meta.env.VITE_APP_ENV === 'development',
+apps/web-demo/src/locales/index.ts:146:  fallbackWarn: import.meta.env.VITE_APP_ENV === 'development',
+apps/web-demo/src/locales/index.ts:166:    document.documentElement.lang = locale
+apps/web-demo/src/locales/index.ts:170:    document.documentElement.dir = localeInfo?.direction || 'ltr'
+apps/web-demo/src/views/login/index.vue:32:    class="layout-screen relative isolate select-none bg-background text-foreground"
+apps/web-demo/src/constants/http.ts:2:const timeout = Number(import.meta.env.VITE_API_TIMEOUT) || 10000
+apps/web-demo/src/utils/http/instance.ts:7:import adapterFetch from 'alova/fetch'
+apps/web-demo/src/utils/http/instance.ts:8:import type { FetchRequestInit } from 'alova/fetch'
+apps/web-demo/src/utils/http/instance.ts:28:    import.meta.env.VITE_APP_ENV !== 'development' &&
+apps/web-demo/src/utils/http/instance.ts:29:    import.meta.env.VITE_APP_ENV !== 'production'
+apps/web-demo/src/utils/http/instance.ts:31:    errors.push(t('http.config.invalidAppEnv', { env: import.meta.env.VITE_APP_ENV }))
+apps/web-demo/src/utils/http/instance.ts:56:    import.meta.env.VITE_APP_ENV === 'development' ? '/api' : import.meta.env.VITE_API_BASE_URL,
+apps/web-demo/src/utils/http/instance.ts:58:  // 使用 fetch 作为请求适配器
+apps/web-demo/src/stores/modules/session/user.ts:128:      const basePrefix = `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-`
+apps/web-demo/src/stores/modules/session/user.ts:158:    key: `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-user`,
+apps/web-demo/src/stores/modules/session/user.ts:159:    storage: localStorage,
+apps/web-demo/src/utils/http/requestLayer.spec.ts:338:          signal.addEventListener(
+apps/web-demo/src/utils/http/requestLayer.spec.ts:394:        { label: 'session storage', pattern: /\b(?:localStorage|sessionStorage)\b/ },
+apps/web-demo/src/api/system/system.api.ts:70:  await new Promise(resolve => setTimeout(resolve, 100))
+apps/web-demo/src/plugins/modules/proform.ts:22:    import.meta.env.VITE_PUBLIC_STORAGE_OBFUSCATION_KEY
+apps/web-demo/src/plugins/modules/proform.ts:34:    getStorage: () => (typeof window === 'undefined' ? undefined : window.localStorage),
+apps/web-demo/src/plugins/modules/proform.ts:35:    pack: data => packDataSync(data, import.meta.env.VITE_PUBLIC_STORAGE_OBFUSCATION_KEY),
+apps/web-demo/src/constants/size.ts:4:  const prefix = import.meta.env?.VITE_PINIA_PERSIST_KEY_PREFIX?.trim()
+apps/web-demo/src/constants/size.ts:15:  if (import.meta.env?.MODE === 'test') {
+apps/web-demo/src/constants/size.ts:19:  return import.meta.env?.DEV ? 'app-template-storage-dev-size' : 'ccd-storage-size'
+apps/web-demo/src/stores/modules/system/theme.spec.ts:14:    addEventListener: (type: string, listener: () => void) => void
+apps/web-demo/src/stores/modules/system/theme.spec.ts:15:    removeEventListener: (type: string, listener: () => void) => void
+apps/web-demo/src/stores/modules/system/theme.spec.ts:78:      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+apps/web-demo/src/stores/modules/system/theme.spec.ts:143:  describe('init/dispose — matchMedia lifecycle', () => {
+apps/web-demo/src/stores/modules/system/theme.spec.ts:148:        addEventListener: addSpy,
+apps/web-demo/src/stores/modules/system/theme.spec.ts:149:        removeEventListener: removeSpy,
+apps/web-demo/src/stores/modules/system/theme.spec.ts:167:        addEventListener: addSpy,
+apps/web-demo/src/stores/modules/system/theme.spec.ts:168:        removeEventListener: vi.fn(),
+apps/web-demo/src/stores/modules/session/permission.spec.ts:382:    it('creates window metadata and returns key', () => {
+apps/web-demo/src/stores/modules/session/permission.spec.ts:391:    it('updates existing window on re-register', () => {
+apps/web-demo/src/stores/modules/session/permission.spec.ts:400:    it('marks window as closed', () => {
+apps/web-demo/src/utils/date/dateUtils.ts:108:      console.warn(`Failed to load locale: ${locale}`, error)
+apps/web-demo/src/utils/date/dateUtils.ts:154:          console.warn('DateUtils locale change listener error:', error)
+apps/web-demo/src/utils/date/dateUtils.ts:158:      console.warn('Failed to sync with framework locale:', error)
+apps/web-demo/src/utils/date/dateUtils.ts:176:          console.warn('DateUtils timezone change listener error:', error)
+apps/web-demo/src/utils/date/dateUtils.ts:180:      console.warn('Failed to sync with framework timezone:', error)
+apps/web-demo/src/utils/date/dateUtils.ts:329:        if (typeof window !== 'undefined' && window.$i18n) {
+apps/web-demo/src/utils/date/dateUtils.ts:331:            const i18n = window.$i18n
+apps/web-demo/src/utils/date/dateUtils.ts:375:      console.error('DateUtils.coreFormat error:', error)
+apps/web-demo/src/utils/date/dateUtils.ts:387:      console.warn(`Locale ${locale} not loaded. Use setLocale() to load it first.`)
+apps/web-demo/src/utils/date/dateUtils.ts:553:      console.error('DateUtils.formatTimestamp error:', error)
+apps/web-demo/src/utils/date/dateUtils.ts:588:      console.error('DateUtils.formatTimestampAdvanced error:', error)
+apps/web-demo/src/utils/date/dateUtils.ts:773:      console.error('DateUtils.formatTimestampAdvancedAsync error:', error)
+apps/web-demo/src/utils/date/dateUtils.ts:834:      console.warn('DateUtils.safeParse error:', error)
+apps/web-demo/src/utils/date/dateUtils.ts:952:        console.warn(`Failed to format date at index ${index}:`, error)
+apps/web-demo/src/utils/date/dateUtils.ts:993:        console.warn(`Failed to process date at index ${index}:`, error)
+apps/web-demo/src/utils/date/dateUtils.ts:1018:      console.error('DateUtils.fromNow error:', error)
+apps/web-demo/src/utils/date/dateUtils.ts:1034:      console.error('DateUtils.fromNowWithLocale error:', error)
+apps/web-demo/src/utils/date/dateUtils.ts:1054:      console.error('DateUtils.fromDate error:', error)
+apps/web-demo/src/constants/runtime.ts:21:/** localStorage key prefixes used by ProForm persistence (shared between DraftStorage and logout cleanup) */
+apps/web-demo/src/stores/modules/system/locale.spec.ts:66:      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+apps/web-demo/src/stores/modules/system/theme.ts:20:// 模块级变量持有 handler 引用，确保 removeEventListener 可精确移除同一函数引用
+apps/web-demo/src/stores/modules/system/theme.ts:85:        console.warn(
+apps/web-demo/src/stores/modules/system/theme.ts:121:        console.warn(`[Theme Store] 未找到预设 ${this.themeName}，已自动恢复默认主题`)
+apps/web-demo/src/stores/modules/system/theme.ts:132:        localStorage.setItem(RUNTIME_STORAGE_KEYS.themeMode, this.mode)
+apps/web-demo/src/stores/modules/system/theme.ts:148:      mediaQuery.addEventListener('change', _themeMediaQueryHandler)
+apps/web-demo/src/stores/modules/system/theme.ts:153:     * 清理 matchMedia 监听器。
+apps/web-demo/src/stores/modules/system/theme.ts:158:        getSystemDarkModeQuery()?.removeEventListener('change', _themeMediaQueryHandler)
+apps/web-demo/src/stores/modules/system/theme.ts:165:    key: `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-theme`,
+apps/web-demo/src/stores/modules/system/theme.ts:166:    storage: localStorage,
+apps/web-demo/src/utils/date/timezone.ts:26:  if (typeof window === 'undefined' || typeof fetch === 'undefined') {
+apps/web-demo/src/utils/date/timezone.ts:34:    const timeoutId = setTimeout(() => controller.abort(), timeout)
+apps/web-demo/src/utils/date/timezone.ts:36:      const response = await fetch(url, {
+apps/web-demo/src/utils/date/timezone.ts:40:      clearTimeout(timeoutId)
+apps/web-demo/src/utils/date/timezone.ts:43:      clearTimeout(timeoutId)
+apps/web-demo/src/utils/date/timezone.ts:70:              console.warn('[tzdb] load failed from', url, error.message)
+apps/web-demo/src/utils/date/timezone.ts:76:      console.info(
+apps/web-demo/src/utils/date/timezone.ts:80:      console.warn('[tzdb] 加载时区数据时发生未知错误:', error)
+apps/web-demo/src/plugins/modules/errorHandler.spec.ts:15:    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+apps/web-demo/src/plugins/modules/errorHandler.spec.ts:19:    window.dispatchEvent(new ErrorEvent('error', { message: 'script failed' }))
+apps/web-demo/src/plugins/modules/errorHandler.spec.ts:32:  it('mutes ResizeObserver loop noise', () => {
+apps/web-demo/src/plugins/modules/errorHandler.spec.ts:34:    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+apps/web-demo/src/plugins/modules/errorHandler.spec.ts:36:      message: 'ResizeObserver loop limit exceeded',
+apps/web-demo/src/plugins/modules/errorHandler.spec.ts:41:    window.dispatchEvent(event)
+apps/web-demo/src/stores/modules/system/size.spec.ts:91:      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+apps/web-demo/src/stores/modules/system/layout.ts:368:      console.warn(
+apps/web-demo/src/stores/modules/system/layout.ts:384:      console.warn(
+apps/web-demo/src/stores/modules/system/layout.ts:457:    key: `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-layout`,
+apps/web-demo/src/stores/modules/system/layout.ts:458:    storage: localStorage,
+apps/web-demo/src/stores/modules/system/size.ts:37:        console.warn(`[Size Store] 无效尺寸 ${name}，已重置为默认`)
+apps/web-demo/src/stores/modules/system/size.ts:63:    storage: localStorage,
+apps/web-demo/src/stores/modules/session/permission.ts:385:    key: `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-permission`,
+apps/web-demo/src/stores/modules/session/permission.ts:386:    storage: localStorage,
+apps/web-demo/src/utils/http/methods.ts:35:  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+apps/web-demo/src/utils/http/methods.ts:36:    return crypto.randomUUID()
+apps/web-demo/src/utils/http/methods.ts:150:      const timeoutId = setTimeout(() => {
+apps/web-demo/src/utils/http/methods.ts:175:            clearTimeout(timeoutId)
+apps/web-demo/src/utils/http/methods.ts:181:            clearTimeout(timeoutId)
+apps/web-demo/src/utils/http/methods.ts:318:      await new Promise(r => setTimeout(r, waitMs))
+apps/web-demo/src/utils/http/methods.ts:388:      await new Promise(resolve => setTimeout(resolve, delay))
+apps/web-demo/src/utils/http/methods.ts:435: * **Infrastructure exception**: Uses native `fetch` because Alova does not expose
+apps/web-demo/src/utils/http/methods.ts:453:  // const deduplicate = config?.deduplicate !== false // Not used in raw fetch
+apps/web-demo/src/utils/http/methods.ts:488:    const response = await fetch(`${fullUrl}${queryString}`, {
+apps/web-demo/src/utils/http/methods.ts:743:  const downloadUrl = window.URL.createObjectURL(blob)
+apps/web-demo/src/utils/http/methods.ts:745:    const link = document.createElement('a')
+apps/web-demo/src/utils/http/methods.ts:748:    document.body.appendChild(link)
+apps/web-demo/src/utils/http/methods.ts:750:    document.body.removeChild(link)
+apps/web-demo/src/utils/http/methods.ts:752:    window.URL.revokeObjectURL(downloadUrl)
+apps/web-demo/src/stores/modules/system/device.ts:23:let lastResizeViewportWidth = typeof window === 'undefined' ? 0 : window.innerWidth
+apps/web-demo/src/stores/modules/system/device.ts:24:let lastResizeViewportHeight = typeof window === 'undefined' ? 0 : window.innerHeight
+apps/web-demo/src/stores/modules/system/device.ts:40:const INITIAL_WIDTH: number = typeof window === 'undefined' ? 0 : window.innerWidth
+apps/web-demo/src/stores/modules/system/device.ts:41:const INITIAL_HEIGHT: number = typeof window === 'undefined' ? 0 : window.innerHeight
+apps/web-demo/src/stores/modules/system/device.ts:53:    pixelRatio: typeof window === 'undefined' ? 1 : window.devicePixelRatio || 1,
+apps/web-demo/src/stores/modules/system/device.ts:54:    screenWidth: typeof window === 'undefined' ? 0 : window.screen.width,
+apps/web-demo/src/stores/modules/system/device.ts:55:    screenHeight: typeof window === 'undefined' ? 0 : window.screen.height,
+apps/web-demo/src/stores/modules/system/device.ts:88:      (typeof window !== 'undefined' && 'ontouchstart' in window),
+apps/web-demo/src/stores/modules/system/device.ts:142:      const pageW = window.innerWidth
+apps/web-demo/src/stores/modules/system/device.ts:143:      const pageH = window.innerHeight
+apps/web-demo/src/stores/modules/system/device.ts:147:      this.screenWidth = window.screen.width
+apps/web-demo/src/stores/modules/system/device.ts:148:      this.screenHeight = window.screen.height
+apps/web-demo/src/stores/modules/system/device.ts:149:      this.pixelRatio = window.devicePixelRatio || 1
+apps/web-demo/src/stores/modules/system/device.ts:170:      if (typeof window === 'undefined') {
+apps/web-demo/src/stores/modules/system/device.ts:181:      lastResizeViewportWidth = window.innerWidth
+apps/web-demo/src/stores/modules/system/device.ts:182:      lastResizeViewportHeight = window.innerHeight
+apps/web-demo/src/stores/modules/system/device.ts:185:      let resizeIdleTimer: ReturnType<typeof setTimeout> | undefined
+apps/web-demo/src/stores/modules/system/device.ts:187:        const w = window.innerWidth
+apps/web-demo/src/stores/modules/system/device.ts:188:        const h = window.innerHeight
+apps/web-demo/src/stores/modules/system/device.ts:204:        if (resizeIdleTimer !== undefined) clearTimeout(resizeIdleTimer)
+apps/web-demo/src/stores/modules/system/device.ts:205:        resizeIdleTimer = setTimeout(() => {
+apps/web-demo/src/stores/modules/system/device.ts:213:        viewportRafId = window.requestAnimationFrame(() => {
+apps/web-demo/src/stores/modules/system/device.ts:233:        if (document.visibilityState === 'visible') {
+apps/web-demo/src/stores/modules/system/device.ts:239:        useEventListener(window, 'resize', markResizing),
+apps/web-demo/src/stores/modules/system/device.ts:240:        useEventListener(window, 'resize', handleResize),
+apps/web-demo/src/stores/modules/system/device.ts:241:        useEventListener(window, 'orientationchange', handleImmediateViewportSync),
+apps/web-demo/src/stores/modules/system/device.ts:242:        useEventListener(window, 'pageshow', handleImmediateViewportSync),
+apps/web-demo/src/stores/modules/system/device.ts:243:        useEventListener(document, 'visibilitychange', handleVisibility),
+apps/web-demo/src/stores/modules/system/device.ts:246:      if (window.visualViewport) {
+apps/web-demo/src/stores/modules/system/device.ts:248:          useEventListener(window.visualViewport, 'resize', handleVisualViewportResize)
+apps/web-demo/src/stores/modules/system/device.ts:251:          useEventListener(window.visualViewport, 'scroll', handleVisualViewportResize)
+apps/web-demo/src/stores/modules/system/device.ts:257:        if (resizeIdleTimer !== undefined) clearTimeout(resizeIdleTimer)
+apps/web-demo/src/stores/modules/system/device.ts:259:          window.cancelAnimationFrame(viewportRafId)
+apps/web-demo/src/utils/http/connection.ts:13:  private healthCheckTimer?: ReturnType<typeof setInterval>
+apps/web-demo/src/utils/http/connection.ts:14:  private reconnectTimer?: ReturnType<typeof setTimeout>
+apps/web-demo/src/utils/http/connection.ts:30:      isConnected: navigator.onLine,
+apps/web-demo/src/utils/http/connection.ts:32:      lastConnectedAt: navigator.onLine ? new Date() : undefined,
+apps/web-demo/src/utils/http/connection.ts:33:      disconnectReason: navigator.onLine ? undefined : t('http.connection.networkUnavailable'),
+apps/web-demo/src/utils/http/connection.ts:114:      if (!navigator.onLine) {
+apps/web-demo/src/utils/http/connection.ts:164:        clearTimeout(this.reconnectTimer)
+apps/web-demo/src/utils/http/connection.ts:166:      this.reconnectTimer = setTimeout(() => {
+apps/web-demo/src/utils/http/connection.ts:178:      return navigator.onLine
+apps/web-demo/src/utils/http/connection.ts:183:      const timeoutId: ReturnType<typeof setTimeout> = setTimeout(
+apps/web-demo/src/utils/http/connection.ts:187:      await fetch(this.config.healthCheckUrl, {
+apps/web-demo/src/utils/http/connection.ts:192:      clearTimeout(timeoutId)
+apps/web-demo/src/utils/http/connection.ts:207:    this.healthCheckTimer = setInterval(async () => {
+apps/web-demo/src/utils/http/connection.ts:232:      clearInterval(this.healthCheckTimer)
+apps/web-demo/src/utils/http/connection.ts:277:    window.addEventListener('online', handleOnline)
+apps/web-demo/src/utils/http/connection.ts:278:    window.addEventListener('offline', handleOffline)
+apps/web-demo/src/utils/http/connection.ts:282:      window.removeEventListener('online', handleOnline)
+apps/web-demo/src/utils/http/connection.ts:283:      window.removeEventListener('offline', handleOffline)
+apps/web-demo/src/utils/http/connection.ts:291:    return new Promise(resolve => setTimeout(resolve, ms))
+apps/web-demo/src/utils/http/connection.ts:319:      clearTimeout(this.reconnectTimer)
+apps/web-demo/src/stores/modules/system/locale.ts:58:        console.warn(
+apps/web-demo/src/stores/modules/system/locale.ts:79:          // 仍保留 window 事件作为过渡兼容层（供旧代码监听）
+apps/web-demo/src/stores/modules/system/locale.ts:80:          window.dispatchEvent(
+apps/web-demo/src/stores/modules/system/locale.ts:87:        // 3. 保留原有的 window 事件，确保过渡期间旧逻辑仍然可用
+apps/web-demo/src/stores/modules/system/locale.ts:88:        window.dispatchEvent(
+apps/web-demo/src/stores/modules/system/locale.ts:99:        console.error('Failed to switch locale:', error)
+apps/web-demo/src/stores/modules/system/locale.ts:115:      // 初始化时，通过 mitt 与 window 双通道同步 locale 与 timezone
+apps/web-demo/src/stores/modules/system/locale.ts:118:      window.dispatchEvent(
+apps/web-demo/src/stores/modules/system/locale.ts:128:        window.dispatchEvent(
+apps/web-demo/src/stores/modules/system/locale.ts:151:        // 保留 window 事件作为兼容
+apps/web-demo/src/stores/modules/system/locale.ts:152:        window.dispatchEvent(
+apps/web-demo/src/stores/modules/system/locale.ts:162:    key: `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-locale`,
+apps/web-demo/src/stores/modules/system/locale.ts:163:    storage: localStorage,
+apps/web-demo/src/stores/modules/system/layout.spec.ts:40:    it('closing showHeader caches and hides showLogo + showMenu', () => {
+apps/web-demo/src/stores/modules/system/layout.spec.ts:65:      // Close header (caches logo=true, menu=false)
+apps/web-demo/src/stores/modules/system/layout.spec.ts:79:    it('closing showBreadcrumb caches and hides showBreadcrumbIcon', () => {
+apps/web-demo/src/utils/http/interceptors.ts:121:  if (typeof document === 'undefined') return null
+apps/web-demo/src/utils/http/interceptors.ts:124:  const cookieMatch = document.cookie.match(/(?:XSRF-TOKEN|csrf-token|_csrf)=([^;]+)/)
+apps/web-demo/src/utils/http/interceptors.ts:128:  const meta = document.querySelector('meta[name="csrf-token"]')
+apps/web-demo/src/utils/http/interceptors.ts:357:    // TypeError with common fetch failure messages covers older browsers and Node.
+apps/web-demo/src/utils/http/interceptors.ts:361:        (errorMessage.includes('Failed to fetch') ||
+apps/web-demo/src/utils/http/interceptors.ts:362:          errorMessage.includes('fetch failed') ||
+apps/web-demo/src/utils/http/interceptors.ts:456:  } else if (error.message.includes('Failed to fetch')) {
+apps/web-demo/src/utils/http/interceptors.spec.ts:26:  vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+apps/web-demo/src/utils/http/interceptors.spec.ts:27:  vi.spyOn(console, 'error').mockImplementation(() => undefined)
+apps/web-demo/src/utils/http/interceptors.spec.ts:29:  // Provide a mock refresh executor so 401 tests don't hit real fetch
+apps/web-demo/src/utils/http/interceptors.spec.ts:124:  it('classifies Failed to fetch as NETWORK error', async () => {
+apps/web-demo/src/utils/http/interceptors.spec.ts:127:    vi.spyOn(response, 'text').mockRejectedValue(new TypeError('Failed to fetch'))
+apps/web-demo/src/plugins/modules/errorHandler.ts:6: * - 捕获浏览器级错误：window.onerror / window.unhandledrejection
+apps/web-demo/src/plugins/modules/errorHandler.ts:13:  const isProd = import.meta.env.PROD
+apps/web-demo/src/plugins/modules/errorHandler.ts:36:    if (!isProd || typeof window === 'undefined') return
+apps/web-demo/src/plugins/modules/errorHandler.ts:39:      if (window.$message?.danger) {
+apps/web-demo/src/plugins/modules/errorHandler.ts:40:        window.$message.danger('系统遇到问题，请刷新页面重试。')
+apps/web-demo/src/plugins/modules/errorHandler.ts:45:      if (window.$toast?.dangerIn) {
+apps/web-demo/src/plugins/modules/errorHandler.ts:46:        window.$toast.dangerIn('top-left', '系统错误', '系统遇到问题，请刷新页面重试。')
+apps/web-demo/src/plugins/modules/errorHandler.ts:80:  if (typeof window === 'undefined') {
+apps/web-demo/src/plugins/modules/errorHandler.ts:81:    // SSR 或非浏览器环境下不注册 window 级别监听
+apps/web-demo/src/plugins/modules/errorHandler.ts:88:  window.addEventListener(
+apps/web-demo/src/plugins/modules/errorHandler.ts:91:      // [Phase 13.11] Mute benign ResizeObserver layout warnings
+apps/web-demo/src/plugins/modules/errorHandler.ts:94:        msg.includes('ResizeObserver loop') ||
+apps/web-demo/src/plugins/modules/errorHandler.ts:95:        msg.includes('ResizeObserver loop limit exceeded')
+apps/web-demo/src/plugins/modules/errorHandler.ts:107:        const isResourceError = event.target && event.target !== window
+apps/web-demo/src/plugins/modules/errorHandler.ts:131:  window.addEventListener('unhandledrejection', event => {
+apps/web-demo/src/plugins/modules/errorHandler.ts:132:    // [Phase 13.11] Mute ResizeObserver if wrapped in a rejected promise
+apps/web-demo/src/plugins/modules/errorHandler.ts:134:    if (msg.includes('ResizeObserver loop')) return
+apps/web-demo/src/views/dashboard/index.vue:33:if (typeof window !== 'undefined') {
+apps/web-demo/src/views/dashboard/index.vue:34:  if (window.requestIdleCallback) {
+apps/web-demo/src/views/dashboard/index.vue:35:    window.requestIdleCallback(() => {
+apps/web-demo/src/stores/modules/system/device.spec.ts:21:    Object.defineProperty(window, 'innerWidth', { value: 1920, configurable: true, writable: true })
+apps/web-demo/src/stores/modules/system/device.spec.ts:22:    Object.defineProperty(window, 'innerHeight', {
+apps/web-demo/src/stores/modules/system/device.spec.ts:27:    Object.defineProperty(window, 'devicePixelRatio', {
+apps/web-demo/src/stores/modules/system/device.spec.ts:32:    Object.defineProperty(window, 'screen', {
+apps/web-demo/src/stores/modules/system/device.spec.ts:112:      Object.defineProperty(window, 'innerWidth', { value: 1920, configurable: true })
+apps/web-demo/src/stores/modules/system/device.spec.ts:113:      Object.defineProperty(window, 'innerHeight', { value: 1080, configurable: true })
+apps/web-demo/src/utils/theme/engine.spec.ts:325:  it('applies CSS variables to document root', () => {
+apps/web-demo/src/utils/theme/engine.spec.ts:392:    const root = document.documentElement
+apps/web-demo/src/utils/theme/lottieThemeUtils.ts:113: * 从 document.documentElement 读取指定 Token，转为 Lottie 可用的 [r,g,b,1]（0–1）。
+apps/web-demo/src/utils/theme/lottieThemeUtils.ts:114: * SSR 或 window 不存在时返回对应回退色。
+apps/web-demo/src/utils/theme/lottieThemeUtils.ts:117:  if (typeof window === 'undefined') return FALLBACKS[token]
+apps/web-demo/src/utils/theme/lottieThemeUtils.ts:120:  const raw = getComputedStyle(document.documentElement).getPropertyValue(cssVar).trim()
+apps/web-demo/src/utils/http/uploadManager.ts:25:  if (typeof crypto !== 'undefined' && crypto.subtle) {
+apps/web-demo/src/utils/http/uploadManager.ts:28:      const hashBuffer = await crypto.subtle.digest('SHA-256', buffer)
+apps/web-demo/src/utils/http/uploadManager.ts:113:    window.addEventListener('beforeunload', this.beforeUnloadHandler)
+apps/web-demo/src/utils/http/uploadManager.ts:122:      window.removeEventListener('beforeunload', this.beforeUnloadHandler)
+apps/web-demo/src/utils/http/uploadManager.ts:499:    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+apps/web-demo/src/utils/http/uploadManager.ts:500:      return `${UPLOAD_TASK_PREFIX}${crypto.randomUUID()}`
+apps/web-demo/src/utils/theme/sizeEngine.ts:95:  const root = document.documentElement
+apps/web-demo/src/utils/theme/sizeEngine.ts:153:  const root = document.documentElement
+apps/web-demo/src/utils/theme/sizeEngine.ts:289:  const root = document.documentElement
+apps/web-demo/src/utils/theme/sizeEngine.ts:311:  const root = document.documentElement
+apps/web-demo/src/utils/theme/sizeEngine.ts:367:  if (typeof document === 'undefined') return
+apps/web-demo/src/utils/theme/sizeEngine.ts:374:    raw = localStorage.getItem(SIZE_PERSIST_KEY)
+apps/web-demo/src/utils/theme/sizeEngine.ts:401:  const pixelRatio = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1
+apps/web-demo/src/utils/theme/engine.ts:68:    target: document.documentElement,
+apps/web-demo/src/utils/theme/engine.ts:69:    storage: localStorage,
+apps/web-demo/src/api/auth/auth.api.ts:65:  await new Promise(resolve => setTimeout(resolve, 500))
+apps/web-demo/src/api/auth/auth.api.ts:108:  await new Promise(resolve => setTimeout(resolve, 300))
+apps/web-demo/src/utils/http/types.ts:37:  enableCache?: boolean // 是否启用缓存（避免与 fetch cache 冲突）
+apps/web-demo/src/utils/theme/transitions.ts:40:  const maxX = Math.max(x, window.innerWidth - x)
+apps/web-demo/src/utils/theme/transitions.ts:41:  const maxY = Math.max(y, window.innerHeight - y)
+apps/web-demo/src/utils/theme/transitions.ts:50:  const maxX = Math.max(x, window.innerWidth - x)
+apps/web-demo/src/utils/theme/transitions.ts:51:  const maxY = Math.max(y, window.innerHeight - y)
+apps/web-demo/src/utils/theme/transitions.ts:60:  const rgbValue = getComputedStyle(document.documentElement).getPropertyValue(cssVar).trim()
+apps/web-demo/src/utils/theme/transitions.ts:68:    const fallback = getComputedStyle(document.documentElement)
+apps/web-demo/src/utils/theme/transitions.ts:116:  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false
+apps/web-demo/src/utils/theme/transitions.ts:117:  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+apps/web-demo/src/utils/theme/observability.ts:36:  return globalThis.__THEME_DEVTOOLS__ === true && !import.meta.env.PROD
+apps/web-demo/src/utils/theme/observability.ts:66:    console.warn(label, event)
+apps/web-demo/src/utils/theme/observability.ts:69:  console.info(label, event)
+apps/web-demo/src/utils/theme/mode.ts:4:  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+apps/web-demo/src/utils/theme/mode.ts:7:  systemDarkModeQuery ??= window.matchMedia('(prefers-color-scheme: dark)')
+apps/web-demo/src/utils/theme/mode.ts:26:  if (typeof document === 'undefined') return
+apps/web-demo/src/utils/theme/mode.ts:28:  const root = document.documentElement
+apps/web-demo/src/utils/http/policies/notificationPolicy.ts:6:  if (typeof window === 'undefined') return
+apps/web-demo/src/utils/http/policies/notificationPolicy.ts:8:  if (window.$message?.danger) {
+apps/web-demo/src/utils/http/policies/notificationPolicy.ts:9:    window.$message.danger(message, title)
+apps/web-demo/src/utils/http/policies/notificationPolicy.ts:13:  if (window.$toast?.dangerIn) {
+apps/web-demo/src/utils/http/policies/notificationPolicy.ts:14:    window.$toast.dangerIn('top-left', title, message)
+apps/web-demo/src/utils/http/policies/notificationPolicy.ts:33:    if (window.$message?.danger) {
+apps/web-demo/src/utils/http/policies/notificationPolicy.ts:34:      window.$message.danger(message, statusTitle)
+apps/web-demo/src/utils/http/policies/notificationPolicy.ts:35:    } else if (window.$toast?.dangerIn) {
+apps/web-demo/src/utils/http/policies/notificationPolicy.ts:36:      window.$toast.dangerIn('top-left', statusTitle, message)
+apps/web-demo/src/adapters/logger.adapter.ts:6:      globalThis.console.debug(message)
+apps/web-demo/src/adapters/logger.adapter.ts:10:    globalThis.console.debug(message, details)
+apps/web-demo/src/adapters/logger.adapter.ts:14:      globalThis.console.info(message)
+apps/web-demo/src/adapters/logger.adapter.ts:18:    globalThis.console.info(message, details)
+apps/web-demo/src/adapters/logger.adapter.ts:22:      globalThis.console.warn(message)
+apps/web-demo/src/adapters/logger.adapter.ts:26:    globalThis.console.warn(message, details)
+apps/web-demo/src/adapters/logger.adapter.ts:30:      globalThis.console.error(message)
+apps/web-demo/src/adapters/logger.adapter.ts:34:    globalThis.console.error(message, details)
+apps/web-demo/src/utils/http/policies/authRefreshPolicy.ts:28: * Fallback token refresh executor using raw `fetch`.
+apps/web-demo/src/utils/http/policies/authRefreshPolicy.ts:34:  const response = await fetch(REFRESH_ENDPOINT, {
+apps/web-demo/src/hooks/modules/useAuth.spec.ts:118:  window.$message = {
+apps/web-demo/src/hooks/modules/useAuth.spec.ts:134:    delete window.$message
+apps/web-demo/src/hooks/modules/useAuth.spec.ts:135:    delete window.$toast
+apps/web-demo/src/hooks/modules/useDateUtils.ts:325:      console.error('Failed to set DateUtils locale:', error)
+apps/web-demo/src/hooks/modules/useDateUtils.ts:337:      console.error('Failed to set DateUtils timezone:', error)
+apps/web-demo/src/hooks/modules/useLocale.ts:56:      console.error('Failed to switch locale:', error)
+apps/web-demo/src/hooks/modules/useHttpRequest.spec.ts:54:    setTimeout(() => {
+apps/web-demo/src/hooks/modules/usePermissionRoutes.ts:24:    const timer: ReturnType<typeof setTimeout> = setTimeout(
+apps/web-demo/src/hooks/modules/usePermissionRoutes.ts:30:        clearTimeout(timer)
+apps/web-demo/src/hooks/modules/usePermissionRoutes.ts:34:        clearTimeout(timer)
+apps/web-demo/src/hooks/modules/usePermissionRoutes.ts:52:        await new Promise<void>(resolve => setTimeout(resolve, delay))
+apps/web-demo/src/hooks/modules/usePermissionRoutes.ts:107:      console.error('🪒 Router: 获取动态路由失败，使用本地缓存:', error)
+apps/web-demo/src/hooks/layout/useLoading.ts:60:  const root = typeof document !== 'undefined' ? document.documentElement : null
+apps/web-demo/src/hooks/layout/useLoading.ts:61:  const el = typeof document !== 'undefined' ? document.getElementById('preloader-bg') : null
+apps/web-demo/src/hooks/layout/useLoading.ts:80:    setTimeout(() => {
+apps/web-demo/src/hooks/layout/useLoading.ts:89:    window.addEventListener(RUNTIME_E2E_EVENTS.releasePreloader, doFadeOut, { once: true })
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:56:  const overlay = document.createElement('div')
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:65:  document.body.appendChild(overlay)
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:75:    let fallbackTimer: ReturnType<typeof globalThis.setTimeout> | null = null
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:81:        globalThis.clearTimeout(fallbackTimer)
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:86:    overlay.addEventListener('transitionend', cleanup, { once: true })
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:87:    fallbackTimer = globalThis.setTimeout(cleanup, duration + 50)
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:93:  document.documentElement.style.setProperty('--theme-transition-duration', `${durationMs}ms`)
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:104:  const centerX = window.innerWidth / 2
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:105:  const centerY = window.innerHeight / 2
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:111:  document.documentElement.style.setProperty('--transition-x', `${centerX}px`)
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:112:  document.documentElement.style.setProperty('--transition-y', `${centerY}px`)
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:113:  document.documentElement.style.setProperty('--transition-radius', `${radius}px`)
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:123:  const root = document.documentElement
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:150:        globalThis.requestAnimationFrame(onFrame)
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:153:      globalThis.setTimeout(() => {
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:166:    globalThis.requestAnimationFrame(onFrame)
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:200:    const root = document.documentElement
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:210:    const root = document.documentElement
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:230:    void document.documentElement.offsetHeight
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:233:      localStorage.setItem(RUNTIME_STORAGE_KEYS.themeMode, targetMode)
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:292:    if (!document?.startViewTransition || visualE2EMode) {
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:322:    document.documentElement.setAttribute('data-transition', transitionModeToUse)
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:336:      document.documentElement.classList.add('theme-transition')
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:337:      document.documentElement.classList.add('is-view-transitioning')
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:338:      document.documentElement.classList.add('theme-transition-recovery') // 关键：提前添加
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:340:      const transition = document.startViewTransition(async () => {
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:358:        requestAnimationFrame(() => {
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:367:      document.documentElement.classList.remove('is-view-transitioning')
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:375:      console.error('Theme transition failed:', error)
+apps/web-demo/src/views/example/hooks/use-auth.vue:44:    window.$message?.danger(msg)
+apps/web-demo/src/views/example/hooks/use-auth.vue:57:    window.$message?.danger(msg)
+apps/web-demo/src/views/example/hooks/use-app-element-size.vue:176:            <div class="text-sm text-muted-foreground">改变容器尺寸（触发 ResizeObserver）</div>
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:21:  if (globalThis.localStorage) return globalThis.localStorage
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:39:  Object.defineProperty(globalThis, 'localStorage', {
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:52:    Object.defineProperty(window, 'matchMedia', {
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:59:        addEventListener: vi.fn(),
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:60:        removeEventListener: vi.fn(),
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:67:    Object.defineProperty(globalThis, 'requestAnimationFrame', {
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:76:    Object.defineProperty(globalThis, 'cancelAnimationFrame', {
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:83:    document.documentElement.className = ''
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:84:    document.documentElement.style.cssText = ''
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:85:    document.documentElement.dataset.themeTransitioning = 'false'
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:86:    document.documentElement.removeAttribute('data-transition')
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:112:    Object.defineProperty(document, 'startViewTransition', {
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:169:    expect(document.documentElement.dataset.themeTransitioning).toBe('false')
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:187:    Object.defineProperty(window, 'innerWidth', {
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:191:    Object.defineProperty(window, 'innerHeight', {
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:195:    Object.defineProperty(document, 'startViewTransition', {
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:217:    expect(document.documentElement.style.getPropertyValue('--transition-x')).toBe('600px')
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:218:    expect(document.documentElement.style.getPropertyValue('--transition-y')).toBe('400px')
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:219:    expect(document.documentElement.style.getPropertyValue('--transition-radius')).toBe(
+apps/web-demo/src/hooks/modules/useAuth.ts:94:  if (typeof window === 'undefined') return
+apps/web-demo/src/hooks/modules/useAuth.ts:108:  if (window.$message?.warn) {
+apps/web-demo/src/hooks/modules/useAuth.ts:109:    window.$message.warn(message, title)
+apps/web-demo/src/hooks/modules/useAuth.ts:113:  if (window.$toast?.dangerIn) {
+apps/web-demo/src/hooks/modules/useAuth.ts:114:    window.$toast.dangerIn('top-center', title, message)
+apps/web-demo/src/hooks/modules/useAuth.ts:189:        console.warn('[SystemPreferencesSync] Failed to load user preferences:', error)
+apps/web-demo/src/hooks/modules/useAuth.ts:269:      console.error('根据 token 恢复用户信息失败:', error)
+apps/web-demo/src/views/example/hooks/use-http-request.vue:19:// Card 3: Immediate fetch on mount (hook-level immediate)
+apps/web-demo/src/views/example/hooks/layout-page-title.vue:90:              手动刷新 useTitle 管理的 document.title
+apps/web-demo/src/hooks/layout/usePageTitle.ts:147:   * 这样 useTitle 就能响应式地更新 document.title
+apps/web-demo/src/types/env.d.ts:78:  readonly VITE_ROUTER_MODE: 'history' | 'hash'
+apps/web-demo/src/hooks/layout/useAdminTabs.ts:141:    return fixedTab?.path ?? (import.meta.env.VITE_ROOT_REDIRECT || '/dashboard')
+apps/web-demo/src/hooks/layout/useAdminTabs.ts:251:    document.addEventListener('click', closeContextMenu)
+apps/web-demo/src/hooks/layout/useAdminTabs.ts:252:    setTimeout(() => updateActiveTabPosition('auto'), 50)
+apps/web-demo/src/hooks/layout/useAdminTabs.ts:253:    setTimeout(() => updateActiveTabPosition('auto'), 300)
+apps/web-demo/src/hooks/layout/useAdminTabs.ts:257:    document.removeEventListener('click', closeContextMenu)
+apps/web-demo/src/hooks/layout/useNprogress.ts:40:let trickleTimer: ReturnType<typeof setInterval> | null = null
+apps/web-demo/src/hooks/layout/useNprogress.ts:41:let removeTimer: ReturnType<typeof setTimeout> | null = null
+apps/web-demo/src/hooks/layout/useNprogress.ts:54:  if (typeof document === 'undefined') return null
+apps/web-demo/src/hooks/layout/useNprogress.ts:56:  const existing = document.getElementById('nprogress')
+apps/web-demo/src/hooks/layout/useNprogress.ts:59:  const root = document.createElement('div')
+apps/web-demo/src/hooks/layout/useNprogress.ts:62:  const bar = document.createElement('div')
+apps/web-demo/src/hooks/layout/useNprogress.ts:66:  const peg = document.createElement('div')
+apps/web-demo/src/hooks/layout/useNprogress.ts:71:  document.body.appendChild(root)
+apps/web-demo/src/hooks/layout/useNprogress.ts:88:  clearInterval(trickleTimer)
+apps/web-demo/src/hooks/layout/useNprogress.ts:94:  trickleTimer = setInterval(() => {
+apps/web-demo/src/hooks/layout/useNprogress.ts:106:  if (typeof document === 'undefined') return
+apps/web-demo/src/hooks/layout/useNprogress.ts:107:  document.getElementById('nprogress')?.remove()
+apps/web-demo/src/hooks/layout/useNprogress.ts:140:      clearTimeout(removeTimer)
+apps/web-demo/src/hooks/layout/useNprogress.ts:156:    removeTimer = setTimeout(() => {
+apps/web-demo/src/hooks/layout/useNprogress.ts:189:      clearTimeout(removeTimer)
+apps/web-demo/src/types/systems/device.d.ts:49:    screen: {
+apps/web-demo/src/hooks/layout/useLoading.spec.ts:13:  if (globalThis.localStorage) return globalThis.localStorage
+apps/web-demo/src/hooks/layout/useLoading.spec.ts:31:  Object.defineProperty(globalThis, 'localStorage', {
+apps/web-demo/src/hooks/layout/useLoading.spec.ts:52:  document.body.innerHTML = ''
+apps/web-demo/src/hooks/layout/useLoading.spec.ts:53:  document.documentElement.removeAttribute('data-preloader-state')
+apps/web-demo/src/hooks/layout/useLoading.spec.ts:54:  document.documentElement.removeAttribute('data-app-ready')
+apps/web-demo/src/App.vue:16:if (typeof window !== 'undefined') {
+apps/web-demo/src/App.vue:39:    document.documentElement.classList.toggle('app-resizing', resizing)
+apps/web-demo/src/App.vue:47:  const key = new URLSearchParams(location.search).get('_windowKey')
+apps/web-demo/src/App.vue:57:  document.documentElement.classList.remove('app-resizing')
+apps/web-demo/src/App.vue:63:  <div class="layout-screen layout-full text-foreground font-sans antialiased">
+apps/web-demo/src/hooks/layout/useLayoutRuntime.ts:106:      window.cancelAnimationFrame(expandShellFrameId)
+apps/web-demo/src/hooks/layout/useLayoutRuntime.ts:110:      window.cancelAnimationFrame(expandShellCommitFrameId)
+apps/web-demo/src/hooks/layout/useLayoutRuntime.ts:218:      expandShellFrameId = window.requestAnimationFrame(() => {
+apps/web-demo/src/hooks/layout/useLayoutRuntime.ts:221:        expandShellCommitFrameId = window.requestAnimationFrame(() => {
+apps/web-demo/src/layouts/modules/LayoutRatio.vue:66:    class="layout-screen text-foreground center relative"
+apps/web-demo/src/layouts/modules/LayoutAdmin.tsx:198:          class="layout-screen flex flex-col relative overflow-hidden"
+apps/web-demo/src/layouts/components/LoadingLottie.vue:30:/** Lottie JSON 文件路径映射（public/ 目录，运行时 fetch 加载） */
+apps/web-demo/src/layouts/components/LoadingLottie.vue:32:  1: `${import.meta.env.BASE_URL}lottie/airplane.json`,
+apps/web-demo/src/layouts/components/LoadingLottie.vue:33:  2: `${import.meta.env.BASE_URL}lottie/loading-002.json`,
+apps/web-demo/src/layouts/components/LoadingLottie.vue:34:  3: `${import.meta.env.BASE_URL}lottie/loading-003.json`,
+apps/web-demo/src/layouts/components/LoadingLottie.vue:37:/** 内存缓存：同一 type 不重复 fetch */
+apps/web-demo/src/layouts/components/LoadingLottie.vue:62:    const res = await fetch(LOADING_JSON_URL[type])
+apps/web-demo/src/layouts/components/LoadingLottie.vue:67:    console.error(`Failed to load Lottie animation (type=${type}):`, e)
+apps/web-demo/src/views/example/components/icons/configs/iconLists.generated.ts:3:export const LUCIDE_ICONS: string[] = ["i-lucide-a-arrow-down","i-lucide-a-arrow-up","i-lucide-a-large-small","i-lucide-accessibility","i-lucide-activity","i-lucide-air-vent","i-lucide-airplay","i-lucide-alarm-clock","i-lucide-alarm-clock-check","i-lucide-alarm-clock-minus","i-lucide-alarm-clock-off","i-lucide-alarm-clock-plus","i-lucide-alarm-smoke","i-lucide-album","i-lucide-align-center","i-lucide-align-center-horizontal","i-lucide-align-center-vertical","i-lucide-align-end-horizontal","i-lucide-align-end-vertical","i-lucide-align-horizontal-distribute-center","i-lucide-align-horizontal-distribute-end","i-lucide-align-horizontal-distribute-start","i-lucide-align-horizontal-justify-center","i-lucide-align-horizontal-justify-end","i-lucide-align-horizontal-justify-start","i-lucide-align-horizontal-space-around","i-lucide-align-horizontal-space-between","i-lucide-align-justify","i-lucide-align-left","i-lucide-align-right","i-lucide-align-start-horizontal","i-lucide-align-start-vertical","i-lucide-align-vertical-distribute-center","i-lucide-align-vertical-distribute-end","i-lucide-align-vertical-distribute-start","i-lucide-align-vertical-justify-center","i-lucide-align-vertical-justify-end","i-lucide-align-vertical-justify-start","i-lucide-align-vertical-space-around","i-lucide-align-vertical-space-between","i-lucide-ambulance","i-lucide-ampersand","i-lucide-ampersands","i-lucide-amphora","i-lucide-anchor","i-lucide-angry","i-lucide-annoyed","i-lucide-antenna","i-lucide-anvil","i-lucide-aperture","i-lucide-app-window","i-lucide-app-window-mac","i-lucide-apple","i-lucide-archive","i-lucide-archive-restore","i-lucide-archive-x","i-lucide-area-chart","i-lucide-armchair","i-lucide-arrow-big-down","i-lucide-arrow-big-down-dash","i-lucide-arrow-big-left","i-lucide-arrow-big-left-dash","i-lucide-arrow-big-right","i-lucide-arrow-big-right-dash","i-lucide-arrow-big-up","i-lucide-arrow-big-up-dash","i-lucide-arrow-down","i-lucide-arrow-down-0-1","i-lucide-arrow-down-1-0","i-lucide-arrow-down-a-z","i-lucide-arrow-down-from-line","i-lucide-arrow-down-left","i-lucide-arrow-down-narrow-wide","i-lucide-arrow-down-right","i-lucide-arrow-down-to-dot","i-lucide-arrow-down-to-line","i-lucide-arrow-down-up","i-lucide-arrow-down-wide-narrow","i-lucide-arrow-down-z-a","i-lucide-arrow-left","i-lucide-arrow-left-from-line","i-lucide-arrow-left-right","i-lucide-arrow-left-to-line","i-lucide-arrow-right","i-lucide-arrow-right-from-line","i-lucide-arrow-right-left","i-lucide-arrow-right-to-line","i-lucide-arrow-up","i-lucide-arrow-up-0-1","i-lucide-arrow-up-1-0","i-lucide-arrow-up-a-z","i-lucide-arrow-up-down","i-lucide-arrow-up-from-dot","i-lucide-arrow-up-from-line","i-lucide-arrow-up-left","i-lucide-arrow-up-narrow-wide","i-lucide-arrow-up-right","i-lucide-arrow-up-to-line","i-lucide-arrow-up-wide-narrow","i-lucide-arrow-up-z-a","i-lucide-arrows-up-from-line","i-lucide-asterisk","i-lucide-at-sign","i-lucide-atom","i-lucide-audio-lines","i-lucide-audio-waveform","i-lucide-award","i-lucide-axe","i-lucide-axis-3d","i-lucide-baby","i-lucide-backpack","i-lucide-badge","i-lucide-badge-alert","i-lucide-badge-cent","i-lucide-badge-check","i-lucide-badge-dollar-sign","i-lucide-badge-euro","i-lucide-badge-indian-rupee","i-lucide-badge-info","i-lucide-badge-japanese-yen"]
+apps/web-demo/src/layouts/modules/LayoutFullScreen.vue:29:    class="layout-screen text-foreground flex flex-col relative overflow-hidden"
+apps/web-demo/src/views/example/components/use-echarts/configs/dynamicChartConfig.ts:228:      console.warn('[useAutoHighlightChartOption] start aborted: chart instance is unavailable')
+apps/web-demo/src/views/example/components/use-echarts/configs/dynamicChartConfig.ts:236:      console.warn('[useAutoHighlightChartOption] start aborted: dispatchAction is unavailable')
+apps/web-demo/src/views/example/system-configuration/size.vue:93:  if (typeof document === 'undefined') return out
+apps/web-demo/src/views/example/system-configuration/size.vue:94:  const host = document.createElement('span')
+apps/web-demo/src/views/example/system-configuration/size.vue:99:  document.body.appendChild(host)
+apps/web-demo/src/views/example/system-configuration/size.vue:115:  if (typeof document === 'undefined') return out
+apps/web-demo/src/views/example/system-configuration/size.vue:116:  const root = document.documentElement
+apps/web-demo/src/views/example/system-configuration/size.vue:154:    window.$toast?.add({
+apps/web-demo/src/views/example/system-configuration/size.vue:165:    window.$toast?.add({
+apps/web-demo/src/views/example/system-configuration/size.vue:173:    window.$toast?.add({
+apps/web-demo/src/views/example/system-configuration/unocss.vue:8:  'layout-screen',
+apps/web-demo/src/views/example/system-configuration/unocss.vue:106:    className: 'layout-screen',
+apps/web-demo/src/views/example/system-configuration/unocss.vue:480:    window.$toast?.add({
+apps/web-demo/src/views/example/system-configuration/unocss.vue:491:    window.$toast?.add({
+apps/web-demo/src/views/example/system-configuration/unocss.vue:499:    window.$toast?.add({
+apps/web-demo/src/views/example/components/icons/index.vue:139:    await navigator.clipboard.writeText(codeExampleText.value)
+apps/web-demo/src/views/example/components/icons/index.vue:140:    window.$message?.success?.('已复制到剪贴板')
+apps/web-demo/src/views/example/components/icons/index.vue:142:    window.$message?.danger?.('复制失败，请检查浏览器剪贴板权限')
+apps/web-demo/src/views/example/components/c-scrollbar/index.vue:988:    body: 'Platform maintenance window: Sunday 02:00 UTC',
+apps/web-demo/src/views/example/components/c-scrollbar/index.vue:1075:    await navigator.clipboard.writeText(text)
+apps/web-demo/src/views/example/components/c-scrollbar/index.vue:1076:    window.$toast?.add({
+apps/web-demo/src/views/example/components/c-scrollbar/index.vue:1084:    window.$toast?.add({
+apps/web-demo/src/layouts/components/AnimateRouterView.vue:35:  console.error('[AnimateRouterView] route render failed', error)
+apps/web-demo/src/layouts/components/AnimateRouterView.vue:72:  if (!import.meta.env.DEV || route.meta?.keepAlive !== true) return
+apps/web-demo/src/layouts/components/AnimateRouterView.vue:79:    console.warn(
+apps/web-demo/src/layouts/components/AnimateRouterView.vue:91:    console.warn(
+apps/web-demo/src/layouts/components/ContextMenuProvider.vue:90:  const vw = window.innerWidth
+apps/web-demo/src/layouts/components/ContextMenuProvider.vue:91:  const vh = window.innerHeight
+apps/web-demo/src/layouts/components/ContextMenuProvider.vue:155:  document.addEventListener('mousedown', onDocPointerDown, true)
+apps/web-demo/src/layouts/components/ContextMenuProvider.vue:156:  window.addEventListener('keydown', onKeyDown)
+apps/web-demo/src/layouts/components/ContextMenuProvider.vue:159:    document.addEventListener('contextmenu', onGlobalContextMenu, true)
+apps/web-demo/src/layouts/components/ContextMenuProvider.vue:165:  if (el) el.addEventListener('contextmenu', onRootContextMenu as EventListener, true)
+apps/web-demo/src/layouts/components/ContextMenuProvider.vue:169:  document.removeEventListener('mousedown', onDocPointerDown, true)
+apps/web-demo/src/layouts/components/ContextMenuProvider.vue:170:  window.removeEventListener('keydown', onKeyDown)
+apps/web-demo/src/layouts/components/ContextMenuProvider.vue:172:  document.removeEventListener('contextmenu', onGlobalContextMenu, true)
+apps/web-demo/src/layouts/components/ContextMenuProvider.vue:175:  if (el) el.removeEventListener('contextmenu', onRootContextMenu as EventListener, true)
+apps/web-demo/src/views/example/components/primevue-collection/overview/composables/usePrimeVueScrollSpy.ts:26:  let intersectionObserver: IntersectionObserver | null = null
+apps/web-demo/src/views/example/components/primevue-collection/overview/composables/usePrimeVueScrollSpy.ts:85:      const targetEl = document.getElementById(id)
+apps/web-demo/src/views/example/components/primevue-collection/overview/composables/usePrimeVueScrollSpy.ts:130:      const el = document.getElementById(section.id)
+apps/web-demo/src/views/example/components/primevue-collection/overview/composables/usePrimeVueScrollSpy.ts:158:    intersectionObserver = new IntersectionObserver(
+apps/web-demo/src/views/example/components/primevue-collection/overview/composables/usePrimeVueScrollSpy.ts:170:      const el = document.getElementById(section.id)
+apps/web-demo/src/views/notfound/500.vue:9:  if (history.state?.back) {
+apps/web-demo/src/views/notfound/500.vue:18:  <div class="layout-screen col-center gap-lg px-xl py-2xl">
+apps/web-demo/src/sync/runtime.ts:21:  return import.meta.env.VITE_SYNC_WS_URL?.trim() || undefined
+apps/web-demo/src/views/example/components/use-echarts/index.vue:152:let mixedClearTimer: ReturnType<typeof globalThis.setTimeout> | null = null
+apps/web-demo/src/views/example/components/use-echarts/index.vue:190:  const host = document.querySelector(selector) as
+apps/web-demo/src/views/example/components/use-echarts/index.vue:250:    globalThis.clearTimeout(mixedClearTimer)
+apps/web-demo/src/views/example/components/use-echarts/index.vue:355:    mixedClearTimer = globalThis.setTimeout(() => {
+apps/web-demo/src/views/example/components/use-echarts/index.vue:621:    globalThis.clearTimeout(mixedClearTimer)
+apps/web-demo/src/views/example/system-configuration/layout.vue:135:    window.$toast?.add({
+apps/web-demo/src/views/example/system-configuration/layout.vue:146:    window.$toast?.add({
+apps/web-demo/src/views/example/system-configuration/layout.vue:154:    window.$toast?.add({
+apps/web-demo/src/views/notfound/404.vue:9:  if (history.state?.back) {
+apps/web-demo/src/views/notfound/404.vue:18:  <div class="layout-screen col-center gap-lg px-xl py-2xl">
+apps/web-demo/src/views/example/architecture/router-meta/router-meta-index.vue:51:    path: '/example/router-meta/reuse-window',
+apps/web-demo/src/views/example/architecture/router-meta/router-meta-index.vue:53:    icon: 'i-lucide-app-window',
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:3: * 布局层：PrimeVue 全局 UI 与 window.$toast / window.$message 挂载
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:5: *       useToast 封装并挂到 window；PrimeVue locale 同步；useDialog + PrimeDialog
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:62:  if (typeof window !== 'undefined') {
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:63:    window.$toast = createPrimeVueToastApi(toast) as typeof window.$toast
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:64:    window.$message = createPrimeVueMessageApi(toast)
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:69:  if (typeof window !== 'undefined') {
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:70:    window.$toast = undefined
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:71:    window.$message = undefined
+apps/web-demo/src/views/example/architecture/router-meta/reuse-window.vue:64:              <span class="text-sm font-semibold text-success">Focus existing window</span>
+apps/web-demo/src/views/example/architecture/router-meta/reuse-window.vue:81:                path: '/example/router-meta/reuse-window',
+apps/web-demo/src/views/example/architecture/router-meta/reuse-window.vue:86:                  icon: 'i-lucide-app-window',
+apps/web-demo/src/views/notfound/403.vue:9:  if (history.state?.back) {
+apps/web-demo/src/views/notfound/403.vue:18:  <div class="layout-screen col-center gap-lg px-xl py-2xl">
+apps/web-demo/src/sync/socket.ts:10:  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+apps/web-demo/src/sync/socket.ts:11:    return crypto.randomUUID()
+apps/web-demo/src/sync/socket.ts:42:    this.ws.addEventListener('open', () => {
+apps/web-demo/src/sync/socket.ts:46:    this.ws.addEventListener('message', event => {
+apps/web-demo/src/sync/socket.ts:49:    this.ws.addEventListener('close', () => {
+apps/web-demo/src/sync/socket.ts:54:    this.ws.addEventListener('error', () => {
+apps/web-demo/src/views/example/architecture/stores/size.vue:153:            切换预设后，generateSizeVars() 生成 CSS 变量并注入 document.documentElement。 所有使用
+apps/web-demo/src/views/example/system-configuration/theme.vue:93:    window.$toast?.add({
+apps/web-demo/src/views/example/system-configuration/theme.vue:104:    window.$toast?.add({
+apps/web-demo/src/views/example/system-configuration/theme.vue:112:    window.$toast?.add({
+apps/web-demo/src/views/example/system-configuration/theme.vue:215:  if (typeof document === 'undefined') return out
+apps/web-demo/src/views/example/system-configuration/theme.vue:216:  const root: Element = document.documentElement
+apps/web-demo/src/views/example/system-configuration/theme.vue:228:  if (typeof document === 'undefined') return out
+apps/web-demo/src/views/example/system-configuration/theme.vue:229:  const root: Element = document.documentElement
+apps/web-demo/src/views/example/common/constants.vue:66:  return navigator.clipboard
+apps/web-demo/src/views/example/common/constants.vue:69:      window.$toast?.add({
+apps/web-demo/src/views/example/common/constants.vue:78:      window.$toast?.add({
+apps/web-demo/src/views/example/utils/device-sync.vue:9:const widthValue = ref<number>(typeof window !== 'undefined' ? Math.max(0, window.innerWidth) : 0)
+apps/web-demo/src/directives/auth.spec.ts:50:      const el = document.createElement('div')
+apps/web-demo/src/directives/auth.spec.ts:60:      const el = document.createElement('div')
+apps/web-demo/src/directives/auth.spec.ts:69:      const el = document.createElement('div')
+apps/web-demo/src/directives/auth.spec.ts:84:      const el = document.createElement('div')
+apps/web-demo/src/directives/auth.spec.ts:96:      const btn = document.createElement('button')
+apps/web-demo/src/directives/auth.spec.ts:105:      const div = document.createElement('div')
+apps/web-demo/src/directives/auth.spec.ts:115:      const btn = document.createElement('button')
+apps/web-demo/src/directives/auth.spec.ts:130:      const el = document.createElement('div')
+apps/web-demo/src/directives/auth.spec.ts:141:      const el = document.createElement('div')
+apps/web-demo/src/views/example/architecture/router-meta/external-link.vue:10:  window.open(linkUrl.value, '_blank')
+apps/web-demo/src/layouts/index.vue:32:        /fetch dynamically imported module|Failed to fetch dynamically imported module|Loading chunk|Importing a module script failed/i.test(
+apps/web-demo/src/layouts/index.vue:70:  if (typeof document === 'undefined') return
+apps/web-demo/src/layouts/index.vue:76:  document.documentElement.dataset.runtimeLoading = nextState
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/columns/columns.tsx:140:          onClick={() => window.$toast?.infoIn('top-right', '编辑', `商品：${row.name}`)}
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/columns/columns.tsx:147:          onClick={() => window.$toast?.warnIn('top-right', '删除', `商品：${row.name}`)}
+apps/web-demo/src/layouts/components/admin/AdminHeader.vue:341:              ? 'i-solar-quit-full-screen-bold-duotone'
+apps/web-demo/src/layouts/components/admin/AdminHeader.vue:342:              : 'i-solar-full-screen-bold-duotone'
+apps/web-demo/src/sync/systemPreferences/runtime.ts:35:      console.warn('[SystemPreferencesSync] Cloud save failed:', error)
+apps/web-demo/src/layouts/components/admin/AdminSidebarMenuInline.tsx:213:          const fontsReady = (document as DocWithFonts).fonts?.ready
+apps/web-demo/src/views/example/components/primevue-collection/prime-dialog/index.vue:272:    open: () => console.log('[Dialog] opened'),
+apps/web-demo/src/views/example/components/primevue-collection/prime-dialog/index.vue:273:    close: () => console.log('[Dialog] closed'),
+apps/web-demo/src/layouts/components/admin/AdminMenuPopup.tsx:116:      const computedStyle = window.getComputedStyle(container)
+apps/web-demo/src/layouts/components/admin/AdminMenuPopup.tsx:119:      const viewportWidth = document.documentElement.clientWidth
+apps/web-demo/src/layouts/components/admin/AdminMenuPopup.tsx:120:      const viewportHeight = document.documentElement.clientHeight
+apps/web-demo/src/layouts/components/admin/AdminMenuPopup.tsx:121:      const scrollLeft = window.scrollX || document.documentElement.scrollLeft
+apps/web-demo/src/layouts/components/admin/AdminMenuPopup.tsx:122:      const scrollTop = window.scrollY || document.documentElement.scrollTop
+apps/web-demo/src/layouts/components/admin/AdminMenuPopup.tsx:145:        window.cancelAnimationFrame(alignmentFrameId)
+apps/web-demo/src/layouts/components/admin/AdminMenuPopup.tsx:150:        alignmentFrameId = window.requestAnimationFrame(() => {
+apps/web-demo/src/layouts/components/admin/AdminMenuPopup.tsx:187:        window.cancelAnimationFrame(alignmentFrameId)
+apps/web-demo/src/views/example/components/primevue-collection/toast/index.vue:4: * - 禁用 raw `window.$toast.add/clear/removeGroup`
+apps/web-demo/src/views/example/components/primevue-collection/toast/index.vue:5: * - 统一走内部抽象：`window.$message.*` 与 `window.$toast.*In`
+apps/web-demo/src/views/example/components/primevue-collection/toast/index.vue:47:  const toast = window.$toast
+apps/web-demo/src/views/example/components/primevue-collection/toast/index.vue:53:  const api = window.$message
+apps/web-demo/src/views/example/components/primevue-collection/toast/index.vue:92:                  当前示例仅保留内部抽象接口：`window.$message.*` 与 `window.$toast.*In`，不再演示
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/validation/index.vue:270:  window.$toast?.successIn('top-right', '已清除草稿', '草稿内容已重置')
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/validation/index.vue:279:  window.$toast?.successIn('top-right', '同步校验通过', '表单提交成功')
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/validation/index.vue:284:  window.$toast?.successIn('top-right', '异步校验通过', '表单提交成功')
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/playground/index.vue:107:  console.log('ProForm Playground Submit:', values)
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/playground/index.vue:108:  window.$toast?.successIn('top-right', '提交成功', '已在控制台输出演示数据')
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/advanced/index.vue:24:  { label: 'sessionStorage', value: 'session' },
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/advanced/index.vue:25:  { label: 'localStorage', value: 'local' },
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/advanced/index.vue:38:  window.$toast?.infoIn('top-right', '编辑', `编辑员工：${row.name}`)
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/advanced/index.vue:49:      window.$toast?.dangerIn('top-right', '已删除', row.name)
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/virtual/index.vue:112:  requestAnimationFrame(() => {
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/reactions/index.vue:397:  console.log('ProForm Reactions Submit Values:', values)
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/reactions/index.vue:398:  window.$toast?.successIn('top-right', '提交成功', '已在控制台输出序列化后的 values')
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/plugins/index.vue:64:  console.log('Plugins form submit:', values)
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/plugins/index.vue:65:  window.$toast?.successIn('top-right', '提交成功', '已在控制台输出 values')
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/api-events/index.vue:66:  window.$toast?.successIn('top-right', '提交成功', '已记录到事件日志')
+apps/web-demo/src/layouts/components/admin/AdminTabsBar.tsx:52:      const vw = window.innerWidth
+apps/web-demo/src/layouts/components/admin/AdminTabsBar.tsx:53:      const vh = window.innerHeight
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/dag/index.vue:297:  console.log('ProForm DAG Submit Values:', values)
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/dag/index.vue:298:  window.$toast?.successIn('top-right', '提交成功', '已在控制台输出序列化后的 values')
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/basic/index.vue:211:  // 这里用 window.$toast 做轻量反馈（布局层已挂载）；真实业务里可替换为请求提交逻辑
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/basic/index.vue:213:  console.log('ProForm Basic Submit Values:', values)
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/basic/index.vue:214:  window.$toast?.successIn('top-right', '提交成功', '已在控制台输出序列化后的 values')
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/basic/index.vue:228:  window.$toast?.infoIn(
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/group/index.vue:353:  console.log(`[${label}] Submit:`, values)
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/group/index.vue:354:  window.$toast?.successIn('top-right', `${label} 提交成功`, '已在控制台输出 values')
+apps/web-demo/src/layouts/components/AsyncErrorFallback.vue:15:  window.location.reload()
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/advanced/index.vue:115:  window.$toast?.successIn('top-right', '提交成功', '动态字段数组已序列化')
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/advanced/index.vue:336:  console.log('Draft form submitted:', values)
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/advanced/index.vue:337:  window.$toast?.successIn('top-right', '提交成功', '草稿已清除')
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/advanced/index.vue:345:  window.$toast?.infoIn('top-right', '草稿已清除', '表单已重置为初始状态')
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/advanced/index.vue:487:                <code>localStorage</code>

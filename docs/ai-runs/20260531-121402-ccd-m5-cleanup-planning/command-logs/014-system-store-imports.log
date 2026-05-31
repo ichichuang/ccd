@@ -1,0 +1,252 @@
+apps/web-demo/src/router/utils/guardEffects.ts:16:import { useLayoutStoreWithOut } from '@/stores/modules/system'
+apps/web-demo/src/router/utils/guardEffects.ts:77:    const layoutStore = useLayoutStoreWithOut()
+apps/web-demo/src/router/utils/guardEffects.ts:92:    useLayoutStoreWithOut().beginPageLoading()
+apps/web-demo/src/router/utils/guardEffects.ts:121:      useLayoutStoreWithOut().endPageLoading()
+scripts/drift-check.mjs:198:      content.includes("'src/stores/modules/system'") &&
+scripts/drift-check.mjs:205:        'apps/web-demo/build/plugins.ts: AutoImport.dirs 需显式包含 "src/stores/modules/system"、"src/stores/modules/session"、"src/stores/modules/ui" 与 "src/hooks/**/*"。'
+apps/web-demo/src/layouts/modules/LayoutAdmin.spec.ts:148:vi.mock('@/stores/modules/system', () => ({
+apps/web-demo/src/layouts/modules/LayoutAdmin.spec.ts:149:  useLayoutStore: () => ({
+apps/web-demo/src/layouts/modules/LayoutRatio.vue:5:import { useLayoutStore } from '@/stores/modules/system'
+apps/web-demo/src/layouts/modules/LayoutRatio.vue:8:const layoutStore = useLayoutStore()
+scripts/ai-architecture-guard.mjs:94:  'apps/web-demo/src/stores/modules/system/layout.ts',
+scripts/ai-architecture-guard.mjs:95:  'apps/web-demo/src/stores/modules/system/size.ts',
+scripts/ai-architecture-guard.mjs:105:  'apps/web-demo/src/stores/modules/system/theme.ts',
+scripts/ai-architecture-guard.mjs:106:  'apps/web-demo/src/stores/modules/system/locale.ts',
+scripts/ai-architecture-guard.mjs:515:  'apps/web-demo/src/stores/modules/system/device.ts',
+scripts/ai-architecture-guard.mjs:560:const layoutStorePath = 'apps/web-demo/src/stores/modules/system/layout.ts'
+scripts/ai-architecture-guard.mjs:567:  fail('store-persist-serializer', layoutStorePath, 'useLayoutStore persistence must use createPiniaEncryptedSerializer()')
+scripts/ai-architecture-guard.mjs:570:const sizeStorePath = 'apps/web-demo/src/stores/modules/system/size.ts'
+scripts/ai-architecture-guard.mjs:577:  fail('store-persist-serializer', sizeStorePath, 'useSizeStore persistence must use createPiniaEncryptedSerializer()')
+apps/web-demo/src/layouts/modules/LayoutAdmin.tsx:6:import { useLayoutStore } from '@/stores/modules/system'
+apps/web-demo/src/layouts/modules/LayoutAdmin.tsx:46:    const layoutStore = useLayoutStore()
+apps/web-demo/src/layouts/modules/LayoutFullScreen.vue:5:import { useLayoutStore } from '@/stores/modules/system'
+apps/web-demo/src/layouts/modules/LayoutFullScreen.vue:10:const layoutStore = useLayoutStore()
+apps/web-demo/src/App.vue:10:const sizeStore = useSizeStore()
+apps/web-demo/src/App.vue:11:const deviceStore = useDeviceStore()
+apps/web-demo/src/App.vue:12:const themeStore = useThemeStore()
+apps/web-demo/src/types/auto-imports.d.ts:231:  const useDeviceStore: typeof import('../stores/modules/system/device').useDeviceStore
+apps/web-demo/src/types/auto-imports.d.ts:271:  const useLayoutStore: typeof import('../stores/modules/system/layout').useLayoutStore
+apps/web-demo/src/types/auto-imports.d.ts:272:  const useLayoutStoreWithOut: typeof import('../stores/modules/system/layout').useLayoutStoreWithOut
+apps/web-demo/src/types/auto-imports.d.ts:277:  const useLocaleStore: typeof import('../stores/modules/system/locale').useLocaleStore
+apps/web-demo/src/types/auto-imports.d.ts:278:  const useLocaleStoreWithOut: typeof import('../stores/modules/system/locale').useLocaleStoreWithOut
+apps/web-demo/src/types/auto-imports.d.ts:332:  const useSizeStore: typeof import('../stores/modules/system/size').useSizeStore
+apps/web-demo/src/types/auto-imports.d.ts:352:  const useThemeStore: typeof import('../stores/modules/system/theme').useThemeStore
+apps/web-demo/src/layouts/components/LoadingLottie.vue:13:import { useThemeStore } from '@/stores/modules/system'
+apps/web-demo/src/layouts/components/LoadingLottie.vue:40:const themeStore = useThemeStore()
+apps/web-demo/src/adapters/charts/UseEcharts.vue:13:import { useThemeStore, useSizeStore } from '@/stores/modules/system'
+apps/web-demo/src/adapters/charts/UseEcharts.vue:24:const themeStore = useThemeStore()
+apps/web-demo/src/adapters/charts/UseEcharts.vue:25:const sizeStore = useSizeStore()
+apps/web-demo/src/layouts/components/AnimateRouterView.vue:7:import { useLayoutStore } from '@/stores/modules/system'
+apps/web-demo/src/layouts/components/AnimateRouterView.vue:15:const layoutStore = useLayoutStore()
+apps/web-demo/src/types/systems/device.d.ts:44:   * 保留此类型仅用于向后兼容，新代码请使用 useDeviceStore() 的 state
+apps/web-demo/src/plugins/modules/primevue.spec.ts:41:vi.mock('@/stores/modules/system', () => ({
+apps/web-demo/src/plugins/modules/primevue.spec.ts:42:  useLocaleStore: () => ({ locale: 'zh-CN' }),
+apps/web-demo/src/plugins/modules/primevue.spec.ts:43:  useDeviceStore: () => ({ isPCLayout: true, isTabletLayout: false }),
+apps/web-demo/src/plugins/modules/primevue.spec.ts:44:  useSizeStore: () => ({ mode: 'comfortable' }),
+apps/web-demo/src/layouts/components/AppContainer.vue:6:import { useLayoutStore } from '@/stores/modules/system'
+apps/web-demo/src/layouts/components/AppContainer.vue:9:const layoutStore = useLayoutStore()
+apps/web-demo/src/plugins/modules/stores.ts:2:import { useThemeStore } from '@/stores/modules/system'
+apps/web-demo/src/plugins/modules/stores.ts:3:import { useSizeStore } from '@/stores/modules/system'
+apps/web-demo/src/plugins/modules/stores.ts:4:import { useLocaleStore } from '@/stores/modules/system'
+apps/web-demo/src/plugins/modules/stores.ts:10:  const themeStore = useThemeStore()
+apps/web-demo/src/plugins/modules/stores.ts:11:  const sizeStore = useSizeStore()
+apps/web-demo/src/plugins/modules/stores.ts:12:  const localeStore = useLocaleStore()
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:18:import { useLocaleStore } from '@/stores/modules/system'
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:30:const localeStore = useLocaleStore()
+apps/web-demo/src/layouts/components/AmbientBackground.vue:18:const layoutStore = useLayoutStore()
+apps/web-demo/src/stores/modules/session/user.ts:4:import { useLayoutStore } from '@/stores/modules/system/layout'
+apps/web-demo/src/stores/modules/session/user.ts:5:import { useThemeStore } from '@/stores/modules/system/theme'
+apps/web-demo/src/stores/modules/session/user.ts:6:import { useSizeStore } from '@/stores/modules/system/size'
+apps/web-demo/src/stores/modules/session/user.ts:7:import { useLocaleStore } from '@/stores/modules/system/locale'
+apps/web-demo/src/stores/modules/session/user.ts:143:      const themeStore = useThemeStore(store)
+apps/web-demo/src/stores/modules/session/user.ts:144:      const sizeStore = useSizeStore(store)
+apps/web-demo/src/stores/modules/session/user.ts:145:      const localeStore = useLocaleStore(store)
+apps/web-demo/src/stores/modules/session/user.ts:146:      const layoutStore = useLayoutStore(store)
+packages/vue-ui/src/ProTable/ProTable.vue:224:/** 表格内容区局部密度（不调用全局 useSizeStore，仅在子树覆盖 CSS 变量） */
+apps/web-demo/src/layouts/components/admin/AdminSidebarMenuInline.tsx:19:import { useLayoutStore } from '@/stores/modules/system'
+apps/web-demo/src/layouts/components/admin/AdminSidebarMenuInline.tsx:96:    const layoutStore = useLayoutStore()
+apps/web-demo/src/layouts/components/GlobalSetting/SettingsContent.vue:3:import { useThemeStore } from '@/stores/modules/system'
+apps/web-demo/src/layouts/components/GlobalSetting/SettingsContent.vue:4:import { useSizeStore } from '@/stores/modules/system'
+apps/web-demo/src/layouts/components/GlobalSetting/SettingsContent.vue:5:import { useLayoutStore } from '@/stores/modules/system'
+apps/web-demo/src/layouts/components/GlobalSetting/SettingsContent.vue:30:const themeStore = useThemeStore()
+apps/web-demo/src/layouts/components/GlobalSetting/SettingsContent.vue:31:const sizeStore = useSizeStore()
+apps/web-demo/src/layouts/components/GlobalSetting/SettingsContent.vue:32:const layoutStore = useLayoutStore()
+apps/web-demo/src/stores/modules/session/user.spec.ts:30:vi.mock('@/stores/modules/system/theme', () => ({
+apps/web-demo/src/stores/modules/session/user.spec.ts:31:  useThemeStore: () => ({ resetState: vi.fn() }),
+apps/web-demo/src/stores/modules/session/user.spec.ts:33:vi.mock('@/stores/modules/system/size', () => ({
+apps/web-demo/src/stores/modules/session/user.spec.ts:34:  useSizeStore: () => ({ resetState: vi.fn() }),
+apps/web-demo/src/stores/modules/session/user.spec.ts:36:vi.mock('@/stores/modules/system/locale', () => ({
+apps/web-demo/src/stores/modules/session/user.spec.ts:37:  useLocaleStore: () => ({ resetState: vi.fn() }),
+apps/web-demo/src/stores/modules/session/user.spec.ts:39:vi.mock('@/stores/modules/system/layout', () => ({
+apps/web-demo/src/stores/modules/session/user.spec.ts:40:  useLayoutStore: () => ({ resetState: vi.fn() }),
+apps/web-demo/src/plugins/modules/primevue.ts:7:import { useDeviceStore, useLocaleStore } from '@/stores/modules/system'
+apps/web-demo/src/plugins/modules/primevue.ts:8:import { useSizeStore } from '@/stores/modules/system'
+apps/web-demo/src/plugins/modules/primevue.ts:18:  const sizeStore = useSizeStore()
+apps/web-demo/src/plugins/modules/primevue.ts:19:  const deviceStore = useDeviceStore(store)
+apps/web-demo/src/plugins/modules/primevue.ts:20:  const localeStore = useLocaleStore(store)
+apps/web-demo/src/layouts/components/admin/AdminSidebarMenu.tsx:10:import { useLayoutStore } from '@/stores/modules/system'
+apps/web-demo/src/layouts/components/admin/AdminSidebarMenu.tsx:41:    const layoutStore = useLayoutStore()
+apps/web-demo/src/stores/modules/system/theme.spec.ts:56:describe('useThemeStore', () => {
+apps/web-demo/src/stores/modules/system/theme.spec.ts:57:  let useThemeStore: typeof import('./theme').useThemeStore
+apps/web-demo/src/stores/modules/system/theme.spec.ts:67:    useThemeStore = mod.useThemeStore
+apps/web-demo/src/stores/modules/system/theme.spec.ts:72:      const store = useThemeStore()
+apps/web-demo/src/stores/modules/system/theme.spec.ts:79:      const store = useThemeStore()
+apps/web-demo/src/stores/modules/system/theme.spec.ts:92:      const store = useThemeStore()
+apps/web-demo/src/stores/modules/system/theme.spec.ts:101:      const store = useThemeStore()
+apps/web-demo/src/stores/modules/system/theme.spec.ts:113:      const store = useThemeStore()
+apps/web-demo/src/stores/modules/system/theme.spec.ts:129:      const store = useThemeStore()
+apps/web-demo/src/stores/modules/system/theme.spec.ts:138:      const freshStore = mod.useThemeStore()
+apps/web-demo/src/stores/modules/system/theme.spec.ts:152:      const store = useThemeStore()
+apps/web-demo/src/stores/modules/system/theme.spec.ts:171:      const store = useThemeStore()
+apps/web-demo/src/stores/modules/system/theme.spec.ts:186:      const store = useThemeStore()
+packages/vue-ui/src/ProTable/engine/types/props.ts:118:  /** 工具栏是否显示表格区域尺寸密度切换（紧凑 / 适中 / 宽松）；仅在 ProTable 内容子树覆盖 CSS 变量，不改全局 `useSizeStore`。 @default true */
+apps/web-demo/src/main.ts:19:import { useLayoutStoreWithOut } from '@/stores/modules/system'
+apps/web-demo/src/main.ts:42:  const layoutStore = useLayoutStoreWithOut()
+apps/web-demo/src/stores/modules/system/theme.ts:34:export const useThemeStore = defineStore('theme', {
+apps/web-demo/src/layouts/index.vue:12:import { useLayoutStore } from '@/stores/modules/system'
+apps/web-demo/src/layouts/index.vue:48:const layoutStore = useLayoutStore()
+apps/web-demo/src/stores/modules/system/size.ts:13:export const useSizeStore = defineStore('size', {
+apps/web-demo/src/stores/modules/system/device.ts:45:export const useDeviceStore = defineStore('device', {
+apps/web-demo/src/views/login/index.vue:3:import { useDeviceStore } from '@/stores/modules/system'
+apps/web-demo/src/views/login/index.vue:10:const deviceStore = useDeviceStore()
+apps/web-demo/src/stores/modules/system/locale.ts:15:export const useLocaleStore = defineStore('locale', {
+apps/web-demo/src/stores/modules/system/locale.ts:168:export const useLocaleStoreWithOut = () => {
+apps/web-demo/src/stores/modules/system/locale.ts:169:  return useLocaleStore(store)
+apps/web-demo/src/stores/modules/system/layout.ts:6:import { useDeviceStore } from '@/stores/modules/system/device'
+apps/web-demo/src/stores/modules/system/layout.ts:14: * 缓存 deviceStore，避免 effectiveMode getter 每次求值都调用 useDeviceStore()。
+apps/web-demo/src/stores/modules/system/layout.ts:18:let _deviceStore: ReturnType<typeof useDeviceStore> | null = null
+apps/web-demo/src/stores/modules/system/layout.ts:79:export const useLayoutStore = defineStore('layout', {
+apps/web-demo/src/stores/modules/system/layout.ts:110:      if (!_deviceStore) _deviceStore = useDeviceStore()
+apps/web-demo/src/stores/modules/system/layout.ts:465:export const useLayoutStoreWithOut = () => useLayoutStore(store)
+apps/web-demo/src/stores/modules/system/size.spec.ts:68:describe('useSizeStore', () => {
+apps/web-demo/src/stores/modules/system/size.spec.ts:69:  let useSizeStore: typeof import('./size').useSizeStore
+apps/web-demo/src/stores/modules/system/size.spec.ts:76:    useSizeStore = mod.useSizeStore
+apps/web-demo/src/stores/modules/system/size.spec.ts:82:      const store = useSizeStore()
+apps/web-demo/src/stores/modules/system/size.spec.ts:92:      const store = useSizeStore()
+apps/web-demo/src/stores/modules/system/size.spec.ts:104:      const store = useSizeStore()
+apps/web-demo/src/stores/modules/system/size.spec.ts:110:      const store = useSizeStore()
+apps/web-demo/src/stores/modules/system/size.spec.ts:118:      const store = useSizeStore()
+apps/web-demo/src/stores/modules/system/layout.spec.ts:12:vi.mock('@/stores/modules/system/device', () => ({
+apps/web-demo/src/stores/modules/system/layout.spec.ts:13:  useDeviceStore: () => ({
+apps/web-demo/src/stores/modules/system/layout.spec.ts:26:describe('useLayoutStore — MODULE_DEPENDENCIES state machine', () => {
+apps/web-demo/src/stores/modules/system/layout.spec.ts:27:  let useLayoutStore: typeof import('./layout').useLayoutStore
+apps/web-demo/src/stores/modules/system/layout.spec.ts:36:    useLayoutStore = mod.useLayoutStore
+apps/web-demo/src/stores/modules/system/layout.spec.ts:41:      const store = useLayoutStore()
+apps/web-demo/src/stores/modules/system/layout.spec.ts:60:      const store = useLayoutStore()
+apps/web-demo/src/stores/modules/system/layout.spec.ts:80:      const store = useLayoutStore()
+apps/web-demo/src/stores/modules/system/layout.spec.ts:94:      const store = useLayoutStore()
+apps/web-demo/src/stores/modules/system/layout.spec.ts:107:      const store = useLayoutStore()
+apps/web-demo/src/stores/modules/system/layout.spec.ts:120:      const store = useLayoutStore()
+apps/web-demo/src/stores/modules/system/layout.spec.ts:129:      const store = useLayoutStore()
+apps/web-demo/src/stores/modules/system/layout.spec.ts:138:      const store = useLayoutStore()
+apps/web-demo/src/stores/modules/system/layout.spec.ts:152:      const store = useLayoutStore()
+apps/web-demo/src/stores/modules/system/layout.spec.ts:168:      const store = useLayoutStore()
+apps/web-demo/src/stores/modules/system/layout.spec.ts:181:      const store = useLayoutStore()
+apps/web-demo/src/stores/modules/system/layout.spec.ts:193:      const store = useLayoutStore()
+apps/web-demo/src/stores/modules/system/layout.spec.ts:206:      const store = useLayoutStore()
+apps/web-demo/src/stores/modules/system/layout.spec.ts:223:      const store = useLayoutStore()
+apps/web-demo/src/stores/modules/system/layout.spec.ts:238:      const store = useLayoutStore()
+apps/web-demo/src/stores/modules/system/layout.spec.ts:249:      const store = useLayoutStore()
+apps/web-demo/src/stores/modules/system/layout.spec.ts:265:      const store = useLayoutStore()
+apps/web-demo/src/stores/modules/system/layout.spec.ts:274:      const store = useLayoutStore()
+apps/web-demo/src/stores/modules/system/layout.spec.ts:295:      const store = useLayoutStore()
+apps/web-demo/src/stores/modules/system/layout.spec.ts:304:      const store = useLayoutStore()
+apps/web-demo/src/stores/modules/system/locale.spec.ts:28:describe('useLocaleStore', () => {
+apps/web-demo/src/stores/modules/system/locale.spec.ts:29:  let useLocaleStore: typeof import('./locale').useLocaleStore
+apps/web-demo/src/stores/modules/system/locale.spec.ts:36:    useLocaleStore = mod.useLocaleStore
+apps/web-demo/src/stores/modules/system/locale.spec.ts:43:      const store = useLocaleStore()
+apps/web-demo/src/stores/modules/system/locale.spec.ts:54:      const store = useLocaleStore()
+apps/web-demo/src/stores/modules/system/locale.spec.ts:67:      const store = useLocaleStore()
+apps/web-demo/src/stores/modules/system/locale.spec.ts:79:      const store = useLocaleStore()
+apps/web-demo/src/stores/modules/system/locale.spec.ts:92:      const store = useLocaleStore()
+apps/web-demo/src/stores/modules/system/locale.spec.ts:106:      const store = useLocaleStore()
+apps/web-demo/src/stores/modules/system/device.spec.ts:13:describe('useDeviceStore', () => {
+apps/web-demo/src/stores/modules/system/device.spec.ts:14:  let useDeviceStore: typeof import('./device').useDeviceStore
+apps/web-demo/src/stores/modules/system/device.spec.ts:38:    useDeviceStore = mod.useDeviceStore
+apps/web-demo/src/stores/modules/system/device.spec.ts:43:      const store = useDeviceStore()
+apps/web-demo/src/stores/modules/system/device.spec.ts:50:      const store = useDeviceStore()
+apps/web-demo/src/stores/modules/system/device.spec.ts:57:      const store = useDeviceStore()
+apps/web-demo/src/stores/modules/system/device.spec.ts:64:      const store = useDeviceStore()
+apps/web-demo/src/stores/modules/system/device.spec.ts:73:      const store = useDeviceStore()
+apps/web-demo/src/stores/modules/system/device.spec.ts:80:      const store = useDeviceStore()
+apps/web-demo/src/stores/modules/system/device.spec.ts:87:      const store = useDeviceStore()
+apps/web-demo/src/stores/modules/system/device.spec.ts:94:      const store = useDeviceStore()
+apps/web-demo/src/stores/modules/system/device.spec.ts:103:      const store = useDeviceStore()
+apps/web-demo/src/stores/modules/system/device.spec.ts:111:      const store = useDeviceStore()
+apps/web-demo/src/views/dashboard/hooks/useChartOptions.ts:3:import { useThemeStore, useSizeStore } from '@/stores/modules/system'
+apps/web-demo/src/views/dashboard/hooks/useChartOptions.ts:21:  const themeStore = useThemeStore()
+apps/web-demo/src/views/dashboard/hooks/useChartOptions.ts:22:  const sizeStore = useSizeStore()
+apps/web-demo/src/utils/theme/sizeEngine.ts:373:    // Payload is still safeStorage-packed by useSizeStore's encrypted serializer.
+apps/web-demo/src/views/example/hooks/layout-breadcrumbs.vue:11:import { useLayoutStore } from '@/stores/modules/system'
+apps/web-demo/src/views/example/hooks/layout-breadcrumbs.vue:26:const layoutStore = useLayoutStore()
+apps/web-demo/src/views/example/hooks/layout-loading.vue:6:const layoutStore = useLayoutStoreWithOut()
+apps/web-demo/src/utils/theme/transitions.ts:12:// useThemeSwitch ↔ themeStore 循环依赖。若未来依赖链解除，应迁移至 useThemeStore。
+apps/web-demo/src/sync/systemPreferences/register.ts:3:  useLayoutStore,
+apps/web-demo/src/sync/systemPreferences/register.ts:4:  useLocaleStore,
+apps/web-demo/src/sync/systemPreferences/register.ts:5:  useSizeStore,
+apps/web-demo/src/sync/systemPreferences/register.ts:6:  useThemeStore,
+apps/web-demo/src/sync/systemPreferences/register.ts:7:} from '@/stores/modules/system'
+apps/web-demo/src/sync/systemPreferences/register.ts:59:    const themeStore = useThemeStore()
+apps/web-demo/src/sync/systemPreferences/register.ts:76:    const sizeStore = useSizeStore()
+apps/web-demo/src/sync/systemPreferences/register.ts:88:    const layoutStore = useLayoutStore()
+apps/web-demo/src/sync/systemPreferences/register.ts:106:    const localeStore = useLocaleStore()
+apps/web-demo/src/views/example/hooks/use-chart-theme.vue:7:import { useThemeStore, useSizeStore } from '@/stores/modules/system'
+apps/web-demo/src/views/example/hooks/use-chart-theme.vue:16:const themeStore = useThemeStore()
+apps/web-demo/src/views/example/hooks/use-chart-theme.vue:17:const sizeStore = useSizeStore()
+apps/web-demo/src/sync/systemPreferences/model.ts:6:  useLayoutStore,
+apps/web-demo/src/sync/systemPreferences/model.ts:7:  useLocaleStore,
+apps/web-demo/src/sync/systemPreferences/model.ts:8:  useSizeStore,
+apps/web-demo/src/sync/systemPreferences/model.ts:9:  useThemeStore,
+apps/web-demo/src/sync/systemPreferences/model.ts:10:} from '@/stores/modules/system'
+apps/web-demo/src/sync/systemPreferences/model.ts:66:  const themeStore = useThemeStore()
+apps/web-demo/src/sync/systemPreferences/model.ts:67:  const sizeStore = useSizeStore()
+apps/web-demo/src/sync/systemPreferences/model.ts:68:  const layoutStore = useLayoutStore()
+apps/web-demo/src/sync/systemPreferences/model.ts:69:  const localeStore = useLocaleStore()
+apps/web-demo/src/sync/systemPreferences/model.ts:110:  const themeStore = useThemeStore()
+apps/web-demo/src/sync/systemPreferences/model.ts:111:  const sizeStore = useSizeStore()
+apps/web-demo/src/sync/systemPreferences/model.ts:112:  const layoutStore = useLayoutStore()
+apps/web-demo/src/sync/systemPreferences/model.ts:113:  const localeStore = useLocaleStore()
+apps/web-demo/src/sync/systemPreferences/model.spec.ts:112:    const { useThemeStore, useSizeStore, useLayoutStore, useLocaleStore } =
+apps/web-demo/src/sync/systemPreferences/model.spec.ts:113:      await import('@/stores/modules/system')
+apps/web-demo/src/sync/systemPreferences/model.spec.ts:123:    const themeStore = useThemeStore()
+apps/web-demo/src/sync/systemPreferences/model.spec.ts:124:    const sizeStore = useSizeStore()
+apps/web-demo/src/sync/systemPreferences/model.spec.ts:125:    const layoutStore = useLayoutStore()
+apps/web-demo/src/sync/systemPreferences/model.spec.ts:126:    const localeStore = useLocaleStore()
+apps/web-demo/src/hooks/modules/useAuth.spec.ts:47:vi.mock('@/stores/modules/system/theme', () => ({
+apps/web-demo/src/hooks/modules/useAuth.spec.ts:48:  useThemeStore: () => ({ resetState: vi.fn() }),
+apps/web-demo/src/hooks/modules/useAuth.spec.ts:50:vi.mock('@/stores/modules/system/size', () => ({
+apps/web-demo/src/hooks/modules/useAuth.spec.ts:51:  useSizeStore: () => ({ resetState: vi.fn() }),
+apps/web-demo/src/hooks/modules/useAuth.spec.ts:53:vi.mock('@/stores/modules/system/locale', () => ({
+apps/web-demo/src/hooks/modules/useAuth.spec.ts:54:  useLocaleStore: () => ({ resetState: vi.fn() }),
+apps/web-demo/src/hooks/modules/useAuth.spec.ts:56:vi.mock('@/stores/modules/system/layout', () => ({
+apps/web-demo/src/hooks/modules/useAuth.spec.ts:57:  useLayoutStore: () => ({ resetState: vi.fn() }),
+apps/web-demo/src/hooks/layout/useLoading.ts:50:import { useLayoutStoreWithOut } from '@/stores/modules/system'
+apps/web-demo/src/hooks/layout/useLoading.ts:108:  const layoutStore = useLayoutStoreWithOut()
+apps/web-demo/src/views/example/architecture/stores/locale.vue:5:const localeStore = useLocaleStore()
+apps/web-demo/src/hooks/layout/useLayoutRuntime.ts:7:import { useLayoutStore } from '@/stores/modules/system'
+apps/web-demo/src/hooks/layout/useLayoutRuntime.ts:8:import { useDeviceStore } from '@/stores/modules/system'
+apps/web-demo/src/hooks/layout/useLayoutRuntime.ts:64:  const layoutStore = useLayoutStore()
+apps/web-demo/src/hooks/layout/useLayoutRuntime.ts:65:  const deviceStore = useDeviceStore()
+apps/web-demo/src/views/example/architecture/stores/layout.vue:4:const layoutStore = useLayoutStore()
+apps/web-demo/src/hooks/layout/useLoading.spec.ts:56:  const [{ useLoading }, { useLayoutStoreWithOut }] = await Promise.all([
+apps/web-demo/src/hooks/layout/useLoading.spec.ts:58:    import('@/stores/modules/system/layout'),
+apps/web-demo/src/hooks/layout/useLoading.spec.ts:60:  const layoutStore = useLayoutStoreWithOut()
+apps/web-demo/src/hooks/modules/useDateUtils.ts:24:import { useLocaleStore } from '@/stores/modules/system'
+apps/web-demo/src/hooks/modules/useDateUtils.ts:90:  const localeStore = useLocaleStore()
+apps/web-demo/src/views/example/architecture/stores/device.vue:4:const deviceStore = useDeviceStore()
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:8:import { useThemeStore } from '@/stores/modules/system'
+apps/web-demo/src/hooks/modules/useThemeSwitch.ts:190:  const themeStore = useThemeStore()
+apps/web-demo/src/views/example/architecture/stores/theme.vue:6:const themeStore = useThemeStore()
+apps/web-demo/src/views/example/components/c-scrollbar/index.vue:8:const themeStore = useThemeStore()
+apps/web-demo/src/views/example/system-configuration/layout.vue:7:const layoutStore = useLayoutStore()
+apps/web-demo/src/views/example/system-configuration/layout.vue:8:const deviceStore = useDeviceStore()
+apps/web-demo/src/views/example/system-configuration/breakpoints.vue:17:const deviceStore = useDeviceStore()
+apps/web-demo/src/views/example/architecture/stores/size.vue:6:const sizeStore = useSizeStore()
+apps/web-demo/src/views/example/system-configuration/theme.vue:9:const themeStore = useThemeStore()
+apps/web-demo/src/views/example/system-configuration/size.vue:10:const sizeStore = useSizeStore()
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:98:    const { useThemeStore } = await import('@/stores/modules/system/theme')
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:101:    const themeStore = useThemeStore()
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:175:    const { useThemeStore } = await import('@/stores/modules/system/theme')
+apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts:178:    const themeStore = useThemeStore()
+apps/web-demo/src/hooks/modules/useLocale.ts:16:import { useLocaleStore } from '@/stores/modules/system'
+apps/web-demo/src/hooks/modules/useLocale.ts:32:  const localeStore = useLocaleStore()

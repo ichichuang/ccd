@@ -1,0 +1,122 @@
+$ rg -n "apps/web-demo/src/utils/theme|\.\./apps/web-demo/src|apps/web-demo/src" scripts --glob "*.{mjs,ts}"
+scripts/lint-staged-safe.mjs:4:  'apps/web-demo/src/types/auto-imports.d.ts',
+scripts/lint-staged-safe.mjs:5:  'apps/web-demo/src/types/components.d.ts',
+scripts/lint-staged-safe.mjs:9:  'apps/web-demo/src/views/example/components/icons/configs/iconLists.generated.ts',
+scripts/upgrade-all-themes.mjs:11:} from '../apps/web-demo/src/utils/theme/color.ts'
+scripts/project-config.mjs:13:const BRAND_PATH = join(ROOT, 'apps/web-demo/src/constants/brand.ts')
+scripts/project-config.mjs:297:      'apps/web-demo/src/constants/brand.ts',
+scripts/project-config.mjs:305:      'apps/web-demo/src/constants/brand.ts',
+scripts/project-config.mjs:312:    row('apps/web-demo/src/constants/brand.ts', 'subtitle', 'Platform', readBrandValue('subtitle'))
+scripts/project-config.mjs:316:      'apps/web-demo/src/constants/brand.ts',
+scripts/project-config.mjs:324:      'apps/web-demo/src/constants/brand.ts',
+scripts/project-config.mjs:332:      'apps/web-demo/src/constants/brand.ts',
+scripts/measure-router-modules.mjs:5:const MODULE_GLOB = 'apps/web-demo/src/router/modules/**/*.ts'
+scripts/validate-token-contrast.ts:2:import { generateThemeVars } from '../apps/web-demo/src/utils/theme/engine'
+scripts/validate-token-contrast.ts:7:} from '../apps/web-demo/src/utils/theme/validate'
+scripts/drift-check.mjs:4: * 1. 扫描 apps/web-demo/src/views 下所有含 data-archetype 的 .vue，若同目录有 page.state.ts 则比对
+scripts/drift-check.mjs:251:      errors.push(`[apps/web-demo/src/views/${rel}]: 同目录 page.state.ts 中未找到 archetype`)
+scripts/drift-check.mjs:256:        `[apps/web-demo/src/views/${rel}]: 结构漂移 — page.state.ts archetype="${stateArchetype}" vs data-archetype="${uiArchetype}"`
+scripts/drift-check.mjs:266:    const styleErrors = checkStyleDrift(`apps/web-demo/src/${rel}`, content)
+scripts/drift-check.mjs:268:    errors.push(...checkClassColorDrift(`apps/web-demo/src/${rel}`, content))
+scripts/drift-check.mjs:274:    errors.push(...checkClassColorDrift(`apps/web-demo/src/${rel}`, content))
+scripts/ccd-ops.mjs:14:  'apps/web-demo/src/constants/brand.ts',
+scripts/ai-architecture-guard.mjs:19:const businessViewPatterns = ['apps/web-demo/src/views/**/*.vue']
+scripts/ai-architecture-guard.mjs:21:  'apps/web-demo/src/views/example/**',
+scripts/ai-architecture-guard.mjs:22:  'apps/web-demo/src/views/login/**',
+scripts/ai-architecture-guard.mjs:23:  'apps/web-demo/src/views/notfound/**',
+scripts/ai-architecture-guard.mjs:24:  'apps/web-demo/src/views/**/components/**',
+scripts/ai-architecture-guard.mjs:82:  'apps/web-demo/src/utils/http/methods.ts',
+scripts/ai-architecture-guard.mjs:83:  'apps/web-demo/src/utils/http/interceptors.ts',
+scripts/ai-architecture-guard.mjs:84:  'apps/web-demo/src/utils/http/connection.ts',
+scripts/ai-architecture-guard.mjs:85:  'apps/web-demo/src/utils/date/timezone.ts',
+scripts/ai-architecture-guard.mjs:86:  'apps/web-demo/src/layouts/components/LoadingLottie.vue',
+scripts/ai-architecture-guard.mjs:90:  'apps/web-demo/src/main.ts',
+scripts/ai-architecture-guard.mjs:91:  'apps/web-demo/src/hooks/modules/useThemeSwitch.ts',
+scripts/ai-architecture-guard.mjs:92:  'apps/web-demo/src/stores/modules/session/permission.ts',
+scripts/ai-architecture-guard.mjs:93:  'apps/web-demo/src/stores/modules/session/user.ts',
+scripts/ai-architecture-guard.mjs:94:  'apps/web-demo/src/stores/modules/system/layout.ts',
+scripts/ai-architecture-guard.mjs:95:  'apps/web-demo/src/stores/modules/system/size.ts',
+scripts/ai-architecture-guard.mjs:96:  'apps/web-demo/src/utils/theme/engine.ts',
+scripts/ai-architecture-guard.mjs:97:  'apps/web-demo/src/utils/theme/sizeEngine.ts',
+scripts/ai-architecture-guard.mjs:98:  'apps/web-demo/src/utils/runtime/e2e.ts',
+scripts/ai-architecture-guard.mjs:102:  'apps/web-demo/src/utils/safeStorage/**',
+scripts/ai-architecture-guard.mjs:103:  'apps/web-demo/src/components/ProForm/engine/persistence/**',
+scripts/ai-architecture-guard.mjs:104:  'apps/web-demo/src/components/ProTable/engine/hooks/useProTableColumnSettingsStorage.ts',
+scripts/ai-architecture-guard.mjs:105:  'apps/web-demo/src/stores/modules/system/theme.ts',
+scripts/ai-architecture-guard.mjs:106:  'apps/web-demo/src/stores/modules/system/locale.ts',
+scripts/ai-architecture-guard.mjs:110:  'apps/web-demo/src/components/ProTable/engine/hooks/useProTableColumnSettingsStorage.ts',
+scripts/ai-architecture-guard.mjs:119:  'apps/web-demo/src/assets/styles/custom-nprogress.scss',
+scripts/ai-architecture-guard.mjs:120:  'apps/web-demo/src/assets/styles/theme/transitions.scss',
+scripts/ai-architecture-guard.mjs:121:  'apps/web-demo/src/assets/styles/theme/modes/circle.scss',
+scripts/ai-architecture-guard.mjs:122:  'apps/web-demo/src/assets/styles/theme/modes/curtain.scss',
+scripts/ai-architecture-guard.mjs:123:  'apps/web-demo/src/assets/styles/theme/modes/diamond.scss',
+scripts/ai-architecture-guard.mjs:124:  'apps/web-demo/src/assets/styles/theme/modes/fade.scss',
+scripts/ai-architecture-guard.mjs:125:  'apps/web-demo/src/assets/styles/theme/modes/glitch.scss',
+scripts/ai-architecture-guard.mjs:126:  'apps/web-demo/src/assets/styles/theme/modes/implosion.scss',
+scripts/ai-architecture-guard.mjs:130:  'apps/web-demo/src/sync/runtime.ts',
+scripts/ai-architecture-guard.mjs:131:  'apps/web-demo/src/sync/socket.ts',
+scripts/ai-architecture-guard.mjs:133:  'apps/web-demo/src/router/utils/helper.ts',
+scripts/ai-architecture-guard.mjs:142:  'apps/web-demo/src/hooks/layout/useAdminBreadcrumbs.ts',
+scripts/ai-architecture-guard.mjs:143:  'apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue',
+scripts/ai-architecture-guard.mjs:144:  'apps/web-demo/src/layouts/components/admin/AdminSidebarMenuCollapsed.tsx',
+scripts/ai-architecture-guard.mjs:145:  'apps/web-demo/src/layouts/components/admin/AdminSidebarMenuInline.tsx',
+scripts/ai-architecture-guard.mjs:146:  'apps/web-demo/src/plugins/modules/primevue.ts',
+scripts/ai-architecture-guard.mjs:147:  'apps/web-demo/src/router/utils/helper.ts',
+scripts/ai-architecture-guard.mjs:148:  'apps/web-demo/src/types/components.d.ts',
+scripts/ai-architecture-guard.mjs:149:  'apps/web-demo/src/views/dashboard/index.vue',
+scripts/ai-architecture-guard.mjs:150:  'apps/web-demo/src/views/example/hooks/layout-breadcrumbs.vue',
+scripts/ai-architecture-guard.mjs:151:  'apps/web-demo/src/views/example/hooks/use-app-element-size.vue',
+scripts/ai-architecture-guard.mjs:152:  'apps/web-demo/src/views/example/system-configuration/layout.vue',
+scripts/ai-architecture-guard.mjs:156:  relPath.startsWith('apps/web-demo/src/views/example/components/primevue-collection/')
+scripts/ai-architecture-guard.mjs:406:  'apps/web-demo/src/api/**/*.{ts,tsx}',
+scripts/ai-architecture-guard.mjs:407:  'apps/web-demo/src/hooks/**/*.{ts,tsx}',
+scripts/ai-architecture-guard.mjs:408:  'apps/web-demo/src/stores/**/*.{ts,tsx}',
+scripts/ai-architecture-guard.mjs:409:  'apps/web-demo/src/layouts/components/LoadingLottie.vue',
+scripts/ai-architecture-guard.mjs:419:const storageBoundaryFiles = scanFiles(['apps/web-demo/src/views/**/*.{vue,ts,tsx}', 'apps/web-demo/src/hooks/**/*.{ts,tsx}', 'apps/web-demo/src/stores/**/*.{ts,tsx}', 'apps/web-demo/src/components/**/*.{vue,ts,tsx}'])
+scripts/ai-architecture-guard.mjs:431:const vueUseBoundaryFiles = scanFiles(['apps/web-demo/src/views/**/*.{vue,ts,tsx}', 'apps/web-demo/src/hooks/**/*.{ts,tsx}', 'apps/web-demo/src/stores/**/*.{ts,tsx}', 'apps/web-demo/src/components/**/*.{vue,ts,tsx}'])
+scripts/ai-architecture-guard.mjs:445:const syncBoundaryFiles = scanFiles(['apps/web-demo/src/**/*.{ts,tsx,vue}'])
+scripts/ai-architecture-guard.mjs:465:      'BroadcastChannel transport must stay in apps/web-demo/src/sync/** or an approved infrastructure allowlist'
+scripts/ai-architecture-guard.mjs:473:      'WebSocket transport must stay in apps/web-demo/src/sync/** or an approved infrastructure allowlist'
+scripts/ai-architecture-guard.mjs:480:  'apps/web-demo/src/utils/date/timezone.ts',
+scripts/ai-architecture-guard.mjs:481:  'apps/web-demo/src/utils/http/connection.ts',
+scripts/ai-architecture-guard.mjs:482:  'apps/web-demo/src/utils/http/uploadManager.ts',
+scripts/ai-architecture-guard.mjs:485:const dateCheckFiles = scanFiles(['apps/web-demo/src/**/*.{ts,tsx,vue}'])
+scripts/ai-architecture-guard.mjs:498:  'apps/web-demo/src/views/login/index.vue',
+scripts/ai-architecture-guard.mjs:499:  'apps/web-demo/src/components/ProForm/engine/core/FormController.ts',
+scripts/ai-architecture-guard.mjs:500:  'apps/web-demo/src/components/ProForm/engine/validation/ValidationEngine.ts',
+scripts/ai-architecture-guard.mjs:501:  'apps/web-demo/src/utils/http/connection.ts',
+scripts/ai-architecture-guard.mjs:502:  'apps/web-demo/src/utils/http/methods.ts',
+scripts/ai-architecture-guard.mjs:503:  'apps/web-demo/src/utils/http/interceptors.ts',
+scripts/ai-architecture-guard.mjs:504:  'apps/web-demo/src/utils/date/timezone.ts',
+scripts/ai-architecture-guard.mjs:505:  'apps/web-demo/src/hooks/modules/useThemeSwitch.ts',
+scripts/ai-architecture-guard.mjs:506:  'apps/web-demo/src/hooks/layout/useAdminTabs.ts',
+scripts/ai-architecture-guard.mjs:507:  'apps/web-demo/src/hooks/layout/useLoading.ts',
+scripts/ai-architecture-guard.mjs:508:  'apps/web-demo/src/hooks/layout/useNprogress.ts',
+scripts/ai-architecture-guard.mjs:509:  'apps/web-demo/src/hooks/modules/usePermissionRoutes.ts',
+scripts/ai-architecture-guard.mjs:510:  'apps/web-demo/src/layouts/components/admin/AdminSidebarMenu.tsx',
+scripts/ai-architecture-guard.mjs:511:  'apps/web-demo/src/layouts/modules/LayoutAdmin.tsx',
+scripts/ai-architecture-guard.mjs:512:  'apps/web-demo/src/router/utils/guardEffects.ts',
+scripts/ai-architecture-guard.mjs:513:  'apps/web-demo/src/components/PrimeDialog/useDialog.ts',
+scripts/ai-architecture-guard.mjs:514:  'apps/web-demo/src/adapters/charts/UseEcharts.vue',
+scripts/ai-architecture-guard.mjs:515:  'apps/web-demo/src/stores/modules/system/device.ts',
+scripts/ai-architecture-guard.mjs:516:  'apps/web-demo/src/api/auth/auth.api.ts',
+scripts/ai-architecture-guard.mjs:517:  'apps/web-demo/src/api/system/system.api.ts',
+scripts/ai-architecture-guard.mjs:520:const timerCheckFiles = scanFiles(['apps/web-demo/src/**/*.{ts,tsx,vue}'])
+scripts/ai-architecture-guard.mjs:531:const designSystemFiles = scanFiles(['apps/web-demo/index.html', 'apps/web-demo/src/**/*.{vue,ts,tsx,css,scss}'])
+scripts/ai-architecture-guard.mjs:548:    'apps/web-demo/src/utils/theme/ptPresets/**/*.ts',
+scripts/ai-architecture-guard.mjs:549:    'apps/web-demo/src/utils/theme/presetComponents/**/*.ts',
+scripts/ai-architecture-guard.mjs:550:    'apps/web-demo/src/layouts/**/*.{vue,tsx}',
+scripts/ai-architecture-guard.mjs:560:const layoutStorePath = 'apps/web-demo/src/stores/modules/system/layout.ts'
+scripts/ai-architecture-guard.mjs:570:const sizeStorePath = 'apps/web-demo/src/stores/modules/system/size.ts'
+scripts/ai-architecture-guard.mjs:584:    'apps/web-demo/src/hooks/modules/useHttpRequest.ts',
+scripts/ai-architecture-guard.mjs:585:    'apps/web-demo/src/locales/**/*.ts',
+scripts/ai-architecture-guard.mjs:586:    'apps/web-demo/src/plugins/**/*.ts',
+scripts/ai-architecture-guard.mjs:594:const storeFiles = scanFiles(['apps/web-demo/src/stores/**/*.{ts,tsx}'])
+scripts/ai-architecture-guard.mjs:613:const apiFiles = scanFiles(['apps/web-demo/src/api/**/*.{ts,tsx}'])
+scripts/ai-architecture-guard.mjs:651:          `${node.expression.text}() calls in apps/web-demo/src/api must pass a config object with responseSchema`
+scripts/ai-architecture-guard.mjs:661:const routerModuleFiles = scanFiles(['apps/web-demo/src/router/modules/**/*.ts'])
+scripts/ai-architecture-guard.mjs:758:  const absTarget = path.join(cwd, target.replace(/^@\//, 'apps/web-demo/src/'))
+scripts/architecture/generate-dependency-graphs.mjs:71:  '  Web --> WebAdapters["apps/web-demo/src/adapters/**<br/>browser capabilities"]',
+scripts/ai-route-view-scaffold.mjs:51:const hookDir = segmentParts.length > 1 ? path.posix.join('apps/web-demo/src/hooks/modules', ...segmentParts.slice(0, -1)) : 'apps/web-demo/src/hooks/modules'
+scripts/ai-route-view-scaffold.mjs:53:const routeFile = path.posix.join('apps/web-demo/src/router/modules', options.routeFile ?? `${segmentParts.join('-')}.ts`)
+scripts/ai-route-view-scaffold.mjs:54:const viewFile = path.posix.join('apps/web-demo/src/views', segment, 'index.vue')

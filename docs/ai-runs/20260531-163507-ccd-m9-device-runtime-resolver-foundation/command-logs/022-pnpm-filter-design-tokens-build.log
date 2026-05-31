@@ -1,0 +1,4 @@
+
+> @ccd/design-tokens@1.0.38 build /Users/cc/MyPorject/ccd/packages/design-tokens
+> rm -f ../../node_modules/.tmp/packages-design-tokens.tsbuildinfo && tsc -p tsconfig.json
+

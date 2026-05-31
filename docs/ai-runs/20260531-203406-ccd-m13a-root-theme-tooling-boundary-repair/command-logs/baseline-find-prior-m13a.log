@@ -1,0 +1,4 @@
+$ bash -lc find docs/ai-runs -maxdepth 2 -iname "*m13a*" -o -iname "*root-theme-tooling*"
+docs/ai-runs/20260531-203406-ccd-m13a-root-theme-tooling-boundary-repair
+
+[exit 0]

@@ -1,0 +1,10 @@
+
+ RUN  v4.0.18 /Users/cc/MyPorject/ccd
+
+ ✓ |node| packages/vue-hooks/src/createAutoMittHook.spec.tsx (2 tests) 7ms
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  19:26:18
+   Duration  365ms (transform 51ms, setup 0ms, import 95ms, tests 7ms, environment 203ms)
+

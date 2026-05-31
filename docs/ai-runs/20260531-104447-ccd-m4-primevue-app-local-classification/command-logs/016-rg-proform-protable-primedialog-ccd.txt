@@ -1,0 +1,473 @@
+$ rg -n \b(ProForm|ProTable|PrimeDialog|Ccd[A-Z][A-Za-z0-9_]*)\b apps packages scripts .ai docs --hidden --glob !node_modules/** --glob !**/dist/** --glob !docs/ai-runs/** --glob !docs/generated/** --glob !.ai/generated/** --glob !coverage/**
+.ai/manifests/rule-index.json:59:      "description": "Governs all business views and ProTable/ProForm usage. Enforces PrimeVue purity, semantic layout shell, v-auth directive, and responsive patterns.",
+.ai/manifests/rule-index.json:63:        "src/components/ProTable/**",
+.ai/manifests/rule-index.json:64:        "src/components/ProForm/**"
+.ai/manifests/rule-index.json:553:    "src/components/ProForm/**": [
+.ai/manifests/rule-index.json:556:    "src/components/ProTable/**": [
+apps/desktop/src/views/DesktopHome.vue:5:import { CcdButton as Button, Icons } from '@ccd/vue-ui'
+docs/ai-plan/DECISIONS.md:69:Remaining P1 areas include Bridge, ProTable, UI boundary, HTTP boundary, and guard coverage.
+docs/ai-plan/DECISIONS.md:74:2. ProTable typings.
+docs/ai-plan/DECISIONS.md:546:COMP-005 proposes a future `packages/vue-pro-components` split if ProForm/ProTable growth would overload `packages/vue-ui`. The current task explicitly forbids broad rewrites without approval.
+docs/ai-plan/DECISIONS.md:558:When approved: `pnpm ci:prepare-internal`, `pnpm arch:graphs`, `pnpm api:report`, package build, web-demo type-check, and relevant ProForm/ProTable tests.
+docs/ai-plan/FINAL_VALIDATION_MATRIX.md:9:| COMP-001 package build/test | `pnpm --filter @ccd/vue-ui build && pnpm --filter @ccd/vue-ui test` | 2026-05-29 17:27 CST |                 0 / PASS | `docs/ai-runs/20260529-170536-ccd-p1-platform-extraction-and-boundaries/command-logs/COMP-001-20260529-172627-vue-ui-build.log`, `COMP-001-20260529-172754-vue-ui-test.log` | ProForm extracted to `@ccd/vue-ui`.                                       |
+docs/ai-plan/FINAL_VALIDATION_MATRIX.md:10:| COMP-002 package build/test | `pnpm --filter @ccd/vue-ui build && pnpm --filter @ccd/vue-ui test` | 2026-05-29 17:40 CST |                 0 / PASS | `docs/ai-runs/20260529-170536-ccd-p1-platform-extraction-and-boundaries/command-logs/COMP-002-20260529-173957-vue-ui-build.log`, `COMP-002-20260529-174017-vue-ui-test.log` | ProTable extracted to `@ccd/vue-ui`.                                      |
+docs/ai-plan/FINAL_VALIDATION_MATRIX.md:11:| Web app type-check          | `pnpm --filter @ccd/web-demo type-check`                            | 2026-05-29 17:40 CST |                 0 / PASS | `docs/ai-runs/20260529-170536-ccd-p1-platform-extraction-and-boundaries/command-logs/COMP-002-20260529-174005-web-demo-type-check.log`                                      | App consumers compile after ProForm/ProTable extraction.                  |
+scripts/ai-route-view-scaffold.mjs:153:  if (kind === 'form') return `${titleLabel} form page assembled on top of ProForm.`
+scripts/ai-route-view-scaffold.mjs:155:  return `${titleLabel} table page assembled on top of ProTable.`
+scripts/ai-route-view-scaffold.mjs:202:        <ProForm
+scripts/ai-route-view-scaffold.mjs:283:        <ProTable
+scripts/ai-route-view-scaffold.mjs:302:    return `import type { FormSchema } from '@/components/ProForm'
+scripts/ai-route-view-scaffold.mjs:441:  return `import type { ProTableColumn } from '@/components/ProTable'
+docs/ai-plan/PLAN.md:180:- Inspect ProForm/CoreTypes changes already made.
+docs/ai-plan/PLAN.md:183:- Validate focused ProForm and build output behavior.
+docs/ai-plan/PLAN.md:187:- ProTable functional refactor.
+docs/ai-plan/PLAN.md:193:- `apps/web-demo/src/components/ProForm/**`
+docs/ai-plan/PLAN.md:208:- Implementation approach: Inspect changed ProForm/Core type files and record findings.
+docs/ai-plan/PLAN.md:209:- Expected files or modules: `apps/web-demo/src/components/ProForm/**`.
+docs/ai-plan/PLAN.md:218:#### M1-T2 — ProForm focused validation
+docs/ai-plan/PLAN.md:221:- Objective: Validate tightened ProForm types.
+docs/ai-plan/PLAN.md:224:- Expected files or modules: ProForm engine and tests.
+docs/ai-plan/PLAN.md:230:- Rollback or revert note: Revert targeted ProForm type deltas only.
+docs/ai-plan/PLAN.md:259:- Keep M1 narrow. Do not touch Bridge, ProTable, HTTP, or UI boundary work.
+docs/ai-plan/PLAN.md:361:## M3 — ProTable typings and helper boundary
+docs/ai-plan/PLAN.md:364:Stabilize ProTable typings, helper availability, and public/local boundary.
+docs/ai-plan/PLAN.md:373:- Inspect `apps/web-demo/src/components/ProTable/**`.
+docs/ai-plan/PLAN.md:387:- `apps/web-demo/src/components/ProTable/**`
+docs/ai-plan/PLAN.md:388:- local ProTable index/types files.
+docs/ai-plan/PLAN.md:398:#### M3-T1 — ProTable helper inventory
+docs/ai-plan/PLAN.md:404:- Expected files or modules: `apps/web-demo/src/components/ProTable/**`.
+docs/ai-plan/PLAN.md:411:#### M3-T2 — ProTable exports correction
+docs/ai-plan/PLAN.md:417:- Expected files or modules: `apps/web-demo/src/components/ProTable/index.ts`.
+docs/ai-plan/PLAN.md:426:#### M3-T3 — ProTable props shape stabilization
+docs/ai-plan/PLAN.md:432:- Expected files or modules: ProTable props/type files.
+docs/ai-plan/PLAN.md:434:  - ProTable remains decoupled from concrete HTTP client.
+docs/ai-plan/PLAN.md:446:- ProTable becomes a concrete alova wrapper.
+docs/ai-plan/PLAN.md:930:- Blocker: table-heavy production screenshot remains blocked by existing ProTable/AppContainer layout debt; `/example/primevue-collection/pro-table/basic` renders `.p-datatable` with height `0` in both patched and original pxtorem exclusion A/B runs.
+docs/ai-plan/PLAN.md:1122:- P1 ProTable/HTTP/guard does not block app build.
+docs/ai-plan/PLAN.md:1130:- Preserve ProForm and submit flow.
+docs/ai-plan/PLAN.md:1177:- Objective: Preserve ProForm, submit flow, presets, password state, and feedback.
+docs/ai-plan/PLAN.md:1215:- ProForm behavior breaks.
+scripts/ai-architecture-guard.mjs:103:  'apps/web-demo/src/components/ProForm/engine/persistence/**',
+scripts/ai-architecture-guard.mjs:104:  'apps/web-demo/src/components/ProTable/engine/hooks/useProTableColumnSettingsStorage.ts',
+scripts/ai-architecture-guard.mjs:110:  'apps/web-demo/src/components/ProTable/engine/hooks/useProTableColumnSettingsStorage.ts',
+scripts/ai-architecture-guard.mjs:395:    fail('view-native-form', relPath, 'business views must not use native <form>; use <ProForm>')
+scripts/ai-architecture-guard.mjs:499:  'apps/web-demo/src/components/ProForm/engine/core/FormController.ts',
+scripts/ai-architecture-guard.mjs:500:  'apps/web-demo/src/components/ProForm/engine/validation/ValidationEngine.ts',
+scripts/ai-architecture-guard.mjs:513:  'apps/web-demo/src/components/PrimeDialog/useDialog.ts',
+packages/unocss-preset/src/index.ts:58:export interface CcdUnoConfigOptions {
+packages/unocss-preset/src/index.ts:63:export function createCcdUnoConfig(options: CcdUnoConfigOptions = {}): UserConfig {
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:136:| A-03 | A | P1 | NEEDS_REVIEW | app-local allowances | apps/web-demo | `README.md`, `docs/zh/02-architecture.md`, `docs/en/architecture-contract.md` | docs plus lane plan | App-local candidate allowance conflicts with no-public-app-common goal. | App becomes hidden platform layer. | M4, M7 | `pnpm docs:commands`, reviewer checklist | app component scan | `apps/web-demo/src/hooks/**`, `apps/web-demo/src/utils/**` |  | ProForm/ProTable moved; remaining candidates must be reclassified. |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:138:| B-02 | B | P1 | OPEN | dialog facade | `@ccd/vue-ui` plus app i18n adapter | `apps/web-demo/src/hooks/modules/useDialog.tsx` | `packages/vue-ui`, app i18n adapter | App owns dialog convenience API and i18n coupling. | Shared UI behavior remains app-local. | M4 | `pnpm --filter @ccd/vue-ui test`, web-demo type-check | hook scan | `packages/vue-ui/src/PrimeDialog/**` |  | Keep i18n in app if extracted. |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:161:| D-08 | D | P1 | OPEN | ownership docs | docs/vue-ui | `README.md`, `docs/architecture/ownership-boundaries.md`, `docs/zh/02-architecture.md` | docs | Docs still name removed app component paths as app-local candidates. | Codex may migrate backwards or inspect nonexistent paths. | M7 | `pnpm docs:commands` | component path scan | `packages/vue-ui/src/PrimeDialog/**`, `packages/vue-ui/src/ProForm/**`, `packages/vue-ui/src/ProTable/**` |  | ProForm/ProTable/PrimeDialog now live in vue-ui. |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:164:| D-11 | D | P1 | OPEN | AI scaffolds/guards | scripts/docs | `scripts/ai-route-view-scaffold.mjs`, `scripts/ai-architecture-guard.mjs`, `docs/ai-plan/PLAN.md` | current package public APIs | AI scaffold templates and guard allowlists still reference removed `apps/web-demo/src/components/ProForm|ProTable|PrimeDialog` paths. | Generated code or guards can target nonexistent app APIs. | M2, M7 | `pnpm codex:preflight`, `pnpm ai:guard` | stale path scan | `packages/vue-ui/src/index.ts` |  | New scan finding. |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:241:- Repair notes: Partially obsolete because ProForm/ProTable/PrimeDialog moved to `packages/vue-ui`.
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:281:- Related files: `packages/vue-ui/src/PrimeDialog/**`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:757:- Problem: Docs still list `apps/web-demo/src/components/PrimeDialog|ProForm|ProTable` as app-local candidates or do-not-move paths.
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:764:- Related files: `packages/vue-ui/src/PrimeDialog/**`, `packages/vue-ui/src/ProForm/**`, `packages/vue-ui/src/ProTable/**`
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:822:- Architecture decision: ProForm, ProTable, and PrimeDialog active owner is `packages/vue-ui`.
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1201:| `packages/vue-ui/src/PrimeDialog/**` | dialog primitive | vue-ui | B-02, D-08 | platform-package-public-api | UI primitive | UI primitive edits | no app i18n hardcoding | package tests |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1202:| `packages/vue-ui/src/ProForm/**` | ProForm primitive | vue-ui | D-08, D-11 | platform-package-public-api | UI primitive | UI primitive edits | no app-local import aliases | package tests |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1203:| `packages/vue-ui/src/ProTable/**` | ProTable primitive | vue-ui | D-08, D-11 | platform-package-public-api | UI primitive | UI primitive edits | no app-local import aliases | package tests |
+packages/unocss-preset/src/safelist/index.ts:45:export interface CcdUnoPresetProjectOptions {
+packages/unocss-preset/src/safelist/index.ts:49:export function configureCcdUnoPresetProject(options: CcdUnoPresetProjectOptions = {}): void {
+docs/ai-plan/STATUS.md:131:| B-007 | M8 table-heavy production screenshot and two e2e checks fail independently of the pxtorem patch                                                     | M8-T2                   | Separate ProTable/AppContainer layout validation lane for `.p-datatable` height `0` and scroll-memory regression | BLOCKED |
+docs/ai-plan/STATUS.md:162:M3 ProTable boundary update:
+docs/ai-plan/STATUS.md:164:- `apps/web-demo/src/components/ProTable/index.ts`
+docs/ai-plan/STATUS.md:165:- `apps/web-demo/src/components/ProTable/engine/types/props.ts`
+docs/ai-plan/STATUS.md:166:- `apps/web-demo/src/components/ProTable/engine/config/apiAdapter.ts`
+docs/ai-plan/STATUS.md:167:- `apps/web-demo/src/components/ProTable/README.md`
+docs/ai-plan/STATUS.md:259:| ProForm focused Vitest                       |     2026-05-29 07:35 CST | PASS, 4 files / 8 tests                                                                   | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M1-T2-20260529-073549-proform-focused-vitest.log`                            |
+docs/ai-plan/STATUS.md:269:| M3 ProTable helper inventory                 |     2026-05-29 07:43 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M3-T1-20260529-074338-protable-helper-inventory.log`                         |
+docs/ai-plan/STATUS.md:271:| ProTable focused Vitest                      |     2026-05-29 07:44 CST | PASS                                                                                      | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M3-T3-20260529-074417-protable-focused-vitest.log`                           |
+docs/ai-plan/STATUS.md:341:- M8 `P2-CSS-Validation` remains blocked by ProTable/AppContainer layout debt unrelated to the pxtorem patch.
+docs/ai-plan/RISK_REGISTER.md:7:| R-003   | Scope mixing across Bridge/ProTable/UI/HTTP/Vite/deps                                                                                                  |        High |   High | diff touches unrelated lanes                                                                                                                               | One milestone at a time; strict allowlist                                                                                                                                                                                                  | Codex                    | OPEN      | Medium        | unrelated files in diff                                             |
+docs/ai-plan/RISK_REGISTER.md:11:| R-007   | ProTable typing changes alter runtime table behavior                                                                                                   |      Medium | Medium | UI smoke or tests fail                                                                                                                                     | type-only changes preferred                                                                                                                                                                                                                | Codex                    | OPEN      | Low           | runtime template changes                                            |
+docs/ai-plan/RISK_REGISTER.md:15:| R-011   | CSS/token validation blocked by table-heavy layout debt unrelated to the M8 pxtorem patch                                                              |      Medium |   High | `P2-CSS-Validation` table screenshot blocked; `.p-datatable` height `0`; e2e snapshot and scroll-memory failures                                           | Current P2 validation passed `e2e:layout`, `e2e:visual`, and `e2e:qa:prepared`, including the ProTable non-zero geometry regression.                                                                                                       | Reviewer                 | MITIGATED | Low           | Future table-heavy e2e regression                                   |
+docs/ai-plan/RISK_REGISTER.md:16:| R-012   | Login Diorama changes auth UX inadvertently                                                                                                            |      Medium |   High | login interaction smoke fails                                                                                                                              | M11 blocked until explicit approval and prerequisite stability; preserve ProForm/submit flow when approved                                                                                                                                 | Codex                    | BLOCKED   | Medium        | M11 approved                                                        |
+packages/vue-ui/src/ProTable/engine/hooks/useProTable.ts:14:  /** 与 ProTable `stateKey` 一致，用于列顺序/显隐 LocalStorage 分桶 */
+.ai/runtime/repair_list.template.md:125:- [ ] [P0-SFC] Move `defineOptions()` below top-level imports in `apps/web-demo/src/components/ProForm/renderers/ProFormNode.vue`, `apps/web-demo/src/components/ProTable/ProTable.vue`, and `apps/web-demo/src/components/ProTable/VirtualGridRenderer.vue` so the SFC parser restores module scope and downstream imports resolve.
+.ai/runtime/repair_list.template.md:152:- [ ] [P1-CoreTypes] Tighten `apps/web-demo/src/components/ProForm/**` types, especially `FormController.ts`, `useField.ts`, `FieldRegistry.ts`, `SchemaNormalizer.ts`, and `ReactionEngine.ts`, so deep-clone, registry, and async-reaction values stop widening to `unknown` or `Record<string, unknown>`.
+.ai/runtime/repair_list.template.md:154:- [ ] [P1-CoreTypes-Validation] Run targeted `vue-tsc` and `vitest` checks for ProForm after changes.
+.ai/runtime/repair_list.template.md:166:## 10. P1 — ProTable Typing and Helper Restoration
+.ai/runtime/repair_list.template.md:168:Rationale: current repair template records missing ProTable typings and helper availability.
+.ai/runtime/repair_list.template.md:172:- [ ] [P1-ProTable] Restore missing ProTable typings and helper availability, including `useProTableInfiniteScroll`, `useProTableUrlSync`, props shape, and related imports after the SFC parse fix.
+.ai/runtime/repair_list.template.md:173:- [ ] [P1-ProTable-Exports] Ensure helpers are exported from the correct local or package boundary.
+.ai/runtime/repair_list.template.md:174:- [ ] [P1-ProTable-Validation] Run targeted type-check and smoke tests for ProTable views.
+.ai/runtime/repair_list.template.md:336:- The login form occupies the left 55%–60% of the desktop panel and keeps `ProForm` as the only multi-field form boundary.
+.ai/runtime/repair_list.template.md:344:- [ ] [P3-Login-Context] Build top-K context from `apps/web-demo/src/views/login/index.vue`, login components, `apps/web-demo/src/views/login/composables/useLoginSubmit.ts`, `packages/unocss-preset/src/shortcuts/semanticShortcuts.ts`, and relevant ProForm renderer typings.
+.ai/runtime/repair_list.template.md:365:- [ ] [P3-Login-ProForm] Preserve `ProForm` schema, validation, submit flow, demo account filling, locale re-keying, and `ProFormExpose` usage.
+.ai/runtime/repair_list.template.md:455:5. Tighten ProForm / ProTable / bridge typing.
+docs/ai-plan/VALIDATION.md:45:- focused ProForm tests after inspecting exact test names
+docs/ai-plan/VALIDATION.md:59:- focused ProTable tests/smoke after inspection
+.ai/runtime/repair_list.md:125:- [x] [P0-SFC] Move `defineOptions()` below top-level imports in `apps/web-demo/src/components/ProForm/renderers/ProFormNode.vue`, `apps/web-demo/src/components/ProTable/ProTable.vue`, and `apps/web-demo/src/components/ProTable/VirtualGridRenderer.vue` so the SFC parser restores module scope and downstream imports resolve.
+.ai/runtime/repair_list.md:155:- [x] [P1-CoreTypes] Tightened ProForm engine value precision by introducing `FormFieldValue<TValues>` and aligning `SubscriptionStore`, `FormController`, `ValidationEngine`, `useField`, `SchemaNormalizer`, and `ReactionEngine` boundaries to reduce `FieldState<unknown>` / `Record<string, unknown>` leakage while keeping runtime behavior unchanged.
+.ai/runtime/repair_list.md:156:- [x] [P1-CoreTypes-NoAny] Audited ProForm implementation code for `any`, `@ts-ignore`, and assertion-heavy core surfaces; implementation scan found no business-code `any`, and remaining casts are typed boundary bridges around generic schema keys, injection, record guards, or field/component adapter boundaries.
+.ai/runtime/repair_list.md:157:- [x] [P1-CoreTypes-Validation] Ran targeted ProForm validation: `pnpm --filter @ccd/web-demo type-check` passed, and focused Vitest for `FormController`, `DraftStorage`, `schemaResolver`, and `PrimeVueRenderer` passed with 4 files / 8 tests.
+.ai/runtime/repair_list.md:169:## 10. P1 — ProTable Typing and Helper Restoration
+.ai/runtime/repair_list.md:171:Rationale: current repair template records missing ProTable typings and helper availability.
+.ai/runtime/repair_list.md:175:- [x] [P1-ProTable] Restored ProTable typing boundary: verified `useProTableInfiniteScroll` and `useProTableUrlSync` exist and are internal-only, introduced local `ProTableApiConfig`, and removed ProTable's type dependency on `@/utils/http/types` while preserving injected `apiExecutor` behavior.
+.ai/runtime/repair_list.md:176:- [x] [P1-ProTable-Exports] Exported approved public API types (`ProTableApiConfig`, `ProTableApiExecutor`, `ProTableApiExecutorContext`, `ProTableUrlSyncOptions`) from `apps/web-demo/src/components/ProTable/index.ts`; kept internal scroll/URL hooks unexported because external inventory found no public consumers, and updated the example executor import to the public ProTable boundary.
+.ai/runtime/repair_list.md:177:- [x] [P1-ProTable-Validation] Ran M3 validation: ProTable helper inventory, `pnpm --filter @ccd/web-demo type-check`, focused ProTable Vitest, and `pnpm api:report` all passed with evidence under `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/`.
+.ai/runtime/repair_list.md:321:- [x] [P2-CSS-Validation] Resolved the prior table-heavy validation blocker with current P2 evidence: `pnpm e2e:layout`, `pnpm e2e:visual`, and `pnpm e2e:qa:prepared` passed in `docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/`, including the ProTable non-zero geometry regression.
+.ai/runtime/repair_list.md:359:- The login form occupies the left 55%–60% of the desktop panel and keeps `ProForm` as the only multi-field form boundary.
+.ai/runtime/repair_list.md:388:- [ ] [P3-Login-ProForm] BLOCKED pending M11 operator approval and prerequisite stability; ProForm integration was not changed.
+.ai/runtime/repair_list.md:478:5. Tighten ProForm / ProTable / bridge typing.
+docs/ai-plan/CHANGE_SUMMARY.md:15:- `COMP-001`: moved ProForm engine/renderers/tests into `packages/vue-ui`; app now injects storage/date runtime adapters.
+docs/ai-plan/CHANGE_SUMMARY.md:16:- `COMP-002`: moved ProTable engine/renderers/tests into `packages/vue-ui`; app now provides URL sync and record overlay wiring.
+docs/ai-plan/CHANGE_SUMMARY.md:17:- `COMP-003`: moved PrimeDialog into `packages/vue-ui`; app now injects runtime config.
+docs/ai-plan/CHANGE_SUMMARY.md:42:| UI package                   | `packages/vue-ui/**`                                                                                                                    | Own ProForm, ProTable, PrimeDialog, and CCD PrimeVue façade components.                | COMP-001/COMP-002/COMP-003/UI-002/UI-003 |
+.ai/runtime/repair-ledger.json:219:      "title": "Move `defineOptions()` below top-level imports in `apps/web-demo/src/components/ProForm/renderers/ProFormNode.vue`, `apps/web-demo/src/components/ProTable/ProTable.vue`, and `apps/web-demo/src/components/ProTable/VirtualGridRenderer.vue` so the SFC parser restores module scope and downstream imports resolve.",
+.ai/runtime/repair-ledger.json:221:        "apps/web-demo/src/components/ProForm/renderers/ProFormNode.vue",
+.ai/runtime/repair-ledger.json:222:        "apps/web-demo/src/components/ProTable/ProTable.vue",
+.ai/runtime/repair-ledger.json:223:        "apps/web-demo/src/components/ProTable/VirtualGridRenderer.vue"
+.ai/runtime/repair-ledger.json:369:      "title": "Tightened ProForm engine value precision by introducing `FormFieldValue<TValues>` and aligning `SubscriptionStore`, `FormController`, `ValidationEngine`, `useField`, `SchemaNormalizer`, and `ReactionEngine` boundaries to reduce `FieldState<unknown>` / `Record<string, unknown>` leakage while keeping runtime behavior unchanged.",
+.ai/runtime/repair-ledger.json:380:      "title": "Audited ProForm implementation code for `any`, `@ts-ignore`, and assertion-heavy core surfaces; implementation scan found no business-code `any`, and remaining casts are typed boundary bridges around generic schema keys, injection, record guards, or field/component adapter boundaries.",
+.ai/runtime/repair-ledger.json:391:      "title": "Ran targeted ProForm validation: `pnpm --filter @ccd/web-demo type-check` passed, and focused Vitest for `FormController`, `DraftStorage`, `schemaResolver`, and `PrimeVueRenderer` passed with 4 files / 8 tests.",
+.ai/runtime/repair-ledger.json:436:      "module": "P1-ProTable",
+.ai/runtime/repair-ledger.json:439:      "title": "Restored ProTable typing boundary: verified `useProTableInfiniteScroll` and `useProTableUrlSync` exist and are internal-only, introduced local `ProTableApiConfig`, and removed ProTable's type dependency on `@/utils/http/types` while preserving injected `apiExecutor` behavior.",
+.ai/runtime/repair-ledger.json:449:      "module": "P1-ProTable-Exports",
+.ai/runtime/repair-ledger.json:452:      "title": "Exported approved public API types (`ProTableApiConfig`, `ProTableApiExecutor`, `ProTableApiExecutorContext`, `ProTableUrlSyncOptions`) from `apps/web-demo/src/components/ProTable/index.ts`; kept internal scroll/URL hooks unexported because external inventory found no public consumers, and updated the example executor import to the public ProTable boundary.",
+.ai/runtime/repair-ledger.json:454:        "apps/web-demo/src/components/ProTable/index.ts"
+.ai/runtime/repair-ledger.json:462:      "module": "P1-ProTable-Validation",
+.ai/runtime/repair-ledger.json:465:      "title": "Ran M3 validation: ProTable helper inventory, `pnpm --filter @ccd/web-demo type-check`, focused ProTable Vitest, and `pnpm api:report` all passed with evidence under `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/`.",
+.ai/runtime/repair-ledger.json:1152:      "title": "Resolved the prior table-heavy validation blocker with current P2 evidence: `pnpm e2e:layout`, `pnpm e2e:visual`, and `pnpm e2e:qa:prepared` passed in `docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/`, including the ProTable non-zero geometry regression.",
+.ai/runtime/repair-ledger.json:1484:      "module": "P3-Login-ProForm",
+.ai/runtime/repair-ledger.json:1487:      "title": "BLOCKED pending M11 operator approval and prerequisite stability; ProForm integration was not changed.",
+docs/ai-plan/FINAL_GO_NO_GO.md:35:| M3        | DONE             | `docs/ai-runs/20260529-070550-ccd-architecture-repair/` | ProTable helper/type boundary repaired and validated.                                                        |
+docs/ai-plan/FINAL_GO_NO_GO.md:64:| B-007      | M8 table-heavy production screenshot and two e2e checks fail independently of the pxtorem patch.                 | Open separate ProTable/AppContainer layout validation lane.    | BLOCKED |
+packages/vue-ui/src/ProForm/engine/validation/schemaResolver.spec.ts:6:  it('converts zod DTO validation failures into ProForm field errors', async () => {
+packages/vue-ui/src/ProForm/engine/config.ts:2: * ProForm 引擎全局默认配置 (Engine Defaults Registry)
+packages/vue-ui/src/ProForm/engine/config.ts:12:   * 该值作为 ProForm 组件未显式传入 layout 时的回退。
+packages/vue-ui/src/ProForm/engine/config.ts:30:   * 注意：ProForm 内部仅在传入 string 时才会应用到样式中，避免 px/rem 魔法数。
+packages/vue-ui/src/ProForm/engine/config.ts:47:   * ProForm 使用 12 栅格布局：
+packages/vue-ui/src/ProTable/engine/config/apiAdapter.ts:10: * ProTable 自治拉取：将表格标准参数转为通用 REST 风格 query。
+packages/vue-ui/src/ProTable/engine/config/apiAdapter.ts:36:    throw new Error(`ProTable: data-key "${dataKey}" did not resolve to an array`)
+packages/vue-ui/src/ProTable/engine/config/apiAdapter.ts:39:    throw new Error(`ProTable: data-key "${dataKey}" resolved to an array with invalid row shape`)
+packages/vue-ui/src/ProTable/engine/core/TableController.ts:86:  /** True when ProTable is in request mode (autonomous fetch). */
+packages/vue-ui/src/ProTable/engine/core/TableController.ts:412:   * Trigger the initial fetch (called from ProTable onMounted when immediate=true).
+.ai/governance/policies/runtime.json:2111:      "path": "packages/vue-ui/src/PrimeDialog/PrimeDialog.vue",
+.ai/governance/policies/runtime.json:2127:      "path": "packages/vue-ui/src/PrimeDialog/useDialog.ts",
+.ai/governance/policies/runtime.json:2143:      "path": "packages/vue-ui/src/ProForm/engine/core/FormController.ts",
+.ai/governance/policies/runtime.json:2159:      "path": "packages/vue-ui/src/ProForm/engine/utils/logger.ts",
+.ai/governance/policies/runtime.json:2174:      "path": "packages/vue-ui/src/ProForm/engine/validation/ValidationEngine.ts",
+.ai/governance/policies/runtime.json:2190:      "path": "packages/vue-ui/src/ProForm/index.vue",
+.ai/governance/policies/runtime.json:2205:      "path": "packages/vue-ui/src/ProTable/engine/engines/export.ts",
+.ai/governance/policies/runtime.json:2220:      "path": "packages/vue-ui/src/ProTable/engine/hooks/useProTableInfiniteScroll.ts",
+.ai/governance/policies/runtime.json:2236:      "path": "packages/vue-ui/src/ProTable/ProTable.vue",
+.ai/governance/policies/runtime.json:2252:      "path": "packages/vue-ui/src/ProTable/VirtualGridRenderer.vue",
+packages/vue-ui/src/ProForm/README.md:1:## ProForm Engine 技术设计文档（TDD）
+packages/vue-ui/src/ProForm/README.md:3:> 本文是 `packages/vue-ui/src/ProForm` 的正式技术设计文档，面向 AI 与人类协同实现。
+packages/vue-ui/src/ProForm/README.md:12:ProForm 系统被抽象为五个主要层级：
+packages/vue-ui/src/ProForm/README.md:304:本节统一整理 ProForm Engine 的核心 TypeScript 类型，以便 AI 直接引用与扩展。
+packages/vue-ui/src/ProForm/README.md:507:### 4.7 ProForm 组件对外 API
+packages/vue-ui/src/ProForm/README.md:534:本节定义 `packages/vue-ui/src/ProForm` 的目标目录结构与各子目录职责，所有实现须与此保持一致。
+packages/vue-ui/src/ProForm/README.md:539:packages/vue-ui/src/ProForm/
+packages/vue-ui/src/ProForm/README.md:540:├── index.vue                  # 顶级 ProForm 组件（外部使用入口）
+packages/vue-ui/src/ProForm/README.md:1022:你要做的 PrimeVue ProForm
+packages/vue-ui/src/ProForm/README.md:1026:ProForm
+packages/vue-ui/src/ProForm/README.md:1058:下面给你的是一套 真正企业级 / 可长期演进 / UI-无关 / 类型安全 / 高性能 的 ProForm 表单引擎架构设计。
+packages/vue-ui/src/ProForm/README.md:1071:Ant Design ProForm
+packages/vue-ui/src/ProForm/README.md:1079:ProForm
+packages/vue-ui/src/ProForm/README.md:1464:一个顶级 ProForm 应该支持：
+packages/vue-ui/src/ProForm/README.md:1512:<ProForm
+packages/vue-ui/src/ProForm/README.md:1769:ProForm
+packages/vue-ui/src/ProForm/README.md:1816:我建议你的 ProForm 最终 hooks：
+packages/vue-ui/src/ProForm/README.md:1853:如果不设计这个，你的 ProForm 后期扩展会非常痛苦。
+packages/vue-ui/src/ProForm/README.md:1854:这个东西其实是 Ant Design ProForm、FormKit、TanStack Form 的核心扩展点。
+packages/vue-ui/src/ProForm/README.md:1858:很好，这一部分其实是 真正决定你的 ProForm 是否能长期扩展的关键设计。
+packages/vue-ui/src/ProForm/README.md:1867:像 FormKit、TanStack Form、Ant Design ProForm 都有类似的 字段注册机制。
+packages/vue-ui/src/ProForm/README.md:2173:你的 ProForm Engine 最终结构：
+packages/vue-ui/src/ProForm/README.md:2193:你的 ProForm 会获得：
+packages/vue-ui/src/ProForm/README.md:2634:你的 ProForm 本质上已经是：
+packages/vue-ui/src/ProForm/README.md:2663:目标是你实现的 ProForm Engine 最终具备和：
+packages/vue-ui/src/ProForm/README.md:3216:三十、最终你这个 ProForm Engine 的能力
+packages/vue-ui/src/ProForm/README.md:3250:下面给你一套 真正可以落地的 ProForm Engine TypeScript 类型系统设计。
+packages/vue-ui/src/ProForm/README.md:3265:ProForm Engine 类型体系应该分为 7层
+packages/vue-ui/src/ProForm/README.md:3597:二十一、ProForm 组件 Props
+packages/vue-ui/src/ProForm/README.md:3630:二十二、ProForm 组件 Emits
+packages/vue-ui/src/ProForm/README.md:3695:二十六、最终 ProForm Engine 的 TS 能力
+packages/vue-ui/src/ProForm/README.md:3716:如果你要做 真正顶级的 ProForm Engine
+packages/vue-ui/src/ProForm/README.md:3741:一、ProForm Engine 目录结构
+packages/vue-ui/src/ProForm/README.md:3811:└─ ProForm.vue # 顶级表单组件
+packages/vue-ui/src/ProForm/README.md:3905:四、ProForm.vue 组件 Props / Emits
+packages/vue-ui/src/ProForm/README.md:3966:ProForm.vue 初始化 → 解析 schema → normalize → build dependency graph
+packages/vue-ui/src/ProForm/engine/hooks/useFormContext.ts:11:    throw new Error('[ProForm] useFormContext must be used within a ProForm context')
+packages/vue-ui/src/ProTable/engine/types/props.ts:18: * The callback ProTable calls to fetch data.
+packages/vue-ui/src/ProTable/engine/types/props.ts:40: * 保持为本地结构类型，避免 ProTable 组件 API 绑定具体 HTTP 客户端。
+packages/vue-ui/src/ProTable/engine/types/props.ts:65: * apiUrl 模式下的请求执行器（由业务层注入，避免 ProTable 耦合具体请求库）
+packages/vue-ui/src/ProTable/engine/types/props.ts:106: * Extra query params merged into api/apiUrl requests (e.g. ProForm filter object).
+packages/vue-ui/src/ProTable/engine/types/props.ts:118:  /** 工具栏是否显示表格区域尺寸密度切换（紧凑 / 适中 / 宽松）；仅在 ProTable 内容子树覆盖 CSS 变量，不改全局 `useSizeStore`。 @default true */
+packages/vue-ui/src/ProTable/engine/types/props.ts:172:   * When provided, ProTable manages loading, data, total, and error state internally.
+packages/vue-ui/src/ProTable/engine/types/props.ts:190:   * 当设置该字段时，ProTable 会通过 `apiExecutor` 执行请求。
+packages/vue-ui/src/ProTable/engine/types/props.ts:247:/** Shape of the object exposed by ProTable via defineExpose (generic-safe). */
+packages/vue-ui/src/ProForm/engine/hooks/useForm.ts:11: * ProForm 表单入口 Hook
+packages/vue-ui/src/ProTable/engine/types/column.ts:2:import type { SelectOption } from '../../../ProForm'
+docs/zh/08-release.md:26:- `apps/web-demo/src/components/PrimeDialog`
+docs/zh/08-release.md:27:- `apps/web-demo/src/components/ProForm`
+docs/zh/08-release.md:28:- `apps/web-demo/src/components/ProTable`
+docs/zh/08-release.md:45:- `apps/web-demo/src/components/ProForm/**`
+docs/zh/08-release.md:46:- `apps/web-demo/src/components/ProTable/**`
+docs/zh/04-project-control-center.md:33:- `apps/web-demo/src/components/PrimeDialog`
+docs/zh/04-project-control-center.md:34:- `apps/web-demo/src/components/ProForm`
+docs/zh/04-project-control-center.md:35:- `apps/web-demo/src/components/ProTable`
+docs/zh/04-project-control-center.md:52:- `apps/web-demo/src/components/ProForm/**`
+docs/zh/04-project-control-center.md:53:- `apps/web-demo/src/components/ProTable/**`
+docs/architecture/ownership-boundaries.md:46:- `apps/web-demo/src/components/PrimeDialog`
+docs/architecture/ownership-boundaries.md:47:- `apps/web-demo/src/components/ProForm`
+docs/architecture/ownership-boundaries.md:48:- `apps/web-demo/src/components/ProTable`
+docs/architecture/ownership-boundaries.md:72:- `apps/web-demo/src/components/ProForm/**`
+docs/architecture/ownership-boundaries.md:73:- `apps/web-demo/src/components/ProTable/**`
+packages/vue-ui/src/ProTable/index.ts:1:export { default as ProTable } from './ProTable.vue'
+docs/zh/02-architecture.md:95:- `apps/web-demo/src/components/ProForm/**`
+docs/zh/02-architecture.md:96:- `apps/web-demo/src/components/ProTable/**`
+packages/vue-ui/src/ProTable/VirtualGridRenderer.vue:23:    /** 与 ProTable 表格区密度一致，驱动虚拟行 padding / 字号 */
+packages/vue-ui/src/ProForm/engine/utils/logger.ts:3:    console.error(`[ProForm Error]: ${msg}`, ...args)
+packages/vue-ui/src/ProForm/engine/utils/logger.ts:6:    console.warn(`[ProForm Warn]: ${msg}`, ...args)
+apps/web-demo/build/plugins.ts:205:    ProForm: '@ccd/vue-ui',
+apps/web-demo/build/plugins.ts:206:    ProTable: '@ccd/vue-ui',
+apps/web-demo/src/constants/runtime.spec.ts:30:  it('keeps ProForm persistence prefixes non-overlapping', () => {
+packages/vue-ui/src/ProTable/components/ProTableCrudViewModalBody.tsx:5:import { ProForm } from '../../ProForm'
+packages/vue-ui/src/ProTable/components/ProTableCrudViewModalBody.tsx:6:import type { FormSchema } from '../../ProForm'
+packages/vue-ui/src/ProTable/components/ProTableCrudViewModalBody.tsx:32:            <ProForm
+apps/web-demo/src/constants/validation.ts:1:/** 表单校验 — 正则与演示文案（示例页与 ProForm 演示共用） */
+packages/vue-ui/src/ProTable/components/ProTableToolbar.vue:22:    /** 是否显示表格区域尺寸密度切换（紧凑 / 适中 / 宽松），仅影响 ProTable 内容区 */
+apps/web-demo/src/constants/runtime.ts:21:/** localStorage key prefixes used by ProForm persistence (shared between DraftStorage and logout cleanup) */
+packages/vue-ui/src/CcdPrimeControls/index.ts:60:const ccdButton = createCcdPrimeControl('CcdButton', PrimeButton)
+packages/vue-ui/src/CcdPrimeControls/index.ts:61:const ccdDrawer = createCcdPrimeControl('CcdDrawer', PrimeDrawer)
+packages/vue-ui/src/CcdPrimeControls/index.ts:62:const ccdPanelMenu = createCcdPrimeControl('CcdPanelMenu', PrimePanelMenu)
+packages/vue-ui/src/CcdPrimeControls/index.ts:63:const ccdPopover = createCcdPrimeControl('CcdPopover', PrimePopover, {
+packages/vue-ui/src/CcdPrimeControls/index.ts:66:const ccdSelect = createCcdPrimeControl('CcdSelect', PrimeSelect)
+packages/vue-ui/src/CcdPrimeControls/index.ts:67:const ccdSelectButton = createCcdPrimeControl('CcdSelectButton', PrimeSelectButton)
+packages/vue-ui/src/CcdPrimeControls/index.ts:68:const ccdTieredMenu = createCcdPrimeControl('CcdTieredMenu', PrimeTieredMenu, {
+packages/vue-ui/src/CcdPrimeControls/index.ts:72:const ccdToggleSwitch = createCcdPrimeControl('CcdToggleSwitch', PrimeToggleSwitch)
+packages/vue-ui/src/CcdPrimeControls/index.ts:75:  ccdButton as CcdButton,
+packages/vue-ui/src/CcdPrimeControls/index.ts:76:  ccdDrawer as CcdDrawer,
+packages/vue-ui/src/CcdPrimeControls/index.ts:77:  ccdPanelMenu as CcdPanelMenu,
+packages/vue-ui/src/CcdPrimeControls/index.ts:78:  ccdPopover as CcdPopover,
+packages/vue-ui/src/CcdPrimeControls/index.ts:79:  ccdSelect as CcdSelect,
+packages/vue-ui/src/CcdPrimeControls/index.ts:80:  ccdSelectButton as CcdSelectButton,
+packages/vue-ui/src/CcdPrimeControls/index.ts:81:  ccdTieredMenu as CcdTieredMenu,
+packages/vue-ui/src/CcdPrimeControls/index.ts:82:  ccdToggleSwitch as CcdToggleSwitch,
+apps/web-demo/src/plugins/modules/proform.ts:28: * 预注册 ProForm 内置字段组件到全局 fieldRegistry 单例。
+packages/vue-ui/src/ProTable/components/ProTableCrudFormModalBody.tsx:6:import { ProForm } from '../../ProForm'
+packages/vue-ui/src/ProTable/components/ProTableCrudFormModalBody.tsx:7:import type { FormSchema, ProFormExpose } from '../../ProForm'
+packages/vue-ui/src/ProTable/components/ProTableCrudFormModalBody.tsx:49:            <ProForm
+packages/vue-ui/src/ProForm/renderers/PrimeVueRenderer.vue:80:  const message = `[ProForm] Component "${props.field.component}" is not registered.`
+packages/vue-ui/src/ProTable/README.md:1:# ProTable Architecture v1.0
+packages/vue-ui/src/ProTable/README.md:16:The goal is to create a **fully extensible ProTable system** comparable
+packages/vue-ui/src/ProTable/README.md:31:The ProTable architecture is designed with the following principles:
+packages/vue-ui/src/ProTable/README.md:69:    ├── ProTable Component
+packages/vue-ui/src/ProTable/README.md:265:The ProTable engine follows a deterministic state machine.
+packages/vue-ui/src/ProTable/README.md:295:    <ProTable />
+packages/vue-ui/src/ProTable/README.md:332:<ProTable :columns="columns" :data="data" virtual-scroll selectable />
+packages/vue-ui/src/ProTable/README.md:348:  <ProTable
+packages/vue-ui/src/ProTable/README.md:363:ProTable supports three height modes via the `heightMode` prop.
+packages/vue-ui/src/ProTable/README.md:375:<ProTable :columns="columns" :data="data" />
+packages/vue-ui/src/ProTable/README.md:386:<ProTable :columns="columns" :data="data" height-mode="auto" />
+packages/vue-ui/src/ProTable/README.md:397:<ProTable :columns="columns" :data="data" height-mode="fixed" height="360px" />
+packages/vue-ui/src/ProTable/README.md:410:Plugins allow extending ProTable functionality.
+packages/vue-ui/src/ProTable/README.md:456:    │   ├── ProTable.vue
+packages/vue-ui/src/ProTable/README.md:485:ProTable integrates with PrimeVue components:
+packages/vue-ui/src/ProTable/README.md:517:ProTable Architecture v1.0 provides a scalable foundation for building a
+packages/vue-ui/src/ProTable/README.md:528:This architecture allows teams to build **customized ProTable
+packages/vue-ui/README.md:13:`CcdPrimeControls` is a transitional wrapper set for audited layout and desktop shell usage. It forwards attrs and slots to PrimeVue internally while keeping the exported component identities CCD-owned. During this transition the wrappers retain type-only compatibility with the underlying PrimeVue prop surface so existing app call sites compile while importing only `Ccd*` names from `@ccd/vue-ui`.
+packages/vue-ui/src/ProForm/index.vue:107:    console.warn('[ProForm] schema.fields is empty or missing — form will render nothing.')
+apps/web-demo/src/locales/lang/example/en-US.ts:21:          primeDialog: 'PrimeDialog',
+apps/web-demo/src/locales/lang/example/en-US.ts:23:            root: 'ProForm Playground',
+apps/web-demo/src/locales/lang/example/en-US.ts:35:            root: 'ProTable',
+packages/vue-ui/src/ProTable/ProTable.vue:61:defineOptions({ name: 'ProTable' })
+packages/vue-ui/src/ProTable/ProTable.vue:155:          '[ProTable] apiUrl mode requires `apiExecutor` to decouple component from concrete HTTP client.'
+packages/vue-ui/src/ProTable/ProTable.vue:185:    '[ProTable] apiUrl mode requires `apiExecutor` prop. ' +
+apps/web-demo/src/views/login/components/LoginForm.vue:107:    <ProForm
+apps/web-demo/src/views/login/components/LoginForm.vue:237:    </ProForm>
+apps/web-demo/src/locales/lang/example/zh-CN.ts:23:            root: 'ProForm 超级表单',
+apps/web-demo/src/locales/lang/example/zh-CN.ts:35:            root: 'ProTable 超级表格',
+apps/web-demo/src/locales/lang/example/zh-CN.ts:76:          useProTable: 'ProTable Hook 引擎',
+apps/web-demo/src/types/components.d.ts:52:    ProForm: typeof import('@ccd/vue-ui')['ProForm']
+apps/web-demo/src/types/components.d.ts:55:    ProTable: typeof import('@ccd/vue-ui')['ProTable']
+packages/design-tokens/src/theme.ts:1645: * ProForm ColorPicker 插件示例默认 hex（与 `DEFAULT_THEME_NAME` 下 light.primary.default 一致，避免示例散落任意色值）
+apps/web-demo/src/locales/lang/core/en-US.ts:123:      'Declarative columns (valueEnum), toolbar fullscreen/export, :request pagination, useDialog + ProForm + async permission linkage — gold-standard CRUD.',
+packages/design-tokens/src/index.ts:1970: * ProForm ColorPicker 插件示例默认 hex（与 `DEFAULT_THEME_NAME` 下 light.primary.default 一致，避免示例散落任意色值）
+packages/vue-ui/src/ProForm/engine/types/index.ts:311: * ProForm 组件 expose 类型
+packages/vue-ui/src/ProForm/engine/types/index.ts:312: * 通过 ref 访问 ProForm 实例时使用
+packages/vue-ui/src/PrimeDialog/index.ts:1:export { default as PrimeDialog } from './PrimeDialog.vue'
+apps/web-demo/src/locales/lang/core/zh-CN.ts:122:      '声明式列（valueEnum）、工具栏全屏/导出、:request 分页、useDialog + ProForm 与异步权限联动 —— 企业级 CRUD 黄金样例。',
+packages/vue-ui/src/ProForm/index.ts:1:import ProForm from './index.vue'
+packages/vue-ui/src/ProForm/index.ts:3:export { ProForm }
+packages/vue-ui/src/ProForm/index.ts:51:type ProFormWithPluginApi = typeof ProForm & {
+packages/vue-ui/src/ProForm/index.ts:54:;(ProForm as ProFormWithPluginApi).use = (plugin: ProFormPlugin) => pluginManager.use(plugin)
+packages/vue-ui/src/PrimeDialog/useDialog.ts:2: * PrimeDialog 底层 Composable
+packages/vue-ui/src/index.ts:26:  CcdButton,
+packages/vue-ui/src/index.ts:27:  CcdDrawer,
+packages/vue-ui/src/index.ts:28:  CcdPanelMenu,
+packages/vue-ui/src/index.ts:29:  CcdPopover,
+packages/vue-ui/src/index.ts:30:  CcdSelect,
+packages/vue-ui/src/index.ts:31:  CcdSelectButton,
+packages/vue-ui/src/index.ts:32:  CcdTieredMenu,
+packages/vue-ui/src/index.ts:33:  CcdToggleSwitch,
+packages/vue-ui/src/index.ts:34:} from './CcdPrimeControls'
+packages/vue-ui/src/index.ts:36:export { ProForm } from './ProForm'
+packages/vue-ui/src/index.ts:48:} from './ProForm'
+packages/vue-ui/src/index.ts:74:} from './ProForm'
+packages/vue-ui/src/index.ts:78:  ProTable,
+packages/vue-ui/src/index.ts:82:} from './ProTable'
+packages/vue-ui/src/index.ts:116:} from './ProTable'
+packages/vue-ui/src/index.ts:119:  PrimeDialog,
+packages/vue-ui/src/index.ts:123:} from './PrimeDialog'
+packages/vue-ui/src/index.ts:132:} from './PrimeDialog'
+apps/web-demo/src/views/dashboard/index.vue:23:const loadProForm = () => import('@ccd/vue-ui').then(module => module.ProForm)
+apps/web-demo/src/views/dashboard/index.vue:24:const ProForm = defineAsyncComponent(loadProForm)
+apps/web-demo/src/views/dashboard/index.vue:280:// ProTable mock (recent alerts / node status)
+apps/web-demo/src/views/dashboard/index.vue:319:// Quick Action dialog (ProForm inside PrimeDialog)
+apps/web-demo/src/views/dashboard/index.vue:337:          <ProForm
+apps/web-demo/src/views/dashboard/index.vue:706:             material-solid + CScrollbar + ProTable
+apps/web-demo/src/views/dashboard/index.vue:733:          <ProTable
+packages/vue-ui/src/EmptyState/EmptyState.vue:9:import { CcdButton } from '../CcdPrimeControls'
+packages/vue-ui/src/EmptyState/EmptyState.vue:80:      <CcdButton
+packages/vue-ui/src/PrimeDialog/utils/types.ts:73:  /** 遮罩层 Uno 类名（毛玻璃 + 压暗，由 PrimeDialog 合成进 pt.mask，业务侧无需手写 pt） */
+apps/web-demo/src/api/example/users.ts:2: * 本地 Hono `GET|POST|PUT|DELETE /api/v1/users` 契约（ProTable 示例用）
+apps/web-demo/src/api/example/users.ts:130:/** Imperative ProTable executor compatibility wrapper. Prefer buildExampleUserListMethod with useHttpRequest for server-state UIs. */
+apps/web-demo/src/api/example/users.spec.ts:81:  it('unwraps response.data so ProTable keeps reading list and total at the top level', async () => {
+.ai/rules/design-system/00-unocss-guardrails.mdc:191:| ProTable / Data Grid | `material-solid` |
+.ai/rules/design-system/00-unocss-guardrails.mdc:192:| ProForm / Form containers | `material-elevated` |
+.ai/rules/design-system/00-unocss-guardrails.mdc:203:**FORBIDDEN**: `glass-*` inside `<ProTable>`, virtual lists, or nested inside another `glass-*` element (GPU performance).
+.ai/rules/design-system/03-material-system.mdc:35:- `<ProTable>` / Data Grids → `material-solid` ONLY.
+.ai/rules/design-system/03-material-system.mdc:36:- `<ProForm>` / Forms → `material-elevated`.
+.ai/rules/design-system/03-material-system.mdc:45:- **NEVER** use `glass-*` inside: `<ProTable>`, virtual lists, scrollable containers, or nested inside another `glass` element.
+.ai/rules/design-system/04-design-state-contract.mdc:91:  <div class="col-fill overflow-hidden"><!-- <ProTable> fills remaining height --></div>
+.ai/rules/design-system/04-design-state-contract.mdc:97:  <div class="bg-card rounded-md p-lg col-fill w-full max-w-3xl"><!-- <ProForm> --></div>
+.ai/rules/design-system/04-design-state-contract.mdc:177:- Spacing: prefer `p-sm`, `gap-sm` for toolbar; `ProTable` fills remaining height
+apps/web-demo/src/views/example/hooks/use-pro-table.vue:138:                  教育性 Hook 内部示例：刻意不使用 &lt;ProTable&gt; 组件，直接通过 Hook
+apps/web-demo/src/views/example/hooks/use-pro-table.vue:139:                  控制排序、过滤、分页与选中状态，自行渲染表格；生产业务表格必须使用 ProTable。
+apps/web-demo/src/views/example/hooks/use-pro-table.vue:258:              <!-- Educational low-level renderer: production business tables must use ProTable. -->
+.ai/rules/architecture/03-auth-rbac.mdc:88:| `example:advanced:*` | ProTable Advanced 示例列操作 |
+.ai/rules/components/01-primevue-pt-styling.mdc:144:1. `src/components/ProTable/ProTable.vue`
+.ai/rules/components/00-primevue-ecosystem.mdc:23:- `<DataTable>` / `<Column>` in business pages -> use `<ProTable>`
+.ai/rules/components/00-primevue-ecosystem.mdc:24:- raw business `<Dialog>` / `<Drawer>` declarations -> use `useDialog` + `PrimeDialog`
+.ai/rules/components/00-primevue-ecosystem.mdc:25:- multi-field business form built from raw controls -> use `<ProForm :schema>`
+.ai/rules/components/00-primevue-ecosystem.mdc:30:Inside `src/views/**` (Business Pages), native `<form>` is FORBIDDEN. MUST use `<ProForm>` for forms with 2+ fields. Single-field trivial cases may use standalone PrimeVue controls.
+.ai/rules/components/00-primevue-ecosystem.mdc:49:| `<table>` / `<thead>` / `<tbody>` / `<tr>` / `<td>` / `<th>` | `<DataTable>` + `<Column>` | Or `<ProTable>` for project tables |
+.ai/rules/components/00-primevue-ecosystem.mdc:74:2. **Custom ProForm field wrappers** (`src/components/ProForm/renderers/components/`) — may use native elements for fine-grained internal control.
+.ai/rules/components/00-primevue-ecosystem.mdc:81:- **Dialogs (ARCHITECTURAL PRIORITY):** Prefer the internal dialog abstraction (`@/components/PrimeDialog` or equivalent architecture-approved wrapper / `useDialog`) over raw PrimeVue `Dialog` declarations when implementing business dialogs, so lifecycle orchestration, layout constraints, and close behaviors remain centralized.
+.ai/rules/components/00-primevue-ecosystem.mdc:131:- Replace ad-hoc business dialogs with the internal dialog wrapper path (`PrimeDialog` / `useDialog`) where applicable.
+.ai/rules/components/00-primevue-ecosystem.mdc:146:1. **`src/components/ProTable/ProTable.vue`** — DataTable frozen column z-index management, row selection coloring, and grid line control. These are CSS-variable overrides that cannot be expressed via PT.
+.ai/rules/components/00-primevue-ecosystem.mdc:210:- [ ] Complex forms use `<ProForm>` schema engine when appropriate (`02-pro-components.mdc`)
+.ai/rules/components/00-primevue-ecosystem.mdc:211:- [ ] Complex tables use `<ProTable>` when appropriate (`02-pro-components.mdc`)
+.ai/rules/components/02-pro-components.mdc:2:description: Governs all business views and ProTable/ProForm usage. Enforces PrimeVue purity, semantic layout shell, v-auth directive, and responsive patterns.
+.ai/rules/components/02-pro-components.mdc:3:globs: ["src/views/**/*.vue", "src/views/**/*.tsx", "src/components/ProTable/**", "src/components/ProForm/**"]
+.ai/rules/components/02-pro-components.mdc:7:# Pro Components Law: Business Views, ProTable, ProForm
+.ai/rules/components/02-pro-components.mdc:9:Applies to all **business views** (CRUD, dashboards) and usage of the **ProTable** and **ProForm** engine components. Violations are architecture regressions.
+.ai/rules/components/02-pro-components.mdc:26:<ProTable :columns="columns" :data="rows" :loading="loading" />
+.ai/rules/components/02-pro-components.mdc:27:<ProForm :schema="schema" @submit="onSubmit" />
+.ai/rules/components/02-pro-components.mdc:42:| `<DataTable>` + `<Column>` | `<ProTable>` |
+.ai/rules/components/02-pro-components.mdc:43:| Multi-field `<form>` (2+ fields) | `<ProForm :schema>` |
+.ai/rules/components/02-pro-components.mdc:52:| CRUD / Server table / Infinite / Virtual list | `<ProTable>` |
+.ai/rules/components/02-pro-components.mdc:53:| Create / Edit / Validation / DAG form | `<ProForm>` |
+.ai/rules/components/02-pro-components.mdc:67:<ProTable :columns="columns" :data="rows" />
+.ai/rules/components/02-pro-components.mdc:69:<ProForm :schema="schema" @submit="onSubmit" />
+.ai/rules/components/02-pro-components.mdc:119:    <!-- ProTable -->
+.ai/rules/components/02-pro-components.mdc:134:## LAW 3 — ProTable Usage
+.ai/rules/components/02-pro-components.mdc:177:NEVER set explicit pixel height on the ProTable wrapper via inline style.
+.ai/rules/components/02-pro-components.mdc:194:<ProTable
+.ai/rules/components/02-pro-components.mdc:205:ProTable manages PrimeVue DataTable's `scrollable`/`scrollHeight` internally — do NOT pass these directly.
+.ai/rules/components/02-pro-components.mdc:209:## LAW 4 — ProForm Usage
+.ai/rules/components/02-pro-components.mdc:213:All forms with ≥2 fields **MUST** use `<ProForm>` with a typed `FormSchema`.
+.ai/rules/components/02-pro-components.mdc:215:Internal implementation note: native `<form>` is allowed inside `src/components/ProForm/**`
+.ai/rules/components/02-pro-components.mdc:220:ProForm uses an internal 12-column CSS grid. Control layout with field `span`.
+.ai/rules/components/02-pro-components.mdc:245:| `<table><tr><td>` in views | ❌ FORBIDDEN | `<ProTable :columns :data />` |
+.ai/rules/components/02-pro-components.mdc:246:| `<form><input>` in business views | ❌ FORBIDDEN | `<ProForm :schema />` |
+apps/web-demo/src/utils/theme/sizeEngine.ts:422: * ProTable 等组件在子树根上局部覆盖「内容区」尺寸变量（不修改 :root），
+apps/web-demo/src/views/example/system-configuration/unocss.vue:143:    note: '表格/数据网格基础材质（ProTable）',
+apps/web-demo/src/views/example/system-configuration/unocss.vue:346:      'v2.4.0 已发布：新增 ProForm Engine 批量事务更新、Z-Axis 物理剧场可视化、Size Engine V2 全景密度矩阵与语义快捷类系统。',
+apps/web-demo/src/views/example/system-configuration/unocss.vue:353:    name: 'ProForm Engine',
+apps/web-demo/src/views/example/system-configuration/unocss.vue:387:  'ProForm DAG',
+apps/web-demo/src/layouts/modules/LayoutAdmin.spec.ts:128:  CcdDrawer: defineComponent({
+apps/web-demo/src/layouts/modules/LayoutAdmin.spec.ts:129:    name: 'CcdDrawer',
+apps/web-demo/src/views/example/common/constants.vue:162:                  结构；生产业务表格必须使用 ProTable。
+apps/web-demo/src/layouts/modules/LayoutAdmin.tsx:3:import { CcdDrawer as Drawer } from '@ccd/vue-ui'
+apps/web-demo/src/views/example/common/enums.vue:169:                  的转换；生产业务表格必须使用 ProTable。
+.ai/rules/core/02-ui-preflight.mdc:22:- [ ] **Form Boundary:** Inside `src/views/**`, `<form>` is NOT used. Use `<ProForm>` for 2+ fields.
+apps/web-demo/src/layouts/components/User/index.vue:3:import { CcdButton as Button, CcdPopover as Popover } from '@ccd/vue-ui'
+.ai/rules/core/07-vue-auto-imports.mdc:100:import ProForm from '@/components/ProForm/index.vue'
+.ai/rules/core/07-vue-auto-imports.mdc:110:      <ProForm :schema="schema" />
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:4: * 职责：Toast、ConfirmPopup、DynamicDialog、PrimeDialog；
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:5: *       useToast 封装并挂到 window；PrimeVue locale 同步；useDialog + PrimeDialog
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:19:import { PrimeDialog } from '@ccd/vue-ui'
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:153:  <PrimeDialog
+apps/web-demo/src/layouts/components/GlobalSetting/SettingsContent.vue:18:  CcdButton as Button,
+apps/web-demo/src/layouts/components/GlobalSetting/SettingsContent.vue:19:  CcdSelect as Select,
+apps/web-demo/src/layouts/components/GlobalSetting/SettingsContent.vue:20:  CcdSelectButton as SelectButton,
+apps/web-demo/src/layouts/components/GlobalSetting/SettingsContent.vue:21:  CcdToggleSwitch as ToggleSwitch,
+apps/web-demo/src/layouts/components/admin/AdminBreadcrumbBar.vue:2:import { CcdTieredMenu as TieredMenu } from '@ccd/vue-ui'
+apps/web-demo/src/layouts/components/admin/AdminMenuPopup.tsx:1:import { CcdTieredMenu as TieredMenu } from '@ccd/vue-ui'
+apps/web-demo/src/layouts/components/admin/AdminSidebarMenuInline.tsx:7:import { CcdPanelMenu as PanelMenu, Icons } from '@ccd/vue-ui'
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/validation/index.vue:305:              <span class="text-lg font-bold text-foreground text-no-wrap">ProForm 表单验证</span>
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/validation/index.vue:374:            <ProForm
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/validation/index.vue:398:            </ProForm>
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/validation/index.vue:461:            <ProForm
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/validation/index.vue:477:            </ProForm>
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/validation/index.vue:517:          <ProForm
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/playground/index.vue:107:  console.log('ProForm Playground Submit:', values)
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/playground/index.vue:133:              <span class="text-lg font-bold text-foreground text-no-wrap">ProForm Playground</span>
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/playground/index.vue:166:          <ProForm
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/group/index.vue:375:              <span class="text-lg font-bold text-foreground text-no-wrap">ProForm 分组布局</span>
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/group/index.vue:408:            <ProForm
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/group/index.vue:423:            </ProForm>
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/group/index.vue:442:            <ProForm
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/group/index.vue:457:            </ProForm>
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/group/index.vue:476:            <ProForm
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/group/index.vue:491:            </ProForm>
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/group/index.vue:510:            <ProForm
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/group/index.vue:525:            </ProForm>
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/group/index.vue:545:              <ProForm
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/group/index.vue:560:              </ProForm>
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/group/index.vue:578:              <ProForm
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/group/index.vue:593:              </ProForm>
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/dag/index.vue:297:  console.log('ProForm DAG Submit Values:', values)
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/dag/index.vue:319:              <span class="text-lg font-bold text-foreground text-no-wrap">ProForm DAG 工作流</span>
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/dag/index.vue:356:                <ProForm
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/dag/index.vue:380:                </ProForm>
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/basic/index.vue:213:  console.log('ProForm Basic Submit Values:', values)
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/basic/index.vue:253:              <span class="text-lg font-bold text-foreground text-no-wrap">ProForm 基础用法</span>
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/basic/index.vue:259:              展示 ProForm 引擎已注册的全部基础字段，并演示全局 readonly / disabled
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/basic/index.vue:349:                <ProForm
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/basic/index.vue:369:                </ProForm>
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/basic/index.vue:73:              <span class="text-lg font-bold text-foreground text-no-wrap">ProTable 基础用法</span>
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/basic/index.vue:98:          <ProTable
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/reactions/index.vue:397:  console.log('ProForm Reactions Submit Values:', values)
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/reactions/index.vue:420:                ProForm Reactions 声明式联动
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/reactions/index.vue:456:                <ProForm
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/reactions/index.vue:472:                </ProForm>
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/plugins/index.vue:14: * - ProForm 字段注册要求 `component` 的类型为 `Component<FieldComponentProps<T>>`
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/plugins/index.vue:86:              <span class="text-lg font-bold text-foreground text-no-wrap">ProForm 插件系统</span>
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/plugins/index.vue:119:                <ProForm
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/plugins/index.vue:142:                </ProForm>
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/api-events/index.vue:143:                ProForm API & Events
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/api-events/index.vue:218:          <ProForm
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/advanced/index.vue:366:              <span class="text-lg font-bold text-foreground text-no-wrap">ProForm 高级用法</span>
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/advanced/index.vue:407:            <ProForm
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/advanced/index.vue:433:            </ProForm>
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/advanced/index.vue:492:            <ProForm
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/advanced/index.vue:516:            </ProForm>
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/advanced/index.vue:89:                  ProTable 高级用法
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/advanced/index.vue:223:      <!-- ── Section 2: ProTable ── -->
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/advanced/index.vue:224:      <!-- LAW 2.3: material-elevated; col-fill so ProTable height-mode=fill has a constrained parent -->
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/advanced/index.vue:235:            <ProTable
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/form-table-combo/index.vue:42:              <span class="text-lg font-bold text-foreground text-no-wrap">ProTable 搜索表格</span>
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/virtual/index.vue:139:                  ProTable 虚拟滚动
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/virtual/index.vue:374:      <!-- ── Section 3: ProTable ── -->
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/virtual/index.vue:381:            <ProTable
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/infinite/index.vue:25:              <span class="text-lg font-bold text-foreground text-no-wrap">ProTable 无限滚动</span>
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/infinite/index.vue:40:      <ProTable
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/form-table-combo/config.tsx:88:/** 用户详情侧栏（只读展示，由 useRecordOverlay.openView/openViewDrawer + ProForm readonly 打开） */
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/shared/apiExecutor.ts:6:    return Promise.reject(new Error(`Unsupported ProTable users method: ${method}`))
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/server/index.vue:26:                ProTable 服务端分页
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/server/index.vue:42:      <ProTable
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/api-events/index.vue:263:                ProTable API & Events
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/api-events/index.vue:333:              <ProTable
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/form-table-combo/components/TablePanel.vue:128:    <ProTable
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/form-table-combo/components/TablePanel.vue:151:    </ProTable>
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/form-table-combo/components/SearchPanel.vue:26:    <ProForm
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/form-table-combo/components/SearchPanel.vue:55:    </ProForm>
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/columns/index.vue:92:              <span class="text-lg font-bold text-foreground text-no-wrap">ProTable 列定义</span>
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/columns/index.vue:115:            <ProTable

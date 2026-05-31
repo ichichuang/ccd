@@ -1,0 +1,9 @@
+$ git diff --name-status -- docs/generated .ai/generated .ai/governance/api-snapshots scripts/normalize-generated-output.mjs
+M	.ai/generated/governance-report.json
+M	docs/generated/api-surface-report.json
+M	docs/generated/api-surface-report.md
+M	docs/generated/governance-report.md
+M	docs/generated/graphs/README.md
+M	docs/generated/graphs/dependency-graph.json
+M	docs/generated/graphs/package-dependency-graph.mmd
+M	scripts/normalize-generated-output.mjs

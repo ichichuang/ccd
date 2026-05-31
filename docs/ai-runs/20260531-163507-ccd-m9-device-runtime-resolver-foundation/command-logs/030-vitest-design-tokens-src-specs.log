@@ -1,0 +1,11 @@
+
+ RUN  v4.0.18 /Users/cc/MyPorject/ccd
+
+ ✓ |node| packages/design-tokens/src/sizeResolver.spec.ts (5 tests) 2ms
+ ✓ |node| packages/design-tokens/src/deviceResolver.spec.ts (5 tests) 2ms
+
+ Test Files  2 passed (2)
+      Tests  10 passed (10)
+   Start at  16:41:07
+   Duration  171ms (transform 132ms, setup 0ms, import 190ms, tests 4ms, environment 0ms)
+

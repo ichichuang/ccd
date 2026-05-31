@@ -1,112 +1,72 @@
 # Final Go / No-Go
 
-## P1 Platform Extraction Update
+## Current Decision
 
-- Active evidence directory: `docs/ai-runs/20260529-170536-ccd-p1-platform-extraction-and-boundaries/`
-- Current active decision: `CONDITIONAL_GO_FOR_IMPLEMENTABLE_P1`
-- Implemented P1 lanes: `APP-001`, `APP-002`, `ARCH-003`, `ARCH-004`, `ARCH-005`, `BUILD-001`, `COMP-001`, `COMP-002`, `COMP-003`, `COMP-004`, `DOC-002`, `E2E-006`, `E2E-007`, `E2E-008`, `GOV-002`, `GOV-004`, `HTTP-002`, `HTTP-003`, `HTTP-004`, `UI-002`, `UI-003`
-- Approval-gated P1 lanes remain blocked unless owner/operator approval is recorded.
+- Final decision: `NO_GO`
+- Current program: `CCD post-M16 NO_GO blocker-resolution program` (P0–P9)
+- P8 reconciliation status: `P8_FINAL_NO_GO`
+- Current accepted baseline: `M14_STATUS_LEDGER_RECONCILED_NO_GO`
+- Latest lanes: P0–P8 (2026-06-01)
+- Evidence directory: `docs/ai-runs/20260601-106000-ccd-p8-final-go-no-go-reconciliation/`
+- Full GO authorized: no
 
-### P1 Approval-Gated Blockers
+P1–P3 resolved owner decisions for safeStorage crypto (D-016 Option A), compression (D-019/B-08 Option A), and PrimeVue guard posture (D-017 Options A+D). P4 confirmed non-crypto safeStorage boundaries. P7 classified all 80 repair-ledger open tasks. Top-level status remains `NO_GO` because C-06 allowlist debt, G-02 open tasks, G-03 completion gate, dirty uncommitted tree, and M16a evidence gap remain.
 
-| Task ID  | Owner               | Status                | Exit criteria                                                                                  | Narrow next action                                             |
-| -------- | ------------------- | --------------------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| HTTP-001 | Architecture owner  | `BLOCKED_BY_OWNER`    | Written approval for `packages/contracts/src/http/**` scope and runtime-neutral contract list. | Decide whether HTTP contracts are allowed in this P1 lane.     |
-| HTTP-007 | Product owner       | `BLOCKED_BY_PRODUCT`  | Product-approved auth retry/offline/401 behavior.                                              | Record desired auth failure UX in `docs/ai-plan/DECISIONS.md`. |
-| UI-001   | Architecture owner  | `BLOCKED_BY_POLICY`   | Approved PrimeVue boundary policy and exception list.                                          | Approve policy before adding broad import guards.              |
-| GOV-003  | Repository operator | `BLOCKED_BY_OPERATOR` | Approval for `.github/**` mutation or remote branch protection work.                           | Decide whether local workflow/CODEOWNERS changes are in scope. |
+## Blocking Facts
 
-## Summary
+| Item                    | Status           | GO impact                                                               |
+| ----------------------- | ---------------- | ----------------------------------------------------------------------- |
+| `B-07`                  | `DONE`           | Resolved — app-owned crypto per D-016 Option A.                         |
+| `B-08`                  | `DONE`           | Resolved — app-owned compression per D-019 Option A.                    |
+| `C-06`                  | `OPEN`           | Allowlist debt remains; D-017 approved posture only (no M12 reduction). |
+| `D-016`                 | `APPROVED`       | Option A recorded 2026-06-01.                                           |
+| `D-017`                 | `APPROVED`       | Options A+D recorded 2026-06-01; Option E/M12 not approved.             |
+| `G-02`                  | `OPEN`           | 80 repair-ledger tasks classified; none closed in P7.                   |
+| `G-03`                  | `BLOCKED`        | Final completion cannot be declared.                                    |
+| `M16a evidence`         | missing dir      | Ledger references missing evidence package.                             |
+| `pnpm ai:doctor --open` | 80 open tasks    | repair ledger remains open.                                             |
+| `pnpm codex:preflight`  | fail (inherited) | `.cursor` presence + ai:sync drift note.                                |
+| review/commit package   | OPEN             | P9 prepared; not committed.                                             |
 
-- Final decision: `CONDITIONAL_GO_FOR_IMPLEMENTABLE_P1`
-- Decision date: 2026-05-29
-- Reviewer: Codex Desktop evidence sweep
-- Operator approval: Not granted for blocked approval-gated lanes
+## P8 Validation Matrix (2026-06-01)
 
-The implementable P1 scope is complete and validated. This is not approval to execute blocked P1 items; those remain out of scope until owner/operator/product approval is recorded.
+| Command                            | Result                                        |
+| ---------------------------------- | --------------------------------------------- |
+| `git diff --check`                 | pass                                          |
+| `pnpm docs:commands`               | pass                                          |
+| `pnpm project:doctor`              | pass                                          |
+| `pnpm ai:doctor --open`            | pass (80 open)                                |
+| `pnpm codex:preflight`             | **fail** (inherited `.cursor`, ai:sync drift) |
+| `pnpm ci:prepare-internal`         | pass                                          |
+| `pnpm ci:smoke:packages`           | pass                                          |
+| `pnpm arch:runtime`                | pass                                          |
+| `pnpm arch:boundaries`             | pass                                          |
+| `pnpm api:report`                  | pass                                          |
+| `pnpm ai:guard -- --format=json`   | pass                                          |
+| `pnpm validate:governance`         | pass                                          |
+| `pnpm type-check`                  | pass                                          |
+| `pnpm test:run`                    | pass                                          |
+| `pnpm --filter @ccd/web-demo test` | pass                                          |
+| `pnpm build:web-demo`              | pass                                          |
+| `pnpm build:desktop`               | pass                                          |
+| `pnpm build:ci`                    | pass                                          |
 
-## Completed milestones
+Logs: `docs/ai-runs/20260601-106000-ccd-p8-final-go-no-go-reconciliation/command-logs/`
 
-| Milestone | Status           | Evidence directory                                      | Notes                                                                                                        |
-| --------- | ---------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| M0        | DONE             | `docs/ai-runs/20260529-070550-ccd-architecture-repair/` | Baseline and post-7 checkpoint recorded.                                                                     |
-| M1        | DONE             | `docs/ai-runs/20260529-070550-ccd-architecture-repair/` | Residual CoreTypes/Turbo validation debt closed.                                                             |
-| M2        | DONE             | `docs/ai-runs/20260529-070550-ccd-architecture-repair/` | Capability Bridge validation closed.                                                                         |
-| M3        | DONE             | `docs/ai-runs/20260529-070550-ccd-architecture-repair/` | ProTable helper/type boundary repaired and validated.                                                        |
-| M4        | PARTIAL_BLOCKED  | `docs/ai-runs/20260529-070550-ccd-architecture-repair/` | Audit complete; guard enforcement blocked pending owner policy.                                              |
-| M5        | PARTIAL_BLOCKED  | `docs/ai-runs/20260529-070550-ccd-architecture-repair/` | Inventory/proposal complete; contract implementation blocked pending owner approval.                         |
-| M6        | PARTIAL_BLOCKED  | `docs/ai-runs/20260529-070550-ccd-architecture-repair/` | Guard inventory complete; enforcement questions blocked pending owner decisions.                             |
-| M7        | PARTIAL_BLOCKED  | `docs/ai-runs/20260529-070550-ccd-architecture-repair/` | Local governance documented; `.github/**` and remote settings blocked pending approval.                      |
-| M8        | PARTIAL_BLOCKED  | `docs/ai-runs/20260529-070550-ccd-architecture-repair/` | CSS patch validated; table-heavy/e2e validation blocked by unrelated layout debt.                            |
-| M9        | BLOCKED          | `docs/ai-runs/20260529-070550-ccd-architecture-repair/` | Vite 8 inventory complete; migration blocked pending isolated branch/worktree approval.                      |
-| M10       | BLOCKED          | `docs/ai-runs/20260529-070550-ccd-architecture-repair/` | Outdated inventory complete; upgrades blocked pending lane approval.                                         |
-| M11       | BLOCKED          | `docs/ai-runs/20260529-070550-ccd-architecture-repair/` | Login Diorama blocked pending approval and prerequisite stability.                                           |
-| M12       | DONE             | `docs/ai-runs/20260529-070550-ccd-architecture-repair/` | Secondary directive/date casing cleanup validated.                                                           |
-| M13       | DEFERRED_BLOCKED | `docs/ai-runs/20260529-070550-ccd-architecture-repair/` | P4 strategic work deferred or blocked pending owner approval.                                                |
-| M14       | DONE_WITH_NO_GO  | `docs/ai-runs/20260529-070550-ccd-architecture-repair/` | Final validation commands pass after generated-sync rerun; decision remains `NO_GO` due unresolved blockers. |
-
-## Deferred milestones
-
-| Milestone               | Reason                                                                             | Revisit trigger                                |
-| ----------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------- |
-| M13 P4 strategic work   | New org/starter/design-system/Reka/TanStack work is outside approved repair scope. | Explicit owner approval and separate lane.     |
-| M9 Vite 8 migration     | Requires dependency/toolchain mutation and isolated branch/worktree approval.      | Operator approves isolated Vite 8 lane.        |
-| M10 dependency upgrades | Requires package/lockfile mutation and per-lane approval.                          | Operator approves exactly one dependency lane. |
-
-## Blockers
-
-| Blocker ID | Description                                                                                                      | Required action                                                | Status  |
-| ---------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ------- |
-| B-003      | UI boundary guard would create broad false positives without approved policy/exception list.                     | Resolve D-003 owner policy before enforcement.                 | BLOCKED |
-| B-004      | HTTP contract package/core path creation requires owner approval.                                                | Resolve `.ai/runtime/owner_decisions.md` Decision 6.           | BLOCKED |
-| B-005      | Guard enforcement scope, rule contradictions, and design-token canonical file require owner/architect decisions. | Resolve owner Decisions 2, 3, 4, and 5.                        | BLOCKED |
-| B-006      | `.github/**` CODEOWNERS/template edits and remote branch-protection changes require operator approval.           | Approve local `.github/**` mutation or remote governance work. | BLOCKED |
-| B-007      | M8 table-heavy production screenshot and two e2e checks fail independently of the pxtorem patch.                 | Open separate ProTable/AppContainer layout validation lane.    | BLOCKED |
-| B-008      | Vite 8 migration requires isolated branch/worktree and dependency/toolchain approval.                            | Approve isolated Vite 8 lane.                                  | BLOCKED |
-| B-009      | Dependency modernization requires explicit per-lane approval.                                                    | Approve exactly one dependency lane.                           | BLOCKED |
-| B-010      | Login Diorama requires operator approval and stable prerequisites.                                               | Approve M11 after P1/P2 blockers are resolved.                 | BLOCKED |
-
-## Validation summary
-
-| Validation group | Result                        | Evidence                                                                                                                                                                                                                                                                                                                              |
-| ---------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Install          | PASS                          | `docs/ai-runs/20260529-170536-ccd-p1-platform-extraction-and-boundaries/command-logs/FINAL-20260529-184310-01-pnpm-install-frozen-lockfile.log`                                                                                                                                                                                       |
-| AI governance    | PASS                          | `docs/ai-runs/20260529-170536-ccd-p1-platform-extraction-and-boundaries/command-logs/FINAL-20260529-184331-03-pnpm-ai-doctor.log`, `docs/ai-runs/20260529-170536-ccd-p1-platform-extraction-and-boundaries/command-logs/FINAL-20260529-184344-04-pnpm-codex-preflight.log`                                                            |
-| Type check       | PASS                          | `docs/ai-runs/20260529-170536-ccd-p1-platform-extraction-and-boundaries/command-logs/FINAL-20260529-190032-06-pnpm-type-check-after-tieredmenu-forwarding.log`                                                                                                                                                                        |
-| Lint             | PASS with 2 existing warnings | `docs/ai-runs/20260529-170536-ccd-p1-platform-extraction-and-boundaries/command-logs/FINAL-20260529-190145-08-pnpm-lint-check-after-tieredmenu-forwarding.log`                                                                                                                                                                        |
-| Tests            | PASS, 71 files / 404 tests    | `docs/ai-runs/20260529-170536-ccd-p1-platform-extraction-and-boundaries/command-logs/FINAL-20260529-190127-07-pnpm-test-run-after-tieredmenu-forwarding.log`                                                                                                                                                                          |
-| Web build        | PASS                          | `docs/ai-runs/20260529-170536-ccd-p1-platform-extraction-and-boundaries/command-logs/FINAL-20260529-190159-09-pnpm-build-web-demo-after-tieredmenu-forwarding.log`                                                                                                                                                                    |
-| Desktop build    | PASS                          | `docs/ai-runs/20260529-170536-ccd-p1-platform-extraction-and-boundaries/command-logs/FINAL-20260529-190234-10-pnpm-build-desktop-after-tieredmenu-forwarding.log`, `docs/ai-runs/20260529-170536-ccd-p1-platform-extraction-and-boundaries/command-logs/FINAL-20260529-190259-11-pnpm-budget-desktop-after-tieredmenu-forwarding.log` |
-| E2E              | PASS                          | `docs/ai-runs/20260529-170536-ccd-p1-platform-extraction-and-boundaries/command-logs/FINAL-20260529-190429-16-pnpm-e2e-qa-prepared.log`                                                                                                                                                                                               |
-| Governance gate  | PASS                          | `docs/ai-runs/20260529-170536-ccd-p1-platform-extraction-and-boundaries/command-logs/FINAL-20260529-190615-17-pnpm-build-ci.log`                                                                                                                                                                                                      |
-| Full build CI    | PASS                          | `docs/ai-runs/20260529-170536-ccd-p1-platform-extraction-and-boundaries/command-logs/FINAL-20260529-190615-17-pnpm-build-ci.log`                                                                                                                                                                                                      |
-
-## Risk summary
-
-- High residual risks: R-009, R-010, R-011.
-- Medium residual risks: R-003, R-004, R-005, R-006, R-008, R-012, R-014, R-016, R-017, R-020.
-- Closed or mitigated risks: R-001 and M12-specific secondary test/case risk.
-
-## Decision criteria
+## Decision Criteria
 
 ### GO
 
-All selected milestones are complete or intentionally deferred, final validation passes, evidence exists, and no unresolved high-risk blocker remains.
-
-### CONDITIONAL_GO
-
-Validation passes except for documented and accepted non-blocking issues, or some milestones are deferred with explicit owner approval.
+All blockers resolved with evidence, owner/operator approvals recorded, open repair-ledger tasks closed or explicitly accepted as debt with owner sign-off, validation passes, review package committed or explicitly accepted dirty.
 
 ### NO_GO
 
-Any final validation fails, evidence is missing, generated drift is unexplained, or unresolved high-risk blockers remain.
+Any unresolved blocker remains, repair-ledger open tasks remain unclosed, C-06 allowlist debt remains, validation fails on required gates, or release package is unreviewed/uncommitted.
 
-## Final decision rationale
+## Final Rationale
 
-Final validation passes for all implementable P1 work. The correct final state is `CONDITIONAL_GO_FOR_IMPLEMENTABLE_P1`: implementable P1 is complete, while HTTP-001, HTTP-007, UI-001, and GOV-003 remain blocked by explicit approval gates and must not be executed without recorded owner/operator/product approval.
+The final state is **`NO_GO`**. Owner decisions closed B-07/B-08/D-016/D-019 and approved D-017 guard posture, but C-06 allowlist debt, 80 classified-but-open repair-ledger tasks (G-02), G-03 completion gate, inherited codex:preflight failure, M16a missing evidence directory, and uncommitted M1–P8 dirty tree prevent GO or CONDITIONAL_GO without explicit owner acceptance of residual debt.
 
-## Operator signoff
+## Recommended Next Action
 
-- Name: TBD
-- Date: TBD
-- Decision: TBD
+Review P9 commit package proposal. Optionally retro-create M16a evidence directory or accept ledger reference fix. Do not treat P1–P3 approvals as authorization for M12 allowlist reduction or package manifest changes.

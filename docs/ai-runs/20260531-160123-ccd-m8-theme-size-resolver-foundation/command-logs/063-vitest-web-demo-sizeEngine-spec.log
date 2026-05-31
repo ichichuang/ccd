@@ -1,0 +1,13 @@
+$ pnpm exec vitest run apps/web-demo/src/utils/theme/sizeEngine.spec.ts
+
+ RUN  v4.0.18 /Users/cc/MyPorject/ccd
+
+ ✓ |node| apps/web-demo/src/utils/theme/sizeEngine.spec.ts (8 tests) 2ms
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  16:16:06
+   Duration  442ms (transform 79ms, setup 0ms, import 178ms, tests 2ms, environment 203ms)
+
+
+[exit:0]

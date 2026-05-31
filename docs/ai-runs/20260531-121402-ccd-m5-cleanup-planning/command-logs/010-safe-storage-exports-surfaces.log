@@ -1,0 +1,91 @@
+apps/web-demo/src/utils/safeStorage/piniaSerializer.ts:1:import { parseSafeObject } from '@/adapters/http.adapter'
+apps/web-demo/src/utils/safeStorage/piniaSerializer.ts:2:import { appLogger } from '@/adapters/logger.adapter'
+apps/web-demo/src/utils/safeStorage/piniaSerializer.ts:3:import { packDataSync, unpackDataSync } from './core'
+apps/web-demo/src/utils/safeStorage/piniaSerializer.ts:12:export const createPiniaEncryptedSerializer = (secret?: string) => {
+apps/web-demo/src/utils/safeStorage/piniaSerializer.ts:31:        if (import.meta.env.DEV) {
+apps/web-demo/src/utils/safeStorage/piniaSerializer.ts:32:          appLogger.warn('[PiniaSerializer] 反序列化收到空值或非法字符串，视为无数据:', value)
+apps/web-demo/src/utils/safeStorage/piniaSerializer.ts:43:      if (import.meta.env.DEV) {
+apps/web-demo/src/utils/safeStorage/piniaSerializer.ts:44:        appLogger.warn(
+apps/web-demo/src/utils/safeStorage/safeStorage.ts:1:import { packData, unpackData, packDataSync, unpackDataSync } from './core'
+apps/web-demo/src/utils/safeStorage/safeStorage.ts:6:export const compressAndEncrypt = packData
+apps/web-demo/src/utils/safeStorage/safeStorage.ts:7:export const decryptAndDecompress = unpackData
+apps/web-demo/src/utils/safeStorage/safeStorage.ts:8:export const compressAndEncryptSync = packDataSync
+apps/web-demo/src/utils/safeStorage/safeStorage.ts:9:export const decryptAndDecompressSync = unpackDataSync
+apps/web-demo/src/utils/safeStorage/safeStorage.ts:14:export const encryptAndCompress = packData
+apps/web-demo/src/utils/safeStorage/safeStorage.ts:18:export const decompressAndDecrypt = unpackData
+apps/web-demo/src/utils/safeStorage/safeStorage.ts:22:export const encryptAndCompressSync = packDataSync
+apps/web-demo/src/utils/safeStorage/safeStorage.ts:26:export const decompressAndDecryptSync = unpackDataSync
+apps/web-demo/src/utils/safeStorage/index.ts:1:export * from './crypto'
+apps/web-demo/src/utils/safeStorage/index.ts:2:export * from './lzstring'
+apps/web-demo/src/utils/safeStorage/index.ts:3:export * from './core'
+apps/web-demo/src/utils/safeStorage/index.ts:4:export * from './safeStorage'
+apps/web-demo/src/utils/safeStorage/index.ts:5:export * from './piniaSerializer'
+apps/web-demo/src/utils/safeStorage/index.ts:6:export * from './storageMaintenance'
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:1:import type { SafeStorageAdapter, SafeStoragePolicy, StorageScope } from '@ccd/contracts'
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:3:export type StorageKeyPredicate = (key: string) => boolean
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:14:  if (typeof window === 'undefined') return undefined
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:15:  if (scope === 'local') return window.localStorage
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:16:  if (scope === 'session') return window.sessionStorage
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:20:export function createBrowserStorageAdapter(policy: SafeStoragePolicy): SafeStorageAdapter {
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:35:export const browserLocalSafeStorageAdapter = createBrowserStorageAdapter(localSafeStoragePolicy)
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:38: * Safe-storage infrastructure boundary for bulk localStorage maintenance.
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:42:export function removeLocalStorageKeysWhere(shouldRemove: StorageKeyPredicate): string[] {
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:43:  if (typeof localStorage === 'undefined') return []
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:47:  for (let index = localStorage.length - 1; index >= 0; index -= 1) {
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:48:    const key = localStorage.key(index)
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:55:    localStorage.removeItem(key)
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:61:export function writeLocalStorageValue(key: string, value: string): void {
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:62:  if (typeof localStorage === 'undefined') return
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:63:  localStorage.setItem(key, value)
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:66:export function readLocalStorageValue(key: string): string | null {
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:67:  if (typeof localStorage === 'undefined') return null
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:68:  return localStorage.getItem(key)
+apps/web-demo/src/utils/safeStorage/lzstring.ts:1:import LZString from 'lz-string'
+apps/web-demo/src/utils/safeStorage/lzstring.ts:3:export function compress(str: string): string {
+apps/web-demo/src/utils/safeStorage/lzstring.ts:8:export function decompress(str: string): string | null {
+apps/web-demo/src/utils/safeStorage/core.ts:1:import { appLogger } from '@/adapters/logger.adapter'
+apps/web-demo/src/utils/safeStorage/core.ts:2:import { parseJsonStorageValue, stringifyJsonStorageValue } from '@ccd/shared-utils'
+apps/web-demo/src/utils/safeStorage/core.ts:3:import type { SyncStorageCodec, StorageCodec } from '@ccd/contracts'
+apps/web-demo/src/utils/safeStorage/core.ts:4:import * as Crypto from './crypto'
+apps/web-demo/src/utils/safeStorage/core.ts:5:import { ENCRYPTION_FAILED } from './crypto'
+apps/web-demo/src/utils/safeStorage/core.ts:6:import * as LZ from './lzstring'
+apps/web-demo/src/utils/safeStorage/core.ts:14: * ⚠️ 前端“加密”本质仍是客户端可见混淆，不是真正的 secret 管理。此设计仅防止 localStorage 裸奔。
+apps/web-demo/src/utils/safeStorage/core.ts:20:  const injected = import.meta.env.VITE_PUBLIC_STORAGE_OBFUSCATION_KEY?.trim()
+apps/web-demo/src/utils/safeStorage/core.ts:23:  if (typeof window !== 'undefined') {
+apps/web-demo/src/utils/safeStorage/core.ts:26:    // VITE_APP_TITLE is set at build time; document.title is the runtime fallback.
+apps/web-demo/src/utils/safeStorage/core.ts:27:    const appName = import.meta.env.VITE_APP_TITLE || document?.title || 'ccd'
+apps/web-demo/src/utils/safeStorage/core.ts:28:    return `obfs:${window.location.origin}:${appName}:${STORAGE_KEY_VERSION}`
+apps/web-demo/src/utils/safeStorage/core.ts:32:  if (!import.meta.env.PROD) {
+apps/web-demo/src/utils/safeStorage/core.ts:33:    appLogger.warn(
+apps/web-demo/src/utils/safeStorage/core.ts:46:if (import.meta.env.PROD && typeof window !== 'undefined') {
+apps/web-demo/src/utils/safeStorage/core.ts:47:  const injected = import.meta.env.VITE_PUBLIC_STORAGE_OBFUSCATION_KEY?.trim()
+apps/web-demo/src/utils/safeStorage/core.ts:49:    appLogger.warn(
+apps/web-demo/src/utils/safeStorage/core.ts:64:  const prev = import.meta.env.VITE_PUBLIC_STORAGE_OBFUSCATION_KEY_PREVIOUS?.trim()
+apps/web-demo/src/utils/safeStorage/core.ts:80:export function packDataSync(value: unknown, secret?: string): string {
+apps/web-demo/src/utils/safeStorage/core.ts:90:    appLogger.warn('[SafeStorage] Pack failed:', e)
+apps/web-demo/src/utils/safeStorage/core.ts:101:export function unpackDataSync<T>(value: string, secret?: string): T | null {
+apps/web-demo/src/utils/safeStorage/core.ts:116:  appLogger.warn(
+apps/web-demo/src/utils/safeStorage/core.ts:154:    appLogger.warn('[SafeStorage] Async Pack failed:', e)
+apps/web-demo/src/utils/safeStorage/core.ts:174:  appLogger.warn(
+apps/web-demo/src/utils/safeStorage/core.ts:199:export const safeStorageSyncCodec: SyncStorageCodec<unknown> = {
+apps/web-demo/src/utils/safeStorage/core.ts:204:export const safeStorageCodec: StorageCodec<unknown> = {
+apps/web-demo/src/utils/safeStorage/crypto.ts:1:import { appLogger } from '@/adapters/logger.adapter'
+apps/web-demo/src/utils/safeStorage/crypto.ts:2:import { AES, HmacSHA256, Utf8 } from 'crypto-es'
+apps/web-demo/src/utils/safeStorage/crypto.ts:7:export const ENCRYPTION_FAILED = Symbol('ENCRYPTION_FAILED')
+apps/web-demo/src/utils/safeStorage/crypto.ts:10: * Compute HMAC-SHA256 using Web Crypto API (browser) with crypto-es fallback.
+apps/web-demo/src/utils/safeStorage/crypto.ts:14:  if (typeof crypto !== 'undefined' && crypto.subtle) {
+apps/web-demo/src/utils/safeStorage/crypto.ts:16:    const key = await crypto.subtle.importKey(
+apps/web-demo/src/utils/safeStorage/crypto.ts:23:    const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(data))
+apps/web-demo/src/utils/safeStorage/crypto.ts:32: * Synchronous HMAC-SHA256 via crypto-es.
+apps/web-demo/src/utils/safeStorage/crypto.ts:41: * **注意：** crypto-es 的 AES.encrypt/decrypt 底层是同步实现，
+apps/web-demo/src/utils/safeStorage/crypto.ts:43: * 当 Web Crypto 不可用时（如旧浏览器/SSR），回退到同步 crypto-es HMAC，
+apps/web-demo/src/utils/safeStorage/crypto.ts:46: * - crypto-es 会自动生成随机 Salt 和 IV，并将其编码到字符串中
+apps/web-demo/src/utils/safeStorage/crypto.ts:63:    appLogger.error('[Crypto] Encrypt failed:', e)
+apps/web-demo/src/utils/safeStorage/crypto.ts:71: * **注意：** 同 encrypt，crypto-es 底层同步实现，async 仅为 HMAC Web Crypto 路径。
+apps/web-demo/src/utils/safeStorage/crypto.ts:84:        appLogger.warn('[Crypto] HMAC verification failed — ciphertext may have been tampered with')
+apps/web-demo/src/utils/safeStorage/crypto.ts:105:export function encryptSync(plain: string, secret: string): string | typeof ENCRYPTION_FAILED {
+apps/web-demo/src/utils/safeStorage/crypto.ts:113:    appLogger.error('[Crypto] EncryptSync failed:', e)
+apps/web-demo/src/utils/safeStorage/crypto.ts:123:export function decryptSync(encrypted: string, secret: string): string | null {
+apps/web-demo/src/utils/safeStorage/crypto.ts:132:        appLogger.warn('[Crypto] HMAC verification failed — ciphertext may have been tampered with')
+apps/web-demo/src/utils/safeStorage/piniaSerializer.spec.ts:1:import { describe, expect, it, vi } from 'vitest'
+apps/web-demo/src/utils/safeStorage/piniaSerializer.spec.ts:2:import { createPiniaEncryptedSerializer } from './piniaSerializer'

@@ -1,0 +1,3 @@
+$ diff -u 085-after-api-generator-fix-validate-generated-shasum.log 089-after-api-generator-fix-refresh-generated-shasum.log
+
+exit_code=0

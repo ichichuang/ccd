@@ -1,0 +1,9 @@
+$ git status --short --untracked-files=all -- docs/generated .ai/generated .ai/governance/api-snapshots
+ M .ai/generated/governance-report.json
+ M docs/generated/api-surface-report.json
+ M docs/generated/api-surface-report.md
+ M docs/generated/governance-report.md
+ M docs/generated/graphs/README.md
+ M docs/generated/graphs/dependency-graph.json
+ M docs/generated/graphs/package-dependency-graph.mmd
+?? .ai/governance/api-snapshots/ccd__vue-app-platform.json

@@ -1,0 +1,102 @@
+$ rg -n crypto|crypto\.subtle|Hmac|HMAC|AES|import\.meta\.env|appLogger|window|document|localStorage|sessionStorage|lz-string|LZString apps/web-demo/src/utils/safeStorage apps/web-demo/src/plugins/modules/proform.ts apps/web-demo/src/stores/modules/system/size.ts apps/web-demo/src/stores/modules/system/layout.ts packages/shared-utils/src
+apps/web-demo/src/plugins/modules/proform.ts:22:    import.meta.env.VITE_PUBLIC_STORAGE_OBFUSCATION_KEY
+apps/web-demo/src/plugins/modules/proform.ts:34:    getStorage: () => (typeof window === 'undefined' ? undefined : window.localStorage),
+apps/web-demo/src/plugins/modules/proform.ts:35:    pack: data => packDataSync(data, import.meta.env.VITE_PUBLIC_STORAGE_OBFUSCATION_KEY),
+apps/web-demo/src/stores/modules/system/size.ts:63:    storage: localStorage,
+apps/web-demo/src/stores/modules/system/layout.ts:457:    key: `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-layout`,
+apps/web-demo/src/stores/modules/system/layout.ts:458:    storage: localStorage,
+apps/web-demo/src/utils/safeStorage/piniaSerializer.ts:2:import { appLogger } from '@/adapters/logger.adapter'
+apps/web-demo/src/utils/safeStorage/piniaSerializer.ts:16:     * 流程：Object → JSON.stringify → LZ-String(Base64) 压缩 → AES 同步加密
+apps/web-demo/src/utils/safeStorage/piniaSerializer.ts:24:     * 流程：AES 解密 → LZ-String(Base64) 解压 → 经 Type Boundary 校验后返回
+apps/web-demo/src/utils/safeStorage/piniaSerializer.ts:31:        if (import.meta.env.DEV) {
+apps/web-demo/src/utils/safeStorage/piniaSerializer.ts:32:          appLogger.warn('[PiniaSerializer] 反序列化收到空值或非法字符串，视为无数据:', value)
+apps/web-demo/src/utils/safeStorage/piniaSerializer.ts:43:      if (import.meta.env.DEV) {
+apps/web-demo/src/utils/safeStorage/piniaSerializer.ts:44:        appLogger.warn(
+apps/web-demo/src/utils/safeStorage/index.ts:1:export * from './crypto'
+packages/shared-utils/src/createCapabilityBridge.spec.ts:121:      const mutableEnv = import.meta.env as { MODE?: string }
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:14:  if (typeof window === 'undefined') return undefined
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:15:  if (scope === 'local') return window.localStorage
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:16:  if (scope === 'session') return window.sessionStorage
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:38: * Safe-storage infrastructure boundary for bulk localStorage maintenance.
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:43:  if (typeof localStorage === 'undefined') return []
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:47:  for (let index = localStorage.length - 1; index >= 0; index -= 1) {
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:48:    const key = localStorage.key(index)
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:55:    localStorage.removeItem(key)
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:62:  if (typeof localStorage === 'undefined') return
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:63:  localStorage.setItem(key, value)
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:67:  if (typeof localStorage === 'undefined') return null
+apps/web-demo/src/utils/safeStorage/storageMaintenance.ts:68:  return localStorage.getItem(key)
+packages/shared-utils/src/createCapabilityBridge.ts:54:      if (import.meta.env.MODE !== 'test') {
+apps/web-demo/src/utils/safeStorage/lzstring.ts:1:import LZString from 'lz-string'
+apps/web-demo/src/utils/safeStorage/lzstring.ts:5:  return LZString.compressToBase64(str)
+apps/web-demo/src/utils/safeStorage/lzstring.ts:10:  return LZString.decompressFromBase64(str)
+apps/web-demo/src/utils/safeStorage/core.ts:1:import { appLogger } from '@/adapters/logger.adapter'
+apps/web-demo/src/utils/safeStorage/core.ts:4:import * as Crypto from './crypto'
+apps/web-demo/src/utils/safeStorage/core.ts:5:import { ENCRYPTION_FAILED } from './crypto'
+apps/web-demo/src/utils/safeStorage/core.ts:14: * ⚠️ 前端“加密”本质仍是客户端可见混淆，不是真正的 secret 管理。此设计仅防止 localStorage 裸奔。
+apps/web-demo/src/utils/safeStorage/core.ts:20:  const injected = import.meta.env.VITE_PUBLIC_STORAGE_OBFUSCATION_KEY?.trim()
+apps/web-demo/src/utils/safeStorage/core.ts:23:  if (typeof window !== 'undefined') {
+apps/web-demo/src/utils/safeStorage/core.ts:26:    // VITE_APP_TITLE is set at build time; document.title is the runtime fallback.
+apps/web-demo/src/utils/safeStorage/core.ts:27:    const appName = import.meta.env.VITE_APP_TITLE || document?.title || 'ccd'
+apps/web-demo/src/utils/safeStorage/core.ts:28:    return `obfs:${window.location.origin}:${appName}:${STORAGE_KEY_VERSION}`
+apps/web-demo/src/utils/safeStorage/core.ts:32:  if (!import.meta.env.PROD) {
+apps/web-demo/src/utils/safeStorage/core.ts:33:    appLogger.warn(
+apps/web-demo/src/utils/safeStorage/core.ts:46:if (import.meta.env.PROD && typeof window !== 'undefined') {
+apps/web-demo/src/utils/safeStorage/core.ts:47:  const injected = import.meta.env.VITE_PUBLIC_STORAGE_OBFUSCATION_KEY?.trim()
+apps/web-demo/src/utils/safeStorage/core.ts:49:    appLogger.warn(
+apps/web-demo/src/utils/safeStorage/core.ts:64:  const prev = import.meta.env.VITE_PUBLIC_STORAGE_OBFUSCATION_KEY_PREVIOUS?.trim()
+apps/web-demo/src/utils/safeStorage/core.ts:75: * 核心序列化流程: Object -> JSON -> Compress(Base64) -> Encrypt(AES)
+apps/web-demo/src/utils/safeStorage/core.ts:90:    appLogger.warn('[SafeStorage] Pack failed:', e)
+apps/web-demo/src/utils/safeStorage/core.ts:116:  appLogger.warn(
+apps/web-demo/src/utils/safeStorage/core.ts:130:    if (decrypted === null) return undefined // HMAC failed or decrypt error — try next key
+apps/web-demo/src/utils/safeStorage/core.ts:154:    appLogger.warn('[SafeStorage] Async Pack failed:', e)
+apps/web-demo/src/utils/safeStorage/core.ts:174:  appLogger.warn(
+apps/web-demo/src/utils/safeStorage/crypto.ts:1:import { appLogger } from '@/adapters/logger.adapter'
+apps/web-demo/src/utils/safeStorage/crypto.ts:2:import { AES, HmacSHA256, Utf8 } from 'crypto-es'
+apps/web-demo/src/utils/safeStorage/crypto.ts:4:const HMAC_SEPARATOR = '|__hmac__:'
+apps/web-demo/src/utils/safeStorage/crypto.ts:10: * Compute HMAC-SHA256 using Web Crypto API (browser) with crypto-es fallback.
+apps/web-demo/src/utils/safeStorage/crypto.ts:13:async function computeHmac(data: string, secret: string): Promise<string> {
+apps/web-demo/src/utils/safeStorage/crypto.ts:14:  if (typeof crypto !== 'undefined' && crypto.subtle) {
+apps/web-demo/src/utils/safeStorage/crypto.ts:16:    const key = await crypto.subtle.importKey(
+apps/web-demo/src/utils/safeStorage/crypto.ts:19:      { name: 'HMAC', hash: 'SHA-256' },
+apps/web-demo/src/utils/safeStorage/crypto.ts:23:    const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(data))
+apps/web-demo/src/utils/safeStorage/crypto.ts:28:  return computeHmacSync(data, secret)
+apps/web-demo/src/utils/safeStorage/crypto.ts:32: * Synchronous HMAC-SHA256 via crypto-es.
+apps/web-demo/src/utils/safeStorage/crypto.ts:34:function computeHmacSync(data: string, secret: string): string {
+apps/web-demo/src/utils/safeStorage/crypto.ts:35:  return HmacSHA256(data, secret).toString()
+apps/web-demo/src/utils/safeStorage/crypto.ts:39: * 异步加密（OpenSSL 标准格式）+ HMAC 认证
+apps/web-demo/src/utils/safeStorage/crypto.ts:41: * **注意：** crypto-es 的 AES.encrypt/decrypt 底层是同步实现，
+apps/web-demo/src/utils/safeStorage/crypto.ts:42: * 此处的 async 仅因 HMAC 的 Web Crypto API 路径需要 await。
+apps/web-demo/src/utils/safeStorage/crypto.ts:43: * 当 Web Crypto 不可用时（如旧浏览器/SSR），回退到同步 crypto-es HMAC，
+apps/web-demo/src/utils/safeStorage/crypto.ts:46: * - crypto-es 会自动生成随机 Salt 和 IV，并将其编码到字符串中
+apps/web-demo/src/utils/safeStorage/crypto.ts:48: * - 附加 HMAC-SHA256 认证标签，防止密文篡改
+apps/web-demo/src/utils/safeStorage/crypto.ts:59:    const ciphertext = AES.encrypt(plain, secret).toString()
+apps/web-demo/src/utils/safeStorage/crypto.ts:60:    const hmac = await computeHmac(ciphertext, secret)
+apps/web-demo/src/utils/safeStorage/crypto.ts:61:    return ciphertext + HMAC_SEPARATOR + hmac
+apps/web-demo/src/utils/safeStorage/crypto.ts:63:    appLogger.error('[Crypto] Encrypt failed:', e)
+apps/web-demo/src/utils/safeStorage/crypto.ts:69: * 异步解密（自动解析 OpenSSL 格式）+ HMAC 验证
+apps/web-demo/src/utils/safeStorage/crypto.ts:71: * **注意：** 同 encrypt，crypto-es 底层同步实现，async 仅为 HMAC Web Crypto 路径。
+apps/web-demo/src/utils/safeStorage/crypto.ts:78:    const separatorIndex = encrypted.lastIndexOf(HMAC_SEPARATOR)
+apps/web-demo/src/utils/safeStorage/crypto.ts:81:      const storedHmac = encrypted.slice(separatorIndex + HMAC_SEPARATOR.length)
+apps/web-demo/src/utils/safeStorage/crypto.ts:82:      const computedHmac = await computeHmac(ciphertext, secret)
+apps/web-demo/src/utils/safeStorage/crypto.ts:83:      if (storedHmac !== computedHmac) {
+apps/web-demo/src/utils/safeStorage/crypto.ts:84:        appLogger.warn('[Crypto] HMAC verification failed — ciphertext may have been tampered with')
+apps/web-demo/src/utils/safeStorage/crypto.ts:87:      const bytes = AES.decrypt(ciphertext, secret)
+apps/web-demo/src/utils/safeStorage/crypto.ts:91:    // Legacy format without HMAC — allow decryption for migration
+apps/web-demo/src/utils/safeStorage/crypto.ts:92:    const bytes = AES.decrypt(encrypted, secret)
+apps/web-demo/src/utils/safeStorage/crypto.ts:101: * 同步加密（用于 Pinia / LocalStorage）+ HMAC 认证
+apps/web-demo/src/utils/safeStorage/crypto.ts:109:    const ciphertext = AES.encrypt(plain, secret).toString()
+apps/web-demo/src/utils/safeStorage/crypto.ts:110:    const hmac = computeHmacSync(ciphertext, secret)
+apps/web-demo/src/utils/safeStorage/crypto.ts:111:    return ciphertext + HMAC_SEPARATOR + hmac
+apps/web-demo/src/utils/safeStorage/crypto.ts:113:    appLogger.error('[Crypto] EncryptSync failed:', e)
+apps/web-demo/src/utils/safeStorage/crypto.ts:119: * 同步解密 + HMAC 验证
+apps/web-demo/src/utils/safeStorage/crypto.ts:126:    const separatorIndex = encrypted.lastIndexOf(HMAC_SEPARATOR)
+apps/web-demo/src/utils/safeStorage/crypto.ts:129:      const storedHmac = encrypted.slice(separatorIndex + HMAC_SEPARATOR.length)
+apps/web-demo/src/utils/safeStorage/crypto.ts:130:      const computedHmac = computeHmacSync(ciphertext, secret)
+apps/web-demo/src/utils/safeStorage/crypto.ts:131:      if (storedHmac !== computedHmac) {
+apps/web-demo/src/utils/safeStorage/crypto.ts:132:        appLogger.warn('[Crypto] HMAC verification failed — ciphertext may have been tampered with')
+apps/web-demo/src/utils/safeStorage/crypto.ts:135:      const bytes = AES.decrypt(ciphertext, secret)
+apps/web-demo/src/utils/safeStorage/crypto.ts:139:    // Legacy format without HMAC — allow decryption for migration
+apps/web-demo/src/utils/safeStorage/crypto.ts:140:    const bytes = AES.decrypt(encrypted, secret)
+
+[exit=0]

@@ -1,0 +1,10 @@
+
+ RUN  v4.0.18 /Users/cc/MyPorject/ccd
+
+ ✓ |node| apps/web-demo/src/stores/modules/system/layout.spec.ts (20 tests) 207ms
+
+ Test Files  1 passed (1)
+      Tests  20 passed (20)
+   Start at  19:00:19
+   Duration  525ms (transform 100ms, setup 0ms, import 57ms, tests 207ms, environment 201ms)
+

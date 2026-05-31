@@ -5,21 +5,27 @@ CCD enforces runtime isolation through workspace package boundaries and adapter 
 ## Active Runtime Surfaces
 
 ```text
-packages/contracts  -> no runtime access
-packages/core       -> no runtime access
-apps/web-demo       -> single browser runtime source of truth; browser runtime in adapters only
-apps/desktop        -> Tauri runtime in adapters only
-root                -> orchestration-only shell
+packages/contracts          -> strict runtime-neutral contracts
+packages/core               -> strict runtime-neutral injected-adapter facade
+packages/design-tokens      -> runtime-neutral token layer; classified diagnostics debt only
+packages/shared-utils       -> runtime-neutral utility layer; classified env-test debt only
+packages/unocss-preset      -> node-build package
+packages/vue-*              -> governed web-library packages with exact runtime surface classification
+apps/web-demo               -> browser app runtime; adapters preferred, exact app-local exceptions registered
+apps/desktop                -> desktop WebView app; Tauri runtime in adapters only
+root                        -> orchestration-only shell
 ```
 
 ## Core Runtime-Neutrality
 
-`packages/contracts` and `packages/core` must not access:
+`packages/contracts` and `packages/core` are strict runtime-neutral packages and must not access:
 
 - browser globals: `window`, `document`, `navigator`, `localStorage`, `sessionStorage`, `fetch`, `XMLHttpRequest`
 - Node globals/builtins: `process`, `fs`, `path`
 - runtime side effects: `console`, timers, direct `crypto`
 - Tauri APIs or `invoke()`
+
+`packages/design-tokens` and `packages/shared-utils` are also classified as runtime-neutral. Existing non-strict diagnostics/test-reset runtime references are exact policy exceptions and are tracked as debt, not as reusable runtime permission.
 
 Validation:
 
@@ -29,7 +35,7 @@ pnpm arch:runtime
 
 ## Adapter Boundaries
 
-Runtime access is allowed only in app adapter layers:
+Runtime access should be adapter-owned first:
 
 ```text
 apps/web-demo/src/adapters/**
@@ -41,6 +47,31 @@ Rules:
 - Browser storage/network/logger implementations stay in web adapters.
 - Tauri imports and `invoke()` stay in desktop adapters.
 - Adapters translate runtime capability to contracts; they do not own business workflows.
+
+M3 does not migrate existing app source. Existing non-adapter browser runtime usage is allowed only when the exact file and runtime surface are registered in `.ai/governance/policies/runtime.json` with classification, related issue IDs, migration target, and revisit lane. New unclassified production browser runtime access fails `pnpm arch:runtime`.
+
+M4 app-local classification adds a second layer of meaning on top of those exact runtime exceptions: app shell, app adapter, app store, app plugin integration, app view, app layout, app-local compatibility facade, app-local shared candidate, migration candidate, stale-doc candidate, test-only, violation candidate, or needs-owner-decision. This classification is evidence for future lanes, not a runtime allowlist broadening.
+
+M5 planning records the safeStorage/theme/size/device split without moving source: pure contracts/helpers/resolvers may target `packages/contracts`, `packages/shared-utils`, or `packages/design-tokens`; injected DOM/storage/runtime primitives may target `packages/vue-app-platform`; concrete browser collectors, persistence, Pinia stores, router/i18n bindings, and app bootstrap wiring stay app-owned or adapter-injected.
+
+SafeStorage crypto remains blocked on B-07 owner decision. Web Crypto/fallback implementation must not move into `packages/core` or `packages/contracts`.
+
+M5 does not broaden runtime or PrimeVue allowlists. PrimeVue allowlist reduction requires future source migration first because no current row is safely removable without behavior/API movement.
+
+M6 records proposed decisions and lane split only. It does not approve crypto movement, PrimeVue allowlist edits, runtime policy weakening, or source migration.
+
+M8 establishes pure size resolver helpers under `packages/design-tokens` and keeps browser DOM/preload/storage/device/store behavior in `apps/web-demo`. This is non-crypto foundation progress only and does not reduce runtime exception requirements for app-owned surfaces.
+
+M9 establishes pure device resolver helpers under `packages/design-tokens` and keeps browser collectors, listener lifecycle, `visualViewport`, rAF/timers, and store mutation in `apps/web-demo`.
+
+M10 establishes pure layout visibility reducer helpers under `packages/vue-app-platform` and keeps Pinia ownership, persisted preferences, `syncAction`, loading counters, mobile drawer runtime state, and app singleton access in `apps/web-demo`.
+
+M11 verifies hook/facade convergence without reducing runtime boundaries. App event maps, app i18n defaults, app router query sync, app storage/date injection, and PrimeVue app plugin wiring stay in `apps/web-demo`; package layers keep only the generic Vue hook factory, dialog core, ProTable adapter key/types, and ProForm extension points.
+
+Inventory and exceptions:
+
+- `docs/ai-runs/20260531-101606-ccd-m3-browser-runtime-boundary/reports/runtime-surface-inventory.md`
+- `docs/ai-runs/20260531-101606-ccd-m3-browser-runtime-boundary/reports/exceptions-register.md`
 
 ## Import Boundaries
 

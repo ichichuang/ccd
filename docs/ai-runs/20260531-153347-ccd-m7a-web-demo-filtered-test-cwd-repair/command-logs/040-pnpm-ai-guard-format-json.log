@@ -1,0 +1,13 @@
+$ pnpm ai:guard -- --format=json
+
+> ccd@1.0.38 ai:guard /Users/cc/MyPorject/ccd
+> node scripts/ai-architecture-guard.mjs -- --format=json
+
+{
+  "ok": true,
+  "mode": "full",
+  "scannedFiles": null,
+  "findings": []
+}
+
+[exit=0]

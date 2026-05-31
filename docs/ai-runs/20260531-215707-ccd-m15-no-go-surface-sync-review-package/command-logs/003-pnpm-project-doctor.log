@@ -1,0 +1,41 @@
+$ pnpm project:doctor
+started_at=2026-05-31T14:06:40Z
+
+> ccd@1.0.38 project:doctor /Users/cc/MyPorject/ccd
+> node scripts/project-config.mjs doctor
+
+file                                       | field                | expected                                                                    | actual                                                                      | status
+-------------------------------------------|----------------------|-----------------------------------------------------------------------------|-----------------------------------------------------------------------------|-------
+package.json                               | name                 | ccd                                                                         | ccd                                                                         | ok    
+package.json                               | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+package.json                               | description          | Self-protecting deterministic multi-runtime platform architecture.          | Self-protecting deterministic multi-runtime platform architecture.          | ok    
+package.json                               | author               | Chi Chuang                                                                  | Chi Chuang                                                                  | ok    
+package.json                               | license              | GPL-3.0                                                                     | GPL-3.0                                                                     | ok    
+package.json                               | homepage             | https://www.ccd.wzdxcc.cloudns.org/                                         | https://www.ccd.wzdxcc.cloudns.org/                                         | ok    
+package.json                               | keywords             | ["vue3","typescript","vite","tauri","monorepo","governance","architecture"] | ["vue3","typescript","vite","tauri","monorepo","governance","architecture"] | ok    
+apps/web-demo/src/constants/brand.ts       | name                 | ccd                                                                         | ccd                                                                         | ok    
+apps/web-demo/src/constants/brand.ts       | displayName          | CCD                                                                         | CCD                                                                         | ok    
+apps/web-demo/src/constants/brand.ts       | subtitle             | Platform                                                                    | Platform                                                                    | ok    
+apps/web-demo/src/constants/brand.ts       | description          | Self-protecting deterministic multi-runtime platform architecture.          | Self-protecting deterministic multi-runtime platform architecture.          | ok    
+apps/web-demo/src/constants/brand.ts       | slogan               | Self-protecting deterministic multi-runtime platform architecture           | Self-protecting deterministic multi-runtime platform architecture           | ok    
+apps/web-demo/src/constants/brand.ts       | author               | Chi Chuang                                                                  | Chi Chuang                                                                  | ok    
+apps/desktop/package.json                  | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+apps/web-demo/package.json                 | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/contracts/package.json            | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/core/package.json                 | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/design-tokens/package.json        | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/shared-utils/package.json         | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/unocss-preset/package.json        | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/vue-app-platform/package.json     | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/vue-charts/package.json           | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/vue-hooks/package.json            | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/vue-primevue-adapter/package.json | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/vue-ui/package.json               | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+apps/desktop/src-tauri/tauri.conf.json     | productName          | CCD Desktop                                                                 | CCD Desktop                                                                 | ok    
+apps/desktop/src-tauri/tauri.conf.json     | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+apps/desktop/src-tauri/tauri.conf.json     | identifier           | com.ccd.desktop                                                             | com.ccd.desktop                                                             | ok    
+apps/desktop/src-tauri/tauri.conf.json     | app.windows[0].title | CCD Desktop                                                                 | CCD Desktop                                                                 | ok    
+.ai/governance/policies/version.json       | policyVersion        | 2026.05.18                                                                  | 2026.05.18                                                                  | ok    
+.ai/governance/policies/version.json       | governancePhase      | phase-4-self-protecting-platform                                            | phase-4-self-protecting-platform                                            | ok    
+ended_at=2026-05-31T14:06:40Z
+exit_code=0

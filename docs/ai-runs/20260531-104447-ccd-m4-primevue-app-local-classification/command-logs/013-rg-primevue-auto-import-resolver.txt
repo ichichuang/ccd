@@ -1,0 +1,4 @@
+$ rg -n @primevue/auto-import-resolver apps packages scripts .ai docs package.json pnpm-workspace.yaml --hidden --glob !node_modules/** --glob !**/dist/** --glob !docs/ai-runs/** --glob !docs/generated/** --glob !.ai/generated/** --glob !coverage/**
+package.json:224:    "@primevue/auto-import-resolver": "^4.5.4",
+apps/web-demo/build/plugins.ts:9:import { PrimeVueResolver } from '@primevue/auto-import-resolver'
+apps/web-demo/package.json:65:    "@primevue/auto-import-resolver": "^4.5.4",

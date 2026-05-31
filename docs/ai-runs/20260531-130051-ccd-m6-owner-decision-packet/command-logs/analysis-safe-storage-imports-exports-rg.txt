@@ -1,0 +1,47 @@
+packages/contracts/src/index.ts:1:export type { CryptoProvider } from './crypto'
+apps/web-demo/src/utils/safeStorage/piniaSerializer.ts:3:import { packDataSync, unpackDataSync } from './core'
+apps/web-demo/src/utils/safeStorage/piniaSerializer.ts:19:      return secret ? packDataSync(value, secret) : packDataSync(value)
+apps/web-demo/src/utils/safeStorage/piniaSerializer.ts:38:      const result = secret ? unpackDataSync(value, secret) : unpackDataSync(value)
+apps/web-demo/src/utils/safeStorage/safeStorage.ts:1:import { packData, unpackData, packDataSync, unpackDataSync } from './core'
+apps/web-demo/src/utils/safeStorage/safeStorage.ts:6:export const compressAndEncrypt = packData
+apps/web-demo/src/utils/safeStorage/safeStorage.ts:7:export const decryptAndDecompress = unpackData
+apps/web-demo/src/utils/safeStorage/safeStorage.ts:8:export const compressAndEncryptSync = packDataSync
+apps/web-demo/src/utils/safeStorage/safeStorage.ts:9:export const decryptAndDecompressSync = unpackDataSync
+apps/web-demo/src/utils/safeStorage/safeStorage.ts:14:export const encryptAndCompress = packData
+apps/web-demo/src/utils/safeStorage/safeStorage.ts:18:export const decompressAndDecrypt = unpackData
+apps/web-demo/src/utils/safeStorage/safeStorage.ts:22:export const encryptAndCompressSync = packDataSync
+apps/web-demo/src/utils/safeStorage/safeStorage.ts:26:export const decompressAndDecryptSync = unpackDataSync
+apps/web-demo/src/utils/safeStorage/index.ts:1:export * from './crypto'
+apps/web-demo/src/utils/safeStorage/index.ts:2:export * from './lzstring'
+apps/web-demo/src/utils/safeStorage/index.ts:3:export * from './core'
+apps/web-demo/src/utils/safeStorage/index.ts:4:export * from './safeStorage'
+apps/web-demo/src/utils/safeStorage/index.ts:5:export * from './piniaSerializer'
+apps/web-demo/src/utils/safeStorage/index.ts:6:export * from './storageMaintenance'
+apps/web-demo/src/utils/safeStorage/core.ts:4:import * as Crypto from './crypto'
+apps/web-demo/src/utils/safeStorage/core.ts:5:import { ENCRYPTION_FAILED } from './crypto'
+apps/web-demo/src/utils/safeStorage/core.ts:80:export function packDataSync(value: unknown, secret?: string): string {
+apps/web-demo/src/utils/safeStorage/core.ts:101:export function unpackDataSync<T>(value: string, secret?: string): T | null {
+apps/web-demo/src/utils/safeStorage/core.ts:144:export async function packData(value: unknown, secret?: string): Promise<string> {
+apps/web-demo/src/utils/safeStorage/core.ts:159:export async function unpackData<T>(value: string, secret?: string): Promise<T | null> {
+apps/web-demo/src/utils/safeStorage/core.ts:199:export const safeStorageSyncCodec: SyncStorageCodec<unknown> = {
+apps/web-demo/src/utils/safeStorage/core.ts:200:  encode: packDataSync,
+apps/web-demo/src/utils/safeStorage/core.ts:201:  decode: unpackDataSync,
+apps/web-demo/src/utils/safeStorage/core.ts:204:export const safeStorageCodec: StorageCodec<unknown> = {
+apps/web-demo/src/utils/safeStorage/core.ts:205:  encode: packData,
+apps/web-demo/src/utils/safeStorage/core.ts:206:  decode: unpackData,
+apps/web-demo/src/utils/http/interceptors.ts:6:import { compressAndEncryptSync, decryptAndDecompressSync } from '@/utils/safeStorage'
+apps/web-demo/src/plugins/modules/proform.ts:10:import { packDataSync, unpackDataSync } from '@/utils/safeStorage'
+apps/web-demo/src/plugins/modules/proform.ts:20:  const value = unpackDataSync<Record<string, unknown>>(
+apps/web-demo/src/plugins/modules/proform.ts:35:    pack: data => packDataSync(data, import.meta.env.VITE_PUBLIC_STORAGE_OBFUSCATION_KEY),
+apps/web-demo/src/stores/modules/session/user.ts:9:import { createPiniaEncryptedSerializer, removeLocalStorageKeysWhere } from '@/utils/safeStorage'
+apps/web-demo/src/sync/systemPreferences/localPersist.ts:1:import { packDataSync, unpackDataSync } from '@/utils/safeStorage'
+apps/web-demo/src/sync/systemPreferences/localPersist.ts:4:import { readLocalStorageValue, writeLocalStorageValue } from '@/utils/safeStorage'
+apps/web-demo/src/sync/systemPreferences/localPersist.ts:12:  const packed = packDataSync(preferences)
+apps/web-demo/src/sync/systemPreferences/localPersist.ts:21:  return unpackDataSync<SystemPreferences>(raw)
+apps/web-demo/src/utils/theme/sizeEngine.ts:16:import { unpackDataSync } from '@/utils/safeStorage/core'
+apps/web-demo/src/utils/theme/sizeEngine.ts:379:    const state = unpackDataSync<SizePersistState>(raw)
+apps/web-demo/src/stores/modules/system/size.ts:5:import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
+apps/web-demo/src/stores/modules/session/permission.ts:6:import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
+apps/web-demo/src/stores/modules/system/theme.ts:17:import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
+apps/web-demo/src/stores/modules/system/layout.ts:8:import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
+apps/web-demo/src/views/example/utils/safe-storage.vue:4:import { compressAndEncryptSync, decryptAndDecompressSync } from '@/utils/safeStorage'

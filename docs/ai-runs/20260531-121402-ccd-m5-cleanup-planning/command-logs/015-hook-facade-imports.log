@@ -1,0 +1,68 @@
+apps/web-demo/src/router/modules/example.ts:570:            titleKey: 'router.example.hooks.composables.useAutoMitt',
+scripts/ai-architecture-guard.mjs:513:  'apps/web-demo/src/components/PrimeDialog/useDialog.ts',
+packages/vue-hooks/src/index.ts:3:export { createAutoMittHook } from './createAutoMittHook.js'
+packages/vue-hooks/src/createAutoMittHook.ts:15:export function createAutoMittHook<Events extends EventMap>(emitter: EmitterLike<Events>) {
+packages/vue-hooks/src/createAutoMittHook.ts:16:  return function useAutoMitt(): UseAutoMittReturn<Events> {
+packages/vue-hooks/src/createAutoMittHook.spec.tsx:4:import { createAutoMittHook } from './createAutoMittHook'
+packages/vue-hooks/src/createAutoMittHook.spec.tsx:23:describe('createAutoMittHook', () => {
+packages/vue-hooks/src/createAutoMittHook.spec.tsx:30:    const useAutoMitt = createAutoMittHook<TestEvents>(emitter)
+packages/vue-hooks/src/createAutoMittHook.spec.tsx:36:        const hook = useAutoMitt()
+packages/vue-hooks/src/createAutoMittHook.spec.tsx:59:    const useAutoMitt = createAutoMittHook<TestEvents>(emitter)
+packages/vue-hooks/src/createAutoMittHook.spec.tsx:63:        const hook = useAutoMitt()
+packages/vue-ui/src/ProTable/engine/hooks/useProTableUrlSync.ts:19:export const PRO_TABLE_URL_SYNC_ADAPTER_KEY = Symbol(
+packages/vue-ui/src/ProTable/engine/hooks/useProTableUrlSync.ts:20:  'PRO_TABLE_URL_SYNC_ADAPTER_KEY'
+apps/web-demo/src/locales/lang/example/en-US.ts:63:          useAutoMitt: 'useAutoMitt',
+apps/web-demo/src/types/auto-imports.d.ts:201:  const useAutoMitt: typeof import('../hooks/modules/useAutoMitt').useAutoMitt
+apps/web-demo/src/types/auto-imports.d.ts:233:  const useDialog: typeof import('../hooks/modules/useDialog').useDialog
+apps/web-demo/src/types/auto-imports.d.ts:318:  const useProTableUrlSync: typeof import('../hooks/modules/useProTableUrlSync').useProTableUrlSync
+apps/web-demo/src/locales/lang/core/en-US.ts:123:      'Declarative columns (valueEnum), toolbar fullscreen/export, :request pagination, useDialog + ProForm + async permission linkage — gold-standard CRUD.',
+apps/web-demo/src/locales/lang/example/zh-CN.ts:63:          useAutoMitt: '自动卸载事件总线',
+packages/vue-hooks/package.json:18:    "test": "vitest --root ../.. run packages/vue-hooks/src/createAutoMittHook.spec.tsx packages/vue-hooks/src/directives/install.spec.ts packages/vue-hooks/src/directives/tap.spec.ts packages/vue-hooks/src/directives/swipe.spec.ts packages/vue-hooks/src/directives/longPress.spec.ts --passWithNoTests"
+apps/web-demo/src/locales/lang/core/zh-CN.ts:122:      '声明式列（valueEnum）、工具栏全屏/导出、:request 分页、useDialog + ProForm 与异步权限联动 —— 企业级 CRUD 黄金样例。',
+packages/vue-ui/src/ProTable/index.ts:5:export { PRO_TABLE_URL_SYNC_ADAPTER_KEY } from './engine/hooks/useProTableUrlSync'
+packages/vue-ui/src/ProTable/index.ts:11:} from './engine/hooks/useProTableUrlSync'
+packages/vue-ui/src/PrimeDialog/index.ts:4:export { useDialogCore } from './useDialog'
+packages/vue-ui/src/PrimeDialog/useDialog.ts:40:export function useDialogCore(): UseDialogCoreReturn {
+packages/vue-ui/src/PrimeDialog/useDialog.spec.ts:2:import { useDialogCore } from './useDialog'
+packages/vue-ui/src/PrimeDialog/useDialog.spec.ts:5:  useDialogCore().closeAllDialog()
+packages/vue-ui/src/PrimeDialog/useDialog.spec.ts:9:describe('useDialogCore', () => {
+packages/vue-ui/src/PrimeDialog/useDialog.spec.ts:11:    const dialog = useDialogCore()
+packages/vue-ui/src/PrimeDialog/useDialog.spec.ts:30:    const dialog = useDialogCore()
+apps/web-demo/src/views/dashboard/index.vue:4:import { useDialog } from '@/hooks/modules/useDialog'
+apps/web-demo/src/views/dashboard/index.vue:324:const { openDialog, closeDialogByIndex } = useDialog()
+packages/vue-ui/src/ProTable/ProTable.vue:57:  PRO_TABLE_URL_SYNC_ADAPTER_KEY,
+packages/vue-ui/src/ProTable/ProTable.vue:59:} from './engine/hooks/useProTableUrlSync'
+packages/vue-ui/src/ProTable/ProTable.vue:109:  PRO_TABLE_URL_SYNC_ADAPTER_KEY,
+packages/vue-ui/src/PrimeDialog/utils/types.ts:46:  /** 默认尺寸类（UnoCSS），由 useDialogCore 与 class 合并后透传给 Dialog */
+packages/vue-ui/src/index.ts:77:  PRO_TABLE_URL_SYNC_ADAPTER_KEY,
+packages/vue-ui/src/index.ts:122:  useDialogCore,
+apps/web-demo/src/plugins/modules/protable.ts:2:import { PRO_TABLE_URL_SYNC_ADAPTER_KEY } from '@ccd/vue-ui'
+apps/web-demo/src/plugins/modules/protable.ts:3:import { useProTableUrlSync } from '@/hooks/modules/useProTableUrlSync'
+apps/web-demo/src/plugins/modules/protable.ts:6:  app.provide(PRO_TABLE_URL_SYNC_ADAPTER_KEY, useProTableUrlSync)
+apps/web-demo/src/views/example/hooks/use-auto-mitt.vue:4:const { emit } = useAutoMitt()
+apps/web-demo/src/views/example/hooks/use-auto-mitt.vue:24:    const { on } = useAutoMitt()
+apps/web-demo/src/views/example/hooks/use-auto-mitt.vue:60:                  <span class="text-lg font-bold text-foreground text-no-wrap">useAutoMitt</span>
+apps/web-demo/src/hooks/modules/useDialog.tsx:2: * useDialog Composable
+apps/web-demo/src/hooks/modules/useDialog.tsx:4: * 动态弹窗请使用 PrimeVue useDialog().open()；确认弹窗请使用 useConfirm().require()
+apps/web-demo/src/hooks/modules/useDialog.tsx:9:  useDialogCore,
+apps/web-demo/src/hooks/modules/useDialog.tsx:17:  dialogStore: ReturnType<typeof useDialogCore>['dialogStore']
+apps/web-demo/src/hooks/modules/useDialog.tsx:48:export function useDialog(): UseDialogReturn {
+apps/web-demo/src/hooks/modules/useDialog.tsx:56:  } = useDialogCore()
+apps/web-demo/src/hooks/modules/useAutoMitt.ts:3:import { createAutoMittHook } from '@ccd/vue-hooks'
+apps/web-demo/src/hooks/modules/useAutoMitt.ts:6: * useAutoMitt — 带生命周期自动清理的事件总线 hook（推荐在组件内使用）
+apps/web-demo/src/hooks/modules/useAutoMitt.ts:14:const useAutoMittBase = createAutoMittHook<Events>(emitter)
+apps/web-demo/src/hooks/modules/useAutoMitt.ts:16:export const useAutoMitt = (): {
+apps/web-demo/src/hooks/modules/useAutoMitt.ts:21:  const { on, off } = useAutoMittBase()
+apps/web-demo/src/hooks/modules/useRecordOverlay.tsx:9:import { useDialog } from '@/hooks/modules/useDialog'
+apps/web-demo/src/hooks/modules/useRecordOverlay.tsx:109:  const { openDialog, closeDialog } = useDialog()
+apps/web-demo/src/hooks/modules/useProTableUrlSync.ts:58:export function useProTableUrlSync<T extends Record<string, unknown>>(
+apps/web-demo/src/layouts/modules/LayoutAdmin.spec.ts:181:vi.mock('@/hooks/modules/useDialog', () => ({
+apps/web-demo/src/layouts/modules/LayoutAdmin.spec.ts:182:  useDialog: () => ({ openDialog: layoutState.openDialog }),
+apps/web-demo/src/views/example/components/primevue-collection/prime-dialog/index.vue:3:import { useDialog } from '@/hooks/modules/useDialog'
+apps/web-demo/src/views/example/components/primevue-collection/prime-dialog/index.vue:20:} = useDialog()
+apps/web-demo/src/views/example/components/primevue-collection/prime-dialog/index.vue:423:                  全功能演示：基于 useDialog 的二次封装，涵盖所有 Props 控制与交互模式。
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:5: *       useToast 封装并挂到 window；PrimeVue locale 同步；useDialog + PrimeDialog
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:25:import { useDialog } from '@/hooks/modules/useDialog'
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:28:const { dialogStore, closeDialog, removeDialog, closeAll } = useDialog()
+apps/web-demo/src/layouts/components/GlobalSetting/useGlobalSettingsDialog.tsx:2:import { useDialog } from '@/hooks/modules/useDialog'
+apps/web-demo/src/layouts/components/GlobalSetting/useGlobalSettingsDialog.tsx:21:  const { openDialog } = useDialog()

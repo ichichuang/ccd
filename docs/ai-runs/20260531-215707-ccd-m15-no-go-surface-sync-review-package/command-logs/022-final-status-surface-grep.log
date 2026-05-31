@@ -1,0 +1,2 @@
+$ rg -n "CONDITIONAL_GO|PLANNING_ONLY_DONE|Current milestone: P4|apps/web-demo/src/components/(PrimeDialog|ProForm|ProTable)|@/components/(ProForm|ProTable|PrimeDialog)" README.md docs/ai-plan/STATUS.md docs/ai-plan/FINAL_GO_NO_GO.md scripts/ai-route-view-scaffold.mjs || true
+exit_code=0

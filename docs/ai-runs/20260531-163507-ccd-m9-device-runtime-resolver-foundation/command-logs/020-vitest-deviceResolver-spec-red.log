@@ -1,0 +1,78 @@
+
+ RUN  v4.0.18 /Users/cc/MyPorject/ccd
+
+ ❯ |node| packages/design-tokens/src/deviceResolver.spec.ts (5 tests | 5 failed) 3ms
+     × sorts breakpoints by descending width and resolves the current breakpoint 2ms
+     × resolves physical device type from injected browser inputs 0ms
+     × resolves OS type from injected user agent and touch capability 0ms
+     × resolves orientation from viewport dimensions 0ms
+     × derives viewport metrics from explicit numeric inputs only 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |node| packages/design-tokens/src/deviceResolver.spec.ts > device resolver > sorts breakpoints by descending width and resolves the current breakpoint
+TypeError: (0 , __vite_ssr_import_1__.createSortedBreakpoints) is not a function
+ ❯ packages/design-tokens/src/deviceResolver.spec.ts:13:12
+     11| describe('device resolver', () => {
+     12|   it('sorts breakpoints by descending width and resolves the current b…
+     13|     expect(createSortedBreakpoints({ xs: 480, sm: 640, xl: 1280 })).to…
+       |            ^
+     14|       ['xl', 1280],
+     15|       ['sm', 640],
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  |node| packages/design-tokens/src/deviceResolver.spec.ts > device resolver > resolves physical device type from injected browser inputs
+TypeError: (0 , __vite_ssr_import_1__.resolveDeviceTypeFromInputs) is not a function
+ ❯ packages/design-tokens/src/deviceResolver.spec.ts:28:7
+     26|   it('resolves physical device type from injected browser inputs', () …
+     27|     expect(
+     28|       resolveDeviceTypeFromInputs({
+       |       ^
+     29|         userAgent:
+     30|           'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Appl…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  |node| packages/design-tokens/src/deviceResolver.spec.ts > device resolver > resolves OS type from injected user agent and touch capability
+TypeError: (0 , __vite_ssr_import_1__.resolveOsTypeFromUserAgent) is not a function
+ ❯ packages/design-tokens/src/deviceResolver.spec.ts:57:12
+     55| 
+     56|   it('resolves OS type from injected user agent and touch capability',…
+     57|     expect(resolveOsTypeFromUserAgent('Mozilla/5.0 (Windows NT 10.0; W…
+       |            ^
+     58|       'Windows'
+     59|     )
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  |node| packages/design-tokens/src/deviceResolver.spec.ts > device resolver > resolves orientation from viewport dimensions
+TypeError: (0 , __vite_ssr_import_1__.resolveOrientationFromViewport) is not a function
+ ❯ packages/design-tokens/src/deviceResolver.spec.ts:79:12
+     77| 
+     78|   it('resolves orientation from viewport dimensions', () => {
+     79|     expect(resolveOrientationFromViewport(844, 390)).toBe('horizontal')
+       |            ^
+     80|     expect(resolveOrientationFromViewport(390, 844)).toBe('vertical')
+     81|     expect(resolveOrientationFromViewport(0, 0)).toBe('horizontal')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  |node| packages/design-tokens/src/deviceResolver.spec.ts > device resolver > derives viewport metrics from explicit numeric inputs only
+TypeError: (0 , __vite_ssr_import_1__.resolveViewportMetrics) is not a function
+ ❯ packages/design-tokens/src/deviceResolver.spec.ts:86:7
+     84|   it('derives viewport metrics from explicit numeric inputs only', () …
+     85|     expect(
+     86|       resolveViewportMetrics({
+       |       ^
+     87|         width: 390,
+     88|         height: 844,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed (5)
+   Start at  16:38:05
+   Duration  148ms (transform 55ms, setup 0ms, import 79ms, tests 3ms, environment 0ms)
+

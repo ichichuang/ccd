@@ -1,0 +1,71 @@
+$ rg runtime surfaces in design-token resolver and app-owned surfaces
+
+[design-tokens sizeResolver]
+
+[app-owned theme/store surfaces]
+apps/web-demo/src/stores/modules/system/size.ts:1:import { defineStore } from 'pinia'
+apps/web-demo/src/stores/modules/system/size.ts:3:import { SIZE_PERSIST_KEY } from '@/constants/size'
+apps/web-demo/src/stores/modules/system/size.ts:4:import { generateSizeVars, applySizeTheme } from '@/utils/theme/sizeEngine'
+apps/web-demo/src/stores/modules/system/size.ts:5:import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
+apps/web-demo/src/stores/modules/system/size.ts:6:import { syncAction } from '@/sync/syncAction'
+apps/web-demo/src/stores/modules/system/size.ts:11: * - 不在此 store 内做 `spacingBase * n`；若需 px 请用 `@/utils/theme/sizeMetrics` + `currentPreset`。
+apps/web-demo/src/stores/modules/system/size.ts:13:export const useSizeStore = defineStore('size', {
+apps/web-demo/src/stores/modules/system/size.ts:63:    storage: localStorage,
+apps/web-demo/src/utils/theme/sizeEngine.ts:22:import { SIZE_PERSIST_KEY } from '@/constants/size'
+apps/web-demo/src/utils/theme/sizeEngine.ts:23:import { unpackDataSync } from '@/utils/safeStorage/core'
+apps/web-demo/src/utils/theme/sizeEngine.ts:24:import { getDeviceTypeSync, getBreakpointSync } from '@/utils/deviceSync'
+apps/web-demo/src/utils/theme/sizeEngine.ts:45:  const root = document.documentElement
+apps/web-demo/src/utils/theme/sizeEngine.ts:84:  const root = document.documentElement
+apps/web-demo/src/utils/theme/sizeEngine.ts:118:  const root = document.documentElement
+apps/web-demo/src/utils/theme/sizeEngine.ts:132: * 专为 preload() 路径设计，将 applySizeTheme + applyRootFontSize
+apps/web-demo/src/utils/theme/sizeEngine.ts:140:  const root = document.documentElement
+apps/web-demo/src/utils/theme/sizeEngine.ts:188:export function preload(): void {
+apps/web-demo/src/utils/theme/sizeEngine.ts:189:  if (typeof document === 'undefined') return
+apps/web-demo/src/utils/theme/sizeEngine.ts:194:    // Technical first-paint exception: preload must read before Pinia mounts.
+apps/web-demo/src/utils/theme/sizeEngine.ts:196:    raw = localStorage.getItem(SIZE_PERSIST_KEY)
+apps/web-demo/src/utils/theme/sizeEngine.ts:223:  const pixelRatio = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1
+apps/web-demo/src/utils/theme/sizeEngine.ts:233: * 解析尺寸模式对应的预设（与 size store / preload 同源回退链）
+apps/web-demo/src/stores/modules/system/device.ts:2:import { defineStore } from 'pinia'
+apps/web-demo/src/stores/modules/system/device.ts:6:import { useMitt } from '@/utils/mitt'
+apps/web-demo/src/stores/modules/system/device.ts:7:import type { DeviceState } from '@/types/systems/device'
+apps/web-demo/src/stores/modules/system/device.ts:8:import { getDeviceTypeSync, getOsTypeSync } from '@/utils/deviceSync'
+apps/web-demo/src/stores/modules/system/device.ts:23:let lastResizeViewportWidth = typeof window === 'undefined' ? 0 : window.innerWidth
+apps/web-demo/src/stores/modules/system/device.ts:24:let lastResizeViewportHeight = typeof window === 'undefined' ? 0 : window.innerHeight
+apps/web-demo/src/stores/modules/system/device.ts:40:const INITIAL_WIDTH: number = typeof window === 'undefined' ? 0 : window.innerWidth
+apps/web-demo/src/stores/modules/system/device.ts:41:const INITIAL_HEIGHT: number = typeof window === 'undefined' ? 0 : window.innerHeight
+apps/web-demo/src/stores/modules/system/device.ts:45:export const useDeviceStore = defineStore('device', {
+apps/web-demo/src/stores/modules/system/device.ts:53:    pixelRatio: typeof window === 'undefined' ? 1 : window.devicePixelRatio || 1,
+apps/web-demo/src/stores/modules/system/device.ts:54:    screenWidth: typeof window === 'undefined' ? 0 : window.screen.width,
+apps/web-demo/src/stores/modules/system/device.ts:55:    screenHeight: typeof window === 'undefined' ? 0 : window.screen.height,
+apps/web-demo/src/stores/modules/system/device.ts:56:    screenShortSide: Math.min(INITIAL_WIDTH, INITIAL_HEIGHT),
+apps/web-demo/src/stores/modules/system/device.ts:57:    screenLongSide: Math.max(INITIAL_WIDTH, INITIAL_HEIGHT),
+apps/web-demo/src/stores/modules/system/device.ts:88:      (typeof window !== 'undefined' && 'ontouchstart' in window),
+apps/web-demo/src/stores/modules/system/device.ts:113:    getDefinitely: (state): number => state.screenShortSide, // 兼容原 definitely
+apps/web-demo/src/stores/modules/system/device.ts:114:    getDeviceWidth: (state): number => state.screenWidth,
+apps/web-demo/src/stores/modules/system/device.ts:115:    getDeviceHeight: (state): number => state.screenHeight,
+apps/web-demo/src/stores/modules/system/device.ts:142:      const pageW = window.innerWidth
+apps/web-demo/src/stores/modules/system/device.ts:143:      const pageH = window.innerHeight
+apps/web-demo/src/stores/modules/system/device.ts:147:      this.screenWidth = window.screen.width
+apps/web-demo/src/stores/modules/system/device.ts:148:      this.screenHeight = window.screen.height
+apps/web-demo/src/stores/modules/system/device.ts:149:      this.pixelRatio = window.devicePixelRatio || 1
+apps/web-demo/src/stores/modules/system/device.ts:152:      this.screenShortSide = Math.min(pageW, pageH)
+apps/web-demo/src/stores/modules/system/device.ts:153:      this.screenLongSide = Math.max(pageW, pageH)
+apps/web-demo/src/stores/modules/system/device.ts:156:      useMitt().emit('windowResize', { width: pageW, height: pageH })
+apps/web-demo/src/stores/modules/system/device.ts:170:      if (typeof window === 'undefined') {
+apps/web-demo/src/stores/modules/system/device.ts:181:      lastResizeViewportWidth = window.innerWidth
+apps/web-demo/src/stores/modules/system/device.ts:182:      lastResizeViewportHeight = window.innerHeight
+apps/web-demo/src/stores/modules/system/device.ts:187:        const w = window.innerWidth
+apps/web-demo/src/stores/modules/system/device.ts:188:        const h = window.innerHeight
+apps/web-demo/src/stores/modules/system/device.ts:213:        viewportRafId = window.requestAnimationFrame(() => {
+apps/web-demo/src/stores/modules/system/device.ts:233:        if (document.visibilityState === 'visible') {
+apps/web-demo/src/stores/modules/system/device.ts:239:        useEventListener(window, 'resize', markResizing),
+apps/web-demo/src/stores/modules/system/device.ts:240:        useEventListener(window, 'resize', handleResize),
+apps/web-demo/src/stores/modules/system/device.ts:241:        useEventListener(window, 'orientationchange', handleImmediateViewportSync),
+apps/web-demo/src/stores/modules/system/device.ts:242:        useEventListener(window, 'pageshow', handleImmediateViewportSync),
+apps/web-demo/src/stores/modules/system/device.ts:243:        useEventListener(document, 'visibilitychange', handleVisibility),
+apps/web-demo/src/stores/modules/system/device.ts:246:      if (window.visualViewport) {
+apps/web-demo/src/stores/modules/system/device.ts:248:          useEventListener(window.visualViewport, 'resize', handleVisualViewportResize)
+apps/web-demo/src/stores/modules/system/device.ts:251:          useEventListener(window.visualViewport, 'scroll', handleVisualViewportResize)
+apps/web-demo/src/stores/modules/system/device.ts:259:          window.cancelAnimationFrame(viewportRafId)
+
+[exit:0]

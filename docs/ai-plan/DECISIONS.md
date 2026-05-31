@@ -128,21 +128,21 @@ Approved exact app allowlist:
 - `apps/web-demo/src/router/utils/helper.ts`
 - `apps/web-demo/src/types/components.d.ts`
 - `apps/web-demo/src/views/dashboard/index.vue`
-- `apps/web-demo/src/views/example/components/primevue-collection/overview/index.vue`
-- `apps/web-demo/src/views/example/components/primevue-collection/prime-dialog/index.vue`
-- `apps/web-demo/src/views/example/components/primevue-collection/pro-form/advanced/index.vue`
-- `apps/web-demo/src/views/example/components/primevue-collection/pro-form/plugins/components/ColorPickerField.tsx`
-- `apps/web-demo/src/views/example/components/primevue-collection/pro-form/plugins/components/MyColorCustomInput.tsx`
-- `apps/web-demo/src/views/example/components/primevue-collection/pro-table/advanced/configs/columns.tsx`
-- `apps/web-demo/src/views/example/components/primevue-collection/pro-table/advanced/index.vue`
-- `apps/web-demo/src/views/example/components/primevue-collection/pro-table/columns/columns.tsx`
-- `apps/web-demo/src/views/example/components/primevue-collection/pro-table/form-table-combo/components/TablePanel.vue`
-- `apps/web-demo/src/views/example/components/primevue-collection/pro-table/server/columns.tsx`
 - `apps/web-demo/src/views/example/hooks/layout-breadcrumbs.vue`
 - `apps/web-demo/src/views/example/hooks/use-app-element-size.vue`
 - `apps/web-demo/src/views/example/system-configuration/layout.vue`
 
 Current decision: exact allowlist guard is approved and enabled. New app direct imports from `primevue/*` or `@primevue/*` must either migrate behind `@ccd/vue-ui` / `@ccd/vue-primevue-adapter` or receive a future owner-approved allowlist update.
+
+D-011 replaces the former per-file `apps/web-demo/src/views/example/components/primevue-collection/**` exact entries with a path-scoped showcase exception.
+
+M4 classification update (2026-05-31):
+
+- PrimeVue direct import inventory found 163 source import rows across apps/packages; all are currently allowed by the existing package/internal, adapter, exact allowlist, generated typing, or showcase policy.
+- `C-06` remains `OPEN` because app direct imports still depend on exact allowlists and the `apps/web-demo/src/views/example/components/primevue-collection/**` showcase exception.
+- `apps/web-demo/src/hooks/modules/useProTableUrlSync.ts` and `apps/web-demo/src/plugins/modules/protable.ts` are classified as app-local ProTable URL-sync compatibility surfaces (`B-12`); router coupling stays in the app and is injected into `@ccd/vue-ui`.
+- App-local classification does not approve indefinite app ownership. M5 owns safeStorage/theme/size/device cleanup planning.
+- Evidence: `docs/ai-runs/20260531-104447-ccd-m4-primevue-app-local-classification/reports/`.
 
 ### Rationale
 
@@ -333,6 +333,394 @@ Minimum E2E coverage for the future implementation lane:
 - `apps/web-demo/src/utils/http/**`
 - `e2e/qa-regression.spec.ts`
 - `docs/ai-runs/20260530-173553-ccd-http-007-product-decision/reports/HTTP-007-product-decision.md`
+
+---
+
+## D-016 — B-07 safeStorage crypto owner decision
+
+- Status: `APPROVED`
+- Date: 2026-05-31
+- Approved option: **Option A** — keep crypto/HMAC/obfuscation/Web Crypto implementation app-owned under `apps/web-demo/src/utils/safeStorage/crypto.ts`
+- Approved date: 2026-06-01
+
+### Context
+
+`apps/web-demo/src/utils/safeStorage/crypto.ts` owns AES/HMAC behavior, Web Crypto fallback, `crypto-es`, and app logger coupling. M5 marked `B-07` as `BLOCKED` because moving this implementation into `packages/core`, `packages/contracts`, or a shared package without an owner decision would blur runtime and security boundaries.
+
+### Options considered
+
+1. Keep crypto/HMAC/obfuscation app-owned; move only pure JSON/storage serialization helpers later.
+2. Define crypto/storage capability interfaces in `@ccd/contracts` and keep browser crypto implementation in app adapters.
+3. Move runtime-neutral crypto orchestration into `@ccd/core` only if it depends solely on injected contracts and proves multi-runtime value.
+4. Move deterministic pure helper code to `@ccd/shared-utils` only when it has no browser globals, app logger, `import.meta.env`, storage globals, or runtime side effects.
+5. Defer all safeStorage crypto movement and extract non-crypto codec helpers first.
+
+### Decision
+
+**Owner-approved (2026-06-01, P1 lane): Option A.**
+
+Crypto/HMAC/obfuscation/Web Crypto implementation remains permanently app-owned under `apps/web-demo/src/utils/safeStorage/crypto.ts` and app adapters. Pure JSON codec helpers remain in `@ccd/shared-utils` (already established by M7). Compression remains app-owned per D-019 (B-08 Option A).
+
+This approval does not authorize moving Web Crypto/fallback implementation into `packages/contracts`, `packages/core`, or `@ccd/shared-utils`, and does not authorize package manifest, lockfile, or persisted-format changes for crypto behavior.
+
+### Rationale
+
+The non-crypto codec/compression work can reduce app-local residue without touching security-sensitive runtime behavior. `packages/contracts` may hold type-only shapes only after an approved API need exists. `packages/core` has no proven crypto orchestration need.
+
+### Rejected alternatives
+
+- Option 2 is rejected as an immediate lane because current app code can proceed without new crypto contracts.
+- Option 3 is rejected now because `packages/core` must remain a minimal runtime-neutral facade and no multi-runtime orchestration value is proven.
+- Option 4 is accepted only for deterministic pure helpers, not for crypto/HMAC/Web Crypto behavior.
+
+### Risks
+
+- Persisted storage payload compatibility can regress if codec boundaries change without fixtures.
+- Client-visible obfuscation can be overstated as real secret management.
+- Leaving crypto app-owned keeps `B-07` blocked until the owner records the final ownership decision.
+
+### Follow-up validation
+
+Minimum validation for any future storage lane:
+
+- focused safeStorage round-trip and key-rotation tests
+- HMAC failure tests that do not leak secret/ciphertext
+- Pinia serializer compatibility tests
+- ProForm draft storage tests
+- `pnpm --filter @ccd/web-demo type-check`
+- `pnpm arch:runtime`
+- `pnpm arch:boundaries`
+- `pnpm api:report` if contracts or package exports change
+
+### Evidence
+
+- `docs/ai-runs/20260531-121402-ccd-m5-cleanup-planning/reports/safe-storage-plan.md`
+- `docs/ai-runs/20260531-130051-ccd-m6-owner-decision-packet/reports/b07-safe-storage-crypto-owner-decision.md`
+
+### M6b owner decision review
+
+- Review run: `docs/ai-runs/20260531-142414-ccd-m6b-owner-decision-review/`
+- Owner approval status: `NO_OWNER_APPROVAL_RECORDED`
+- Decision log status remains `PROPOSED`.
+- Evidence reviewed: M6 decision packet, M6a reconciliation summary, this decision log, architecture issue repair log, and `.ai/runtime/owner_decisions.md`.
+- Result: no explicit owner approval, rejection, deferral, or revision request was found for options 1-5.
+- Authorization effect: `B-07` remains `BLOCKED` for crypto ownership. A future non-crypto safeStorage codec foundation lane may proceed only if it does not move crypto/HMAC/Web Crypto behavior, package manifests, lockfile, or runtime behavior.
+
+### M7 safeStorage codec foundation note
+
+- Review run: `docs/ai-runs/20260531-144505-ccd-m7-safe-storage-codec-foundation/`
+- M7 established the non-crypto JSON codec foundation as already package-owned by `@ccd/shared-utils` and already consumed by `apps/web-demo/src/utils/safeStorage/core.ts`.
+- M7 did not move compression because `@ccd/shared-utils` does not declare `lz-string` and this lane forbids package manifest/lockfile changes.
+- M7 did not move or modify AES, HMAC, Web Crypto, obfuscation-key resolution, app logger wiring, `import.meta.env`, browser storage, or Pinia serializer behavior.
+- Decision log status remains `PROPOSED`; `B-07` remains `BLOCKED`.
+
+### M7a validation closure note
+
+- Review run: `docs/ai-runs/20260531-153347-ccd-m7a-web-demo-filtered-test-cwd-repair/`
+- M7a repaired the test-only cwd-sensitive path in `apps/web-demo/src/utils/http/requestLayer.spec.ts` that made `pnpm --filter @ccd/web-demo test` resolve `apps/web-demo/apps/web-demo/src/utils/http`.
+- The repair changed only test path normalization. It did not change HTTP runtime behavior, safeStorage runtime behavior, package manifests, lockfile, generated outputs manually, AES, HMAC, Web Crypto, obfuscation-key resolution, app logger wiring, `import.meta.env`, browser storage, or Pinia serializer behavior.
+- M7 strict validation is now closed as `M7_SCOPE_ACCEPTED_VALIDATION_CLOSED`.
+- Decision log status remains `PROPOSED`; `B-07` remains `BLOCKED`.
+
+### M8 theme-size resolver note
+
+- Review run: `docs/ai-runs/20260531-160123-ccd-m8-theme-size-resolver-foundation/`
+- M8 did not move or modify safeStorage crypto, HMAC, Web Crypto, compression ownership, obfuscation-key resolution, app logger wiring, `import.meta.env`, browser storage ownership, or Pinia serializer behavior.
+- Decision log status remains `PROPOSED`; `B-07` remains `BLOCKED`.
+
+### M14 status reconciliation note
+
+- Review run: `docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/`
+- M14 found no explicit owner approval, rejection, deferral, or revision request for D-016 after M6b.
+- Decision log status remains `PROPOSED`; `B-07` remains `BLOCKED`.
+- `B-08` remains `OPEN` because compression extraction still requires dependency/manifest approval and persisted-format parity evidence.
+
+### M15 surface synchronization note
+
+- Review run: `docs/ai-runs/20260531-215707-ccd-m15-no-go-surface-sync-review-package/`
+- M15 updates top-level status surfaces only and does not record owner approval, rejection, deferral, or revision request for D-016.
+- Decision log status remains `PROPOSED`; `B-07` remains `BLOCKED`.
+- `B-08` remains `OPEN`; no package manifest, lockfile, compression, crypto, HMAC, Web Crypto, or runtime behavior was changed.
+
+### P1 post-M16 owner decision (2026-06-01)
+
+- Review run: `docs/ai-runs/20260601-101000-ccd-p1-d016-safe-storage-crypto-decision/`
+- Owner approval status: `APPROVED_OPTION_A`
+- Approved scope: crypto/HMAC/Web Crypto/obfuscation-key resolution remain app-owned; no crypto migration into packages.
+- Authorization effect: `D-016` is `APPROVED`; `B-07` is resolved as app-owned terminal boundary (`DONE` in architecture issue repair log).
+- Non-crypto safeStorage cleanup may proceed in P4 only within approved non-crypto scope.
+
+---
+
+## D-017 — C-06 PrimeVue allowlist reduction strategy
+
+- Status: `APPROVED`
+- Date: 2026-05-31
+- Approved options: **Option A + Option D** (2026-06-01, P3 lane)
+- Approved date: 2026-06-01
+
+### Context
+
+M4 classified current PrimeVue imports and M5 found 0 allowlist rows removable without source migration. `C-06` remains `OPEN` because app direct imports still depend on exact allowlists, generated typing, app shell/plugin exceptions, and the path-scoped showcase exception.
+
+### Options considered
+
+1. Keep exact allowlist and showcase exceptions as temporary debt; reduce only through future component migration lanes.
+2. Prioritize selected app feature usage behind `@ccd/vue-ui` wrappers.
+3. Prioritize global service/config usage behind `@ccd/vue-primevue-adapter`.
+4. Keep showcase paths as long-lived demo exceptions but prevent new non-showcase direct imports.
+5. Create a future PrimeVue reduction lane that handles one feature area at a time.
+
+### Decision
+
+**Owner-approved (2026-06-01, P3 lane): Options A + D.**
+
+Keep exact allowlists and showcase exceptions as documented architecture debt. Prevent new non-showcase direct PrimeVue app imports via existing guard enforcement. Option E staged reduction lanes and M12 allowlist row removal are **not approved** in this decision.
+
+This approval does not authorize reducing allowlists, editing PrimeVue imports, changing generated type output manually, or weakening guard behavior.
+
+### Rationale
+
+The current guard already prevents new non-showcase direct app imports while preserving known app/plugin/generated/showcase surfaces. Removing rows without wrapper or adapter migration would be cosmetic and risky. One feature area per lane gives reviewable diffs and focused visual validation.
+
+### Rejected alternatives
+
+- Broad allowlist deletion is rejected because M5 found no safe immediate removals.
+- Broad wrapper migration is rejected because it mixes unrelated UI surfaces and raises regression risk.
+- Long-lived showcase exception is tolerated only while new non-showcase direct imports remain blocked.
+
+### Risks
+
+- Exact allowlists can become permanent if M12 is not executed.
+- Wrapper migration can change PrimeVue behavior, PT styling, focus handling, or generated typings.
+- Showcase exceptions can hide demo debt if they are not reviewed by owner/product.
+
+### Follow-up validation
+
+Minimum validation for any future reduction lane:
+
+- `pnpm ai:guard -- --format=json`
+- `pnpm api:report`
+- affected `@ccd/vue-ui` and `@ccd/vue-primevue-adapter` tests/builds
+- `pnpm --filter @ccd/web-demo type-check`
+- focused visual/e2e smoke for touched UI
+- generated type registry validation if the generator output changes
+
+### Evidence
+
+- `docs/ai-runs/20260531-121402-ccd-m5-cleanup-planning/reports/primevue-allowlist-reduction-plan.md`
+- `docs/ai-runs/20260531-130051-ccd-m6-owner-decision-packet/reports/c06-primevue-allowlist-decision.md`
+
+### M6b owner decision review
+
+- Review run: `docs/ai-runs/20260531-142414-ccd-m6b-owner-decision-review/`
+- Owner approval status: `NO_OWNER_APPROVAL_RECORDED`
+- Decision log status remains `PROPOSED`.
+- Evidence reviewed: M6 decision packet, M6a reconciliation summary, this decision log, architecture issue repair log, and `.ai/runtime/owner_decisions.md`.
+- Result: no explicit owner approval, rejection, deferral, or revision request was found for options 1-5.
+- Authorization effect: `C-06` remains `OPEN`; `M12-primevue-allowlist-reduction` remains blocked until an owner approves the concrete reduction group, visual validation budget, and wrapper/adapter ownership.
+
+### M14 status reconciliation note
+
+- Review run: `docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/`
+- M14 found no explicit owner approval, rejection, deferral, or revision request for D-017 after M6b.
+- Decision log status remains `PROPOSED`; `C-06` remains `OPEN`.
+- `M12-primevue-allowlist-reduction` remains blocked until an owner approves the concrete reduction group, visual validation budget, and wrapper/adapter ownership.
+
+### M15 surface synchronization note
+
+- Review run: `docs/ai-runs/20260531-215707-ccd-m15-no-go-surface-sync-review-package/`
+- M15 updates top-level status surfaces only and does not record owner approval, rejection, deferral, or revision request for D-017.
+- Decision log status remains `PROPOSED`; `C-06` remains `OPEN`.
+- `M12-primevue-allowlist-reduction` remains blocked; no PrimeVue imports, allowlists, generated type output, package manifests, lockfile, or runtime behavior was changed.
+
+### P3 post-M16 owner decision (2026-06-01)
+
+- Review run: `docs/ai-runs/20260601-103000-ccd-p3-d017-primevue-reduction-decision/`
+- Owner approval status: `APPROVED_OPTIONS_A_AND_D`
+- Approved scope: maintain exact allowlists and showcase exceptions; block new non-showcase direct imports via guard; no allowlist reduction or M12 source migration in this program.
+- Authorization effect: `D-017` is `APPROVED`; `C-06` remains `OPEN` as allowlist debt; `M12-primevue-allowlist-reduction` remains blocked until a future owner approves Option E staged reduction.
+
+---
+
+## D-019 — B-08 safeStorage compression owner decision
+
+- Status: `APPROVED`
+- Date: 2026-06-01
+- Approved option: **Option A** — keep `lz-string` compression app-owned under `apps/web-demo/src/utils/safeStorage/lzstring.ts`
+
+### Context
+
+M7 found compression is pure but depends on `lz-string`, which is declared only in `apps/web-demo/package.json`. Moving compression to `@ccd/shared-utils` would require manifest and lockfile changes plus persisted-format parity tests.
+
+### Decision
+
+**Owner-approved (2026-06-01, P2 lane): Option A.**
+
+Compression remains app-owned. Do not add `lz-string` to `@ccd/shared-utils` in this program. P5 compression migration lane is skipped.
+
+### Authorization effect
+
+- `B-08` resolves as app-owned terminal boundary (`DONE` in architecture issue repair log).
+- No package manifest, lockfile, or compression behavior changes are authorized.
+
+### Evidence
+
+- `docs/ai-runs/20260601-102000-ccd-p2-b08-compression-lz-string-decision/reports/b08-compression-analysis.md`
+- `docs/ai-runs/20260531-144505-ccd-m7-safe-storage-codec-foundation/reports/safe-storage-codec-dependency-map.md`
+
+---
+
+## D-018 — M8 design-tokens size resolver public API
+
+- Status: `APPROVED`
+- Date: 2026-05-31
+
+### Context
+
+M8 was explicitly authorized as the `theme-size resolver foundation execution and evidence lane`. The lane required moving or exposing only runtime-neutral theme/size calculation while preserving app-owned DOM, storage, preload, and Pinia behavior.
+
+### Decision
+
+Approve `@ccd/design-tokens` root exports for pure size resolver helpers:
+
+- `generateSizeVars`
+- `decideRootFontSize`
+- `decideLayoutDimensions`
+- `deriveRuntimeFontSizeVars`
+- `resolveSizePreset`
+- `getScopedContentSizeVars`
+- associated runtime-neutral types
+
+`apps/web-demo/src/utils/theme/sizeEngine.ts` remains the app compatibility facade and may delegate to these package helpers. DOM writes, preload, `localStorage`, browser device collection, and Pinia stores remain app-owned.
+
+This decision does not approve package manifest changes, lockfile changes, DOM/preload migration, store migration, PrimeVue allowlist reduction, safeStorage crypto movement, or runtime enforcement weakening.
+
+### Follow-up validation
+
+- focused design-tokens resolver spec
+- app size facade spec
+- filtered `@ccd/web-demo` test
+- root `pnpm test:run`
+- `pnpm type-check`
+- `pnpm api:report`
+- `pnpm validate:governance`
+
+### Evidence
+
+- `docs/ai-runs/20260531-160123-ccd-m8-theme-size-resolver-foundation/reports/summary.md`
+- `docs/ai-runs/20260531-160123-ccd-m8-theme-size-resolver-foundation/reports/resolver-eligibility.md`
+
+---
+
+## D-019 — M10 vue-app-platform layout visibility reducer public API
+
+- Status: `APPROVED`
+- Date: 2026-05-31
+
+### Context
+
+M10 was authorized only for runtime-neutral pure state helper extraction from system stores. The layout store contained deterministic parent/child module visibility constraints, per-mode hidden-module constraints, and restore-cache behavior embedded inside Pinia actions.
+
+### Decision
+
+Approve `@ccd/vue-app-platform` root exports for pure layout visibility helpers:
+
+- `enforceLayoutVisibilityParentRequirements`
+- `enforceLayoutModeVisibilityConstraints`
+- `resolveLayoutModuleVisibilityChange`
+- related layout module dependency constants and types
+
+`apps/web-demo/src/stores/modules/system/layout.ts` remains the Pinia owner and delegates only pure visibility reduction. Store ID, state shape, persisted key/pick list, `syncAction`, loading counters, mobile drawer runtime state, device-store dependency, and app singleton access remain app-owned.
+
+This decision does not approve moving Pinia stores, persistence wiring, browser runtime listeners, `localStorage`, device lifecycle, `syncAction`, loading behavior, package manifests, lockfile, or runtime enforcement policy.
+
+### Follow-up validation
+
+- package layout runtime spec
+- app layout store spec
+- focused size/device store specs
+- `pnpm --filter @ccd/vue-app-platform build`
+- `pnpm --filter @ccd/web-demo test`
+- `pnpm arch:runtime`
+- `pnpm arch:boundaries`
+- `pnpm api:report`
+- `pnpm validate:governance`
+
+### Evidence
+
+- `docs/ai-runs/20260531-185509-ccd-m10-system-store-pure-state-extraction/reports/system-store-pure-helper-eligibility.md`
+- `docs/ai-runs/20260531-185509-ccd-m10-system-store-pure-state-extraction/reports/summary.md`
+
+---
+
+## D-020 — M11 hook-facade convergence verification
+
+- Status: `APPROVED`
+- Date: 2026-05-31
+
+### Context
+
+M11 was authorized only for behavior-preserving app hook/facade convergence. The inspected surfaces were `useAutoMitt`, `useDialog`, `useProTableUrlSync`, and the ProForm/ProTable plugin integration shells.
+
+### Decision
+
+Do not move production behavior in M11:
+
+- `apps/web-demo/src/hooks/modules/useAutoMitt.ts` stays as the app event-map binding over `@ccd/vue-hooks/createAutoMittHook`.
+- `apps/web-demo/src/hooks/modules/useDialog.tsx` stays as the app translated dialog convenience facade over `@ccd/vue-ui` dialog core.
+- `apps/web-demo/src/hooks/modules/useProTableUrlSync.ts` stays as the app router adapter injected into `@ccd/vue-ui`.
+- `apps/web-demo/src/plugins/modules/proform.ts` and `apps/web-demo/src/plugins/modules/protable.ts` stay app-owned capability injection shells.
+
+M11 adds focused tests for current facade behavior and records eligibility evidence. This does not mark `B-01`, `B-02`, or `B-12` resolved.
+
+### Forbidden
+
+This decision does not approve package manifest changes, lockfile changes, raw PrimeVue export changes, PrimeVue allowlist reduction, dialog UX changes, ProTable URL query behavior changes, or moving app router/i18n/storage/date capabilities into packages.
+
+### Follow-up validation
+
+- `pnpm --filter @ccd/vue-hooks test`
+- `pnpm --filter @ccd/vue-ui test`
+- focused app facade Vitest specs
+- `pnpm --filter @ccd/web-demo test`
+- governance validation matrix
+
+### Evidence
+
+- `docs/ai-runs/20260531-192122-ccd-m11-hook-facade-convergence/reports/hook-facade-eligibility.md`
+- `docs/ai-runs/20260531-192122-ccd-m11-hook-facade-convergence/reports/summary.md`
+
+---
+
+## D-021 — M13a root theme tooling public API boundary
+
+- Status: `APPROVED`
+- Date: 2026-05-31
+
+### Context
+
+M13a was scoped to `F-04`: root theme tooling scripts still imported app theme utilities from `apps/web-demo/src/utils/theme/**`.
+
+### Decision
+
+Root theme tooling must consume `@ccd/design-tokens/theme-engine` public exports for pure theme color, generation, and contrast validation helpers. The app theme utilities remain app compatibility/runtime facades and must not be imported by root scripts.
+
+M13a adds only narrow theme-engine public barrel exports for pure helpers already owned by `packages/design-tokens`; it does not approve app runtime movement, package manifest changes, dependency changes, lockfile changes, or moving app theme runtime into `packages/core`.
+
+### Follow-up validation
+
+- `pnpm exec vitest run packages/design-tokens/src/theme-engine/index.spec.ts`
+- `pnpm --filter @ccd/design-tokens build`
+- `pnpm validate:tokens`
+- `pnpm arch:boundaries`
+- `pnpm api:report`
+- full M13a validation matrix
+
+### Evidence
+
+- `docs/ai-runs/20260531-203406-ccd-m13a-root-theme-tooling-boundary-repair/reports/root-theme-tooling-boundary-analysis.md`
+- `docs/ai-runs/20260531-203406-ccd-m13a-root-theme-tooling-boundary-repair/reports/validation-closure.md`
 
 ---
 

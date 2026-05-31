@@ -1,0 +1,13 @@
+$ pnpm exec vitest run packages/design-tokens/src/sizeResolver.spec.ts
+
+ RUN  v4.0.18 /Users/cc/MyPorject/ccd
+
+ ✓ |node| packages/design-tokens/src/sizeResolver.spec.ts (5 tests) 2ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  16:16:04
+   Duration  133ms (transform 52ms, setup 0ms, import 74ms, tests 2ms, environment 0ms)
+
+
+[exit:0]
