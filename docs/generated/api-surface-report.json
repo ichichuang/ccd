@@ -393,7 +393,9 @@
         "formControlsPt",
         "installPrimeVueServices",
         "menuPt",
+        "PRIMEVUE_TOAST_FALLBACK_ICON",
         "PRIMEVUE_TOAST_GROUP_BY_POSITION",
+        "PRIMEVUE_TOAST_SEVERITY_ICONS",
         "PrimeVueMessageApi",
         "PrimeVueServiceInstallOptions",
         "PrimeVueSizeSource",
@@ -402,6 +404,7 @@
         "PrimeVueToastPosition",
         "PrimeVueToastServiceLike",
         "PrimeVueToastSeverity",
+        "primeVueTooltipDirective",
         "resolvePrimeVueLocale"
       ]
     },

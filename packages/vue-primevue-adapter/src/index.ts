@@ -23,11 +23,15 @@ import {
   type PrimeVueToastServiceLike,
   type PrimeVueToastSeverity,
 } from './services.js'
+import { primeVueTooltipDirective } from './directives.js'
+import { PRIMEVUE_TOAST_FALLBACK_ICON, PRIMEVUE_TOAST_SEVERITY_ICONS } from './toastIcons.js'
 
 export type { PrimeVueSizeSource }
 export {
   DEFAULT_PRIMEVUE_TOAST_LIFE_MS,
+  PRIMEVUE_TOAST_FALLBACK_ICON,
   PRIMEVUE_TOAST_GROUP_BY_POSITION,
+  PRIMEVUE_TOAST_SEVERITY_ICONS,
   applyPrimeVueLocale,
   createCustomPreset,
   createPrimeVueMessageApi,
@@ -35,6 +39,7 @@ export {
   formControlsPt,
   installPrimeVueServices,
   menuPt,
+  primeVueTooltipDirective,
   resolvePrimeVueLocale,
 }
 export type {

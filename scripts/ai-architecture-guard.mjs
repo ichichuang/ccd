@@ -141,8 +141,6 @@ const approvedPrimeVueAppImportFiles = new Set([
   'apps/web-demo/build/plugins.ts',
   'apps/web-demo/src/hooks/layout/useAdminBreadcrumbs.ts',
   'apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue',
-  'apps/web-demo/src/layouts/components/admin/AdminSidebarMenuCollapsed.tsx',
-  'apps/web-demo/src/layouts/components/admin/AdminSidebarMenuInline.tsx',
   'apps/web-demo/src/plugins/modules/primevue.ts',
   'apps/web-demo/src/router/utils/helper.ts',
   'apps/web-demo/src/types/components.d.ts',

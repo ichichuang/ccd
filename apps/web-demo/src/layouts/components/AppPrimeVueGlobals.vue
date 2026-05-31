@@ -5,11 +5,6 @@
  *       useToast 封装并挂到 window；PrimeVue locale 同步；useDialog + PrimeDialog
  */
 import Toast from 'primevue/toast'
-import CheckIcon from '@primevue/icons/check'
-import InfoCircleIcon from '@primevue/icons/infocircle'
-import ExclamationTriangleIcon from '@primevue/icons/exclamationtriangle'
-import TimesCircleIcon from '@primevue/icons/timescircle'
-import MinusIcon from '@primevue/icons/minus'
 import ConfirmPopup from 'primevue/confirmpopup'
 import DynamicDialog from 'primevue/dynamicdialog'
 import { useToast } from 'primevue/usetoast'
@@ -21,6 +16,8 @@ import {
   applyPrimeVueLocale,
   createPrimeVueMessageApi,
   createPrimeVueToastApi,
+  PRIMEVUE_TOAST_FALLBACK_ICON,
+  PRIMEVUE_TOAST_SEVERITY_ICONS,
 } from '@ccd/vue-primevue-adapter'
 import { useDialog } from '@/hooks/modules/useDialog'
 import ToastMessageContent from '@/layouts/components/ToastMessageContent.vue'
@@ -49,14 +46,8 @@ watch(
 )
 
 /** Toast 各 severity 对应图标（PrimeVue 未为 secondary/contrast 定义，此处补充） */
-const TOAST_ICON_MAP: Record<string, object> = {
-  success: CheckIcon,
-  info: InfoCircleIcon,
-  warn: ExclamationTriangleIcon,
-  error: TimesCircleIcon,
-  secondary: InfoCircleIcon,
-  contrast: MinusIcon,
-}
+const TOAST_ICON_MAP = PRIMEVUE_TOAST_SEVERITY_ICONS
+const TOAST_FALLBACK_ICON = PRIMEVUE_TOAST_FALLBACK_ICON
 
 onMounted(() => {
   if (typeof window !== 'undefined') {
@@ -84,7 +75,7 @@ onUnmounted(() => {
       <ToastMessageContent
         :message="message"
         :icon-map="TOAST_ICON_MAP"
-        :fallback-icon="InfoCircleIcon"
+        :fallback-icon="TOAST_FALLBACK_ICON"
       />
     </template>
   </Toast>
@@ -96,7 +87,7 @@ onUnmounted(() => {
       <ToastMessageContent
         :message="message"
         :icon-map="TOAST_ICON_MAP"
-        :fallback-icon="InfoCircleIcon"
+        :fallback-icon="TOAST_FALLBACK_ICON"
       />
     </template>
   </Toast>
@@ -108,7 +99,7 @@ onUnmounted(() => {
       <ToastMessageContent
         :message="message"
         :icon-map="TOAST_ICON_MAP"
-        :fallback-icon="InfoCircleIcon"
+        :fallback-icon="TOAST_FALLBACK_ICON"
       />
     </template>
   </Toast>
@@ -120,7 +111,7 @@ onUnmounted(() => {
       <ToastMessageContent
         :message="message"
         :icon-map="TOAST_ICON_MAP"
-        :fallback-icon="InfoCircleIcon"
+        :fallback-icon="TOAST_FALLBACK_ICON"
       />
     </template>
   </Toast>
@@ -132,7 +123,7 @@ onUnmounted(() => {
       <ToastMessageContent
         :message="message"
         :icon-map="TOAST_ICON_MAP"
-        :fallback-icon="InfoCircleIcon"
+        :fallback-icon="TOAST_FALLBACK_ICON"
       />
     </template>
   </Toast>
@@ -144,7 +135,7 @@ onUnmounted(() => {
       <ToastMessageContent
         :message="message"
         :icon-map="TOAST_ICON_MAP"
-        :fallback-icon="InfoCircleIcon"
+        :fallback-icon="TOAST_FALLBACK_ICON"
       />
     </template>
   </Toast>

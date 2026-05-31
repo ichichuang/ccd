@@ -1,5 +1,5 @@
 import { applyUniqueRoot, toRecord } from '@ccd/shared-utils'
-import Tooltip from 'primevue/tooltip'
+import { primeVueTooltipDirective } from '@ccd/vue-primevue-adapter'
 import type { PropType, VNode } from 'vue'
 import { withDirectives } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
@@ -372,7 +372,7 @@ export default defineComponent({
         shouldMeasureTruncation.value && truncatedKeys.value.has(key) && tooltipLabel.length > 0
       const withMenuTooltip = (node: VNode): VNode => {
         if (!shouldShowTooltip) return node
-        return withDirectives(node, [[Tooltip, tooltipLabel, '', { right: true }]])
+        return withDirectives(node, [[primeVueTooltipDirective, tooltipLabel, '', { right: true }]])
       }
 
       const content = (

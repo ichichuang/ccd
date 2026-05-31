@@ -1,4 +1,4 @@
-import Tooltip from 'primevue/tooltip'
+import { primeVueTooltipDirective } from '@ccd/vue-primevue-adapter'
 import type { PropType, VNodeRef } from 'vue'
 import { withDirectives } from 'vue'
 import { useRoute } from 'vue-router'
@@ -204,7 +204,9 @@ export default defineComponent({
       if (!tooltipLabel) return <li key={key}>{itemNode}</li>
       return (
         <li key={key}>
-          {withDirectives(itemNode, [[Tooltip, tooltipLabel, '', { right: true }]])}
+          {withDirectives(itemNode, [
+            [primeVueTooltipDirective, tooltipLabel, '', { right: true }],
+          ])}
         </li>
       )
     }

@@ -52,7 +52,7 @@
 
 - Path: `packages/vue-primevue-adapter`
 - Export subpaths: `.`
-- Root symbols: `applyPrimeVueLocale`, `createCustomPreset`, `createPrimeVueAdapterConfig`, `CreatePrimeVueAdapterConfigOptions`, `createPrimeVueMessageApi`, `createPrimeVueToastApi`, `DEFAULT_PRIMEVUE_TOAST_LIFE_MS`, `formControlsPt`, `installPrimeVueServices`, `menuPt`, `PRIMEVUE_TOAST_GROUP_BY_POSITION`, `PrimeVueMessageApi`, `PrimeVueServiceInstallOptions`, `PrimeVueSizeSource`, `PrimeVueToastApi`, `PrimeVueToastMessageOptions`, `PrimeVueToastPosition`, `PrimeVueToastServiceLike`, `PrimeVueToastSeverity`, `resolvePrimeVueLocale`
+- Root symbols: `applyPrimeVueLocale`, `createCustomPreset`, `createPrimeVueAdapterConfig`, `CreatePrimeVueAdapterConfigOptions`, `createPrimeVueMessageApi`, `createPrimeVueToastApi`, `DEFAULT_PRIMEVUE_TOAST_LIFE_MS`, `formControlsPt`, `installPrimeVueServices`, `menuPt`, `PRIMEVUE_TOAST_FALLBACK_ICON`, `PRIMEVUE_TOAST_GROUP_BY_POSITION`, `PRIMEVUE_TOAST_SEVERITY_ICONS`, `PrimeVueMessageApi`, `PrimeVueServiceInstallOptions`, `PrimeVueSizeSource`, `PrimeVueToastApi`, `PrimeVueToastMessageOptions`, `PrimeVueToastPosition`, `PrimeVueToastServiceLike`, `PrimeVueToastSeverity`, `primeVueTooltipDirective`, `resolvePrimeVueLocale`
 
 ## @ccd/vue-charts
 
