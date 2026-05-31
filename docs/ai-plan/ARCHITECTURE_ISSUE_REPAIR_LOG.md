@@ -3,13 +3,13 @@
 ## 0. Machine-Readable Summary
 
 ```yaml
-document_version: 2026-06-01.p13
+document_version: 2026-06-01.p16
 last_updated: 2026-06-01
 repository: /Users/cc/MyPorject/ccd
 baseline_branch: main
 baseline_commit: cc255d1a
 last_remote_state_reconciliation: P11 reconciled P10g push state; evidence snapshot only — verify current HEAD via git history
-current_lane: P13 PrimeVue staged reduction owner decision checkpoint
+current_lane: P16 final GO/NO-GO reconciliation
 source_of_truth_files:
   - README.md
   - docs/en/architecture-contract.md
@@ -44,7 +44,7 @@ status_markers:
   partially_obsolete: [B-03, C-04, D-09, D-10, D-11]
   superseded: []
   duplicate: []
-  blocked: [G-03]
+  blocked: []
   done:
     [
       C-01,
@@ -70,12 +70,13 @@ status_markers:
       F-03,
       F-04,
       G-01,
+      G-03,
       B-07,
       B-08,
     ]
 generated_files_policy: do_not_edit_manually; regenerate only with pnpm governance:refresh, pnpm api:report, or the owning generator command
 source_changes_allowed: false
-final_status_decision: NO_GO
+final_status_decision: CONDITIONAL_GO
 ```
 
 Baseline evidence:
