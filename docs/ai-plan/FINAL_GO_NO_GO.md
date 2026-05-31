@@ -3,14 +3,16 @@
 ## Current Decision
 
 - Final decision: `NO_GO`
-- Current program: `CCD post-M16 NO_GO blocker-resolution program` (P0–P9)
-- P8 reconciliation status: `P8_FINAL_NO_GO`
+- Current program: `CCD post-M16 NO_GO blocker-resolution program` (P0–P11)
+- P11 reconciliation status: `P11_REMOTE_STATE_RECONCILED_NO_GO`
 - Current accepted baseline: `M14_STATUS_LEDGER_RECONCILED_NO_GO`
-- Latest lanes: P0–P8 (2026-06-01)
-- Evidence directory: `docs/ai-runs/20260601-106000-ccd-p8-final-go-no-go-reconciliation/`
+- Latest lanes: P0–P11 (2026-06-01)
+- Latest remote commit (`origin/main`): `0de90f64`
+- P10g push status: completed manually to `origin/main` (2026-06-01)
+- Evidence directory: `docs/ai-runs/20260601-140000-ccd-p11-remote-state-surface-reconciliation/`
 - Full GO authorized: no
 
-P1–P3 resolved owner decisions for safeStorage crypto (D-016 Option A), compression (D-019/B-08 Option A), and PrimeVue guard posture (D-017 Options A+D). P4 confirmed non-crypto safeStorage boundaries. P7 classified all 80 repair-ledger open tasks. Top-level status remains `NO_GO` because C-06 allowlist debt, G-02 open tasks, G-03 completion gate, dirty uncommitted tree, and M16a evidence gap remain.
+P1–P3 resolved owner decisions for safeStorage crypto (D-016 Option A), compression (D-019/B-08 Option A), and PrimeVue guard posture (D-017 Options A+D). P4 confirmed non-crypto safeStorage boundaries. P7 classified all 80 repair-ledger open tasks. P10 local commits (G1–G6) and supplemental evidence (P10c/P10f) were pushed manually to `origin/main`; remote HEAD is `0de90f64`. Top-level status remains `NO_GO` because C-06 allowlist debt, G-02 open tasks, G-03 completion gate, and M12 staged-reduction block remain unresolved.
 
 ## Blocking Facts
 
@@ -23,41 +25,30 @@ P1–P3 resolved owner decisions for safeStorage crypto (D-016 Option A), compre
 | `D-017`                 | `APPROVED`       | Options A+D recorded 2026-06-01; Option E/M12 not approved.             |
 | `G-02`                  | `OPEN`           | 80 repair-ledger tasks classified; none closed in P7.                   |
 | `G-03`                  | `BLOCKED`        | Final completion cannot be declared.                                    |
-| `M16a evidence`         | missing dir      | Ledger references missing evidence package.                             |
+| `M12`                   | `BLOCKED`        | Staged PrimeVue allowlist reduction not owner-approved.                 |
 | `pnpm ai:doctor --open` | 80 open tasks    | repair ledger remains open.                                             |
 | `pnpm codex:preflight`  | fail (inherited) | `.cursor` presence + ai:sync drift note.                                |
-| review/commit package   | OPEN             | P9 prepared; not committed.                                             |
+| remote push (P10g)      | `DONE`           | Manual push to `origin/main` at `0de90f64` (2026-06-01).                |
 
-## P8 Validation Matrix (2026-06-01)
+## P11 Validation Matrix (2026-06-01)
 
-| Command                            | Result                                        |
-| ---------------------------------- | --------------------------------------------- |
-| `git diff --check`                 | pass                                          |
-| `pnpm docs:commands`               | pass                                          |
-| `pnpm project:doctor`              | pass                                          |
-| `pnpm ai:doctor --open`            | pass (80 open)                                |
-| `pnpm codex:preflight`             | **fail** (inherited `.cursor`, ai:sync drift) |
-| `pnpm ci:prepare-internal`         | pass                                          |
-| `pnpm ci:smoke:packages`           | pass                                          |
-| `pnpm arch:runtime`                | pass                                          |
-| `pnpm arch:boundaries`             | pass                                          |
-| `pnpm api:report`                  | pass                                          |
-| `pnpm ai:guard -- --format=json`   | pass                                          |
-| `pnpm validate:governance`         | pass                                          |
-| `pnpm type-check`                  | pass                                          |
-| `pnpm test:run`                    | pass                                          |
-| `pnpm --filter @ccd/web-demo test` | pass                                          |
-| `pnpm build:web-demo`              | pass                                          |
-| `pnpm build:desktop`               | pass                                          |
-| `pnpm build:ci`                    | pass                                          |
+| Command                    | Result         |
+| -------------------------- | -------------- |
+| `git diff --check`         | pass           |
+| `pnpm docs:commands`       | pass           |
+| `pnpm ai:doctor`           | pass           |
+| `pnpm ai:doctor --open`    | pass (80 open) |
+| `pnpm validate:governance` | pass           |
 
-Logs: `docs/ai-runs/20260601-106000-ccd-p8-final-go-no-go-reconciliation/command-logs/`
+Logs: `docs/ai-runs/20260601-140000-ccd-p11-remote-state-surface-reconciliation/command-logs/`
+
+Prior P8 full matrix (still valid for arch/build gates): `docs/ai-runs/20260601-106000-ccd-p8-final-go-no-go-reconciliation/command-logs/`
 
 ## Decision Criteria
 
 ### GO
 
-All blockers resolved with evidence, owner/operator approvals recorded, open repair-ledger tasks closed or explicitly accepted as debt with owner sign-off, validation passes, review package committed or explicitly accepted dirty.
+All blockers resolved with evidence, owner/operator approvals recorded, open repair-ledger tasks closed or explicitly accepted as debt with owner sign-off, validation passes, release package committed or explicitly accepted dirty.
 
 ### NO_GO
 
@@ -65,8 +56,8 @@ Any unresolved blocker remains, repair-ledger open tasks remain unclosed, C-06 a
 
 ## Final Rationale
 
-The final state is **`NO_GO`**. Owner decisions closed B-07/B-08/D-016/D-019 and approved D-017 guard posture, but C-06 allowlist debt, 80 classified-but-open repair-ledger tasks (G-02), G-03 completion gate, inherited codex:preflight failure, M16a missing evidence directory, and uncommitted M1–P8 dirty tree prevent GO or CONDITIONAL_GO without explicit owner acceptance of residual debt.
+The final state is **`NO_GO`**. Owner decisions closed B-07/B-08/D-016/D-019 and approved D-017 guard posture, and P10g pushed local commits plus evidence to `origin/main` at `0de90f64`. C-06 allowlist debt, 80 classified-but-open repair-ledger tasks (G-02), G-03 completion gate, M12 staged-reduction block, and inherited codex:preflight failure still prevent GO or CONDITIONAL_GO without explicit owner acceptance of residual debt.
 
 ## Recommended Next Action
 
-Review P9 commit package proposal. Optionally retro-create M16a evidence directory or accept ledger reference fix. Do not treat P1–P3 approvals as authorization for M12 allowlist reduction or package manifest changes.
+Continue NO_GO blocker-resolution on C-06/G-02/G-03/M12. Do not treat P1–P3 approvals or P10g push as authorization for M12 allowlist reduction, package manifest changes, or GO/CONDITIONAL_GO declaration.

@@ -399,48 +399,60 @@ Minimum validation for any future storage lane:
 
 ### M6b owner decision review
 
+> **Historical (superseded):** Pre-P1 M6b review snapshot. Authoritative status is recorded in **P1 post-M16 owner decision (2026-06-01)** below.
+
 - Review run: `docs/ai-runs/20260531-142414-ccd-m6b-owner-decision-review/`
 - Owner approval status: `NO_OWNER_APPROVAL_RECORDED`
-- Decision log status remains `PROPOSED`.
+- Decision log status at time of review: `PROPOSED`.
 - Evidence reviewed: M6 decision packet, M6a reconciliation summary, this decision log, architecture issue repair log, and `.ai/runtime/owner_decisions.md`.
 - Result: no explicit owner approval, rejection, deferral, or revision request was found for options 1-5.
-- Authorization effect: `B-07` remains `BLOCKED` for crypto ownership. A future non-crypto safeStorage codec foundation lane may proceed only if it does not move crypto/HMAC/Web Crypto behavior, package manifests, lockfile, or runtime behavior.
+- Authorization effect at time of review: `B-07` remained `BLOCKED` for crypto ownership.
 
 ### M7 safeStorage codec foundation note
+
+> **Historical (superseded):** Pre-P1 M7 snapshot. Authoritative status is recorded in **P1 post-M16 owner decision (2026-06-01)** below.
 
 - Review run: `docs/ai-runs/20260531-144505-ccd-m7-safe-storage-codec-foundation/`
 - M7 established the non-crypto JSON codec foundation as already package-owned by `@ccd/shared-utils` and already consumed by `apps/web-demo/src/utils/safeStorage/core.ts`.
 - M7 did not move compression because `@ccd/shared-utils` does not declare `lz-string` and this lane forbids package manifest/lockfile changes.
 - M7 did not move or modify AES, HMAC, Web Crypto, obfuscation-key resolution, app logger wiring, `import.meta.env`, browser storage, or Pinia serializer behavior.
-- Decision log status remains `PROPOSED`; `B-07` remains `BLOCKED`.
+- Decision log status at time of review: `PROPOSED`; `B-07` remained `BLOCKED`.
 
 ### M7a validation closure note
+
+> **Historical (superseded):** Pre-P1 M7a snapshot. Authoritative status is recorded in **P1 post-M16 owner decision (2026-06-01)** below.
 
 - Review run: `docs/ai-runs/20260531-153347-ccd-m7a-web-demo-filtered-test-cwd-repair/`
 - M7a repaired the test-only cwd-sensitive path in `apps/web-demo/src/utils/http/requestLayer.spec.ts` that made `pnpm --filter @ccd/web-demo test` resolve `apps/web-demo/apps/web-demo/src/utils/http`.
 - The repair changed only test path normalization. It did not change HTTP runtime behavior, safeStorage runtime behavior, package manifests, lockfile, generated outputs manually, AES, HMAC, Web Crypto, obfuscation-key resolution, app logger wiring, `import.meta.env`, browser storage, or Pinia serializer behavior.
 - M7 strict validation is now closed as `M7_SCOPE_ACCEPTED_VALIDATION_CLOSED`.
-- Decision log status remains `PROPOSED`; `B-07` remains `BLOCKED`.
+- Decision log status at time of review: `PROPOSED`; `B-07` remained `BLOCKED`.
 
 ### M8 theme-size resolver note
 
+> **Historical (superseded):** Pre-P1 M8 snapshot. Authoritative status is recorded in **P1 post-M16 owner decision (2026-06-01)** below.
+
 - Review run: `docs/ai-runs/20260531-160123-ccd-m8-theme-size-resolver-foundation/`
 - M8 did not move or modify safeStorage crypto, HMAC, Web Crypto, compression ownership, obfuscation-key resolution, app logger wiring, `import.meta.env`, browser storage ownership, or Pinia serializer behavior.
-- Decision log status remains `PROPOSED`; `B-07` remains `BLOCKED`.
+- Decision log status at time of review: `PROPOSED`; `B-07` remained `BLOCKED`.
 
 ### M14 status reconciliation note
 
+> **Historical (superseded):** Pre-P1 M14 snapshot. Authoritative status is recorded in **P1 post-M16 owner decision (2026-06-01)** below.
+
 - Review run: `docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/`
 - M14 found no explicit owner approval, rejection, deferral, or revision request for D-016 after M6b.
-- Decision log status remains `PROPOSED`; `B-07` remains `BLOCKED`.
-- `B-08` remains `OPEN` because compression extraction still requires dependency/manifest approval and persisted-format parity evidence.
+- Decision log status at time of review: `PROPOSED`; `B-07` remained `BLOCKED`.
+- `B-08` remained `OPEN` because compression extraction still required dependency/manifest approval and persisted-format parity evidence.
 
 ### M15 surface synchronization note
 
+> **Historical (superseded):** Pre-P1 M15 snapshot. Authoritative status is recorded in **P1 post-M16 owner decision (2026-06-01)** below.
+
 - Review run: `docs/ai-runs/20260531-215707-ccd-m15-no-go-surface-sync-review-package/`
 - M15 updates top-level status surfaces only and does not record owner approval, rejection, deferral, or revision request for D-016.
-- Decision log status remains `PROPOSED`; `B-07` remains `BLOCKED`.
-- `B-08` remains `OPEN`; no package manifest, lockfile, compression, crypto, HMAC, Web Crypto, or runtime behavior was changed.
+- Decision log status at time of review: `PROPOSED`; `B-07` remained `BLOCKED`.
+- `B-08` remained `OPEN`; no package manifest, lockfile, compression, crypto, HMAC, Web Crypto, or runtime behavior was changed.
 
 ### P1 post-M16 owner decision (2026-06-01)
 
@@ -513,26 +525,32 @@ Minimum validation for any future reduction lane:
 
 ### M6b owner decision review
 
+> **Historical (superseded):** Pre-P3 M6b review snapshot. Authoritative status is recorded in **P3 post-M16 owner decision (2026-06-01)** below.
+
 - Review run: `docs/ai-runs/20260531-142414-ccd-m6b-owner-decision-review/`
 - Owner approval status: `NO_OWNER_APPROVAL_RECORDED`
-- Decision log status remains `PROPOSED`.
+- Decision log status at time of review: `PROPOSED`.
 - Evidence reviewed: M6 decision packet, M6a reconciliation summary, this decision log, architecture issue repair log, and `.ai/runtime/owner_decisions.md`.
 - Result: no explicit owner approval, rejection, deferral, or revision request was found for options 1-5.
-- Authorization effect: `C-06` remains `OPEN`; `M12-primevue-allowlist-reduction` remains blocked until an owner approves the concrete reduction group, visual validation budget, and wrapper/adapter ownership.
+- Authorization effect at time of review: `C-06` remained `OPEN`; `M12-primevue-allowlist-reduction` remained blocked.
 
 ### M14 status reconciliation note
 
+> **Historical (superseded):** Pre-P3 M14 snapshot. Authoritative status is recorded in **P3 post-M16 owner decision (2026-06-01)** below.
+
 - Review run: `docs/ai-runs/20260531-212101-ccd-m14-status-ledger-reconciliation/`
 - M14 found no explicit owner approval, rejection, deferral, or revision request for D-017 after M6b.
-- Decision log status remains `PROPOSED`; `C-06` remains `OPEN`.
-- `M12-primevue-allowlist-reduction` remains blocked until an owner approves the concrete reduction group, visual validation budget, and wrapper/adapter ownership.
+- Decision log status at time of review: `PROPOSED`; `C-06` remained `OPEN`.
+- `M12-primevue-allowlist-reduction` remained blocked at time of review.
 
 ### M15 surface synchronization note
 
+> **Historical (superseded):** Pre-P3 M15 snapshot. Authoritative status is recorded in **P3 post-M16 owner decision (2026-06-01)** below.
+
 - Review run: `docs/ai-runs/20260531-215707-ccd-m15-no-go-surface-sync-review-package/`
 - M15 updates top-level status surfaces only and does not record owner approval, rejection, deferral, or revision request for D-017.
-- Decision log status remains `PROPOSED`; `C-06` remains `OPEN`.
-- `M12-primevue-allowlist-reduction` remains blocked; no PrimeVue imports, allowlists, generated type output, package manifests, lockfile, or runtime behavior was changed.
+- Decision log status at time of review: `PROPOSED`; `C-06` remained `OPEN`.
+- `M12-primevue-allowlist-reduction` remained blocked at time of review.
 
 ### P3 post-M16 owner decision (2026-06-01)
 

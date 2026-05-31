@@ -3,12 +3,13 @@
 ## 0. Machine-Readable Summary
 
 ```yaml
-document_version: 2026-06-01.p9
+document_version: 2026-06-01.p11
 last_updated: 2026-06-01
 repository: /Users/cc/MyPorject/ccd
 baseline_branch: main
 baseline_commit: cc255d1a
-current_lane: P9 review package and commit plan lane
+latest_remote_commit: 0de90f64
+current_lane: P11 remote state surface reconciliation
 source_of_truth_files:
   - README.md
   - docs/en/architecture-contract.md
@@ -74,7 +75,7 @@ status_markers:
     ]
 generated_files_policy: do_not_edit_manually; regenerate only with pnpm governance:refresh, pnpm api:report, or the owning generator command
 source_changes_allowed: false
-final_status_decision: M16_STALE_REFERENCES_CLEANED
+final_status_decision: NO_GO
 ```
 
 Baseline evidence:
@@ -131,6 +132,7 @@ Post-review note:
 - M14 reconciled lane status, issue status, blockers, generated outputs, and dirty-tree classification after M1-M13a. Required validation passed, but `pnpm ai:doctor --open` still reports 80 open tasks; `B-07`, `B-08`, `C-06`, `D-016`, `D-017`, and `G-03` remain unresolved. Final status is `M14_STATUS_LEDGER_RECONCILED_NO_GO`; do not treat the architecture repair set as complete.
 - M16 cleans stale documentation and tooling text/path references left out of M15 scope. It updates `docs/ai-plan/PLAN.md`, `docs/zh/04-project-control-center.md`, and `docs/zh/08-release.md` to match current `@ccd/vue-ui` ownership and app integration facade classification, but it does not resolve blockers, fabricate approvals, manually edit generated files, stage, commit, push, clean, or modify runtime source. `D-08` is now `DONE`; `D-11` is `PARTIALLY_OBSOLETE` because planning docs and scaffold imports are aligned while `scripts/ai-architecture-guard.mjs` allowlist reduction remains owner-approved M12 work; `G-02` remains `OPEN` because 80 repair-ledger tasks remain open.
 - M16a syncs ledger §0 YAML and G-02 wording with the M16 issue table, reconciles M16 complete changed-files evidence, and records `M16A_LEDGER_EVIDENCE_POLISHED` without changing substantive issue statuses, runtime source, manifests, lockfile, blocker outcomes, or top-level `NO_GO`.
+- P11 reconciles status surfaces after manual P10g push to `origin/main` at `0de90f64`. Updates `FINAL_GO_NO_GO.md`, `STATUS.md`, `DECISIONS.md` historical notes, and ledger §0 to reflect remote state. Does not change runtime source, package manifests, lockfile, generated files manually, or top-level `NO_GO`. C-06, G-02, G-03, and M12 remain OPEN/BLOCKED.
 
 ## 1. Codex Operating Contract
 
