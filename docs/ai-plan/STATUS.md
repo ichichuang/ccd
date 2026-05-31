@@ -21,7 +21,7 @@
 - Overall final status remains **`NO_GO`**.
 - Full GO is not authorized.
 - `pnpm ai:doctor --open` still reports **80 open tasks** (P7 classified all; 0 closed).
-- Workspace: P10 commits landed; remaining dirty: `.ai/rules/components/*.mdc`, `auto-imports.d.ts`, root `CCD_ARCHITECTURE_ISSUE_REPAIR_LOG.md`.
+- Workspace: P10f restored push-readiness on tracked files (`auto-imports.d.ts` = LOCAL_FORMATTING_DRIFT, cleared via Prettier; `build:web-demo` = PASS after vue-charts build prep). Evidence: `docs/ai-runs/20260601-020401-ccd-p10f-auto-imports-vue-charts-build-repair/`. HEAD remains `ab1d23d6`; push not authorized.
 
 ## Post-M16 Program Results (P0–P8)
 

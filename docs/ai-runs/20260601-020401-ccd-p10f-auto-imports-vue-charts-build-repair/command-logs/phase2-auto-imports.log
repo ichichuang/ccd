@@ -1,0 +1,23 @@
+=== prettier check (before) ===
+Checking formatting...
+All matched files use Prettier code style!
+=== sha256 before generator ===
+accb4545146597f8cef239e470b3211807e000523f1b7a5e3c25ca0630f8c8f9  apps/web-demo/src/types/auto-imports.d.ts
+=== vite build run 1 ===
+undefined
+/Users/cc/MyPorject/ccd/apps/web-demo:
+ ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL  Command failed with exit code 1: vite build
+=== sha256 after run 1 ===
+2e12e9010225dfe687098d17f073e49af8a09d3b1396f722df285888cb156682  apps/web-demo/src/types/auto-imports.d.ts
+=== vite build run 2 ===
+undefined
+/Users/cc/MyPorject/ccd/apps/web-demo:
+ ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL  Command failed with exit code 1: vite build
+=== sha256 after run 2 ===
+2e12e9010225dfe687098d17f073e49af8a09d3b1396f722df285888cb156682  apps/web-demo/src/types/auto-imports.d.ts
+=== git diff lines after generator ===
+      49
+=== prettier write ===
+apps/web-demo/src/types/auto-imports.d.ts 41ms
+=== git diff lines after prettier ===
+       0

@@ -1,0 +1,1297 @@
+=== git status ===
+?? docs/ai-runs/20260601-020401-ccd-p10f-auto-imports-vue-charts-build-repair/command-logs/phase1-baseline.log
+?? docs/ai-runs/20260601-020401-ccd-p10f-auto-imports-vue-charts-build-repair/command-logs/phase5-validation.log
+=== git diff --check ===
+=== pnpm ai:doctor ===
+
+> ccd@1.0.38 ai:doctor /Users/cc/MyPorject/ccd
+> node scripts/ai-doctor.mjs
+
+AI workspace doctor
+===================
+[OK] workspace governance: main
+[OK] canonical asset: .ai/README.md
+[OK] canonical asset: .ai/protocol/AI.entry.md
+[OK] canonical asset: .ai/protocol/AGENTS.core.md
+[OK] canonical asset: .ai/protocol/adapter-manifest.json
+[OK] canonical asset: .ai/protocol/adapters/README.md
+[OK] canonical asset: .ai/protocol/adapters/codex.md
+[OK] canonical asset: .ai/protocol/adapters/claude.md
+[OK] canonical asset: .ai/rules/core/00-global-architect.mdc
+[OK] canonical asset: .ai/rules/core/00-root-gatekeeper.mdc
+[OK] canonical asset: .ai/rules/core/01-global-preflight.mdc
+[OK] canonical asset: .ai/rules/core/02-ui-preflight.mdc
+[OK] canonical asset: .ai/rules/core/10-ai-generation-workflow.mdc
+[OK] canonical asset: scripts/skill-lock-utils.mjs
+[OK] canonical asset: scripts/ai-architecture-guard.mjs
+[OK] canonical asset: scripts/ai-route-view-scaffold.mjs
+[OK] canonical asset: .ai/skills/core/unocss/SKILL.md
+[OK] canonical asset: .ai/skills/core/vite/SKILL.md
+[OK] canonical asset: .ai/skills/core/vue/SKILL.md
+[OK] canonical asset: .ai/skills/core/vueuse-functions/SKILL.md
+[OK] canonical asset: .ai/skills/codex/architecture-browser-master/SKILL.md
+[OK] canonical asset: .ai/skills/codex/task-orchestrator/SKILL.md
+[OK] canonical asset: .ai/skills/codex/github-ops/SKILL.md
+[OK] canonical asset: .ai/skills/codex/desktop-tauri-guard/SKILL.md
+[OK] canonical asset: scripts/ai-sync.mjs
+[OK] canonical asset: scripts/generate-ai-protocol-adapters.mjs
+[OK] canonical asset: scripts/ai-doctor.mjs
+[OK] canonical asset: scripts/codex-preflight.mjs
+[OK] canonical asset: scripts/ai-clean.mjs
+[OK] canonical asset: scripts/ai-sync-codex.mjs
+[OK] canonical asset: .ai/runtime/repair_list.template.md
+[OK] canonical asset: .ai/manifests/skill-routing.json
+[OK] canonical asset: .ai/manifests/skills-lock.json
+[OK] canonical asset: .ai/manifests/rule-index.json
+[OK] local runtime file: .ai/runtime/repair_list.md
+[OK] local runtime file: .ai/runtime/repair-ledger.json
+[OK] retired path removed: .cursor
+[OK] retired path removed: .ai/config/cursor.settings.json
+[OK] retired path removed: .ai/protocol/adapters/cursor.md
+[OK] retired path removed: .ai/protocol/adapters/gemini.md
+[OK] retired path removed: .ai/skills/cursor
+[OK] retired path removed: .ai/manifests/gemini-skill-index.json
+[OK] local architecture gate: .husky/pre-commit
+[OK] ci architecture gate: .github/workflows/ci.yml
+[OK] generated adapter: AGENTS.md
+[OK] generated adapter: CLAUDE.md
+[OK] generated skill lock: .ai/manifests/skills-lock.json
+[OK] skill routing targets: .ai/manifests/skill-routing.json
+AI architecture guard
+====================
+[OK] no actionable architecture violations detected in guarded surfaces
+[LOG] .ai/runtime/architecture-guard-report.json
+[OK] architecture guard: pnpm ai:guard
+[PREP] internal packages for doctor
+
+> ccd@1.0.38 ci:prepare-internal /Users/cc/MyPorject/ccd
+> pnpm ci:clean-artifacts && pnpm --filter @ccd/contracts build && pnpm --filter @ccd/design-tokens build && pnpm --filter @ccd/shared-utils build && pnpm --filter @ccd/core build && pnpm --filter @ccd/unocss-preset build && pnpm --filter @ccd/vue-hooks build && pnpm --filter @ccd/vue-app-platform build && pnpm --filter @ccd/vue-ui build && pnpm --filter @ccd/vue-primevue-adapter build && pnpm --filter @ccd/vue-charts build
+
+
+> ccd@1.0.38 ci:clean-artifacts /Users/cc/MyPorject/ccd
+> rm -rf packages/*/dist apps/*/dist node_modules/.tmp
+
+
+> @ccd/contracts@1.0.38 build /Users/cc/MyPorject/ccd/packages/contracts
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-contracts.tsbuildinfo && tsc -b tsconfig.json --force
+
+
+> @ccd/design-tokens@1.0.38 build /Users/cc/MyPorject/ccd/packages/design-tokens
+> rm -f ../../node_modules/.tmp/packages-design-tokens.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/shared-utils@1.0.38 build /Users/cc/MyPorject/ccd/packages/shared-utils
+> rm -f ../../node_modules/.tmp/packages-shared-utils.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/core@1.0.38 build /Users/cc/MyPorject/ccd/packages/core
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-core.tsbuildinfo && tsc -b tsconfig.json --force
+
+
+> @ccd/unocss-preset@1.0.38 build /Users/cc/MyPorject/ccd/packages/unocss-preset
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-unocss-preset.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-hooks@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-hooks
+> rm -f ../../node_modules/.tmp/packages-vue-hooks.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-app-platform@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-app-platform
+> rm -f ../../node_modules/.tmp/packages-vue-app-platform.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-ui@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-ui
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 126 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/vue-ui.css   19.53 kB │ gzip:  3.33 kB
+dist/index.js    231.44 kB │ gzip: 58.66 kB
+✓ built in 489ms
+
+> @ccd/vue-primevue-adapter@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-primevue-adapter
+> rm -f ../../node_modules/.tmp/packages-vue-primevue-adapter.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-charts@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-charts
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-charts.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 46 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/echarts-setup.js   0.07 kB │ gzip:  0.09 kB
+dist/index.js          89.94 kB │ gzip: 21.36 kB
+✓ built in 171ms
+
+> ccd@1.0.38 validate:tokens /Users/cc/MyPorject/ccd
+> tsx scripts/validate-token-contrast.ts
+
+Token contrast validation passed: 10 presets × 2 modes × 28 pairs (560 checks, decorativeMode=warn)
+Token contrast validation passed with advisories:
+  - [WARN][decorative] morandi-elegance/light success/light contrast: 1.91 (ignored; recommended >= 2.0, bg 111 208 124, fg 255 255 255)
+  - [WARN][decorative] soft-morandi-pastels/light accent/light contrast: 1.93 (ignored; recommended >= 2.0, bg 102 205 170, fg 255 255 255)
+  - [WARN][decorative] soft-morandi-pastels/light success/light contrast: 1.91 (ignored; recommended >= 2.0, bg 111 208 124, fg 255 255 255)
+  - [WARN][decorative] modern-calm-neutrals/light accent/light contrast: 1.93 (ignored; recommended >= 2.0, bg 102 205 170, fg 255 255 255)
+  - [WARN][decorative] modern-calm-neutrals/light success/light contrast: 1.91 (ignored; recommended >= 2.0, bg 111 208 124, fg 255 255 255)
+  - [WARN][decorative] eco-nature-earth/light accent/light contrast: 1.93 (ignored; recommended >= 2.0, bg 102 205 170, fg 255 255 255)
+  - [WARN][decorative] eco-nature-earth/light success/light contrast: 1.91 (ignored; recommended >= 2.0, bg 111 208 124, fg 255 255 255)
+  - [WARN][decorative] elevated-digital-pastels/light success/light contrast: 1.91 (ignored; recommended >= 2.0, bg 111 208 124, fg 255 255 255)
+  - [WARN][decorative] elevated-digital-pastels/light help/light contrast: 1.91 (ignored; recommended >= 2.0, bg 176 190 197, fg 255 255 255)
+  - [WARN][decorative] warm-modern-sunset/light accent/light contrast: 1.93 (ignored; recommended >= 2.0, bg 102 205 170, fg 255 255 255)
+  - [WARN][decorative] warm-modern-sunset/light success/light contrast: 1.91 (ignored; recommended >= 2.0, bg 111 208 124, fg 255 255 255)
+  - [WARN][decorative] emerald-forest/light help/light contrast: 1.43 (ignored; recommended >= 2.0, bg 197 225 165, fg 255 255 255)
+  - [WARN][decorative] midnight-deep-sea/light help/light contrast: 1.91 (ignored; recommended >= 2.0, bg 176 190 197, fg 255 255 255)
+  - [WARN][decorative] industrial-tech/light help/light contrast: 1.91 (ignored; recommended >= 2.0, bg 176 190 197, fg 255 255 255)
+[OK] token contrast validation: pnpm validate:tokens
+=== pnpm validate:governance ===
+
+> ccd@1.0.38 validate:governance /Users/cc/MyPorject/ccd
+> pnpm governance:gate
+
+
+> ccd@1.0.38 governance:gate /Users/cc/MyPorject/ccd
+> bash scripts/exec.sh node scripts/governance/gate.mjs
+
+
+[gate] project metadata drift
+
+> ccd@1.0.38 project:doctor /Users/cc/MyPorject/ccd
+> node scripts/project-config.mjs doctor
+
+file                                       | field                | expected                                                                    | actual                                                                      | status
+-------------------------------------------|----------------------|-----------------------------------------------------------------------------|-----------------------------------------------------------------------------|-------
+package.json                               | name                 | ccd                                                                         | ccd                                                                         | ok
+package.json                               | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+package.json                               | description          | Self-protecting deterministic multi-runtime platform architecture.          | Self-protecting deterministic multi-runtime platform architecture.          | ok
+package.json                               | author               | Chi Chuang                                                                  | Chi Chuang                                                                  | ok
+package.json                               | license              | GPL-3.0                                                                     | GPL-3.0                                                                     | ok
+package.json                               | homepage             | https://www.ccd.wzdxcc.cloudns.org/                                         | https://www.ccd.wzdxcc.cloudns.org/                                         | ok
+package.json                               | keywords             | ["vue3","typescript","vite","tauri","monorepo","governance","architecture"] | ["vue3","typescript","vite","tauri","monorepo","governance","architecture"] | ok
+apps/web-demo/src/constants/brand.ts       | name                 | ccd                                                                         | ccd                                                                         | ok
+apps/web-demo/src/constants/brand.ts       | displayName          | CCD                                                                         | CCD                                                                         | ok
+apps/web-demo/src/constants/brand.ts       | subtitle             | Platform                                                                    | Platform                                                                    | ok
+apps/web-demo/src/constants/brand.ts       | description          | Self-protecting deterministic multi-runtime platform architecture.          | Self-protecting deterministic multi-runtime platform architecture.          | ok
+apps/web-demo/src/constants/brand.ts       | slogan               | Self-protecting deterministic multi-runtime platform architecture           | Self-protecting deterministic multi-runtime platform architecture           | ok
+apps/web-demo/src/constants/brand.ts       | author               | Chi Chuang                                                                  | Chi Chuang                                                                  | ok
+apps/desktop/package.json                  | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+apps/web-demo/package.json                 | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+packages/contracts/package.json            | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+packages/core/package.json                 | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+packages/design-tokens/package.json        | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+packages/shared-utils/package.json         | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+packages/unocss-preset/package.json        | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+packages/vue-app-platform/package.json     | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+packages/vue-charts/package.json           | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+packages/vue-hooks/package.json            | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+packages/vue-primevue-adapter/package.json | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+packages/vue-ui/package.json               | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+apps/desktop/src-tauri/tauri.conf.json     | productName          | CCD Desktop                                                                 | CCD Desktop                                                                 | ok
+apps/desktop/src-tauri/tauri.conf.json     | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+apps/desktop/src-tauri/tauri.conf.json     | identifier           | com.ccd.desktop                                                             | com.ccd.desktop                                                             | ok
+apps/desktop/src-tauri/tauri.conf.json     | app.windows[0].title | CCD Desktop                                                                 | CCD Desktop                                                                 | ok
+.ai/governance/policies/version.json       | policyVersion        | 2026.05.18                                                                  | 2026.05.18                                                                  | ok
+.ai/governance/policies/version.json       | governancePhase      | phase-4-self-protecting-platform                                            | phase-4-self-protecting-platform                                            | ok
+
+[gate] governance assets
+
+> ccd@1.0.38 governance:validate /Users/cc/MyPorject/ccd
+> node scripts/governance/validate.mjs
+
+[OK] governance asset: .ai/protocol/version.json
+[OK] governance asset: .ai/governance/policies/version.json
+[OK] governance asset: .ai/governance/policies/topology.json
+[OK] governance asset: .ai/governance/policies/runtime.json
+[OK] governance asset: .ai/governance/policies/ai.json
+[OK] governance asset: .ai/governance/policies/api.json
+[OK] governance asset: .ai/governance/policies/supply-chain.json
+[OK] governance asset: .ai/governance/policies/release.json
+[OK] governance asset: .ai/orchestration/manifest.json
+[OK] governance asset: .ai/runtime-profile/local/profile.json
+[OK] governance asset: .ai/runtime-profile/desktop/profile.json
+[OK] governance asset: .changeset/config.json
+[OK] governance asset: .github/CODEOWNERS
+[OK] governance asset: mise.toml
+[OK] governance asset: scripts/env.sh
+[OK] governance asset: scripts/exec.sh
+[OK] governance asset: scripts/env-doctor.mjs
+[OK] governance asset: scripts/ai-os-doctor.mjs
+[OK] governance asset: scripts/bootstrap-runtime.sh
+[OK] governance asset: docs/architecture/stable-baseline.md
+[OK] governance asset: docs/runtime/execute-reliability.md
+[OK] governance asset: docs/runtime/runtime-isolation.md
+[OK] governance asset: docs/governance/protocol-versioning.md
+[OK] governance asset: docs/governance/adapter-architecture.md
+[OK] governance asset: docs/governance/ai-orchestration.md
+[OK] governance asset: docs/release/release-policy.md
+[OK] governance asset: docs/release/runtime-promotion-checklist.md
+[OK] governance asset: scripts/diagnostics/codex-execute-doctor.mjs
+[OK] governance asset: scripts/diagnostics/codex-cache-inspect.mjs
+[OK] governance asset: scripts/diagnostics/codex-provider-inspect.mjs
+[OK] governance asset: scripts/diagnostics/codex-routing-inspect.mjs
+[OK] governance asset: scripts/runtime/codex-exec-wrapper.mjs
+[OK] governance asset: scripts/runtime/cache-governance.mjs
+[OK] governance asset: scripts/runtime/provider-transport-validate.mjs
+[OK] governance asset: .ai/execution/execution-fingerprint.json
+[OK] governance asset: .ai/execution/provider-session.json
+[OK] governance asset: .ai/execution/runtime-session.json
+[OK] protocol version field: protocolVersion=1.0.0
+[OK] protocol version field: manifestVersion=1.0.0
+[OK] protocol version field: adapterVersion=1.0.0
+[OK] protocol version field: governanceVersion=1.0.0
+[OK] protocol version field: governanceBaselineVersion=2026.05-main-governance.1
+[OK] protocol version field: runtimeProfileSchemaVersion=1.0.0
+[OK] protocol version field: routerSchemaVersion=1.0.0
+[OK] pnpm workspace has no removed archive package paths
+
+[gate] AI architecture guard
+
+> ccd@1.0.38 ai:guard /Users/cc/MyPorject/ccd
+> node scripts/ai-architecture-guard.mjs -- --format=json
+
+{
+  "ok": true,
+  "mode": "full",
+  "scannedFiles": null,
+  "findings": []
+}
+
+[gate] architecture boundaries
+
+> ccd@1.0.38 arch:boundaries /Users/cc/MyPorject/ccd
+> depcruise --config .dependency-cruiser.cjs apps packages && node scripts/architecture/validate-boundaries.mjs
+
+
+✔ no dependency violations found (777 modules, 1662 dependencies cruised)
+
+Architecture boundary validation passed.
+
+[gate] runtime leak detection
+
+> ccd@1.0.38 arch:runtime /Users/cc/MyPorject/ccd
+> node scripts/architecture/check-runtime-leaks.mjs && node scripts/architecture/check-root-runtime-decommissioned.mjs
+
+Runtime surface validation passed. findings=387, exact_exceptions=297
+[root-runtime] root runtime decommission guard passed
+
+[gate] API snapshot compatibility
+
+> ccd@1.0.38 api:report /Users/cc/MyPorject/ccd
+> node scripts/architecture/check-api-surface.mjs
+
+API surface report generated: docs/generated/api-surface-report.json
+
+[gate] supply-chain policy
+
+> ccd@1.0.38 supply:check /Users/cc/MyPorject/ccd
+> node scripts/architecture/check-supply-chain.mjs
+
+Supply chain validation passed.
+
+[gate] release topology
+
+> ccd@1.0.38 release:governance /Users/cc/MyPorject/ccd
+> node scripts/architecture/check-release-governance.mjs
+
+Release governance validation passed.
+
+[gate] GitHub workflow registry hygiene
+GitHub workflow registry hygiene passed.
+
+[gate] governance report generation
+
+> ccd@1.0.38 arch:report /Users/cc/MyPorject/ccd
+> node scripts/governance/report.mjs
+
+[GENERATED] .ai/generated/governance-report.json
+[GENERATED] docs/generated/governance-report.md
+
+[gate] dependency graph generation
+
+> ccd@1.0.38 arch:graphs /Users/cc/MyPorject/ccd
+> node scripts/architecture/generate-dependency-graphs.mjs
+
+Generated dependency graphs in docs/generated/graphs
+
+[gate] documentation command validation
+[doc-commands] All pnpm command references in documentation are valid. (246 files scanned)
+
+[gate] normalizing generated artifacts before sync check
+
+[gate] governance artifact sync
+
+[gate:pass] unified governance gate passed
+=== pnpm --filter @ccd/vue-charts build ===
+
+> @ccd/vue-charts@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-charts
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-charts.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 46 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/echarts-setup.js   0.07 kB │ gzip:  0.09 kB
+dist/index.js          89.94 kB │ gzip: 21.36 kB
+✓ built in 174ms
+=== pnpm ci:prepare-internal ===
+
+> ccd@1.0.38 ci:prepare-internal /Users/cc/MyPorject/ccd
+> pnpm ci:clean-artifacts && pnpm --filter @ccd/contracts build && pnpm --filter @ccd/design-tokens build && pnpm --filter @ccd/shared-utils build && pnpm --filter @ccd/core build && pnpm --filter @ccd/unocss-preset build && pnpm --filter @ccd/vue-hooks build && pnpm --filter @ccd/vue-app-platform build && pnpm --filter @ccd/vue-ui build && pnpm --filter @ccd/vue-primevue-adapter build && pnpm --filter @ccd/vue-charts build
+
+
+> ccd@1.0.38 ci:clean-artifacts /Users/cc/MyPorject/ccd
+> rm -rf packages/*/dist apps/*/dist node_modules/.tmp
+
+
+> @ccd/contracts@1.0.38 build /Users/cc/MyPorject/ccd/packages/contracts
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-contracts.tsbuildinfo && tsc -b tsconfig.json --force
+
+
+> @ccd/design-tokens@1.0.38 build /Users/cc/MyPorject/ccd/packages/design-tokens
+> rm -f ../../node_modules/.tmp/packages-design-tokens.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/shared-utils@1.0.38 build /Users/cc/MyPorject/ccd/packages/shared-utils
+> rm -f ../../node_modules/.tmp/packages-shared-utils.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/core@1.0.38 build /Users/cc/MyPorject/ccd/packages/core
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-core.tsbuildinfo && tsc -b tsconfig.json --force
+
+
+> @ccd/unocss-preset@1.0.38 build /Users/cc/MyPorject/ccd/packages/unocss-preset
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-unocss-preset.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-hooks@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-hooks
+> rm -f ../../node_modules/.tmp/packages-vue-hooks.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-app-platform@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-app-platform
+> rm -f ../../node_modules/.tmp/packages-vue-app-platform.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-ui@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-ui
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 126 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/vue-ui.css   19.53 kB │ gzip:  3.33 kB
+dist/index.js    231.44 kB │ gzip: 58.66 kB
+✓ built in 460ms
+
+> @ccd/vue-primevue-adapter@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-primevue-adapter
+> rm -f ../../node_modules/.tmp/packages-vue-primevue-adapter.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-charts@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-charts
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-charts.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 46 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/echarts-setup.js   0.07 kB │ gzip:  0.09 kB
+dist/index.js          89.94 kB │ gzip: 21.36 kB
+✓ built in 172ms
+=== pnpm ci:smoke:packages ===
+
+> ccd@1.0.38 ci:smoke:packages /Users/cc/MyPorject/ccd
+> node scripts/ci/package-resolution-smoke.mjs
+
+[smoke] @ccd/contracts resolved OK
+[smoke] @ccd/core resolved OK
+[smoke] @ccd/design-tokens resolved OK
+[smoke] @ccd/design-tokens/theme-engine resolved OK
+[smoke] @ccd/unocss-preset resolved OK
+[smoke] @ccd/vue-ui resolved OK
+[smoke] @ccd/vue-charts resolved OK
+[smoke] packages/contracts/dist/index.d.ts exists
+[smoke] packages/core/dist/index.d.ts exists
+[smoke] packages/design-tokens/dist/index.d.ts exists
+[smoke] packages/design-tokens/dist/theme-engine/index.d.ts exists
+[smoke] packages/design-tokens/dist/theme-engine/index.js exists
+[smoke] packages/unocss-preset/dist/index.d.ts exists
+[smoke] packages/vue-ui/dist/index.d.ts exists
+[smoke] packages/vue-ui/dist/index.js exists
+[smoke] packages/vue-charts/dist/index.d.ts exists
+[smoke] packages/vue-charts/dist/index.js exists
+[smoke] All package resolution checks passed
+=== pnpm --filter @ccd/web-demo type-check ===
+
+> @ccd/web-demo@1.0.38 type-check /Users/cc/MyPorject/ccd/apps/web-demo
+> vue-tsc -p tsconfig.json --noEmit
+
+=== pnpm --filter @ccd/web-demo test ===
+
+> @ccd/web-demo@1.0.38 test /Users/cc/MyPorject/ccd/apps/web-demo
+> vitest run --passWithNoTests
+
+🎉 欢迎使用 ccd
+📦 版本: 1.0.38
+⚡ 基于 Vue ^3.5.12 + Vite 构建
+🛠️ UI 架构: PrimeVue + UnoCSS
+🎨 UnoCSS: ^66.6.0
+🕒 构建时间: 6/1/2026, 2:06:19 AM
+
+
+ RUN  v4.0.18 /Users/cc/MyPorject/ccd/apps/web-demo
+
+ ✓ src/hooks/modules/useDialog.spec.ts (3 tests) 271ms
+ ✓ src/utils/http/requestLayer.spec.ts (10 tests) 101ms
+ ✓ src/hooks/modules/useHttpRequest.spec.ts (3 tests) 228ms
+ ✓ src/stores/modules/system/size.spec.ts (5 tests) 121ms
+stderr | src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > does not retry invalid token failures and clears the session immediately
+根据 token 恢复用户信息失败: AuthApiError: invalid token
+    at /Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:162:7
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vitest+runner@4.0.18/node_modules/@vitest/runner/dist/index.js:915:20 {
+  code: 'AUTH_TOKEN_INVALID'
+}
+
+stderr | src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > stops a transient retry sequence when a later failure becomes 401 terminal auth
+根据 token 恢复用户信息失败: HttpRequestError: unauthorized
+    at /Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:227:9
+    at file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vitest+runner@4.0.18/node_modules/@vitest/runner/dist/index.js:915:20 {
+  type: 'AUTH',
+  code: 'AUTH_ERROR',
+  status: 401,
+  statusText: 'Unauthorized',
+  data: undefined,
+  retryable: false
+}
+
+stderr | src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > fails closed after network retry exhaustion and emits one non-sensitive message
+根据 token 恢复用户信息失败: HttpRequestError: network unavailable
+    at networkError (/Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:98:3)
+    at /Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:248:58
+    at file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vitest+runner@4.0.18/node_modules/@vitest/runner/dist/index.js:915:20 {
+  type: 'NETWORK',
+  code: 'NETWORK_ERROR',
+  status: undefined,
+  statusText: undefined,
+  data: undefined,
+  retryable: true
+}
+
+stderr | src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > uses a 5000ms per-attempt timeout and fails closed when all attempts time out
+根据 token 恢复用户信息失败: HttpRequestError: Restore login timed out
+    at /Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.ts:129:9
+    at file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vueuse+shared@13.9.0_vue@3.5.25_typescript@5.9.3_/node_modules/@vueuse/shared/index.mjs:1318:7
+    at callTimer (file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/vitest@4.0.18_@types+node@24.12.4_jiti@2.6.1_jsdom@28.1.0_sass@1.97.3_terser@5.46.0_tsx@4.21.0_yaml@2.8.2/node_modules/vitest/dist/chunks/vi.2VT5v0um.js:2111:25)
+    at doTickInner (file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/vitest@4.0.18_@types+node@24.12.4_jiti@2.6.1_jsdom@28.1.0_sass@1.97.3_terser@5.46.0_tsx@4.21.0_yaml@2.8.2/node_modules/vitest/dist/chunks/vi.2VT5v0um.js:2714:30)
+    at Immediate.nextPromiseTick (file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/vitest@4.0.18_@types+node@24.12.4_jiti@2.6.1_jsdom@28.1.0_sass@1.97.3_terser@5.46.0_tsx@4.21.0_yaml@2.8.2/node_modules/vitest/dist/chunks/vi.2VT5v0um.js:2775:26)
+    at processImmediate (node:internal/timers:504:21) {
+  type: 'TIMEOUT',
+  code: 'TIMEOUT_ERROR',
+  status: undefined,
+  statusText: undefined,
+  data: undefined,
+  retryable: true
+}
+
+stderr | src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > keeps offline read-only startup blocked by clearing unverified protected state
+根据 token 恢复用户信息失败: HttpRequestError: network unavailable
+    at networkError (/Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:98:3)
+    at /Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:294:58
+    at file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vitest+runner@4.0.18/node_modules/@vitest/runner/dist/index.js:915:20 {
+  type: 'NETWORK',
+  code: 'NETWORK_ERROR',
+  status: undefined,
+  statusText: undefined,
+  data: undefined,
+  retryable: true
+}
+
+ ✓ src/hooks/modules/useAuth.spec.ts (8 tests) 280ms
+ ✓ src/stores/modules/system/layout.spec.ts (20 tests) 353ms
+       ✓ closing showHeader caches and hides showLogo + showMenu  319ms
+ ✓ src/sync/systemPreferences/model.spec.ts (1 test) 388ms
+     ✓ applies remote preferences to theme, size, layout, and locale stores  387ms
+ ✓ src/hooks/modules/useAutoMitt.spec.ts (1 test) 372ms
+     ✓ binds the app event map emitter and keeps package-owned auto cleanup  372ms
+ ✓ src/layouts/modules/LayoutAdmin.spec.ts (3 tests) 401ms
+     ✓ renders the admin shell with header, sidebar, and content in vertical mode  397ms
+stderr | src/hooks/layout/useLoading.spec.ts > useLoading counter semantics > keeps global loading active until every concurrent stop handle is released
+[Layout Store] setIsLoading() is deprecated and corrupts concurrent loading counter. Use beginGlobalLoading()/endGlobalLoading() instead.
+[Layout Store] setIsPageLoading() is deprecated. Use beginPageLoading()/endPageLoading() instead.
+
+stderr | src/hooks/layout/useLoading.spec.ts > useLoading counter semantics > does not underflow when callers over-release global and page loading
+[Layout Store] setIsLoading() is deprecated and corrupts concurrent loading counter. Use beginGlobalLoading()/endGlobalLoading() instead.
+[Layout Store] setIsPageLoading() is deprecated. Use beginPageLoading()/endPageLoading() instead.
+
+stderr | src/hooks/layout/useLoading.spec.ts > useLoading counter semantics > releases global loading when wrapped work rejects or is cancelled by the caller
+[Layout Store] setIsLoading() is deprecated and corrupts concurrent loading counter. Use beginGlobalLoading()/endGlobalLoading() instead.
+[Layout Store] setIsPageLoading() is deprecated. Use beginPageLoading()/endPageLoading() instead.
+
+stderr | src/hooks/layout/useLoading.spec.ts > useLoading counter semantics > keeps page loading active across overlapping route-like work
+[Layout Store] setIsLoading() is deprecated and corrupts concurrent loading counter. Use beginGlobalLoading()/endGlobalLoading() instead.
+[Layout Store] setIsPageLoading() is deprecated. Use beginPageLoading()/endPageLoading() instead.
+
+stderr | src/hooks/layout/useLoading.spec.ts > useLoading counter semantics > stays balanced after an unauthorized-reset style force clear
+[Layout Store] setIsLoading() is deprecated and corrupts concurrent loading counter. Use beginGlobalLoading()/endGlobalLoading() instead.
+[Layout Store] setIsPageLoading() is deprecated. Use beginPageLoading()/endPageLoading() instead.
+
+stderr | src/hooks/layout/useLoading.spec.ts > useLoading counter semantics > stays balanced after an unauthorized-reset style force clear
+[Layout Store] setIsLoading() is deprecated and corrupts concurrent loading counter. Use beginGlobalLoading()/endGlobalLoading() instead.
+
+ ✓ src/hooks/layout/useLoading.spec.ts (5 tests) 584ms
+     ✓ keeps global loading active until every concurrent stop handle is released  558ms
+ ✓ src/plugins/setupPlugins.spec.ts (1 test) 572ms
+     ✓ initializes critical plugins before mount and keeps DateUtils hydration explicit  571ms
+ ✓ src/plugins/modules/primevue.spec.ts (1 test) 661ms
+     ✓ installs PrimeVue v4 with design-system pt and services  660ms
+ ✓ src/hooks/modules/useProTableUrlSync.spec.ts (4 tests) 4ms
+ ✓ src/utils/http/interceptors.spec.ts (15 tests) 20ms
+ ✓ src/utils/theme/engine.spec.ts (59 tests) 36ms
+ ✓ src/stores/modules/system/device.spec.ts (10 tests) 93ms
+ ✓ src/hooks/modules/useThemeSwitch.spec.ts (2 tests) 899ms
+     ✓ queues the latest target mode during an active transition and shares animation state  890ms
+stderr | src/hooks/layout/useAdminTabs.spec.ts > useAdminTabs > closeAll keeps dashboard and navigates to dashboard when current tab was closed
+[Vue warn]: onMounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+[Vue warn]: onUnmounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+
+stderr | src/hooks/layout/useAdminTabs.spec.ts > useAdminTabs > closeOthers keeps dashboard plus target tab
+[Vue warn]: onMounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+[Vue warn]: onUnmounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+
+stderr | src/hooks/layout/useAdminTabs.spec.ts > useAdminTabs > close current fixed tab is a no-op
+[Vue warn]: onMounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+[Vue warn]: onUnmounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+
+stderr | src/hooks/layout/useAdminTabs.spec.ts > useAdminTabs > closeAll safely falls back when no fixed tabs are eligible
+[Vue warn]: onMounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+[Vue warn]: onUnmounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+
+ ✓ src/hooks/layout/useAdminTabs.spec.ts (4 tests) 55ms
+ ✓ src/utils/http/validation.spec.ts (3 tests) 6ms
+ ✓ src/stores/modules/session/permission.spec.ts (23 tests) 38ms
+ ✓ src/stores/modules/session/user.spec.ts (9 tests) 26ms
+ ✓ src/utils/http/policies/httpPolicies.spec.ts (6 tests) 12ms
+ ✓ src/stores/modules/system/theme.spec.ts (10 tests) 55ms
+ ✓ src/constants/theme.spec.ts (5 tests) 14ms
+ ✓ src/sync/systemPreferences/middleware.spec.ts (2 tests) 1ms
+ ✓ src/utils/theme/validate.spec.ts (4 tests) 9ms
+ ✓ src/stores/modules/system/locale.spec.ts (6 tests) 22ms
+stderr | src/utils/safeStorage/piniaSerializer.spec.ts
+[SafeStorage] Using hardcoded fallback key. Set VITE_PUBLIC_STORAGE_OBFUSCATION_KEY in your .env for client-visible storage obfuscation.
+
+ ✓ src/utils/safeStorage/piniaSerializer.spec.ts (3 tests) 4ms
+ ✓ src/stores/modules/ui/tableDrawer.spec.ts (5 tests) 4ms
+ ✓ src/router/utils/moduleLoader.spec.ts (2 tests) 2ms
+ ✓ src/constants/size.spec.ts (3 tests) 2ms
+ ✓ src/utils/theme/colors.spec.ts (27 tests) 7ms
+ ✓ src/adapters/http.adapter.spec.ts (15 tests) 5ms
+ ✓ src/sync/syncAction.spec.ts (3 tests) 6ms
+ ✓ src/api/example/users.spec.ts (6 tests) 4ms
+ ✓ src/constants/enums.spec.ts (3 tests) 2ms
+ ✓ src/layouts/runtime/layoutRuntime.spec.ts (8 tests) 5ms
+ ✓ src/infra/router/routeProvider.spec.ts (3 tests) 2ms
+ ✓ src/constants/runtime.spec.ts (3 tests) 3ms
+ ✓ src/infra/auth/tokenProvider.spec.ts (5 tests) 3ms
+ ✓ src/hooks/layout/usePageTitle.spec.ts (5 tests) 2ms
+ ✓ src/layouts/components/admin/adminSidebarMenu.shared.spec.ts (3 tests) 1ms
+ ✓ src/directives/longPress.spec.ts (1 test) 1ms
+ ✓ src/directives/swipe.spec.ts (1 test) 1ms
+ ✓ src/directives/auth.spec.ts (9 tests) 6ms
+ ✓ src/plugins/modules/errorHandler.spec.ts (2 tests) 3ms
+ ✓ src/directives/tap.spec.ts (1 test) 1ms
+ ✓ src/utils/theme/sizeEngine.spec.ts (8 tests) 2ms
+
+ Test Files  48 passed (48)
+      Tests  339 passed (339)
+   Start at  02:06:20
+   Duration  2.37s (transform 4.02s, setup 0ms, import 5.22s, tests 5.69s, environment 8.77s)
+
+=== pnpm type-check ===
+
+> ccd@1.0.38 type-check /Users/cc/MyPorject/ccd
+> turbo run type-check
+
+• turbo 2.9.14
+
+   • Packages in scope: @ccd/contracts, @ccd/core, @ccd/design-tokens, @ccd/desktop, @ccd/shared-utils, @ccd/unocss-preset, @ccd/vue-app-platform, @ccd/vue-charts, @ccd/vue-hooks, @ccd/vue-primevue-adapter, @ccd/vue-ui, @ccd/web-demo
+   • Running type-check in 12 packages
+   • Remote caching disabled
+
+@ccd/design-tokens:type-check: cache hit, replaying logs 6814e0f0a121d95e
+@ccd/shared-utils:type-check: cache hit, replaying logs eb9e3d352ebd5d1f
+@ccd/design-tokens:type-check:
+@ccd/design-tokens:type-check: > @ccd/design-tokens@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/design-tokens
+@ccd/design-tokens:type-check: > tsc -p tsconfig.json --noEmit
+@ccd/design-tokens:type-check:
+@ccd/shared-utils:type-check:
+@ccd/shared-utils:type-check: > @ccd/shared-utils@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/shared-utils
+@ccd/shared-utils:type-check: > tsc -p tsconfig.json --noEmit
+@ccd/shared-utils:type-check:
+@ccd/contracts:type-check: cache hit, replaying logs 292b839328d4f28f
+@ccd/contracts:type-check:
+@ccd/contracts:type-check: > @ccd/contracts@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/contracts
+@ccd/contracts:type-check: > tsc -p tsconfig.json --noEmit
+@ccd/contracts:type-check:
+@ccd/shared-utils:build: cache hit, replaying logs 36dc04c3b9cd5c9e
+@ccd/contracts:build: cache hit, replaying logs 90708715034e9e15
+@ccd/shared-utils:build:
+@ccd/shared-utils:build: > @ccd/shared-utils@1.0.38 build /Users/cc/MyPorject/ccd/packages/shared-utils
+@ccd/shared-utils:build: > rm -f ../../node_modules/.tmp/packages-shared-utils.tsbuildinfo && tsc -p tsconfig.json
+@ccd/shared-utils:build:
+@ccd/contracts:build:
+@ccd/contracts:build: > @ccd/contracts@1.0.38 build /Users/cc/MyPorject/ccd/packages/contracts
+@ccd/contracts:build: > rm -rf dist && rm -f ../../node_modules/.tmp/packages-contracts.tsbuildinfo && tsc -b tsconfig.json --force
+@ccd/contracts:build:
+@ccd/vue-hooks:type-check: cache hit, replaying logs 25e8ce750bd52a2b
+@ccd/vue-hooks:type-check:
+@ccd/vue-hooks:type-check: > @ccd/vue-hooks@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/vue-hooks
+@ccd/vue-hooks:type-check: > tsc -p tsconfig.json --noEmit
+@ccd/vue-hooks:type-check:
+@ccd/core:type-check: cache hit, replaying logs af0270b9fff07980
+@ccd/core:type-check:
+@ccd/core:type-check: > @ccd/core@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/core
+@ccd/core:type-check: > tsc -p tsconfig.json --noEmit
+@ccd/core:type-check:
+@ccd/core:build: cache hit, replaying logs 8ca999f14acfdd4d
+@ccd/core:build:
+@ccd/core:build: > @ccd/core@1.0.38 build /Users/cc/MyPorject/ccd/packages/core
+@ccd/core:build: > rm -rf dist && rm -f ../../node_modules/.tmp/packages-core.tsbuildinfo && tsc -b tsconfig.json --force
+@ccd/core:build:
+@ccd/design-tokens:build: cache hit, replaying logs c24503720415d134
+@ccd/design-tokens:build:
+@ccd/design-tokens:build: > @ccd/design-tokens@1.0.38 build /Users/cc/MyPorject/ccd/packages/design-tokens
+@ccd/design-tokens:build: > rm -f ../../node_modules/.tmp/packages-design-tokens.tsbuildinfo && tsc -p tsconfig.json
+@ccd/design-tokens:build:
+@ccd/vue-primevue-adapter:type-check: cache hit, replaying logs 9ea8913a79eba984
+@ccd/vue-primevue-adapter:type-check:
+@ccd/vue-primevue-adapter:type-check: > @ccd/vue-primevue-adapter@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/vue-primevue-adapter
+@ccd/vue-primevue-adapter:type-check: > tsc -p tsconfig.json --noEmit
+@ccd/vue-primevue-adapter:type-check:
+@ccd/unocss-preset:type-check: cache hit, replaying logs ddd4b718eeef7269
+@ccd/vue-charts:type-check: cache hit, replaying logs 1cade075ca9b5ac2
+@ccd/vue-charts:type-check:
+@ccd/vue-charts:type-check: > @ccd/vue-charts@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/vue-charts
+@ccd/vue-charts:type-check: > vue-tsc -p tsconfig.json --noEmit
+@ccd/vue-charts:type-check:
+@ccd/vue-hooks:build: cache hit, replaying logs 07e7d5fc3cd1aeba
+@ccd/unocss-preset:type-check:
+@ccd/unocss-preset:type-check: > @ccd/unocss-preset@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/unocss-preset
+@ccd/unocss-preset:type-check: > tsc -p tsconfig.json --noEmit
+@ccd/unocss-preset:type-check:
+@ccd/vue-hooks:build:
+@ccd/vue-hooks:build: > @ccd/vue-hooks@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-hooks
+@ccd/vue-hooks:build: > rm -f ../../node_modules/.tmp/packages-vue-hooks.tsbuildinfo && tsc -p tsconfig.json
+@ccd/vue-hooks:build:
+@ccd/vue-app-platform:type-check: cache hit, replaying logs 55df5019fdd49e1b
+@ccd/vue-app-platform:type-check:
+@ccd/vue-app-platform:type-check: > @ccd/vue-app-platform@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/vue-app-platform
+@ccd/vue-app-platform:type-check: > tsc -p tsconfig.json --noEmit
+@ccd/vue-app-platform:type-check:
+@ccd/vue-ui:type-check: cache hit, replaying logs 63ae9ae4277f9c21
+@ccd/vue-ui:type-check:
+@ccd/vue-ui:type-check: > @ccd/vue-ui@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/vue-ui
+@ccd/vue-ui:type-check: > vue-tsc -p tsconfig.json --noEmit
+@ccd/vue-ui:type-check:
+@ccd/unocss-preset:build: cache hit, replaying logs 63365a20fd835cbd
+@ccd/unocss-preset:build:
+@ccd/unocss-preset:build: > @ccd/unocss-preset@1.0.38 build /Users/cc/MyPorject/ccd/packages/unocss-preset
+@ccd/unocss-preset:build: > rm -rf dist && rm -f ../../node_modules/.tmp/packages-unocss-preset.tsbuildinfo && tsc -p tsconfig.json
+@ccd/unocss-preset:build:
+@ccd/vue-app-platform:build: cache hit, replaying logs 805271a31b49bc63
+@ccd/vue-app-platform:build:
+@ccd/vue-app-platform:build: > @ccd/vue-app-platform@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-app-platform
+@ccd/vue-app-platform:build: > rm -f ../../node_modules/.tmp/packages-vue-app-platform.tsbuildinfo && tsc -p tsconfig.json
+@ccd/vue-app-platform:build:
+@ccd/vue-charts:build: cache hit, replaying logs 79778931d1b9db2e
+@ccd/vue-charts:build:
+@ccd/vue-charts:build: > @ccd/vue-charts@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-charts
+@ccd/vue-charts:build: > rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-charts.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+@ccd/vue-charts:build:
+@ccd/vue-charts:build: vite v7.3.3 building client environment for production...
+@ccd/vue-charts:build: transforming...
+@ccd/vue-charts:build: ✓ 46 modules transformed.
+@ccd/vue-charts:build: rendering chunks...
+@ccd/vue-charts:build: computing gzip size...
+@ccd/vue-charts:build: dist/echarts-setup.js   0.07 kB │ gzip:  0.09 kB
+@ccd/vue-charts:build: dist/index.js          89.94 kB │ gzip: 21.36 kB
+@ccd/vue-charts:build: ✓ built in 540ms
+@ccd/vue-primevue-adapter:build: cache hit, replaying logs 5b8b7d8e2db4b6ad
+@ccd/vue-primevue-adapter:build:
+@ccd/vue-primevue-adapter:build: > @ccd/vue-primevue-adapter@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-primevue-adapter
+@ccd/vue-primevue-adapter:build: > rm -f ../../node_modules/.tmp/packages-vue-primevue-adapter.tsbuildinfo && tsc -p tsconfig.json
+@ccd/vue-primevue-adapter:build:
+@ccd/vue-ui:build: cache hit, replaying logs 62b5b5b6ffefcc9d
+@ccd/vue-ui:build:
+@ccd/vue-ui:build: > @ccd/vue-ui@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-ui
+@ccd/vue-ui:build: > rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+@ccd/vue-ui:build:
+@ccd/vue-ui:build: vite v7.3.3 building client environment for production...
+@ccd/vue-ui:build: transforming...
+@ccd/vue-ui:build: ✓ 126 modules transformed.
+@ccd/vue-ui:build: rendering chunks...
+@ccd/vue-ui:build: computing gzip size...
+@ccd/vue-ui:build: dist/vue-ui.css   19.53 kB │ gzip:  3.33 kB
+@ccd/vue-ui:build: dist/index.js    231.44 kB │ gzip: 58.66 kB
+@ccd/vue-ui:build: ✓ built in 553ms
+@ccd/desktop:type-check: cache hit, replaying logs a202b62fa9de30df
+@ccd/web-demo:type-check: cache hit, replaying logs 6b6392d3741c1aea
+@ccd/desktop:type-check:
+@ccd/desktop:type-check: > @ccd/desktop@1.0.38 type-check /Users/cc/MyPorject/ccd/apps/desktop
+@ccd/desktop:type-check: > vue-tsc -p tsconfig.json --noEmit
+@ccd/desktop:type-check:
+@ccd/web-demo:type-check:
+@ccd/web-demo:type-check: > @ccd/web-demo@1.0.38 type-check /Users/cc/MyPorject/ccd/apps/web-demo
+@ccd/web-demo:type-check: > vue-tsc -p tsconfig.json --noEmit
+@ccd/web-demo:type-check:
+
+ Tasks:    22 successful, 22 total
+Cached:    22 cached, 22 total
+  Time:    68ms >>> FULL TURBO
+
+=== pnpm test:run ===
+
+> ccd@1.0.38 test:run /Users/cc/MyPorject/ccd
+> pnpm build:shared-config && vitest run
+
+
+> ccd@1.0.38 build:shared-config /Users/cc/MyPorject/ccd
+> pnpm --filter @ccd/design-tokens build && pnpm --filter @ccd/shared-utils build && pnpm --filter @ccd/unocss-preset build && pnpm --filter @ccd/vue-hooks build && pnpm --filter @ccd/vue-app-platform build && pnpm --filter @ccd/vue-ui build && pnpm --filter @ccd/vue-primevue-adapter build && pnpm --filter @ccd/vue-charts build
+
+
+> @ccd/design-tokens@1.0.38 build /Users/cc/MyPorject/ccd/packages/design-tokens
+> rm -f ../../node_modules/.tmp/packages-design-tokens.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/shared-utils@1.0.38 build /Users/cc/MyPorject/ccd/packages/shared-utils
+> rm -f ../../node_modules/.tmp/packages-shared-utils.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/unocss-preset@1.0.38 build /Users/cc/MyPorject/ccd/packages/unocss-preset
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-unocss-preset.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-hooks@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-hooks
+> rm -f ../../node_modules/.tmp/packages-vue-hooks.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-app-platform@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-app-platform
+> rm -f ../../node_modules/.tmp/packages-vue-app-platform.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-ui@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-ui
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 126 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/vue-ui.css   19.53 kB │ gzip:  3.33 kB
+dist/index.js    231.44 kB │ gzip: 58.66 kB
+✓ built in 473ms
+
+> @ccd/vue-primevue-adapter@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-primevue-adapter
+> rm -f ../../node_modules/.tmp/packages-vue-primevue-adapter.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-charts@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-charts
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-charts.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 46 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/echarts-setup.js   0.07 kB │ gzip:  0.09 kB
+dist/index.js          89.94 kB │ gzip: 21.36 kB
+✓ built in 174ms
+
+ RUN  v4.0.18 /Users/cc/MyPorject/ccd
+
+ ✓ |node| apps/web-demo/src/hooks/modules/useDialog.spec.ts (3 tests) 286ms
+ ✓ |jsdom| packages/vue-app-platform/src/preloader.dom.spec.ts (1 test) 7ms
+ ✓ |node| apps/web-demo/src/stores/modules/system/theme.spec.ts (10 tests) 263ms
+ ✓ |node| apps/web-demo/src/stores/modules/system/layout.spec.ts (20 tests) 351ms
+       ✓ closing showHeader caches and hides showLogo + showMenu  318ms
+ ✓ |node| apps/web-demo/src/hooks/modules/useAutoMitt.spec.ts (1 test) 395ms
+     ✓ binds the app event map emitter and keeps package-owned auto cleanup  395ms
+ ✓ |node| apps/web-demo/src/sync/systemPreferences/model.spec.ts (1 test) 421ms
+     ✓ applies remote preferences to theme, size, layout, and locale stores  421ms
+ ✓ |node| apps/web-demo/src/layouts/modules/LayoutAdmin.spec.ts (3 tests) 400ms
+     ✓ renders the admin shell with header, sidebar, and content in vertical mode  396ms
+stderr | apps/web-demo/src/hooks/layout/useLoading.spec.ts > useLoading counter semantics > keeps global loading active until every concurrent stop handle is released
+[Layout Store] setIsLoading() is deprecated and corrupts concurrent loading counter. Use beginGlobalLoading()/endGlobalLoading() instead.
+[Layout Store] setIsPageLoading() is deprecated. Use beginPageLoading()/endPageLoading() instead.
+
+ ✓ |node| apps/web-demo/src/utils/http/requestLayer.spec.ts (10 tests) 171ms
+ ✓ |node| apps/web-demo/src/plugins/setupPlugins.spec.ts (1 test) 539ms
+     ✓ initializes critical plugins before mount and keeps DateUtils hydration explicit  538ms
+stderr | apps/web-demo/src/hooks/layout/useLoading.spec.ts > useLoading counter semantics > does not underflow when callers over-release global and page loading
+[Layout Store] setIsLoading() is deprecated and corrupts concurrent loading counter. Use beginGlobalLoading()/endGlobalLoading() instead.
+[Layout Store] setIsPageLoading() is deprecated. Use beginPageLoading()/endPageLoading() instead.
+
+stderr | apps/web-demo/src/hooks/layout/useLoading.spec.ts > useLoading counter semantics > releases global loading when wrapped work rejects or is cancelled by the caller
+[Layout Store] setIsLoading() is deprecated and corrupts concurrent loading counter. Use beginGlobalLoading()/endGlobalLoading() instead.
+[Layout Store] setIsPageLoading() is deprecated. Use beginPageLoading()/endPageLoading() instead.
+
+stderr | apps/web-demo/src/hooks/layout/useLoading.spec.ts > useLoading counter semantics > keeps page loading active across overlapping route-like work
+[Layout Store] setIsLoading() is deprecated and corrupts concurrent loading counter. Use beginGlobalLoading()/endGlobalLoading() instead.
+[Layout Store] setIsPageLoading() is deprecated. Use beginPageLoading()/endPageLoading() instead.
+
+stderr | apps/web-demo/src/hooks/layout/useLoading.spec.ts > useLoading counter semantics > stays balanced after an unauthorized-reset style force clear
+[Layout Store] setIsLoading() is deprecated and corrupts concurrent loading counter. Use beginGlobalLoading()/endGlobalLoading() instead.
+[Layout Store] setIsPageLoading() is deprecated. Use beginPageLoading()/endPageLoading() instead.
+
+stderr | apps/web-demo/src/hooks/layout/useLoading.spec.ts > useLoading counter semantics > stays balanced after an unauthorized-reset style force clear
+[Layout Store] setIsLoading() is deprecated and corrupts concurrent loading counter. Use beginGlobalLoading()/endGlobalLoading() instead.
+
+ ✓ |node| apps/web-demo/src/hooks/layout/useLoading.spec.ts (5 tests) 554ms
+     ✓ keeps global loading active until every concurrent stop handle is released  528ms
+ ✓ |node| apps/web-demo/src/hooks/modules/useHttpRequest.spec.ts (3 tests) 152ms
+ ✓ |node| apps/web-demo/src/plugins/modules/primevue.spec.ts (1 test) 618ms
+     ✓ installs PrimeVue v4 with design-system pt and services  617ms
+ ✓ |node| packages/vue-ui/src/ProForm/engine/core/FormController.spec.ts (4 tests) 208ms
+ ✓ |node| apps/web-demo/src/hooks/modules/useThemeSwitch.spec.ts (2 tests) 866ms
+     ✓ queues the latest target mode during an active transition and shares animation state  858ms
+stderr | apps/web-demo/src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > does not retry invalid token failures and clears the session immediately
+根据 token 恢复用户信息失败: AuthApiError: invalid token
+    at /Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:162:7
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vitest+runner@4.0.18/node_modules/@vitest/runner/dist/index.js:915:20 {
+  code: 'AUTH_TOKEN_INVALID'
+}
+
+ ✓ |node| apps/web-demo/src/stores/modules/system/size.spec.ts (5 tests) 50ms
+stderr | apps/web-demo/src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > stops a transient retry sequence when a later failure becomes 401 terminal auth
+根据 token 恢复用户信息失败: HttpRequestError: unauthorized
+    at /Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:227:9
+    at file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vitest+runner@4.0.18/node_modules/@vitest/runner/dist/index.js:915:20 {
+  type: 'AUTH',
+  code: 'AUTH_ERROR',
+  status: 401,
+  statusText: 'Unauthorized',
+  data: undefined,
+  retryable: false
+}
+
+stderr | apps/web-demo/src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > fails closed after network retry exhaustion and emits one non-sensitive message
+根据 token 恢复用户信息失败: HttpRequestError: network unavailable
+    at networkError (/Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:98:3)
+    at /Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:248:58
+    at file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vitest+runner@4.0.18/node_modules/@vitest/runner/dist/index.js:915:20 {
+  type: 'NETWORK',
+  code: 'NETWORK_ERROR',
+  status: undefined,
+  statusText: undefined,
+  data: undefined,
+  retryable: true
+}
+
+stderr | apps/web-demo/src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > uses a 5000ms per-attempt timeout and fails closed when all attempts time out
+根据 token 恢复用户信息失败: HttpRequestError: Restore login timed out
+    at /Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.ts:129:9
+    at file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vueuse+shared@13.9.0_vue@3.5.25_typescript@5.9.3_/node_modules/@vueuse/shared/index.mjs:1318:7
+    at callTimer (file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/vitest@4.0.18_@types+node@24.12.4_jiti@2.6.1_jsdom@28.1.0_sass@1.97.3_terser@5.46.0_tsx@4.21.0_yaml@2.8.2/node_modules/vitest/dist/chunks/vi.2VT5v0um.js:2111:25)
+    at doTickInner (file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/vitest@4.0.18_@types+node@24.12.4_jiti@2.6.1_jsdom@28.1.0_sass@1.97.3_terser@5.46.0_tsx@4.21.0_yaml@2.8.2/node_modules/vitest/dist/chunks/vi.2VT5v0um.js:2714:30)
+    at Immediate.nextPromiseTick (file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/vitest@4.0.18_@types+node@24.12.4_jiti@2.6.1_jsdom@28.1.0_sass@1.97.3_terser@5.46.0_tsx@4.21.0_yaml@2.8.2/node_modules/vitest/dist/chunks/vi.2VT5v0um.js:2775:26)
+    at processImmediate (node:internal/timers:504:21) {
+  type: 'TIMEOUT',
+  code: 'TIMEOUT_ERROR',
+  status: undefined,
+  statusText: undefined,
+  data: undefined,
+  retryable: true
+}
+
+stderr | apps/web-demo/src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > keeps offline read-only startup blocked by clearing unverified protected state
+根据 token 恢复用户信息失败: HttpRequestError: network unavailable
+    at networkError (/Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:98:3)
+    at /Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:294:58
+    at file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vitest+runner@4.0.18/node_modules/@vitest/runner/dist/index.js:915:20 {
+  type: 'NETWORK',
+  code: 'NETWORK_ERROR',
+  status: undefined,
+  statusText: undefined,
+  data: undefined,
+  retryable: true
+}
+
+ ✓ |node| apps/web-demo/src/hooks/modules/useAuth.spec.ts (8 tests) 147ms
+ ✓ |node| apps/web-demo/src/utils/theme/engine.spec.ts (59 tests) 39ms
+ ✓ |node| apps/web-demo/src/stores/modules/system/device.spec.ts (10 tests) 93ms
+ ✓ |node| apps/web-demo/src/stores/modules/session/permission.spec.ts (23 tests) 56ms
+ ✓ |node| apps/web-demo/src/stores/modules/session/user.spec.ts (9 tests) 21ms
+stderr | apps/web-demo/src/hooks/layout/useAdminTabs.spec.ts > useAdminTabs > closeAll keeps dashboard and navigates to dashboard when current tab was closed
+[Vue warn]: onMounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+[Vue warn]: onUnmounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+
+stderr | apps/web-demo/src/hooks/layout/useAdminTabs.spec.ts > useAdminTabs > closeOthers keeps dashboard plus target tab
+[Vue warn]: onMounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+[Vue warn]: onUnmounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+
+stderr | apps/web-demo/src/hooks/layout/useAdminTabs.spec.ts > useAdminTabs > close current fixed tab is a no-op
+[Vue warn]: onMounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+[Vue warn]: onUnmounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+
+stderr | apps/web-demo/src/hooks/layout/useAdminTabs.spec.ts > useAdminTabs > closeAll safely falls back when no fixed tabs are eligible
+[Vue warn]: onMounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+[Vue warn]: onUnmounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+
+ ✓ |node| apps/web-demo/src/hooks/layout/useAdminTabs.spec.ts (4 tests) 48ms
+ ✓ |node| packages/vue-primevue-adapter/src/services.spec.ts (5 tests) 26ms
+ ✓ |node| apps/web-demo/src/stores/modules/system/locale.spec.ts (6 tests) 24ms
+ ✓ |node| apps/web-demo/src/utils/theme/validate.spec.ts (4 tests) 9ms
+ ✓ |node| apps/web-demo/src/constants/theme.spec.ts (5 tests) 14ms
+ ✓ |node| apps/web-demo/src/utils/http/policies/httpPolicies.spec.ts (6 tests) 14ms
+ ✓ |node| apps/web-demo/src/utils/http/interceptors.spec.ts (15 tests) 16ms
+ ✓ |node| scripts/eslint-rules/no-hardcoded-colors.spec.ts (4 tests) 27ms
+ ✓ |node| packages/vue-ui/src/CScrollbar/CScrollbar.spec.ts (2 tests) 36ms
+stderr | apps/web-demo/src/utils/safeStorage/piniaSerializer.spec.ts
+[SafeStorage] Using hardcoded fallback key. Set VITE_PUBLIC_STORAGE_OBFUSCATION_KEY in your .env for client-visible storage obfuscation.
+
+ ✓ |node| packages/vue-hooks/src/createAutoMittHook.spec.tsx (2 tests) 7ms
+ ✓ |node| apps/web-demo/src/utils/safeStorage/piniaSerializer.spec.ts (3 tests) 4ms
+ ✓ |node| packages/design-tokens/src/theme-engine/index.spec.ts (2 tests) 11ms
+ ✓ |node| apps/web-demo/src/layouts/runtime/layoutRuntime.spec.ts (8 tests) 2ms
+ ✓ |node| packages/vue-ui/src/ProForm/engine/validation/schemaResolver.spec.ts (2 tests) 3ms
+ ✓ |node| apps/web-demo/src/router/utils/moduleLoader.spec.ts (2 tests) 4ms
+ ✓ |node| apps/web-demo/src/utils/http/validation.spec.ts (3 tests) 5ms
+ ✓ |node| apps/web-demo/src/directives/auth.spec.ts (9 tests) 6ms
+ ✓ |node| packages/vue-app-platform/src/preloader.spec.ts (2 tests) 4ms
+ ✓ |node| apps/web-demo/src/hooks/modules/useProTableUrlSync.spec.ts (4 tests) 5ms
+ ✓ |node| packages/vue-ui/src/ProTable/engine/core/TableController.spec.ts (4 tests) 6ms
+ ✓ |node| packages/vue-app-platform/src/layoutRuntime.spec.ts (12 tests) 3ms
+ ✓ |node| apps/web-demo/src/stores/modules/ui/tableDrawer.spec.ts (5 tests) 4ms
+ ✓ |node| packages/vue-ui/src/PrimeDialog/useDialog.spec.ts (2 tests) 3ms
+ ✓ |node| apps/web-demo/src/constants/enums.spec.ts (3 tests) 3ms
+ ✓ |node| apps/web-demo/src/api/example/users.spec.ts (6 tests) 7ms
+ ✓ |node| apps/web-demo/src/adapters/http.adapter.spec.ts (15 tests) 4ms
+ ✓ |node| packages/vue-ui/src/ProForm/renderers/PrimeVueRenderer.spec.ts (1 test) 7ms
+ ✓ |node| packages/vue-app-platform/src/bootstrap.spec.ts (3 tests) 3ms
+ ✓ |node| apps/web-demo/src/constants/size.spec.ts (3 tests) 3ms
+ ✓ |node| packages/shared-utils/src/createCapabilityBridge.spec.ts (11 tests) 3ms
+ ✓ |node| apps/web-demo/src/sync/syncAction.spec.ts (3 tests) 3ms
+ ✓ |node| packages/vue-charts/src/UseEcharts/useChartElementSize.spec.ts (4 tests) 8ms
+ ✓ |node| packages/vue-charts/src/UseEcharts/connectGroupRegistry.spec.ts (4 tests) 2ms
+ ✓ |node| apps/web-demo/src/utils/theme/colors.spec.ts (27 tests) 3ms
+ ✓ |node| packages/vue-app-platform/src/preloadError.spec.ts (2 tests) 2ms
+ ✓ |node| packages/shared-utils/src/storageCodec.spec.ts (3 tests) 2ms
+ ✓ |node| packages/design-tokens/src/sizeResolver.spec.ts (5 tests) 2ms
+ ✓ |node| apps/web-demo/src/plugins/modules/errorHandler.spec.ts (2 tests) 4ms
+ ✓ |node| packages/vue-app-platform/src/themeRuntime.spec.ts (2 tests) 3ms
+ ✓ |node| packages/vue-charts/src/UseEcharts/echarts-render-core.spec.ts (4 tests) 4ms
+ ✓ |node| packages/design-tokens/src/deviceResolver.spec.ts (5 tests) 2ms
+ ✓ |node| apps/web-demo/src/infra/auth/tokenProvider.spec.ts (5 tests) 9ms
+ ✓ |node| apps/web-demo/src/hooks/layout/usePageTitle.spec.ts (5 tests) 4ms
+ ✓ |node| packages/shared-utils/src/stableFingerprint.spec.ts (6 tests) 4ms
+ ✓ |node| packages/vue-ui/src/ProTable/engine/config/apiAdapter.spec.ts (3 tests) 4ms
+ ✓ |node| apps/web-demo/src/constants/runtime.spec.ts (3 tests) 2ms
+ ✓ |node| apps/web-demo/src/sync/systemPreferences/middleware.spec.ts (2 tests) 2ms
+ ✓ |node| packages/shared-utils/src/typeCasters.spec.ts (3 tests) 2ms
+ ✓ |node| packages/shared-utils/src/recordGuards.spec.ts (4 tests) 1ms
+ ✓ |node| apps/web-demo/src/infra/router/routeProvider.spec.ts (3 tests) 2ms
+ ✓ |node| packages/vue-hooks/src/directives/swipe.spec.ts (4 tests) 5ms
+ ✓ |node| apps/web-demo/src/layouts/components/admin/adminSidebarMenu.shared.spec.ts (3 tests) 1ms
+ ✓ |node| packages/vue-hooks/src/directives/longPress.spec.ts (4 tests) 3ms
+ ✓ |node| packages/vue-ui/src/ProForm/engine/persistence/DraftStorage.spec.ts (1 test) 1ms
+ ✓ |node| apps/web-demo/src/directives/swipe.spec.ts (1 test) 1ms
+ ✓ |node| packages/vue-hooks/src/directives/install.spec.ts (2 tests) 2ms
+ ✓ |node| apps/web-demo/src/utils/theme/sizeEngine.spec.ts (8 tests) 2ms
+ ✓ |node| packages/vue-hooks/src/directives/tap.spec.ts (3 tests) 2ms
+ ✓ |node| apps/web-demo/src/directives/tap.spec.ts (1 test) 1ms
+ ✓ |node| apps/web-demo/src/directives/longPress.spec.ts (1 test) 1ms
+
+ Test Files  80 passed (80)
+      Tests  455 passed (455)
+   Start at  02:06:31
+   Duration  3.42s (transform 6.10s, setup 0ms, import 10.80s, tests 6.03s, environment 12.61s)
+
+=== pnpm build:web-demo ===
+
+> ccd@1.0.38 build:web-demo /Users/cc/MyPorject/ccd
+> pnpm build:shared-config && pnpm build:core && pnpm --filter @ccd/web-demo build
+
+
+> ccd@1.0.38 build:shared-config /Users/cc/MyPorject/ccd
+> pnpm --filter @ccd/design-tokens build && pnpm --filter @ccd/shared-utils build && pnpm --filter @ccd/unocss-preset build && pnpm --filter @ccd/vue-hooks build && pnpm --filter @ccd/vue-app-platform build && pnpm --filter @ccd/vue-ui build && pnpm --filter @ccd/vue-primevue-adapter build && pnpm --filter @ccd/vue-charts build
+
+
+> @ccd/design-tokens@1.0.38 build /Users/cc/MyPorject/ccd/packages/design-tokens
+> rm -f ../../node_modules/.tmp/packages-design-tokens.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/shared-utils@1.0.38 build /Users/cc/MyPorject/ccd/packages/shared-utils
+> rm -f ../../node_modules/.tmp/packages-shared-utils.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/unocss-preset@1.0.38 build /Users/cc/MyPorject/ccd/packages/unocss-preset
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-unocss-preset.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-hooks@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-hooks
+> rm -f ../../node_modules/.tmp/packages-vue-hooks.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-app-platform@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-app-platform
+> rm -f ../../node_modules/.tmp/packages-vue-app-platform.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-ui@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-ui
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 126 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/vue-ui.css   19.53 kB │ gzip:  3.33 kB
+dist/index.js    231.44 kB │ gzip: 58.66 kB
+✓ built in 475ms
+
+> @ccd/vue-primevue-adapter@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-primevue-adapter
+> rm -f ../../node_modules/.tmp/packages-vue-primevue-adapter.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-charts@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-charts
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-charts.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 46 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/echarts-setup.js   0.07 kB │ gzip:  0.09 kB
+dist/index.js          89.94 kB │ gzip: 21.36 kB
+✓ built in 182ms
+
+> ccd@1.0.38 build:core /Users/cc/MyPorject/ccd
+> pnpm --filter @ccd/contracts build && pnpm --filter @ccd/core build
+
+
+> @ccd/contracts@1.0.38 build /Users/cc/MyPorject/ccd/packages/contracts
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-contracts.tsbuildinfo && tsc -b tsconfig.json --force
+
+
+> @ccd/core@1.0.38 build /Users/cc/MyPorject/ccd/packages/core
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-core.tsbuildinfo && tsc -b tsconfig.json --force
+
+
+> @ccd/web-demo@1.0.38 prebuild /Users/cc/MyPorject/ccd/apps/web-demo
+> pnpm --workspace-root build:shared-config
+
+
+> ccd@1.0.38 build:shared-config /Users/cc/MyPorject/ccd
+> pnpm --filter @ccd/design-tokens build && pnpm --filter @ccd/shared-utils build && pnpm --filter @ccd/unocss-preset build && pnpm --filter @ccd/vue-hooks build && pnpm --filter @ccd/vue-app-platform build && pnpm --filter @ccd/vue-ui build && pnpm --filter @ccd/vue-primevue-adapter build && pnpm --filter @ccd/vue-charts build
+
+
+> @ccd/design-tokens@1.0.38 build /Users/cc/MyPorject/ccd/packages/design-tokens
+> rm -f ../../node_modules/.tmp/packages-design-tokens.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/shared-utils@1.0.38 build /Users/cc/MyPorject/ccd/packages/shared-utils
+> rm -f ../../node_modules/.tmp/packages-shared-utils.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/unocss-preset@1.0.38 build /Users/cc/MyPorject/ccd/packages/unocss-preset
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-unocss-preset.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-hooks@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-hooks
+> rm -f ../../node_modules/.tmp/packages-vue-hooks.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-app-platform@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-app-platform
+> rm -f ../../node_modules/.tmp/packages-vue-app-platform.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-ui@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-ui
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 126 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/vue-ui.css   19.53 kB │ gzip:  3.33 kB
+dist/index.js    231.44 kB │ gzip: 58.66 kB
+✓ built in 487ms
+
+> @ccd/vue-primevue-adapter@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-primevue-adapter
+> rm -f ../../node_modules/.tmp/packages-vue-primevue-adapter.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-charts@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-charts
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-charts.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 46 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/echarts-setup.js   0.07 kB │ gzip:  0.09 kB
+dist/index.js          89.94 kB │ gzip: 21.36 kB
+✓ built in 175ms
+
+> @ccd/web-demo@1.0.38 build /Users/cc/MyPorject/ccd/apps/web-demo
+> vue-tsc -p tsconfig.json --noEmit && vite build
+
+🎉 欢迎使用 ccd
+📦 版本: 1.0.38
+⚡ 基于 Vue ^3.5.12 + Vite 构建
+🛠️ UI 架构: PrimeVue + UnoCSS
+🎨 UnoCSS: ^66.6.0
+🕒 构建时间: 6/1/2026, 2:06:55 AM
+
+[plugin vite:reporter]
+(!) /Users/cc/MyPorject/ccd/apps/web-demo/src/router/modules/core.ts is dynamically imported by /Users/cc/MyPorject/ccd/apps/web-demo/src/router/index.ts but also statically imported by /Users/cc/MyPorject/ccd/apps/web-demo/src/router/index.ts, dynamic import will not move module into another chunk.
+
+🎉 构建完成！
+📦 打包大小: 4.57 MB
+⏰ 构建耗时: 7.79s
+📁 输出目录: dist
+
+=== pnpm build:desktop ===
+
+> ccd@1.0.38 build:desktop /Users/cc/MyPorject/ccd
+> pnpm build:shared-config && pnpm build:core && pnpm --filter @ccd/desktop build
+
+
+> ccd@1.0.38 build:shared-config /Users/cc/MyPorject/ccd
+> pnpm --filter @ccd/design-tokens build && pnpm --filter @ccd/shared-utils build && pnpm --filter @ccd/unocss-preset build && pnpm --filter @ccd/vue-hooks build && pnpm --filter @ccd/vue-app-platform build && pnpm --filter @ccd/vue-ui build && pnpm --filter @ccd/vue-primevue-adapter build && pnpm --filter @ccd/vue-charts build
+
+
+> @ccd/design-tokens@1.0.38 build /Users/cc/MyPorject/ccd/packages/design-tokens
+> rm -f ../../node_modules/.tmp/packages-design-tokens.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/shared-utils@1.0.38 build /Users/cc/MyPorject/ccd/packages/shared-utils
+> rm -f ../../node_modules/.tmp/packages-shared-utils.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/unocss-preset@1.0.38 build /Users/cc/MyPorject/ccd/packages/unocss-preset
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-unocss-preset.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-hooks@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-hooks
+> rm -f ../../node_modules/.tmp/packages-vue-hooks.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-app-platform@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-app-platform
+> rm -f ../../node_modules/.tmp/packages-vue-app-platform.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-ui@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-ui
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 126 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/vue-ui.css   19.53 kB │ gzip:  3.33 kB
+dist/index.js    231.44 kB │ gzip: 58.66 kB
+✓ built in 484ms
+
+> @ccd/vue-primevue-adapter@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-primevue-adapter
+> rm -f ../../node_modules/.tmp/packages-vue-primevue-adapter.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-charts@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-charts
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-charts.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 46 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/echarts-setup.js   0.07 kB │ gzip:  0.09 kB
+dist/index.js          89.94 kB │ gzip: 21.36 kB
+✓ built in 176ms
+
+> ccd@1.0.38 build:core /Users/cc/MyPorject/ccd
+> pnpm --filter @ccd/contracts build && pnpm --filter @ccd/core build
+
+
+> @ccd/contracts@1.0.38 build /Users/cc/MyPorject/ccd/packages/contracts
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-contracts.tsbuildinfo && tsc -b tsconfig.json --force
+
+
+> @ccd/core@1.0.38 build /Users/cc/MyPorject/ccd/packages/core
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-core.tsbuildinfo && tsc -b tsconfig.json --force
+
+
+> @ccd/desktop@1.0.38 prebuild /Users/cc/MyPorject/ccd/apps/desktop
+> pnpm --workspace-root build:shared-config
+
+
+> ccd@1.0.38 build:shared-config /Users/cc/MyPorject/ccd
+> pnpm --filter @ccd/design-tokens build && pnpm --filter @ccd/shared-utils build && pnpm --filter @ccd/unocss-preset build && pnpm --filter @ccd/vue-hooks build && pnpm --filter @ccd/vue-app-platform build && pnpm --filter @ccd/vue-ui build && pnpm --filter @ccd/vue-primevue-adapter build && pnpm --filter @ccd/vue-charts build
+
+
+> @ccd/design-tokens@1.0.38 build /Users/cc/MyPorject/ccd/packages/design-tokens
+> rm -f ../../node_modules/.tmp/packages-design-tokens.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/shared-utils@1.0.38 build /Users/cc/MyPorject/ccd/packages/shared-utils
+> rm -f ../../node_modules/.tmp/packages-shared-utils.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/unocss-preset@1.0.38 build /Users/cc/MyPorject/ccd/packages/unocss-preset
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-unocss-preset.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-hooks@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-hooks
+> rm -f ../../node_modules/.tmp/packages-vue-hooks.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-app-platform@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-app-platform
+> rm -f ../../node_modules/.tmp/packages-vue-app-platform.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-ui@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-ui
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 126 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/vue-ui.css   19.53 kB │ gzip:  3.33 kB
+dist/index.js    231.44 kB │ gzip: 58.66 kB
+✓ built in 483ms
+
+> @ccd/vue-primevue-adapter@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-primevue-adapter
+> rm -f ../../node_modules/.tmp/packages-vue-primevue-adapter.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-charts@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-charts
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-charts.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 46 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/echarts-setup.js   0.07 kB │ gzip:  0.09 kB
+dist/index.js          89.94 kB │ gzip: 21.36 kB
+✓ built in 177ms
+
+> @ccd/desktop@1.0.38 build /Users/cc/MyPorject/ccd/apps/desktop
+> vue-tsc -p tsconfig.json --noEmit && vite build
+
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 1138 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                        3.22 kB │ gzip:  1.20 kB
+dist/assets/index-9_IlkVxK.css        48.22 kB │ gzip:  7.22 kB
+dist/assets/DesktopHome-P_UPlZ-5.js   67.19 kB │ gzip: 15.76 kB
+dist/assets/index-tG0AlNeA.js        351.75 kB │ gzip: 83.90 kB
+✓ built in 913ms

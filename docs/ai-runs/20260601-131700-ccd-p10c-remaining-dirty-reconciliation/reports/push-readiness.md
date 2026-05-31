@@ -30,3 +30,18 @@
 - Uncommitted rule drift vs committed `packages/vue-ui` layout.
 - STATUS/evidence folder contradicts on-disk P10 narrative for reviewers.
 - Root duplicate ledger could be accidentally staged in a broad `git add`.
+
+---
+
+## P10f follow-up (2026-06-01)
+
+**Status: P10F_PUSH_READINESS_RESTORED** (tracked files clean after Prettier; no new commit).
+
+| P10e blocker | P10f resolution |
+|--------------|-----------------|
+| `auto-imports.d.ts` diff | LOCAL_FORMATTING_DRIFT — `prettier --write` restores HEAD; do not commit generator single-line output |
+| `build:web-demo` vue-charts TS7016 | BUILD_OUTPUT_PREPARATION_REQUIRED — `build:shared-config` / `@ccd/vue-charts build` produces `dist/index.d.ts`; no manifest change |
+
+Evidence: `docs/ai-runs/20260601-020401-ccd-p10f-auto-imports-vue-charts-build-repair/`
+
+Push remains blocked until: `Authorize push of local commits to origin/main.`

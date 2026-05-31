@@ -1820,6 +1820,15 @@ M6b owner decision review:
 - validation result: type-check, test:run, ai:guard, validate:governance passed in P9 subset.
 - final status: `P9_REVIEW_PACKAGE_READY`.
 
+### P10f auto-imports and vue-charts build repair (2026-06-01)
+
+- evidence: `docs/ai-runs/20260601-020401-ccd-p10f-auto-imports-vue-charts-build-repair/`
+- baseline HEAD: `ab1d23d6`; final HEAD: `ab1d23d6` (no commit)
+- auto-imports: `LOCAL_FORMATTING_DRIFT` — unplugin-auto-import single-line output vs Prettier multi-line HEAD; cleared via `prettier --write`
+- vue-charts: `BUILD_OUTPUT_PREPARATION_REQUIRED` — `dist/index.d.ts` from `pnpm --filter @ccd/vue-charts build`; no manifest/config change
+- validation: full P10f matrix PASS including `build:web-demo`, `build:desktop`
+- final status: `P10F_PUSH_READINESS_RESTORED`; architecture remains **NO_GO**; push not authorized
+
 ## 12. Validation Matrix
 
 | command                    | validates issue types                                                       | expected use                          | generated output risk                                                                   |
