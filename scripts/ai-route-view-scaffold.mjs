@@ -299,7 +299,7 @@ const { title, description, columns, rows } = ${hookName}()
 function renderHook({ kind, routeName, hookName, titleLabel, description, stateKey }) {
   if (kind === 'form') {
     const returnTypeName = `${routeName}PageState`
-    return `import type { FormSchema } from '@/components/ProForm'
+    return `import type { FormSchema } from '@ccd/vue-ui'
 
 interface ${returnTypeName} {
   title: string
@@ -438,7 +438,7 @@ export function ${hookName}(): ${returnTypeName} {
 `
   }
 
-  return `import type { ProTableColumn } from '@/components/ProTable'
+  return `import type { ProTableColumn } from '@ccd/vue-ui'
 import type { ComputedRef, Ref } from 'vue'
 
 interface ${routeName}Row extends Record<string, unknown> {

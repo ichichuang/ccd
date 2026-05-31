@@ -7,7 +7,10 @@ const packages = [
   "@ccd/contracts",
   "@ccd/core",
   "@ccd/design-tokens",
+  "@ccd/design-tokens/theme-engine",
   "@ccd/unocss-preset",
+  "@ccd/vue-ui",
+  "@ccd/vue-charts",
 ];
 
 let failed = false;
@@ -31,7 +34,13 @@ const distChecks = [
   "packages/contracts/dist/index.d.ts",
   "packages/core/dist/index.d.ts",
   "packages/design-tokens/dist/index.d.ts",
+  "packages/design-tokens/dist/theme-engine/index.d.ts",
+  "packages/design-tokens/dist/theme-engine/index.js",
   "packages/unocss-preset/dist/index.d.ts",
+  "packages/vue-ui/dist/index.d.ts",
+  "packages/vue-ui/dist/index.js",
+  "packages/vue-charts/dist/index.d.ts",
+  "packages/vue-charts/dist/index.js",
 ];
 
 for (const rel of distChecks) {

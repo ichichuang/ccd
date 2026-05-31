@@ -2,6 +2,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative, sep } from 'node:path'
 import process from 'node:process'
+import ts from 'typescript'
 import { patterns, readPolicies, workspacePackages } from '../governance/policy-utils.mjs'
 
 const root = process.cwd()
@@ -11,9 +12,13 @@ const coreDir = join(root, 'packages/core/src')
 const forbiddenCoreImports = patterns(runtime.forbiddenImports)
 const forbiddenCoreBuiltinImports =
   /^(node:)?(fs|path|os|process|child_process|worker_threads|http|https|stream|crypto)$/
+const rootToolingDir = join(root, 'scripts')
+const forbiddenRootAppThemeImportPattern =
+  /(?:^|\/|\.\.\/)apps\/web-demo\/src\/utils\/theme(?:\/|$)|^@\/utils\/theme(?:\/|$)|(?:^|\/)src\/utils\/theme(?:\/|$)/
 const importPattern =
   /(?:import|export)\s+(?:[^'";]+?\s+from\s+)?['"]([^'"]+)['"]|import\(['"]([^'"]+)['"]\)/g
 const forbiddenCoreGlobalPatterns = patterns(runtime.forbiddenSourcePatterns)
+const appTsconfigSourceIncludePattern = /(^|\/)packages\/[^/]+\/src\//
 const adapterBoundaries = runtime.adapterBoundaries.map(boundary => ({
   ...boundary,
   allowedPath: join(root, boundary.allowedPath),
@@ -27,6 +32,7 @@ const packageExportSubpaths = new Map(
     return [item.name, new Set(Object.keys(manifest.exports ?? {}))]
   })
 )
+const workspacePackageNames = new Set(workspacePackages(topology).map(item => item.name))
 
 function walk(dir) {
   if (!existsSync(dir)) return []
@@ -51,6 +57,59 @@ function isInside(child, parent) {
 
 function report(file, message) {
   findings.push(`${relative(root, file)}: ${message}`)
+}
+
+function workspaceDependencyNames(manifestSection = {}) {
+  return Object.entries(manifestSection)
+    .filter(
+      ([name, specifier]) =>
+        workspacePackageNames.has(name) &&
+        typeof specifier === 'string' &&
+        specifier.startsWith('workspace:')
+    )
+    .map(([name]) => name)
+}
+
+function uniqueSorted(values) {
+  return [...new Set(values)].sort((a, b) => a.localeCompare(b))
+}
+
+function formatList(values) {
+  return values.length > 0 ? values.join(', ') : 'none'
+}
+
+function readTsconfig(file) {
+  const content = readFileSync(file, 'utf8')
+  const parsed = ts.parseConfigFileTextToJson(file, content)
+  if (parsed.error) {
+    report(file, `tsconfig parse failed: ${ts.flattenDiagnosticMessageText(parsed.error.messageText, '\n')}`)
+    return {}
+  }
+  return parsed.config ?? {}
+}
+
+for (const appDirName of readdirSync(join(root, 'apps'))) {
+  const appDir = join(root, 'apps', appDirName)
+  if (!statSync(appDir).isDirectory()) continue
+
+  for (const entry of readdirSync(appDir, { withFileTypes: true })) {
+    if (!entry.isFile() || !/^tsconfig(?:\.[^.]+)?\.json$/.test(entry.name)) continue
+
+    const tsconfigPath = join(appDir, entry.name)
+    const config = readTsconfig(tsconfigPath)
+    const includes = Array.isArray(config.include) ? config.include : []
+    for (const includePath of includes) {
+      if (
+        typeof includePath === 'string' &&
+        appTsconfigSourceIncludePattern.test(includePath.replaceAll('\\', '/'))
+      ) {
+        report(
+          tsconfigPath,
+          `app tsconfig must not include package source path "${includePath}"; consume workspace packages through exports/build outputs or project references`
+        )
+      }
+    }
+  }
 }
 
 for (const sourceRoot of sourceRoots) {
@@ -115,13 +174,47 @@ for (const sourceRoot of sourceRoots) {
   }
 }
 
+for (const file of walk(rootToolingDir)) {
+  const content = readFileSync(file, 'utf8')
+
+  for (const match of content.matchAll(importPattern)) {
+    const specifier = match[1] ?? match[2]
+    if (!specifier) continue
+
+    if (forbiddenRootAppThemeImportPattern.test(specifier.replaceAll('\\', '/'))) {
+      report(
+        file,
+        `root tooling must not import app theme utilities; use @ccd/design-tokens public APIs instead: "${specifier}"`
+      )
+    }
+  }
+}
+
 for (const packageInfo of workspacePackages(topology)) {
-  if (packageInfo.publicApi === false) continue
   const packageDir = join(root, packageInfo.path)
   if (!statSync(packageDir).isDirectory()) continue
   const manifestPath = join(packageDir, 'package.json')
   if (!existsSync(manifestPath)) continue
   const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'))
+  const manifestWorkspaceDependencies = uniqueSorted([
+    ...workspaceDependencyNames(manifest.dependencies),
+    ...workspaceDependencyNames(manifest.devDependencies),
+  ])
+  const allowedWorkspaceDependencies = uniqueSorted(packageInfo.allowedWorkspaceDependencies ?? [])
+
+  if (
+    manifestWorkspaceDependencies.length !== allowedWorkspaceDependencies.length ||
+    manifestWorkspaceDependencies.some(
+      (name, index) => name !== allowedWorkspaceDependencies[index]
+    )
+  ) {
+    report(
+      manifestPath,
+      `workspace dependency policy mismatch for ${packageInfo.name}: manifest=[${formatList(manifestWorkspaceDependencies)}], topology=[${formatList(allowedWorkspaceDependencies)}]`
+    )
+  }
+
+  if (packageInfo.publicApi === false) continue
   if (topology.exportPolicy.requireExplicitRootExport && !manifest.exports?.['.']) {
     findings.push(
       `${relative(root, manifestPath)}: package must expose only an explicit root export entry`

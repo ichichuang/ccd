@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { spawnSync } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join, relative } from 'node:path'
 import process from 'node:process'
@@ -10,9 +11,6 @@ const { api: apiPolicy, topology } = readPolicies('api', 'topology')
 const reportPath = join(root, 'docs/generated/api-surface-report.json')
 const markdownPath = join(root, 'docs/generated/api-surface-report.md')
 const snapshotDir = join(root, apiPolicy.snapshotDir)
-const governedPackages = workspacePackages(topology).filter(
-  item => apiPolicy.packages.includes(item.name) && item.publicApi !== false
-)
 const findings = []
 
 function ensureParent(file) {
@@ -36,6 +34,55 @@ function exportedNames(file) {
 
 function snapshotName(packageName) {
   return `${packageName.replace(/^@/, '').replace(/\//g, '__')}.json`
+}
+
+function exportSubpaths(exportsField) {
+  if (!exportsField) return []
+  if (typeof exportsField === 'string') return ['.']
+  return Object.keys(exportsField).sort()
+}
+
+function formatGeneratedOutputs() {
+  const result = spawnSync(
+    'pnpm',
+    [
+      'exec',
+      'prettier',
+      '--write',
+      '--no-error-on-unmatched-pattern',
+      'docs/generated/api-surface-report.json',
+      'docs/generated/api-surface-report.md',
+      `${apiPolicy.snapshotDir}/**/*.json`,
+    ],
+    {
+      cwd: root,
+      encoding: 'utf8',
+      stdio: 'pipe',
+    }
+  )
+
+  if (result.status === 0) return
+  if (result.stdout) process.stdout.write(result.stdout)
+  if (result.stderr) process.stderr.write(result.stderr)
+  process.exit(result.status ?? 1)
+}
+
+const governedPackages = workspacePackages(topology)
+  .filter(item => item.publicApi === true && item.path.startsWith('packages/'))
+  .map(packageInfo => {
+    const manifest = JSON.parse(readFileSync(join(root, packageInfo.path, 'package.json'), 'utf8'))
+    return {
+      ...packageInfo,
+      manifest,
+      exports: exportSubpaths(manifest.exports),
+    }
+  })
+  .filter(item => item.exports.length > 0)
+
+for (const item of governedPackages) {
+  if (!apiPolicy.packages.includes(item.name)) {
+    findings.push(`${item.path}: public API package missing from API policy packages: ${item.name}`)
+  }
 }
 
 function compareSnapshot(item, current) {
@@ -63,12 +110,10 @@ function compareSnapshot(item, current) {
 
 const report = governedPackages.map(packageInfo => {
   const packageDir = packageInfo.path
-  const manifest = JSON.parse(readFileSync(join(root, packageDir, 'package.json'), 'utf8'))
-  const exportsField = manifest.exports ?? {}
   const item = {
-    package: manifest.name,
+    package: packageInfo.manifest.name,
     path: packageDir,
-    exports: Object.keys(exportsField).sort(),
+    exports: packageInfo.exports,
     rootSymbols: exportedNames(join(root, packageDir, 'src/index.ts')),
   }
   compareSnapshot(item, item)
@@ -83,6 +128,7 @@ writeFileSync(
     .map(item => `## ${item.package}\n\n- Path: \`${item.path}\`\n- Export subpaths: ${item.exports.map(name => `\`${name}\``).join(', ') || 'none'}\n- Root symbols: ${item.rootSymbols.map(name => `\`${name}\``).join(', ') || 'none'}\n`)
     .join('\n')}`.replace(/\n*$/u, '\n')
 )
+formatGeneratedOutputs()
 
 if (findings.length > 0) {
   console.error('API surface validation failed:')

@@ -1,10 +1,10 @@
 import { THEME_PRESETS } from '@ccd/design-tokens'
-import { generateThemeVars } from '../apps/web-demo/src/utils/theme/engine'
 import {
   THEME_CONTRAST_PAIR_SPECS,
   assessTokenContrast,
   type DecorativeValidationMode,
-} from '../apps/web-demo/src/utils/theme/validate'
+  generateThemeVars,
+} from '@ccd/design-tokens/theme-engine'
 
 interface ContrastFinding {
   preset: string

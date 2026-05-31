@@ -8,7 +8,7 @@ import {
   lighten,
   mix,
   contrastRatio,
-} from '../apps/web-demo/src/utils/theme/color.ts'
+} from '@ccd/design-tokens/theme-engine'
 
 const COLOR_FAMILIES = ['primary', 'accent', 'success', 'warn', 'danger', 'info', 'help']
 const COLOR_STATE_KEYS = ['default', 'foreground', 'hover', 'light', 'lightForeground']
