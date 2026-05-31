@@ -16,19 +16,19 @@ P1–P3 resolved owner decisions for safeStorage crypto (D-016 Option A), compre
 
 ## Blocking Facts
 
-| Item                    | Status           | GO impact                                                                                 |
-| ----------------------- | ---------------- | ----------------------------------------------------------------------------------------- |
-| `B-07`                  | `DONE`           | Resolved — app-owned crypto per D-016 Option A.                                           |
-| `B-08`                  | `DONE`           | Resolved — app-owned compression per D-019 Option A.                                      |
-| `C-06`                  | `OPEN`           | Allowlist debt remains; P13 approved staged reduction; P14 pending.                       |
-| `D-016`                 | `APPROVED`       | Option A recorded 2026-06-01.                                                             |
-| `D-017`                 | `APPROVED`       | Options A+D+E recorded 2026-06-01; M12 unlocked for P14.                                  |
-| `G-02`                  | `OPEN`           | 80 repair-ledger tasks classified; none closed in P7.                                     |
-| `G-03`                  | `BLOCKED`        | Final completion cannot be declared.                                                      |
-| `M12`                   | `APPROVED`       | Staged PrimeVue allowlist reduction owner-approved (P13); P14 pending.                    |
-| `pnpm ai:doctor --open` | 80 open tasks    | repair ledger remains open.                                                               |
-| `pnpm codex:preflight`  | fail (inherited) | `.cursor` presence + ai:sync drift note.                                                  |
-| remote push (P10g)      | `DONE`           | Manual push to `origin/main` completed (2026-06-01); verify current HEAD via git history. |
+| Item                    | Status                   | GO impact                                                                                 |
+| ----------------------- | ------------------------ | ----------------------------------------------------------------------------------------- |
+| `B-07`                  | `DONE`                   | Resolved — app-owned crypto per D-016 Option A.                                           |
+| `B-08`                  | `DONE`                   | Resolved — app-owned compression per D-019 Option A.                                      |
+| `C-06`                  | `OPEN`                   | Allowlist debt remains; P13 approved staged reduction; P14 pending.                       |
+| `D-016`                 | `APPROVED`               | Option A recorded 2026-06-01.                                                             |
+| `D-017`                 | `APPROVED`               | Options A+D+E recorded 2026-06-01; M12 unlocked for P14.                                  |
+| `G-02`                  | `ACCEPTED_DEFERRED_DEBT` | 80 tasks owner-accepted as deferred debt (P15); ledger open count unchanged.              |
+| `G-03`                  | `BLOCKED`                | Final completion cannot be declared.                                                      |
+| `M12`                   | `APPROVED`               | Staged PrimeVue allowlist reduction owner-approved (P13); P14 pending.                    |
+| `pnpm ai:doctor --open` | 80 open tasks            | repair ledger remains open.                                                               |
+| `pnpm codex:preflight`  | fail (inherited)         | `.cursor` presence + ai:sync drift note.                                                  |
+| remote push (P10g)      | `DONE`                   | Manual push to `origin/main` completed (2026-06-01); verify current HEAD via git history. |
 
 ## P11 Validation Matrix (2026-06-01)
 

@@ -54,26 +54,26 @@
 
 ## Issue Status After P1–P3
 
-| Issue ID | Status     | Notes                                             |
-| -------- | ---------- | ------------------------------------------------- |
-| `B-07`   | `DONE`     | App-owned crypto terminal boundary (D-016 A)      |
-| `B-08`   | `DONE`     | App-owned compression terminal boundary (D-019 A) |
-| `D-016`  | `APPROVED` | Option A, 2026-06-01                              |
-| `D-017`  | `APPROVED` | Options A+D+E, 2026-06-01                         |
-| `D-019`  | `APPROVED` | B-08 compression Option A (new)                   |
-| `C-06`   | `OPEN`     | Allowlist debt; guard posture approved            |
-| `G-02`   | `OPEN`     | 80 classified open tasks                          |
-| `G-03`   | `BLOCKED`  | Completion gate                                   |
+| Issue ID | Status                   | Notes                                             |
+| -------- | ------------------------ | ------------------------------------------------- |
+| `B-07`   | `DONE`                   | App-owned crypto terminal boundary (D-016 A)      |
+| `B-08`   | `DONE`                   | App-owned compression terminal boundary (D-019 A) |
+| `D-016`  | `APPROVED`               | Option A, 2026-06-01                              |
+| `D-017`  | `APPROVED`               | Options A+D+E, 2026-06-01                         |
+| `D-019`  | `APPROVED`               | B-08 compression Option A (new)                   |
+| `C-06`   | `OPEN`                   | Allowlist debt; guard posture approved            |
+| `G-02`   | `ACCEPTED_DEFERRED_DEBT` | 80 tasks owner-accepted deferred debt (P15)       |
+| `G-03`   | `BLOCKED`                | Completion gate                                   |
 
 ## Unresolved Blockers And Decisions
 
-| ID          | Status     | Required next action                                                                  |
-| ----------- | ---------- | ------------------------------------------------------------------------------------- |
-| `C-06`      | `OPEN`     | P14 staged PrimeVue allowlist reduction in progress                                   |
-| `G-02`      | `OPEN`     | Owner/operator accept deferred ledger debt or approve implementation lanes            |
-| `G-03`      | `BLOCKED`  | Resolve G-02/C-06 or accept continued NO_GO                                           |
-| `M12`       | `APPROVED` | P14 staged PrimeVue reduction implementation                                          |
-| remote push | `DONE`     | P10g manual push to `origin/main` completed (2026-06-01); verify HEAD via git history |
+| ID          | Status                   | Required next action                                                                  |
+| ----------- | ------------------------ | ------------------------------------------------------------------------------------- |
+| `C-06`      | `OPEN`                   | P14 staged PrimeVue allowlist reduction in progress                                   |
+| `G-02`      | `ACCEPTED_DEFERRED_DEBT` | Owner accepted 80 deferred ledger tasks (P15)                                         |
+| `G-03`      | `BLOCKED`                | Resolve G-02/C-06 or accept continued NO_GO                                           |
+| `M12`       | `APPROVED`               | P14 staged PrimeVue reduction implementation                                          |
+| remote push | `DONE`                   | P10g manual push to `origin/main` completed (2026-06-01); verify HEAD via git history |
 
 ## M16a Evidence Path (P9a reconciled)
 
