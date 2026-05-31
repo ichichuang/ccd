@@ -19,8 +19,8 @@
 - P0–P8 evidence roots: `docs/ai-runs/20260601-100000-ccd-p0-post-m16-blocker-baseline/` through `docs/ai-runs/20260601-105000-ccd-p7-repair-ledger-reconciliation/`.
 - Runtime source changed in P4: comment-only in `apps/web-demo/src/utils/safeStorage/index.ts`.
 - Package manifests or lockfile changed in P0–P16: no.
-- Stage/commit/push/clean/reset/rebase in P0–P16a: local commits only; no push after P10g.
-- P12–P16a local commits (unpushed, 2026-06-01): `94c99ebe` (P13), `91cfc956` (P14 E1), `15b785b8` (P14 E2), `ebb89829` (P14 E4), `12f71e0a` (P15), `f86b3bb0` (P16); P16a commit follows this lane.
+- P12–P16a have been pushed to origin/main; no clean/reset/rebase was performed.
+- P12–P16a commits are present on origin/main through d53aa9c3.
 - P10 local commits (2026-06-01): **6 commits created** (G5→G2→G3→G6→G1→G4); pre-commit passed without `--no-verify` after P10a quarantine; see `docs/ai-runs/20260601-121000-ccd-p10-local-commits/reports/summary.md` and `docs/ai-runs/20260601-130000-ccd-p10a-cursor-retired-path-quarantine/`.
 - P10g push (2026-06-01): **manual push to `origin/main` completed**; current HEAD must be verified via git history, not hardcoded status docs.
 

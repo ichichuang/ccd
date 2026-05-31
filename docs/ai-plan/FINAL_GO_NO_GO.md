@@ -80,4 +80,4 @@ The final state is **`CONDITIONAL_GO`**. Owner decisions closed B-07/B-08/D-016/
 
 ## Recommended Next Action
 
-Treat P12–P16 as complete for the architecture-only program. Further work on C-06 remainder, G-02 ledger closure, or E3 showcase cleanup requires separate owner authorization. Do not declare full GO without code-closing residual debt or fresh owner approval. Local P12–P16 commits remain unpushed unless owner separately authorizes push.
+Treat P12–P16 as complete for the architecture-only program. Further work on C-06 remainder, G-02 ledger closure, or E3 showcase cleanup requires separate owner authorization. Do not declare full GO without code-closing residual debt or fresh owner approval. P12–P16a status and evidence are present on origin/main through d53aa9c3.
