@@ -3,13 +3,13 @@
 ## 0. Machine-Readable Summary
 
 ```yaml
-document_version: 2026-06-01.p12
+document_version: 2026-06-01.p13
 last_updated: 2026-06-01
 repository: /Users/cc/MyPorject/ccd
 baseline_branch: main
 baseline_commit: cc255d1a
 last_remote_state_reconciliation: P11 reconciled P10g push state; evidence snapshot only — verify current HEAD via git history
-current_lane: P12 status surface anti-drift repair
+current_lane: P13 PrimeVue staged reduction owner decision checkpoint
 source_of_truth_files:
   - README.md
   - docs/en/architecture-contract.md

@@ -3,13 +3,13 @@
 ## Current Execution State
 
 - Current program: `CCD post-M16 NO_GO blocker-resolution program`
-- Current milestone: P12 `P12_STATUS_SURFACE_ANTI_DRIFT_REPAIRED` — stable last-reconciled-event wording replaces volatile remote HEAD claims.
+- Current milestone: P13 `P13_M12_APPROVED` — owner approved Option E staged PrimeVue allowlist reduction; P14 implementation pending.
 - Current accepted baseline: `M14_STATUS_LEDGER_RECONCILED_NO_GO`.
 - Prior cleanup lane: `M16_STALE_REFERENCES_CLEANED` / `M16A_LEDGER_EVIDENCE_POLISHED`.
 - Baseline branch: `main`.
 - Pre-P10 baseline commit: `cc255d1a`.
 - Last remote-state reconciliation: P11 reconciled P10g push state; P11 itself was pushed after that reconciliation — use `git log` / remote history as source of truth for current HEAD.
-- P12 evidence directory: `docs/ai-runs/20260601-150000-ccd-p12-status-surface-anti-drift-repair/`.
+- P13 evidence directory: `docs/ai-runs/20260601-151000-ccd-p13-primevue-m12-owner-decision/`.
 - P11 evidence directory: `docs/ai-runs/20260601-140000-ccd-p11-remote-state-surface-reconciliation/`.
 - P0–P8 evidence roots: `docs/ai-runs/20260601-100000-ccd-p0-post-m16-blocker-baseline/` through `docs/ai-runs/20260601-105000-ccd-p7-repair-ledger-reconciliation/`.
 - Runtime source changed in P4: comment-only in `apps/web-demo/src/utils/safeStorage/index.ts`.
@@ -20,6 +20,7 @@
 
 ## Top-Level Status
 
+- P13 reconciliation: `P13_M12_APPROVED`.
 - P12 reconciliation: `P12_STATUS_SURFACE_ANTI_DRIFT_REPAIRED`.
 - P11 reconciliation: `P11_REMOTE_STATE_RECONCILED_NO_GO`.
 - Overall final status remains **`NO_GO`**.
@@ -49,6 +50,7 @@
 | P10g  | `P10G_REMOTE_PUSH_COMPLETED`             | manual push to `origin/main` completed (2026-06-01)                    |
 | P11   | `P11_REMOTE_STATE_RECONCILED`            | status surfaces aligned to remote post-push state                      |
 | P12   | `P12_STATUS_SURFACE_ANTI_DRIFT_REPAIRED` | volatile remote HEAD wording replaced with stable reconciliation event |
+| P13   | `P13_M12_APPROVED`                       | owner approved Option E staged PrimeVue reduction; P14 unlocked        |
 
 ## Issue Status After P1–P3
 
@@ -57,7 +59,7 @@
 | `B-07`   | `DONE`     | App-owned crypto terminal boundary (D-016 A)      |
 | `B-08`   | `DONE`     | App-owned compression terminal boundary (D-019 A) |
 | `D-016`  | `APPROVED` | Option A, 2026-06-01                              |
-| `D-017`  | `APPROVED` | Options A+D, 2026-06-01                           |
+| `D-017`  | `APPROVED` | Options A+D+E, 2026-06-01                         |
 | `D-019`  | `APPROVED` | B-08 compression Option A (new)                   |
 | `C-06`   | `OPEN`     | Allowlist debt; guard posture approved            |
 | `G-02`   | `OPEN`     | 80 classified open tasks                          |
@@ -65,13 +67,13 @@
 
 ## Unresolved Blockers And Decisions
 
-| ID          | Status    | Required next action                                                                  |
-| ----------- | --------- | ------------------------------------------------------------------------------------- |
-| `C-06`      | `OPEN`    | Future M12 lane if owner approves Option E staged reduction                           |
-| `G-02`      | `OPEN`    | Owner/operator accept deferred ledger debt or approve implementation lanes            |
-| `G-03`      | `BLOCKED` | Resolve G-02/C-06 or accept continued NO_GO                                           |
-| `M12`       | `BLOCKED` | Owner approve staged PrimeVue reduction                                               |
-| remote push | `DONE`    | P10g manual push to `origin/main` completed (2026-06-01); verify HEAD via git history |
+| ID          | Status     | Required next action                                                                  |
+| ----------- | ---------- | ------------------------------------------------------------------------------------- |
+| `C-06`      | `OPEN`     | P14 staged PrimeVue allowlist reduction in progress                                   |
+| `G-02`      | `OPEN`     | Owner/operator accept deferred ledger debt or approve implementation lanes            |
+| `G-03`      | `BLOCKED`  | Resolve G-02/C-06 or accept continued NO_GO                                           |
+| `M12`       | `APPROVED` | P14 staged PrimeVue reduction implementation                                          |
+| remote push | `DONE`     | P10g manual push to `origin/main` completed (2026-06-01); verify HEAD via git history |
 
 ## M16a Evidence Path (P9a reconciled)
 

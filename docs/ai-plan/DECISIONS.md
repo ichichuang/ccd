@@ -468,7 +468,7 @@ Minimum validation for any future storage lane:
 
 - Status: `APPROVED`
 - Date: 2026-05-31
-- Approved options: **Option A + Option D** (2026-06-01, P3 lane)
+- Approved options: **Option A + Option D + Option E** (E approved 2026-06-01, P13 lane)
 - Approved date: 2026-06-01
 
 ### Context
@@ -557,7 +557,14 @@ Minimum validation for any future reduction lane:
 - Review run: `docs/ai-runs/20260601-103000-ccd-p3-d017-primevue-reduction-decision/`
 - Owner approval status: `APPROVED_OPTIONS_A_AND_D`
 - Approved scope: maintain exact allowlists and showcase exceptions; block new non-showcase direct imports via guard; no allowlist reduction or M12 source migration in this program.
-- Authorization effect: `D-017` is `APPROVED`; `C-06` remains `OPEN` as allowlist debt; `M12-primevue-allowlist-reduction` remains blocked until a future owner approves Option E staged reduction.
+
+### P13 post-P12 owner decision (2026-06-01)
+
+- Review run: `docs/ai-runs/20260601-151000-ccd-p13-primevue-m12-owner-decision/`
+- Owner approval status: `APPROVED_OPTION_E_STAGED_REDUCTION`
+- Approved scope: staged PrimeVue allowlist reduction by feature slice (E, E1–E4); one slice per commit; remove allowlist rows only after source migration and validation; keep bootstrap installs, generated type registry, and showcase exceptions unless explicitly approved for cleanup.
+- Authorization effect: `M12-primevue-allowlist-reduction` is **APPROVED** and unlocked for P14 implementation; `C-06` remains `OPEN` until reduction completes or owner accepts residual debt; Options A+D guard posture remains in force for new non-showcase imports.
+- Recommended first slice: **E1** — adapter-only global PrimeVue service/config/directive reduction (`AdminSidebarMenuCollapsed.tsx`, `AdminSidebarMenuInline.tsx`, narrow `AppPrimeVueGlobals.vue`).
 
 ---
 
