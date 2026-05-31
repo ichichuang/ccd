@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Method } from 'alova'
 import { z } from 'zod'
@@ -120,6 +121,9 @@ vi.mock('@/adapters/logger.adapter', () => ({
 
 let methodsModule: Promise<typeof import('./methods')> | undefined
 let interceptorsModule: Promise<typeof import('./interceptors')> | undefined
+const currentFileDir = path.dirname(fileURLToPath(import.meta.url))
+const webDemoRoot = path.resolve(currentFileDir, '../../..')
+const repoRoot = path.resolve(webDemoRoot, '../..')
 
 function loadMethods(): Promise<typeof import('./methods')> {
   methodsModule ??= import('./methods')
@@ -379,11 +383,10 @@ describe('auth bridge and coupling boundaries', () => {
   })
 
   it('keeps HTTP, adapter, and API source files decoupled from router, store, and session storage', () => {
-    const repoRoot = process.cwd()
     const sourceFiles = [
-      ...collectSourceFiles(path.join(repoRoot, 'apps/web-demo/src/utils/http')),
-      path.join(repoRoot, 'apps/web-demo/src/adapters/http.adapter.ts'),
-      ...collectSourceFiles(path.join(repoRoot, 'apps/web-demo/src/api')),
+      ...collectSourceFiles(path.join(webDemoRoot, 'src/utils/http')),
+      path.join(webDemoRoot, 'src/adapters/http.adapter.ts'),
+      ...collectSourceFiles(path.join(webDemoRoot, 'src/api')),
     ]
     const violations = sourceFiles.flatMap(file => {
       const source = fs.readFileSync(file, 'utf8')

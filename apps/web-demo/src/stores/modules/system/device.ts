@@ -1,6 +1,11 @@
 // src/stores/modules/device.ts
 import { defineStore } from 'pinia'
-import { BREAKPOINTS, type BreakpointKey } from '@ccd/design-tokens'
+import {
+  type BreakpointKey,
+  resolveBreakpointFromWidth,
+  resolveOrientationFromViewport,
+  resolveViewportMetrics,
+} from '@ccd/design-tokens'
 import { useEventListener } from '@vueuse/core'
 import { debounceFn } from '@ccd/shared-utils'
 import { useMitt } from '@/utils/mitt'
@@ -25,36 +30,35 @@ let lastResizeViewportHeight = typeof window === 'undefined' ? 0 : window.innerH
 let cleanupDeviceRuntime: (() => void) | undefined
 let viewportRafId: number | undefined
 
-/** 模块级缓存：断点按阈值降序排列，避免每次 resize 重复排序 */
-const SORTED_BREAKPOINTS: [string, number][] = [...Object.entries(BREAKPOINTS)].sort(
-  (a, b) => b[1] - a[1]
-)
-
-/** 根据宽度同步计算断点（使用缓存的排序结果） */
-function resolveBreakpoint(width: number): BreakpointKey {
-  const match = SORTED_BREAKPOINTS.find(([, val]) => width >= val)
-  return match ? (match[0] as BreakpointKey) : 'xs'
-}
-
 /** SSR 安全的初始视口宽度 */
 const INITIAL_WIDTH: number = typeof window === 'undefined' ? 0 : window.innerWidth
 const INITIAL_HEIGHT: number = typeof window === 'undefined' ? 0 : window.innerHeight
+const INITIAL_SCREEN_WIDTH: number = typeof window === 'undefined' ? 0 : window.screen.width
+const INITIAL_SCREEN_HEIGHT: number = typeof window === 'undefined' ? 0 : window.screen.height
+const INITIAL_PIXEL_RATIO: number = typeof window === 'undefined' ? 1 : window.devicePixelRatio || 1
 const INITIAL_DEVICE_TYPE = getDeviceTypeSync()
 const INITIAL_OS_TYPE = getOsTypeSync()
+const INITIAL_VIEWPORT_METRICS = resolveViewportMetrics({
+  width: INITIAL_WIDTH,
+  height: INITIAL_HEIGHT,
+  screenWidth: INITIAL_SCREEN_WIDTH,
+  screenHeight: INITIAL_SCREEN_HEIGHT,
+  pixelRatio: INITIAL_PIXEL_RATIO,
+})
 
 export const useDeviceStore = defineStore('device', {
   state: (): DeviceState => ({
     width: INITIAL_WIDTH,
     height: INITIAL_HEIGHT,
-    currentBreakpoint: resolveBreakpoint(INITIAL_WIDTH),
+    currentBreakpoint: resolveBreakpointFromWidth(INITIAL_WIDTH),
     type: INITIAL_DEVICE_TYPE,
     os: INITIAL_OS_TYPE,
-    orientation: INITIAL_WIDTH >= INITIAL_HEIGHT ? 'horizontal' : 'vertical',
-    pixelRatio: typeof window === 'undefined' ? 1 : window.devicePixelRatio || 1,
-    screenWidth: typeof window === 'undefined' ? 0 : window.screen.width,
-    screenHeight: typeof window === 'undefined' ? 0 : window.screen.height,
-    screenShortSide: Math.min(INITIAL_WIDTH, INITIAL_HEIGHT),
-    screenLongSide: Math.max(INITIAL_WIDTH, INITIAL_HEIGHT),
+    orientation: INITIAL_VIEWPORT_METRICS.orientation,
+    pixelRatio: INITIAL_VIEWPORT_METRICS.pixelRatio,
+    screenWidth: INITIAL_VIEWPORT_METRICS.screenWidth,
+    screenHeight: INITIAL_VIEWPORT_METRICS.screenHeight,
+    screenShortSide: INITIAL_VIEWPORT_METRICS.screenShortSide,
+    screenLongSide: INITIAL_VIEWPORT_METRICS.screenLongSide,
     navHeight: 0,
     tabHeight: 0,
     isResizing: false,
@@ -139,28 +143,33 @@ export const useDeviceStore = defineStore('device', {
      * 仅计算与窗口尺寸相关的值
      */
     detectViewportInfo() {
-      const pageW = window.innerWidth
-      const pageH = window.innerHeight
+      const metrics = resolveViewportMetrics({
+        width: window.innerWidth,
+        height: window.innerHeight,
+        screenWidth: window.screen.width,
+        screenHeight: window.screen.height,
+        pixelRatio: window.devicePixelRatio || 1,
+      })
 
-      this.width = pageW
-      this.height = pageH
-      this.screenWidth = window.screen.width
-      this.screenHeight = window.screen.height
-      this.pixelRatio = window.devicePixelRatio || 1
+      this.width = metrics.width
+      this.height = metrics.height
+      this.screenWidth = metrics.screenWidth
+      this.screenHeight = metrics.screenHeight
+      this.pixelRatio = metrics.pixelRatio
 
-      this.orientation = pageW >= pageH ? 'horizontal' : 'vertical'
-      this.screenShortSide = Math.min(pageW, pageH)
-      this.screenLongSide = Math.max(pageW, pageH)
+      this.orientation = resolveOrientationFromViewport(metrics.width, metrics.height)
+      this.screenShortSide = metrics.screenShortSide
+      this.screenLongSide = metrics.screenLongSide
 
       this.updateBreakpoint()
-      useMitt().emit('windowResize', { width: pageW, height: pageH })
+      useMitt().emit('windowResize', { width: metrics.width, height: metrics.height })
     },
 
     /**
      * 更新断点 (v2.0 标准)
      */
     updateBreakpoint() {
-      this.currentBreakpoint = resolveBreakpoint(this.width)
+      this.currentBreakpoint = resolveBreakpointFromWidth(this.width)
     },
 
     /**

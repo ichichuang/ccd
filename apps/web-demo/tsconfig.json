@@ -1,15 +1,6 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": [
-    "src/**/*",
-    "vite.config.ts",
-    "build/**/*.ts",
-    "../../packages/vue-ui/src/**/*.ts",
-    "../../packages/vue-ui/src/**/*.tsx",
-    "../../packages/vue-ui/src/**/*.vue",
-    "../../packages/vue-charts/src/**/*.ts",
-    "../../packages/vue-charts/src/**/*.vue"
-  ],
+  "include": ["src/**/*", "vite.config.ts", "build/**/*.ts"],
   "exclude": ["src/**/__tests__/**"],
   "compilerOptions": {
     "composite": true,

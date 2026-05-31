@@ -4,77 +4,23 @@ import {
   LAYOUT_PERSIST_PICK,
 } from '@/constants/layout'
 import { useDeviceStore } from '@/stores/modules/system/device'
-import { deepClone } from '@ccd/shared-utils'
+import { castValue, deepClone } from '@ccd/shared-utils'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
-import { castValue } from '@ccd/shared-utils'
 import store from '@/stores'
-import { resolveLayoutEffectiveMode } from '@ccd/vue-app-platform'
+import {
+  enforceLayoutModeVisibilityConstraints,
+  resolveLayoutEffectiveMode,
+  resolveLayoutModuleVisibilityChange,
+  type LayoutModuleVisibilityKey,
+} from '@ccd/vue-app-platform'
 import { syncAction } from '@/sync/syncAction'
+import { defineStore } from 'pinia'
 /**
  * 缓存 deviceStore，避免 effectiveMode getter 每次求值都调用 useDeviceStore()。
  * 安全性：Pinia 单例模式下 module-level 缓存不会跨实例泄露；
  * HMR 场景下 store 实例不变（Pinia 内部管理），引用仍然有效。
  */
 let _deviceStore: ReturnType<typeof useDeviceStore> | null = null
-import { defineStore } from 'pinia'
-
-type LayoutModuleVisibilityKey =
-  | 'showHeader'
-  | 'showMenu'
-  | 'showSidebar'
-  | 'showBreadcrumb'
-  | 'showBreadcrumbIcon'
-  | 'showTabs'
-  | 'showFooter'
-  | 'showLogo'
-
-const MODULE_DEPENDENCIES: Partial<Record<LayoutModuleVisibilityKey, LayoutModuleVisibilityKey[]>> =
-  {
-    // Header 是父模块：承载 Logo/Menu
-    showHeader: ['showLogo', 'showMenu'],
-    // Breadcrumb 是父模块：承载 Icon（当前 LayoutAdmin 还未渲染 icon，但语义上依赖存在）
-    showBreadcrumb: ['showBreadcrumbIcon'],
-  }
-
-const MODULE_PARENT_REQUIREMENTS: Partial<
-  Record<LayoutModuleVisibilityKey, LayoutModuleVisibilityKey>
-> = {
-  showLogo: 'showHeader',
-  showMenu: 'showHeader',
-  showBreadcrumbIcon: 'showBreadcrumb',
-}
-
-function enforceParentRequirements(visibility: LayoutVisibilitySetting): LayoutVisibilitySetting {
-  const next: LayoutVisibilitySetting = { ...visibility }
-  ;(Object.keys(MODULE_PARENT_REQUIREMENTS) as LayoutModuleVisibilityKey[]).forEach(key => {
-    const parentKey = MODULE_PARENT_REQUIREMENTS[key]
-    if (parentKey && !next[parentKey]) {
-      next[key] = false
-    }
-  })
-  return next
-}
-
-/**
- * 各布局模式下“不会被渲染”的模块开关，统一在 Store 层做兜底约束，
- * 避免出现“状态被打开但当前模式永远不渲染”的错配体验。
- */
-const MODE_HIDDEN_MODULES: Record<AdminLayoutMode, LayoutModuleVisibilityKey[]> = {
-  vertical: ['showMenu'],
-  horizontal: ['showSidebar'],
-  mix: [],
-}
-
-function enforceModeVisibilityConstraints(
-  mode: AdminLayoutMode,
-  visibility: LayoutVisibilitySetting
-): LayoutVisibilitySetting {
-  const next: LayoutVisibilitySetting = enforceParentRequirements(visibility)
-  MODE_HIDDEN_MODULES[mode].forEach(key => {
-    next[key] = false
-  })
-  return next
-}
 
 export const useLayoutStore = defineStore('layout', {
   state: (): LayoutStoreState => ({
@@ -226,9 +172,9 @@ export const useLayoutStore = defineStore('layout', {
 
       // 迁移策略：用旧配置快照初始化三种模式（用户升级后不会丢失习惯）
       this.visibilitySettings = {
-        vertical: enforceModeVisibilityConstraints('vertical', { ...legacyVisibility }),
-        horizontal: enforceModeVisibilityConstraints('horizontal', { ...legacyVisibility }),
-        mix: enforceModeVisibilityConstraints('mix', { ...legacyVisibility }),
+        vertical: enforceLayoutModeVisibilityConstraints('vertical', { ...legacyVisibility }),
+        horizontal: enforceLayoutModeVisibilityConstraints('horizontal', { ...legacyVisibility }),
+        mix: enforceLayoutModeVisibilityConstraints('mix', { ...legacyVisibility }),
       }
 
       // 清理旧字段（避免继续被误用）
@@ -244,7 +190,7 @@ export const useLayoutStore = defineStore('layout', {
 
     setPreferredMode(mode: AdminLayoutMode) {
       this.updateSetting('preferredMode', mode)
-      this.visibilitySettings[mode] = enforceModeVisibilityConstraints(mode, {
+      this.visibilitySettings[mode] = enforceLayoutModeVisibilityConstraints(mode, {
         ...this.visibilitySettings[mode],
       })
       this.markUserAdjusted()
@@ -260,48 +206,16 @@ export const useLayoutStore = defineStore('layout', {
      */
     setModuleVisible(key: LayoutModuleVisibilityKey, visible: boolean, mode?: AdminLayoutMode) {
       const targetMode = mode ?? this.preferredMode
-      const parentKey = MODULE_PARENT_REQUIREMENTS[key]
-      if (visible && parentKey && !this.visibilitySettings[targetMode][parentKey]) {
-        this.visibilitySettings[targetMode][parentKey] = true
-      }
-      if (MODE_HIDDEN_MODULES[targetMode].includes(key)) {
-        this.visibilitySettings[targetMode][key] = false
-        this.markUserAdjusted()
-        return
-      }
-
-      const children = MODULE_DEPENDENCIES[key]
-      if (children && children.length > 0) {
-        const modeCache = this.moduleRestoreCache[targetMode]
-
-        if (!visible) {
-          // 关闭父模块：缓存子模块当前状态并强制关闭
-          modeCache[key] = children.reduce<Partial<LayoutVisibilitySetting>>((acc, childKey) => {
-            acc[childKey] = this.visibilitySettings[targetMode][childKey]
-            return acc
-          }, {})
-          children.forEach(childKey => {
-            this.visibilitySettings[targetMode][childKey] = false
-          })
-        } else {
-          // 开启父模块：如有缓存则恢复子模块状态，并清空缓存
-          const cache = modeCache[key]
-          if (cache) {
-            children.forEach(childKey => {
-              const cached = cache[childKey]
-              if (typeof cached === 'boolean') {
-                this.visibilitySettings[targetMode][childKey] = cached
-              }
-            })
-            delete modeCache[key]
-          }
-        }
-      }
-
-      this.visibilitySettings[targetMode][key] = visible
-      this.visibilitySettings[targetMode] = enforceModeVisibilityConstraints(targetMode, {
-        ...this.visibilitySettings[targetMode],
+      const result = resolveLayoutModuleVisibilityChange({
+        mode: targetMode,
+        key,
+        visible,
+        visibility: this.visibilitySettings[targetMode],
+        restoreCache: this.moduleRestoreCache[targetMode],
       })
+
+      this.visibilitySettings[targetMode] = result.visibility
+      this.moduleRestoreCache[targetMode] = result.restoreCache
       this.markUserAdjusted()
     },
     toggleModuleVisible(key: LayoutModuleVisibilityKey) {
