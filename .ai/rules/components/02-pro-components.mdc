@@ -1,6 +1,6 @@
 ---
 description: Governs all business views and ProTable/ProForm usage. Enforces PrimeVue purity, semantic layout shell, v-auth directive, and responsive patterns.
-globs: ["src/views/**/*.vue", "src/views/**/*.tsx", "src/components/ProTable/**", "src/components/ProForm/**"]
+globs: ["src/views/**/*.vue", "src/views/**/*.tsx", "packages/vue-ui/src/ProTable/**", "packages/vue-ui/src/ProForm/**"]
 alwaysApply: true
 ---
 
@@ -212,7 +212,7 @@ ProTable manages PrimeVue DataTable's `scrollable`/`scrollHeight` internally —
 
 All forms with ≥2 fields **MUST** use `<ProForm>` with a typed `FormSchema`.
 
-Internal implementation note: native `<form>` is allowed inside `src/components/ProForm/**`
+Internal implementation note: native `<form>` is allowed inside `packages/vue-ui/src/ProForm/**`
 because it is the component boundary that provides the approved business form abstraction.
 This exception must not be copied into `src/views/**`.
 
