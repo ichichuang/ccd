@@ -2,65 +2,42 @@
 
 ## Phase status
 
-- **Final status**: `P10_HOOK_BLOCKED_PRECOMMIT`
-- **Local commits created**: **0**
+- **P10a final status**: `P10A_CURSOR_QUARANTINED`
+- **P10 final status**: `P10_LOCAL_COMMITS_CREATED`
+- **Local commits created**: **6**
 - **Baseline branch**: `main`
-- **Baseline commit**: `cc255d1a` (unchanged)
+- **Baseline commit (pre-P10)**: `cc255d1a`
+- **HEAD after P10**: `cd4cdccc`
 - **Top-level architecture status**: `NO_GO`
 
-## P9a outcome
+## P10a cursor quarantine
 
-- `P9A_EVIDENCE_RECONCILED` — M16a evidence directory exists at `docs/ai-runs/20260531-230000-ccd-m16a-ledger-evidence-polish/`
-- `P9A_INHERITED_CODEX_PREFLIGHT_EXCEPTION_RECORDED` — `.cursor` + ai:sync drift
+- Quarantine path: `../ccd.cursor.quarantine.20260601-130000/.cursor`
+- Repo-root `.cursor`: absent
+- Evidence: `docs/ai-runs/20260601-130000-ccd-p10a-cursor-retired-path-quarantine/`
+- `pnpm ai:doctor` passes after quarantine (no `--no-verify`)
 
-## P10 pre-commit validation matrix
+## Commits created (G5 → G2 → G3 → G6 → G1 → G4)
 
-| command | result | log |
-|---|---|---|
-| `git diff --check` | pass | `command-logs/01`, `18` |
-| `pnpm docs:commands` | pass | `02` |
-| `pnpm project:doctor` | pass | `03` |
-| `pnpm ai:doctor --open` | pass (80 open) | `04` |
-| `pnpm codex:preflight` | **fail** (inherited) | `05` |
-| `pnpm ci:prepare-internal` | pass | `06` |
-| `pnpm ci:smoke:packages` | pass | `07` |
-| `pnpm arch:runtime` | pass | `08` |
-| `pnpm arch:boundaries` | pass | `09` |
-| `pnpm api:report` | pass | `10` |
-| `pnpm ai:guard` | pass | `11` |
-| `pnpm validate:governance` | pass | `12` |
-| `pnpm type-check` | pass | `13` |
-| `pnpm test:run` | pass | `14` |
-| `pnpm --filter @ccd/web-demo test` | pass | `15` |
-| `pnpm build:web-demo` | pass | `16` |
-| `pnpm build:desktop` | pass | `17` |
+| Group | Hash | Subject |
+| ----- | ---- | ------- |
+| G5 | `b12652c1` | chore(tooling): 强化架构边界、API 报告与主题工具校验 |
+| G2 | `c59c0727` | refactor(platform): 抽取主题尺寸设备与布局纯能力到公共平台包 |
+| G3 | `1ddf1d5f` | refactor(web-demo): 收敛应用兼容门面与测试路径边界 |
+| G6 | `68bc8acd` | chore(desktop): 收敛桌面应用 TypeScript 构建边界 |
+| G1 | `9a91e1bc` | chore(governance): 同步架构治理策略与生成产物 |
+| G4 | `cd4cdccc` | docs(architecture): 同步 NO_GO 状态、问题台账与修复证据 |
 
-## Commit attempt (G5)
+## Pre-commit hook
 
-- Staged G5 tooling files per authorization.
-- `git commit` **rejected by pre-commit hook** (`.husky/pre-commit` runs `pnpm ai:doctor`).
-- Hook failure: `[FAIL] retired Cursor/Gemini path should be removed: .cursor`
-- Staging reverted via `git restore --staged` for G5 files only; working tree unchanged.
+All commits passed `.husky/pre-commit` (ai:doctor, type-check, lint-staged, commitlint) without `--no-verify`.
 
-## Why commits did not proceed
+## Remaining unstaged (outside authorized groups)
 
-Authorization forbids:
-- `git commit --no-verify`
-- deleting or moving `.cursor/` (inherited local IDE artifact)
-- `git clean` / `reset` / `rebase`
-
-Until `.cursor` is removed from repo root **or** owner authorizes hook bypass, **all local commits will fail pre-commit**.
-
-## Approved commit groups (not executed)
-
-G1–G6 remain uncommitted; file lists unchanged from P9 package.
-
-## Remaining unstaged notable files (outside approved groups)
-
-- `.ai/rules/components/*.mdc` — not in G1/G5 scope
-- `apps/web-demo/src/types/auto-imports.d.ts` — generated; not in G3 scope
-- `.cursor/plans/**` — exclusion list
-- `CCD_ARCHITECTURE_ISSUE_REPAIR_LOG.md` (root) — exclusion list
+- `.ai/rules/components/*.mdc`
+- `apps/web-demo/src/types/auto-imports.d.ts`
+- `CCD_ARCHITECTURE_ISSUE_REPAIR_LOG.md` (repo root)
+- Post-P10 STATUS.md refresh (working tree)
 
 ## Push
 
@@ -69,9 +46,3 @@ Not authorized. Not performed.
 ## Full GO
 
 Not authorized. Remains `NO_GO`.
-
-## Owner next action (pick one)
-
-1. Temporarily move/rename repo-root `.cursor` outside the tree, then re-run P10 commits.
-2. Explicitly authorize `git commit --no-verify` for approved groups G1–G6.
-3. Accept `P10_HOOK_BLOCKED` and keep dirty tree until hook policy is updated.

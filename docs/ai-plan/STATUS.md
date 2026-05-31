@@ -3,17 +3,17 @@
 ## Current Execution State
 
 - Current program: `CCD post-M16 NO_GO blocker-resolution program`
-- Current milestone: P10 `P10_HOOK_BLOCKED_PRECOMMIT` — pre-commit hook blocks commits while repo-root `.cursor` exists.
+- Current milestone: P10 `P10_LOCAL_COMMITS_CREATED` — G1–G6 local commits completed after P10a cursor quarantine.
 - Current accepted baseline: `M14_STATUS_LEDGER_RECONCILED_NO_GO`.
 - Prior cleanup lane: `M16_STALE_REFERENCES_CLEANED` / `M16A_LEDGER_EVIDENCE_POLISHED`.
 - Baseline branch: `main`.
-- Baseline commit: `cc255d1a`.
+- Baseline commit: `cc255d1a` (pre-P10); HEAD after P10: `cd4cdccc` (6 commits, not pushed).
 - P8 evidence directory: `docs/ai-runs/20260601-106000-ccd-p8-final-go-no-go-reconciliation/`.
 - P0–P7 evidence roots: `docs/ai-runs/20260601-100000-ccd-p0-post-m16-blocker-baseline/` through `docs/ai-runs/20260601-105000-ccd-p7-repair-ledger-reconciliation/`.
 - Runtime source changed in P4: comment-only in `apps/web-demo/src/utils/safeStorage/index.ts`.
 - Package manifests or lockfile changed in P0–P8: no.
 - Stage/commit/push/clean/reset/rebase in P0–P8: no.
-- P10 local commit attempt (2026-06-01): **blocked by pre-commit hook** (`pnpm ai:doctor` fails on repo-root `.cursor`); see `docs/ai-runs/20260601-121000-ccd-p10-local-commits/reports/summary.md`.
+- P10 local commits (2026-06-01): **6 commits created** (G5→G2→G3→G6→G1→G4); pre-commit passed without `--no-verify` after P10a quarantine; see `docs/ai-runs/20260601-121000-ccd-p10-local-commits/reports/summary.md` and `docs/ai-runs/20260601-130000-ccd-p10a-cursor-retired-path-quarantine/`.
 
 ## Top-Level Status
 
@@ -21,7 +21,7 @@
 - Overall final status remains **`NO_GO`**.
 - Full GO is not authorized.
 - `pnpm ai:doctor --open` still reports **80 open tasks** (P7 classified all; 0 closed).
-- Workspace remains intentionally dirty with inherited M1–M16a artifacts plus P0–P9 evidence.
+- Workspace: P10 commits landed; remaining dirty: `.ai/rules/components/*.mdc`, `auto-imports.d.ts`, root `CCD_ARCHITECTURE_ISSUE_REPAIR_LOG.md`.
 
 ## Post-M16 Program Results (P0–P8)
 
@@ -38,7 +38,8 @@
 | P8    | `P8_FINAL_NO_GO`                      | validation matrix mostly pass; codex:preflight fail inherited |
 | P9    | `P9_REVIEW_PACKAGE_READY`             | commit grouping prepared; no commit                           |
 | P9a   | `P9A_EVIDENCE_RECONCILED`             | M16a path verified; codex exception documented                |
-| P10   | `P10_HOOK_BLOCKED_PRECOMMIT`          | 0 commits; hook fails on `.cursor`                            |
+| P10a  | `P10A_CURSOR_QUARANTINED`             | `.cursor` moved to sibling quarantine; ai:doctor unblocked    |
+| P10   | `P10_LOCAL_COMMITS_CREATED`           | G1–G6 committed locally (6); not pushed                       |
 
 ## Issue Status After P1–P3
 
@@ -55,13 +56,13 @@
 
 ## Unresolved Blockers And Decisions
 
-| ID            | Status    | Required next action                                                                                     |
-| ------------- | --------- | -------------------------------------------------------------------------------------------------------- |
-| `C-06`        | `OPEN`    | Future M12 lane if owner approves Option E staged reduction                                              |
-| `G-02`        | `OPEN`    | Owner/operator accept deferred ledger debt or approve implementation lanes                               |
-| `G-03`        | `BLOCKED` | Resolve G-02/C-06 or accept continued NO_GO                                                              |
-| `M12`         | `BLOCKED` | Owner approve staged PrimeVue reduction                                                                  |
-| review/commit | `OPEN`    | Remove/rename repo-root `.cursor`, authorize `--no-verify`, or update hook policy; then re-run P10 G1–G6 |
+| ID            | Status    | Required next action                                                       |
+| ------------- | --------- | -------------------------------------------------------------------------- |
+| `C-06`        | `OPEN`    | Future M12 lane if owner approves Option E staged reduction                |
+| `G-02`        | `OPEN`    | Owner/operator accept deferred ledger debt or approve implementation lanes |
+| `G-03`        | `BLOCKED` | Resolve G-02/C-06 or accept continued NO_GO                                |
+| `M12`         | `BLOCKED` | Owner approve staged PrimeVue reduction                                    |
+| review/commit | `DONE`    | P10 G1–G6 local commits created; push not authorized                       |
 
 ## M16a Evidence Path (P9a reconciled)
 
