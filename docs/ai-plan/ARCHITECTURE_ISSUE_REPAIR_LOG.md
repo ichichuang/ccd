@@ -3,13 +3,13 @@
 ## 0. Machine-Readable Summary
 
 ```yaml
-document_version: 2026-06-01.p11
+document_version: 2026-06-01.p12
 last_updated: 2026-06-01
 repository: /Users/cc/MyPorject/ccd
 baseline_branch: main
 baseline_commit: cc255d1a
-latest_remote_commit: 0de90f64
-current_lane: P11 remote state surface reconciliation
+last_remote_state_reconciliation: P11 reconciled P10g push state; evidence snapshot only — verify current HEAD via git history
+current_lane: P12 status surface anti-drift repair
 source_of_truth_files:
   - README.md
   - docs/en/architecture-contract.md

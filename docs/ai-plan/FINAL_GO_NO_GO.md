@@ -6,29 +6,29 @@
 - Current program: `CCD post-M16 NO_GO blocker-resolution program` (P0–P11)
 - P11 reconciliation status: `P11_REMOTE_STATE_RECONCILED_NO_GO`
 - Current accepted baseline: `M14_STATUS_LEDGER_RECONCILED_NO_GO`
-- Latest lanes: P0–P11 (2026-06-01)
-- Latest remote commit (`origin/main`): `0de90f64`
+- Latest lanes: P0–P12 (2026-06-01)
+- Last remote-state reconciliation: P11, evidence directory `docs/ai-runs/20260601-140000-ccd-p11-remote-state-surface-reconciliation/`, reconciled P10g push state; subsequent status-only commits may exist and should be verified by git history.
 - P10g push status: completed manually to `origin/main` (2026-06-01)
-- Evidence directory: `docs/ai-runs/20260601-140000-ccd-p11-remote-state-surface-reconciliation/`
+- Evidence directory: `docs/ai-runs/20260601-150000-ccd-p12-status-surface-anti-drift-repair/`
 - Full GO authorized: no
 
-P1–P3 resolved owner decisions for safeStorage crypto (D-016 Option A), compression (D-019/B-08 Option A), and PrimeVue guard posture (D-017 Options A+D). P4 confirmed non-crypto safeStorage boundaries. P7 classified all 80 repair-ledger open tasks. P10 local commits (G1–G6) and supplemental evidence (P10c/P10f) were pushed manually to `origin/main`; remote HEAD is `0de90f64`. Top-level status remains `NO_GO` because C-06 allowlist debt, G-02 open tasks, G-03 completion gate, and M12 staged-reduction block remain unresolved.
+P1–P3 resolved owner decisions for safeStorage crypto (D-016 Option A), compression (D-019/B-08 Option A), and PrimeVue guard posture (D-017 Options A+D). P4 confirmed non-crypto safeStorage boundaries. P7 classified all 80 repair-ledger open tasks. P10 local commits (G1–G6) and supplemental evidence (P10c/P10f) were pushed manually to `origin/main`; P11 reconciled status surfaces to that push state. P12 replaced volatile latest-remote-head wording with stable last-reconciled-event references. Top-level status remains `NO_GO` because C-06 allowlist debt, G-02 open tasks, G-03 completion gate, and M12 staged-reduction block remain unresolved.
 
 ## Blocking Facts
 
-| Item                    | Status           | GO impact                                                               |
-| ----------------------- | ---------------- | ----------------------------------------------------------------------- |
-| `B-07`                  | `DONE`           | Resolved — app-owned crypto per D-016 Option A.                         |
-| `B-08`                  | `DONE`           | Resolved — app-owned compression per D-019 Option A.                    |
-| `C-06`                  | `OPEN`           | Allowlist debt remains; D-017 approved posture only (no M12 reduction). |
-| `D-016`                 | `APPROVED`       | Option A recorded 2026-06-01.                                           |
-| `D-017`                 | `APPROVED`       | Options A+D recorded 2026-06-01; Option E/M12 not approved.             |
-| `G-02`                  | `OPEN`           | 80 repair-ledger tasks classified; none closed in P7.                   |
-| `G-03`                  | `BLOCKED`        | Final completion cannot be declared.                                    |
-| `M12`                   | `BLOCKED`        | Staged PrimeVue allowlist reduction not owner-approved.                 |
-| `pnpm ai:doctor --open` | 80 open tasks    | repair ledger remains open.                                             |
-| `pnpm codex:preflight`  | fail (inherited) | `.cursor` presence + ai:sync drift note.                                |
-| remote push (P10g)      | `DONE`           | Manual push to `origin/main` at `0de90f64` (2026-06-01).                |
+| Item                    | Status           | GO impact                                                                                 |
+| ----------------------- | ---------------- | ----------------------------------------------------------------------------------------- |
+| `B-07`                  | `DONE`           | Resolved — app-owned crypto per D-016 Option A.                                           |
+| `B-08`                  | `DONE`           | Resolved — app-owned compression per D-019 Option A.                                      |
+| `C-06`                  | `OPEN`           | Allowlist debt remains; D-017 approved posture only (no M12 reduction).                   |
+| `D-016`                 | `APPROVED`       | Option A recorded 2026-06-01.                                                             |
+| `D-017`                 | `APPROVED`       | Options A+D recorded 2026-06-01; Option E/M12 not approved.                               |
+| `G-02`                  | `OPEN`           | 80 repair-ledger tasks classified; none closed in P7.                                     |
+| `G-03`                  | `BLOCKED`        | Final completion cannot be declared.                                                      |
+| `M12`                   | `BLOCKED`        | Staged PrimeVue allowlist reduction not owner-approved.                                   |
+| `pnpm ai:doctor --open` | 80 open tasks    | repair ledger remains open.                                                               |
+| `pnpm codex:preflight`  | fail (inherited) | `.cursor` presence + ai:sync drift note.                                                  |
+| remote push (P10g)      | `DONE`           | Manual push to `origin/main` completed (2026-06-01); verify current HEAD via git history. |
 
 ## P11 Validation Matrix (2026-06-01)
 
@@ -56,7 +56,7 @@ Any unresolved blocker remains, repair-ledger open tasks remain unclosed, C-06 a
 
 ## Final Rationale
 
-The final state is **`NO_GO`**. Owner decisions closed B-07/B-08/D-016/D-019 and approved D-017 guard posture, and P10g pushed local commits plus evidence to `origin/main` at `0de90f64`. C-06 allowlist debt, 80 classified-but-open repair-ledger tasks (G-02), G-03 completion gate, M12 staged-reduction block, and inherited codex:preflight failure still prevent GO or CONDITIONAL_GO without explicit owner acceptance of residual debt.
+The final state is **`NO_GO`**. Owner decisions closed B-07/B-08/D-016/D-019 and approved D-017 guard posture, and P10g pushed local commits plus evidence to `origin/main`; P11/P12 reconciled status surfaces without hardcoding a volatile remote HEAD. C-06 allowlist debt, 80 classified-but-open repair-ledger tasks (G-02), G-03 completion gate, M12 staged-reduction block, and inherited codex:preflight failure still prevent GO or CONDITIONAL_GO without explicit owner acceptance of residual debt.
 
 ## Recommended Next Action
 

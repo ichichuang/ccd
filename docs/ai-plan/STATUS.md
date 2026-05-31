@@ -3,49 +3,52 @@
 ## Current Execution State
 
 - Current program: `CCD post-M16 NO_GO blocker-resolution program`
-- Current milestone: P11 `P11_REMOTE_STATE_RECONCILED` — post-P10g remote verification after manual push to `origin/main`.
+- Current milestone: P12 `P12_STATUS_SURFACE_ANTI_DRIFT_REPAIRED` — stable last-reconciled-event wording replaces volatile remote HEAD claims.
 - Current accepted baseline: `M14_STATUS_LEDGER_RECONCILED_NO_GO`.
 - Prior cleanup lane: `M16_STALE_REFERENCES_CLEANED` / `M16A_LEDGER_EVIDENCE_POLISHED`.
 - Baseline branch: `main`.
 - Pre-P10 baseline commit: `cc255d1a`.
-- Remote HEAD (`origin/main`): `0de90f64` (P10g manual push completed 2026-06-01).
+- Last remote-state reconciliation: P11 reconciled P10g push state; P11 itself was pushed after that reconciliation — use `git log` / remote history as source of truth for current HEAD.
+- P12 evidence directory: `docs/ai-runs/20260601-150000-ccd-p12-status-surface-anti-drift-repair/`.
 - P11 evidence directory: `docs/ai-runs/20260601-140000-ccd-p11-remote-state-surface-reconciliation/`.
 - P0–P8 evidence roots: `docs/ai-runs/20260601-100000-ccd-p0-post-m16-blocker-baseline/` through `docs/ai-runs/20260601-105000-ccd-p7-repair-ledger-reconciliation/`.
 - Runtime source changed in P4: comment-only in `apps/web-demo/src/utils/safeStorage/index.ts`.
 - Package manifests or lockfile changed in P0–P8: no.
 - Stage/commit/push/clean/reset/rebase in P0–P8: no.
 - P10 local commits (2026-06-01): **6 commits created** (G5→G2→G3→G6→G1→G4); pre-commit passed without `--no-verify` after P10a quarantine; see `docs/ai-runs/20260601-121000-ccd-p10-local-commits/reports/summary.md` and `docs/ai-runs/20260601-130000-ccd-p10a-cursor-retired-path-quarantine/`.
-- P10g push (2026-06-01): **manual push to `origin/main` completed**; remote HEAD `0de90f64`.
+- P10g push (2026-06-01): **manual push to `origin/main` completed**; current HEAD must be verified via git history, not hardcoded status docs.
 
 ## Top-Level Status
 
+- P12 reconciliation: `P12_STATUS_SURFACE_ANTI_DRIFT_REPAIRED`.
 - P11 reconciliation: `P11_REMOTE_STATE_RECONCILED_NO_GO`.
 - Overall final status remains **`NO_GO`**.
 - Full GO is not authorized.
 - `pnpm ai:doctor --open` still reports **80 open tasks** (P7 classified all; 0 closed).
-- Remote state: `origin/main` at `0de90f64`; local status surfaces reconciled in P11.
+- Remote state: last reconciled in P11 to P10g push state; use git history for current HEAD; P12 removed self-staling remote-commit claims from status surfaces.
 
 ## Post-M16 Program Results (P0–P11)
 
-| Phase | Status                                | Key outcome                                                   |
-| ----- | ------------------------------------- | ------------------------------------------------------------- |
-| P0    | `P0_BLOCKER_BASELINE_CONFIRMED`       | Baseline + blocker table; M16a evidence gap noted             |
-| P1    | `P1_D016_APPROVED`                    | D-016 Option A; B-07 DONE (app-owned)                         |
-| P2    | `P2_B08_APP_OWNED_DECIDED`            | D-019 Option A; B-08 DONE (app-owned)                         |
-| P3    | `P3_D017_APPROVED`                    | Options A+D; C-06 OPEN; M12 blocked                           |
-| P4    | `P4_SAFE_STORAGE_NOOP_CONFIRMED`      | Facade boundary comment only                                  |
-| P5    | skipped                               | compression app-owned                                         |
-| P6    | skipped                               | no allowlist reduction authorized                             |
-| P7    | `P7_REPAIR_LEDGER_CLASSIFIED_NONZERO` | 80 tasks classified                                           |
-| P8    | `P8_FINAL_NO_GO`                      | validation matrix mostly pass; codex:preflight fail inherited |
-| P9    | `P9_REVIEW_PACKAGE_READY`             | commit grouping prepared                                      |
-| P9a   | `P9A_EVIDENCE_RECONCILED`             | M16a path verified; codex exception documented                |
-| P10a  | `P10A_CURSOR_QUARANTINED`             | `.cursor` moved to sibling quarantine; ai:doctor unblocked    |
-| P10   | `P10_LOCAL_COMMITS_CREATED`           | G1–G6 committed locally (6)                                   |
-| P10c  | `P10C_REMAINING_DIRTY_CLASSIFIED`     | supplemental commit recommendations                           |
-| P10f  | `P10F_PUSH_READINESS_RESTORED`        | auto-imports/vue-charts build prep                            |
-| P10g  | `P10G_REMOTE_PUSH_COMPLETED`          | manual push to `origin/main` at `0de90f64`                    |
-| P11   | `P11_REMOTE_STATE_RECONCILED`         | status surfaces aligned to remote post-push state             |
+| Phase | Status                                   | Key outcome                                                            |
+| ----- | ---------------------------------------- | ---------------------------------------------------------------------- |
+| P0    | `P0_BLOCKER_BASELINE_CONFIRMED`          | Baseline + blocker table; M16a evidence gap noted                      |
+| P1    | `P1_D016_APPROVED`                       | D-016 Option A; B-07 DONE (app-owned)                                  |
+| P2    | `P2_B08_APP_OWNED_DECIDED`               | D-019 Option A; B-08 DONE (app-owned)                                  |
+| P3    | `P3_D017_APPROVED`                       | Options A+D; C-06 OPEN; M12 blocked                                    |
+| P4    | `P4_SAFE_STORAGE_NOOP_CONFIRMED`         | Facade boundary comment only                                           |
+| P5    | skipped                                  | compression app-owned                                                  |
+| P6    | skipped                                  | no allowlist reduction authorized                                      |
+| P7    | `P7_REPAIR_LEDGER_CLASSIFIED_NONZERO`    | 80 tasks classified                                                    |
+| P8    | `P8_FINAL_NO_GO`                         | validation matrix mostly pass; codex:preflight fail inherited          |
+| P9    | `P9_REVIEW_PACKAGE_READY`                | commit grouping prepared                                               |
+| P9a   | `P9A_EVIDENCE_RECONCILED`                | M16a path verified; codex exception documented                         |
+| P10a  | `P10A_CURSOR_QUARANTINED`                | `.cursor` moved to sibling quarantine; ai:doctor unblocked             |
+| P10   | `P10_LOCAL_COMMITS_CREATED`              | G1–G6 committed locally (6)                                            |
+| P10c  | `P10C_REMAINING_DIRTY_CLASSIFIED`        | supplemental commit recommendations                                    |
+| P10f  | `P10F_PUSH_READINESS_RESTORED`           | auto-imports/vue-charts build prep                                     |
+| P10g  | `P10G_REMOTE_PUSH_COMPLETED`             | manual push to `origin/main` completed (2026-06-01)                    |
+| P11   | `P11_REMOTE_STATE_RECONCILED`            | status surfaces aligned to remote post-push state                      |
+| P12   | `P12_STATUS_SURFACE_ANTI_DRIFT_REPAIRED` | volatile remote HEAD wording replaced with stable reconciliation event |
 
 ## Issue Status After P1–P3
 
@@ -62,13 +65,13 @@
 
 ## Unresolved Blockers And Decisions
 
-| ID          | Status    | Required next action                                                       |
-| ----------- | --------- | -------------------------------------------------------------------------- |
-| `C-06`      | `OPEN`    | Future M12 lane if owner approves Option E staged reduction                |
-| `G-02`      | `OPEN`    | Owner/operator accept deferred ledger debt or approve implementation lanes |
-| `G-03`      | `BLOCKED` | Resolve G-02/C-06 or accept continued NO_GO                                |
-| `M12`       | `BLOCKED` | Owner approve staged PrimeVue reduction                                    |
-| remote push | `DONE`    | P10g manual push to `origin/main` at `0de90f64` (2026-06-01)               |
+| ID          | Status    | Required next action                                                                  |
+| ----------- | --------- | ------------------------------------------------------------------------------------- |
+| `C-06`      | `OPEN`    | Future M12 lane if owner approves Option E staged reduction                           |
+| `G-02`      | `OPEN`    | Owner/operator accept deferred ledger debt or approve implementation lanes            |
+| `G-03`      | `BLOCKED` | Resolve G-02/C-06 or accept continued NO_GO                                           |
+| `M12`       | `BLOCKED` | Owner approve staged PrimeVue reduction                                               |
+| remote push | `DONE`    | P10g manual push to `origin/main` completed (2026-06-01); verify HEAD via git history |
 
 ## M16a Evidence Path (P9a reconciled)
 
