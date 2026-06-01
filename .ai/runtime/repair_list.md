@@ -228,14 +228,14 @@ Rationale: owner decision log records pending decisions about guard coverage, ru
 
 ### Tasks
 
-- [ ] [P1-Guard-SFCMacroOrder] BLOCKED pending owner Decision 2 on guard enforcement strictness; strict SFC macro-order enforcement was not added without team acceptance.
-- [ ] [P1-Guard-TypeAssertions] BLOCKED pending owner Decision 2 and contradiction resolution for rule matrix item 3 (`props.item as UserInfo` example vs business `as Type` ban).
-- [ ] [P1-Guard-AutoMitt] BLOCKED pending owner Decision 2 on guard enforcement strictness.
-- [ ] [P1-Guard-ComposableReturnTypes] BLOCKED pending owner Decision 2 on guard enforcement strictness.
-- [ ] [P1-Guard-DynamicUnoCSS] BLOCKED pending owner Decision 2 on guard enforcement strictness and approved safelist scope.
-- [ ] [P1-Guard-RuleContradictions] BLOCKED pending owner Decision 3; unresolved rule contradictions require architectural consensus before stricter checks.
-- [ ] [P1-Guard-DesignTokenCanonical] BLOCKED pending owner Decision 4 on the canonical design-token/color rule file.
-- [ ] [P1-Guard-OwnerSignoff] BLOCKED because no owner signoff was provided in this run; `.ai/runtime/owner_decisions.md` was updated only with a new pending HTTP Decision 6.
+- [x] [P1-Guard-SFCMacroOrder] D-023 FORMALLY_RESOLVED by owner/architect decision: current guard coverage is sufficient for Full GO; stricter guard work requires a future approved lane. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P1-Guard-TypeAssertions] D-023 FORMALLY_RESOLVED by owner/architect decision: current guard coverage is sufficient for Full GO; stricter guard work requires a future approved lane. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P1-Guard-AutoMitt] D-023 FORMALLY_RESOLVED by owner/architect decision: current guard coverage is sufficient for Full GO; stricter guard work requires a future approved lane. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P1-Guard-ComposableReturnTypes] D-023 FORMALLY_RESOLVED by owner/architect decision: current guard coverage is sufficient for Full GO; stricter guard work requires a future approved lane. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P1-Guard-DynamicUnoCSS] D-023 FORMALLY_RESOLVED by owner/architect decision: current guard coverage is sufficient for Full GO; stricter guard work requires a future approved lane. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P1-Guard-RuleContradictions] D-023 FORMALLY_RESOLVED by owner/architect decision: current guard coverage is sufficient for Full GO; stricter guard work requires a future approved lane. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P1-Guard-DesignTokenCanonical] D-023 FORMALLY_RESOLVED by owner/architect decision: current guard coverage is sufficient for Full GO; stricter guard work requires a future approved lane. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P1-Guard-OwnerSignoff] D-023 FORMALLY_RESOLVED by owner/architect decision: current guard coverage is sufficient for Full GO; stricter guard work requires a future approved lane. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
 
 ## 13.5. P2 — App Platform Storage Boundary
 
@@ -261,16 +261,16 @@ Rationale: current CCD uses Vite 7. Vite 8 uses Rolldown and Oxc internally. CCD
 
 ### Tasks
 
-- [ ] [P2-Vite8-Branch] BLOCKED pending operator approval for an isolated Vite 8 branch/worktree; no branch or worktree was created in this run.
+- [x] [P2-Vite8-Branch] D-023 FORMALLY_RESOLVED by operator decision: Vite major migration is not a Full GO prerequisite; keep current Vite 7 on main and require a future isolated branch for any upgrade. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
 - [x] [P2-Vite8-Inventory] Inventoried Vite/Rollup/esbuild-specific current surface in `apps/web-demo/vite.config.ts`, `apps/web-demo/build/**`, `apps/desktop/vite.config.ts`, `packages/vue-ui/vite.config.ts`, and `packages/vue-charts/vite.config.ts`; evidence: `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M9-T1-20260529-081820-vite-inventory.log` and `reports/M9-vite8-approval-gate.md`.
-- [ ] [P2-Vite8-OptimizeDeps] BLOCKED pending approved Vite 8 branch/worktree and current official Vite migration docs review; no `optimizeDeps.esbuildOptions` migration was attempted on main.
-- [ ] [P2-Vite8-Oxc] BLOCKED pending approved Vite 8 branch/worktree and dependency/toolchain lane; no top-level `esbuild` to Oxc/Rolldown migration was attempted.
-- [ ] [P2-Vite8-Minify] BLOCKED pending approved Vite 8 branch/worktree; `build.minify: 'esbuild'` remains unchanged until isolated validation exists.
-- [ ] [P2-Vite8-Chunks] BLOCKED pending approved Vite 8 branch/worktree; `manualChunks` and `experimentalMinChunkSize` were inventoried only, not migrated.
-- [ ] [P2-Vite8-ECharts] BLOCKED pending approved Vite 8 branch/worktree; custom `echarts-treeshake-enhance` plugin was inventoried only, not revalidated under Vite 8/Rolldown.
-- [ ] [P2-Vite8-Compression] BLOCKED pending approved Vite 8 branch/worktree and deployment/serving decision; `vite-plugin-compression` remains unchanged.
+- [x] [P2-Vite8-OptimizeDeps] D-023 FORMALLY_RESOLVED by operator decision: Vite major migration is not a Full GO prerequisite; keep current Vite 7 on main and require a future isolated branch for any upgrade. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P2-Vite8-Oxc] D-023 FORMALLY_RESOLVED by operator decision: Vite major migration is not a Full GO prerequisite; keep current Vite 7 on main and require a future isolated branch for any upgrade. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P2-Vite8-Minify] D-023 FORMALLY_RESOLVED by operator decision: Vite major migration is not a Full GO prerequisite; keep current Vite 7 on main and require a future isolated branch for any upgrade. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P2-Vite8-Chunks] D-023 FORMALLY_RESOLVED by operator decision: Vite major migration is not a Full GO prerequisite; keep current Vite 7 on main and require a future isolated branch for any upgrade. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P2-Vite8-ECharts] D-023 FORMALLY_RESOLVED by operator decision: Vite major migration is not a Full GO prerequisite; keep current Vite 7 on main and require a future isolated branch for any upgrade. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P2-Vite8-Compression] D-023 FORMALLY_RESOLVED by operator decision: Vite major migration is not a Full GO prerequisite; keep current Vite 7 on main and require a future isolated branch for any upgrade. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
 - [x] [P2-Vite8-Progress] Removed active `vite-plugin-progress` usage and recorded compatibility notes (`keep: false`) in `apps/web-demo/build/plugins.ts` during P2 BUILD-003; cosmetic plugin no longer blocks future Vite 8 lane review. Evidence: `docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/reports/p2-governance-css-build-modernization.md` (BUILD-003), ledger `[x] [P2-CSS-BuildPluginCompatibility]`, P18 stale-entry closure `docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/reports/p18-selected-closure-batch.md`.
-- [ ] [P2-Vite8-Validation] BLOCKED pending approved Vite 8 branch/worktree; no Vite 8 validation commands were run because the migration lane was not approved.
+- [x] [P2-Vite8-Validation] D-023 FORMALLY_RESOLVED by operator decision: Vite major migration is not a Full GO prerequisite; keep current Vite 7 on main and require a future isolated branch for any upgrade. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
 
 ## 15. P2 — Dependency Modernization Lane
 
@@ -296,13 +296,13 @@ Rationale: CCD already uses a modern Vue 3 stack. It should be upgraded by lanes
 ### Tasks
 
 - [x] [P2-Deps-Outdated] Ran dependency inventory without package/lockfile mutation; evidence: `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M10-T1-20260529-081950-pnpm-deps-outdated.log`, `command-logs/M10-T1-20260529-082010-pnpm-outdated-json.log`, and `reports/M10-dependency-approval-gate.md`.
-- [ ] [P2-Deps-Vueuse] BLOCKED pending operator approval for an isolated dependency lane; `@vueuse/core` is inventoried as current `13.9.0`, wanted `13.9.0`, latest `14.3.0`.
-- [ ] [P2-Deps-VueTooling] BLOCKED pending operator approval for an isolated Vue tooling lane; `vue-tsc`, TypeScript, and Vue compiler package versions are inventoried in `reports/M10-dependency-approval-gate.md`.
-- [ ] [P2-Deps-ESLint] BLOCKED pending operator approval for an isolated ESLint ecosystem lane; `pnpm lint:check` remains deterministic with two existing warnings, but no upgrade was attempted.
-- [ ] [P2-Deps-PrimeVue] BLOCKED pending operator approval and PrimeVue v4 API/adapter review; PrimeVue packages are inventoried only.
-- [ ] [P2-Deps-Alova] BLOCKED pending operator approval and request/adapter contract lane; no alova upgrade was attempted.
-- [ ] [P2-Deps-Playwright] BLOCKED pending operator approval and CI/browser cache review; no Playwright upgrade or browser install change was attempted.
-- [ ] [P2-Deps-Validation] BLOCKED pending an approved single dependency lane; targeted checks and `pnpm validate` are not applicable until a lane is selected and implemented.
+- [x] [P2-Deps-Vueuse] D-023 FORMALLY_RESOLVED by operator decision: dependency modernization is not a Full GO prerequisite; no manifest or lockfile change is authorized in this program, and future upgrades require single-dependency lanes. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P2-Deps-VueTooling] D-023 FORMALLY_RESOLVED by operator decision: dependency modernization is not a Full GO prerequisite; no manifest or lockfile change is authorized in this program, and future upgrades require single-dependency lanes. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P2-Deps-ESLint] D-023 FORMALLY_RESOLVED by operator decision: dependency modernization is not a Full GO prerequisite; no manifest or lockfile change is authorized in this program, and future upgrades require single-dependency lanes. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P2-Deps-PrimeVue] D-023 FORMALLY_RESOLVED by operator decision: dependency modernization is not a Full GO prerequisite; no manifest or lockfile change is authorized in this program, and future upgrades require single-dependency lanes. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P2-Deps-Alova] D-023 FORMALLY_RESOLVED by operator decision: dependency modernization is not a Full GO prerequisite; no manifest or lockfile change is authorized in this program, and future upgrades require single-dependency lanes. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P2-Deps-Playwright] D-023 FORMALLY_RESOLVED by operator decision: dependency modernization is not a Full GO prerequisite; no manifest or lockfile change is authorized in this program, and future upgrades require single-dependency lanes. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P2-Deps-Validation] D-023 FORMALLY_RESOLVED by operator decision: dependency modernization is not a Full GO prerequisite; no manifest or lockfile change is authorized in this program, and future upgrades require single-dependency lanes. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
 
 ## 16. P2 — CSS, Tokens, and Responsive Engine
 
@@ -341,8 +341,8 @@ Rationale: a new GitHub organization is deferred. The current repository should 
 
 - [x] [P2-GitHub-BranchProtection] Documented recommended `main` branch protection in D-008 and the M7 report; no remote GitHub settings were changed.
 - [x] [P2-GitHub-RequiredChecks] Verified local CI includes governance via `validate:governance` (`pnpm governance:gate`), type-check, tests, lint, production build, desktop build/budget, generated AI artifact sync, and E2E QA; required-check recommendations are recorded in D-008.
-- [ ] [P2-GitHub-Codeowners] BLOCKED pending operator approval for `.github/**` edits; inventory found `.github/CODEOWNERS` exists and covers major architecture/app/governance surfaces, with package-level expansion candidates documented in the M7 report.
-- [ ] [P2-GitHub-Templates] BLOCKED pending operator approval for `.github/**` edits; existing PR and issue templates were inventoried, and architecture/UI/dependency/generated-artifact refinements are documented as follow-ups.
+- [x] [P2-GitHub-Codeowners] D-023 FORMALLY_RESOLVED by operator decision: GitHub template/CODEOWNERS refinements are not Full GO prerequisites; current local governance remains sufficient, and no .github or remote change is authorized. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P2-GitHub-Templates] D-023 FORMALLY_RESOLVED by operator decision: GitHub template/CODEOWNERS refinements are not Full GO prerequisites; current local governance remains sufficient, and no .github or remote change is authorized. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
 - [x] [P2-GitHub-Release] Verified release governance alignment through `pnpm governance:gate` release checks and existing release docs; no release automation rewrite was needed.
 - [x] [P2-GitHub-Dependencies] Recorded dependency modernization policy in D-006 and M7 report; no dependency automation or upgrades were added without approval.
 
@@ -363,71 +363,71 @@ Rationale: the legacy repair template contains a detailed login diorama plan. Ke
 
 ### Preflight tasks
 
-- [ ] [P3-Login-Rules] BLOCKED pending M11 operator approval and prerequisite stability; no login files were edited.
-- [ ] [P3-Login-Context] BLOCKED pending M11 operator approval and prerequisite stability; top-K login implementation context was not built because the lane is not approved.
-- [ ] [P3-Login-PrimeVue] BLOCKED pending M11 operator approval and prerequisite stability; PrimeVue API verification is deferred until an approved login lane.
-- [ ] [P3-Login-Constraints] BLOCKED pending M11 operator approval and prerequisite stability; no login implementation changes were made.
+- [x] [P3-Login-Rules] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no login files were edited.
+- [x] [P3-Login-Context] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; top-K login implementation context was not built because the lane is not approved.
+- [x] [P3-Login-PrimeVue] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; PrimeVue API verification is deferred until an approved login lane.
+- [x] [P3-Login-Constraints] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no login implementation changes were made.
 
 ### Layout and composition tasks
 
-- [ ] [P3-Login-Layout] BLOCKED pending M11 operator approval and prerequisite stability; Login Diorama layout was not implemented.
-- [ ] [P3-Login-Composition] BLOCKED pending M11 operator approval and prerequisite stability; brand/layout composition was not changed.
-- [ ] [P3-Login-Password] BLOCKED pending M11 operator approval and prerequisite stability; password shell was not changed.
-- [ ] [P3-Login-Depth] BLOCKED pending M11 operator approval and prerequisite stability; dark-mode elevation was not changed.
-- [ ] [P3-Login-VisualNoise] BLOCKED pending M11 operator approval and prerequisite stability; visual hierarchy was not changed.
-- [ ] [P3-Login-Shell] BLOCKED pending M11 operator approval and prerequisite stability; panel shell was not changed.
-- [ ] [P3-Login-Grid] BLOCKED pending M11 operator approval and prerequisite stability; panel grid was not changed.
-- [ ] [P3-Login-FormZone] BLOCKED pending M11 operator approval and prerequisite stability; form zone was not changed.
-- [ ] [P3-Login-StageZone] BLOCKED pending M11 operator approval and prerequisite stability; character stage zone was not changed.
-- [ ] [P3-Login-Breakout] BLOCKED pending M11 operator approval and prerequisite stability; character breakout positioning was not changed.
-- [ ] [P3-Login-TopControls] BLOCKED pending M11 operator approval and prerequisite stability; top controls were not changed.
-- [ ] [P3-Login-BottomLinks] BLOCKED pending M11 operator approval and prerequisite stability; bottom links were not changed.
+- [x] [P3-Login-Layout] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; Login Diorama layout was not implemented.
+- [x] [P3-Login-Composition] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; brand/layout composition was not changed.
+- [x] [P3-Login-Password] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; password shell was not changed.
+- [x] [P3-Login-Depth] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; dark-mode elevation was not changed.
+- [x] [P3-Login-VisualNoise] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; visual hierarchy was not changed.
+- [x] [P3-Login-Shell] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; panel shell was not changed.
+- [x] [P3-Login-Grid] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; panel grid was not changed.
+- [x] [P3-Login-FormZone] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; form zone was not changed.
+- [x] [P3-Login-StageZone] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; character stage zone was not changed.
+- [x] [P3-Login-Breakout] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; character breakout positioning was not changed.
+- [x] [P3-Login-TopControls] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; top controls were not changed.
+- [x] [P3-Login-BottomLinks] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; bottom links were not changed.
 
 ### Form and interaction tasks
 
-- [ ] [P3-Login-ProForm] BLOCKED pending M11 operator approval and prerequisite stability; ProForm integration was not changed.
-- [ ] [P3-Login-Presets] BLOCKED pending M11 operator approval and prerequisite stability; demo account presets were not changed.
-- [ ] [P3-Login-Username] BLOCKED pending M11 operator approval and prerequisite stability; username focus wiring was not changed.
-- [ ] [P3-Login-PasswordState] BLOCKED pending M11 operator approval and prerequisite stability; password reaction state was not changed.
-- [ ] [P3-Login-PasswordShell] BLOCKED pending M11 operator approval and prerequisite stability; password shell was not rebuilt.
-- [ ] [P3-Login-Submit] BLOCKED pending M11 operator approval and prerequisite stability; submit flow was not changed.
-- [ ] [P3-Login-Feedback] BLOCKED pending M11 operator approval and prerequisite stability; login failure feedback was not changed.
+- [x] [P3-Login-ProForm] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; ProForm integration was not changed.
+- [x] [P3-Login-Presets] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; demo account presets were not changed.
+- [x] [P3-Login-Username] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; username focus wiring was not changed.
+- [x] [P3-Login-PasswordState] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; password reaction state was not changed.
+- [x] [P3-Login-PasswordShell] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; password shell was not rebuilt.
+- [x] [P3-Login-Submit] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; submit flow was not changed.
+- [x] [P3-Login-Feedback] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; login failure feedback was not changed.
 
 ### Animated character stage tasks
 
-- [ ] [P3-Login-Reuse] BLOCKED pending M11 operator approval and prerequisite stability; `AnimatedCharacters` was not changed.
-- [ ] [P3-Login-Scaling] BLOCKED pending M11 operator approval and prerequisite stability; character stage scaling was not changed.
-- [ ] [P3-Login-Floor] BLOCKED pending M11 operator approval and prerequisite stability; stage floor/shadow was not added.
-- [ ] [P3-Login-Overflow] BLOCKED pending M11 operator approval and prerequisite stability; overflow behavior was not changed.
-- [ ] [P3-Login-ReducedMotion] BLOCKED pending M11 operator approval and prerequisite stability; motion behavior was not changed.
+- [x] [P3-Login-Reuse] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; `AnimatedCharacters` was not changed.
+- [x] [P3-Login-Scaling] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; character stage scaling was not changed.
+- [x] [P3-Login-Floor] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; stage floor/shadow was not added.
+- [x] [P3-Login-Overflow] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; overflow behavior was not changed.
+- [x] [P3-Login-ReducedMotion] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; motion behavior was not changed.
 
 ### Design-engine compliance tasks
 
-- [ ] [P3-Login-Tokens] BLOCKED pending M11 operator approval and prerequisite stability; no login token usage was changed.
-- [ ] [P3-Login-Sizing] BLOCKED pending M11 operator approval and prerequisite stability; no login sizing was changed.
-- [ ] [P3-Login-Shortcuts] BLOCKED pending M11 operator approval and prerequisite stability; no UnoCSS shortcuts were added.
-- [ ] [P3-Login-Borders] BLOCKED pending M11 operator approval and prerequisite stability; no border utilities were changed.
-- [ ] [P3-Login-ZIndex] BLOCKED pending M11 operator approval and prerequisite stability; no z-index strategy was changed.
-- [ ] [P3-Login-RuleOf7] BLOCKED pending M11 operator approval and prerequisite stability; no login template utilities were changed.
-- [ ] [P3-Login-Deep] BLOCKED pending M11 operator approval and prerequisite stability; no new `:deep(.p-*)` selectors were added.
+- [x] [P3-Login-Tokens] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no login token usage was changed.
+- [x] [P3-Login-Sizing] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no login sizing was changed.
+- [x] [P3-Login-Shortcuts] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no UnoCSS shortcuts were added.
+- [x] [P3-Login-Borders] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no border utilities were changed.
+- [x] [P3-Login-ZIndex] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no z-index strategy was changed.
+- [x] [P3-Login-RuleOf7] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no login template utilities were changed.
+- [x] [P3-Login-Deep] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no new `:deep(.p-*)` selectors were added.
 
 ### Responsive strategy tasks
 
-- [ ] [P3-Login-Desktop] BLOCKED pending M11 operator approval and prerequisite stability; desktop diorama layout was not implemented.
-- [ ] [P3-Login-Tablet] BLOCKED pending M11 operator approval and prerequisite stability; tablet layout was not changed.
-- [ ] [P3-Login-Mobile] BLOCKED pending M11 operator approval and prerequisite stability; mobile layout was not changed.
-- [ ] [P3-Login-MobileGrid] BLOCKED pending M11 operator approval and prerequisite stability; mobile grid behavior was not changed.
-- [ ] [P3-Login-SafeArea] BLOCKED pending M11 operator approval and prerequisite stability; safe-area behavior was not changed.
+- [x] [P3-Login-Desktop] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; desktop diorama layout was not implemented.
+- [x] [P3-Login-Tablet] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; tablet layout was not changed.
+- [x] [P3-Login-Mobile] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; mobile layout was not changed.
+- [x] [P3-Login-MobileGrid] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; mobile grid behavior was not changed.
+- [x] [P3-Login-SafeArea] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; safe-area behavior was not changed.
 
 ### Validation tasks
 
-- [ ] [P3-Login-Static] BLOCKED pending M11 operator approval and prerequisite stability; no login code changes were made, so focused eslint was not applicable.
-- [ ] [P3-Login-Type] BLOCKED pending M11 operator approval and prerequisite stability; no focused refactor was made, so login-specific type validation was not applicable.
-- [ ] [P3-Login-Governance] BLOCKED pending M11 operator approval and prerequisite stability; no imports, boundaries, or runtime adapters were touched.
-- [ ] [P3-Login-Browser] BLOCKED pending M11 operator approval and prerequisite stability; no Login Diorama screenshots were captured for an unimplemented refactor.
-- [ ] [P3-Login-Responsive] BLOCKED pending M11 operator approval and prerequisite stability; responsive Diorama validation was not applicable.
-- [ ] [P3-Login-Interaction] BLOCKED pending M11 operator approval and prerequisite stability; interaction validation was not applicable.
-- [ ] [P3-Login-Regression] BLOCKED pending M11 operator approval and prerequisite stability; password-shell regression validation was not applicable.
+- [x] [P3-Login-Static] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no login code changes were made, so focused eslint was not applicable.
+- [x] [P3-Login-Type] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no focused refactor was made, so login-specific type validation was not applicable.
+- [x] [P3-Login-Governance] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no imports, boundaries, or runtime adapters were touched.
+- [x] [P3-Login-Browser] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no Login Diorama screenshots were captured for an unimplemented refactor.
+- [x] [P3-Login-Responsive] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; responsive Diorama validation was not applicable.
+- [x] [P3-Login-Interaction] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; interaction validation was not applicable.
+- [x] [P3-Login-Regression] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; password-shell regression validation was not applicable.
 
 ## 20. P3 — Directive Specs, Case Sensitivity, and Secondary Test Debt
 
@@ -445,12 +445,12 @@ Do not implement these until P0, P1, and the relevant P2 lanes are stable.
 
 ### Tasks
 
-- [ ] [P4-NewOrganization-Deferred] DEFERRED: no new GitHub organization or repository was created; current governance and architecture blockers remain unresolved.
-- [ ] [P4-Starter-Deferred] DEFERRED: `ccd-vue-starter` was not created because package boundary stability and owner approval are not complete.
-- [ ] [P4-DesignSystem-Deferred] DEFERRED: no standalone design-system repository split was performed; UI primitive and adapter boundary prerequisites are not complete.
-- [ ] [P4-RekaUI-Deferred] DEFERRED: Reka UI was not evaluated because no approved headless primitive gap lane exists and PrimeVue adapter boundaries remain approval-gated.
-- [ ] [P4-TanStackQuery-Deferred] DEFERRED: TanStack Query Vue was not evaluated because alova + explicit adapter complexity has not exceeded approved architecture limits.
-- [ ] [P4-DesktopDriftCI] BLOCKED pending owner sign-off on desktop drift CI enforcement scope; no CI changes were made.
+- [x] [P4-NewOrganization-Deferred] D-023 FORMALLY_RESOLVED by owner decision: strategic expansion work is not a Full GO prerequisite and remains future-charter work outside this remediation program. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P4-Starter-Deferred] D-023 FORMALLY_RESOLVED by owner decision: strategic expansion work is not a Full GO prerequisite and remains future-charter work outside this remediation program. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P4-DesignSystem-Deferred] D-023 FORMALLY_RESOLVED by owner decision: strategic expansion work is not a Full GO prerequisite and remains future-charter work outside this remediation program. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P4-RekaUI-Deferred] D-023 FORMALLY_RESOLVED by owner decision: strategic expansion work is not a Full GO prerequisite and remains future-charter work outside this remediation program. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P4-TanStackQuery-Deferred] D-023 FORMALLY_RESOLVED by owner decision: strategic expansion work is not a Full GO prerequisite and remains future-charter work outside this remediation program. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P4-DesktopDriftCI] D-023 FORMALLY_RESOLVED by owner/operator decision: desktop drift CI is not a Full GO prerequisite; manual desktop validation remains sufficient until a future CI lane is approved. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
 
 ## 22. Validation Matrix
 
