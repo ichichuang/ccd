@@ -1,0 +1,21 @@
+ M docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md
+ M docs/ai-plan/FINAL_GO_NO_GO.md
+ M docs/ai-plan/STATUS.md
+?? docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/command-logs/01-baseline.txt
+?? docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/command-logs/02-pnpm-ai-doctor-open-pre.txt
+?? docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/command-logs/03-git-diff-check.txt
+?? docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/command-logs/04-pnpm-docs-commands.txt
+?? docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/command-logs/05-pnpm-ai-doctor-open-post.txt
+?? docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/command-logs/06-pnpm-ai-doctor.txt
+?? docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/command-logs/07-pnpm-validate-governance.txt
+?? docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/command-logs/08-pnpm-type-check.txt
+?? docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/command-logs/09-pnpm-test-run.txt
+?? docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/command-logs/10-pnpm-build-web-demo.txt
+?? docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/command-logs/11-prettier-auto-imports.txt
+?? docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/command-logs/12-auto-imports-diff.txt
+?? docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/command-logs/13-pnpm-build-desktop.txt
+?? docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/command-logs/14-git-status-post.txt
+?? docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/reports/g02-task-closure-table.md
+?? docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/reports/ledger-before-after.md
+?? docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/reports/p18-selected-closure-batch.md
+?? docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/reports/summary.md

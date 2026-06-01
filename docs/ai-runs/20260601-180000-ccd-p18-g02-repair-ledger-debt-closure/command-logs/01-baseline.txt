@@ -1,0 +1,29 @@
+=== git fetch origin main ===
+From github.com:ichichuang/ccd
+ * branch              main       -> FETCH_HEAD
+=== branch ===
+main
+=== HEAD ===
+f1880c1e
+=== origin/main ===
+cc813fe3
+=== status ===
+?? docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/command-logs/01-baseline.txt
+=== log ===
+f1880c1e refactor(primevue): 收敛 C-06 残余直接引用白名单
+cc813fe3 docs(architecture): 补充 P16c 提交后验证日志
+8ffce7c0 docs(architecture): 修正 P16a 远程已推送后的状态面措辞
+d53aa9c3 docs(architecture): 修正 P16 条件通过状态与残余债务表述
+f86b3bb0 docs(architecture): P16 最终对账 CONDITIONAL_GO
+12f71e0a docs(architecture): P15 修复台账 owner 接受延期债务
+ebb89829 docs(architecture): P14 E4 生成类型与 resolver 边界审查
+15b785b8 refactor(primevue): P14 E2 菜单类型门面与 dashboard 按钮迁移
+91cfc956 refactor(primevue): P14 E1 适配器层 tooltip 与 toast 图标门面
+94c99ebe docs(architecture): P13 批准 Option E 分阶段 PrimeVue 白名单缩减
+f0fc41ca docs(architecture): 稳定远程状态面对账表述避免自漂移
+a0c10c1c docs(architecture): 对齐 P10g 推送后的远程状态面
+=== cursor ===
+repo_root_cursor_absent
+=== duplicate ===
+root_duplicate_absent
+=== diff-check ===

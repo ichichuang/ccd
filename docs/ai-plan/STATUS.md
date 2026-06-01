@@ -3,7 +3,8 @@
 ## Current Execution State
 
 - Current program: `CCD post-M16 blocker-resolution program`
-- Current milestone: P17 `P17_C06_RESIDUAL_ALLOWLIST_REDUCED` — one type-only PrimeVue exact allowlist row removed (8 → 7) via adapter `PrimeVuePopoverInstance` facade; CONDITIONAL_GO unchanged; full GO still unauthorized.
+- Current milestone: P18 `P18_G02_LEDGER_REDUCED` — closed 2 stale/evidence-backed repair-ledger rows (80 → 78); CONDITIONAL_GO unchanged; full GO still unauthorized.
+- Prior milestone: P17 `P17_C06_RESIDUAL_ALLOWLIST_REDUCED` — one type-only PrimeVue exact allowlist row removed (8 → 7) via adapter `PrimeVuePopoverInstance` facade; CONDITIONAL_GO unchanged; full GO still unauthorized.
 - Prior milestone: P16a `P16A_CONDITIONAL_GO_CONSISTENCY_REPAIRED` — status-surface consistency repair; owner-accepted residual debt formalized.
 - Prior milestone: P16 `P16_FINAL_CONDITIONAL_GO` — full validation matrix passed (2026-06-01).
 - Current accepted baseline: `M14_STATUS_LEDGER_RECONCILED_NO_GO`.
@@ -11,6 +12,7 @@
 - Baseline branch: `main`.
 - Pre-P10 baseline commit: `cc255d1a`.
 - Last remote-state reconciliation: P11 reconciled P10g push state; P11 itself was pushed after that reconciliation — use `git log` / remote history as source of truth for current HEAD.
+- P18 evidence directory: `docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/`.
 - P17 evidence directory: `docs/ai-runs/20260601-125343-ccd-p17-c06-primevue-residual-allowlist-closure/`.
 - P16a evidence directory: `docs/ai-runs/20260601-161000-ccd-p16a-conditional-go-consistency-repair/`.
 - P16 evidence directory: `docs/ai-runs/20260601-160000-ccd-p16-final-go-no-go-reconciliation/`.
@@ -28,6 +30,7 @@
 
 ## Top-Level Status
 
+- P18 reconciliation: `P18_G02_LEDGER_REDUCED` (repair-ledger 80 → 78; 2 evidence-backed stale-row closures).
 - P17 reconciliation: `P17_C06_RESIDUAL_ALLOWLIST_REDUCED` (PrimeVue exact allowlist 8 → 7; type-only adapter facade; showcase untouched).
 - P16a reconciliation: `P16A_CONDITIONAL_GO_CONSISTENCY_REPAIRED`.
 - P16 reconciliation: `P16_FINAL_CONDITIONAL_GO`.
@@ -38,7 +41,7 @@
 - P11 reconciliation: `P11_REMOTE_STATE_RECONCILED_NO_GO`.
 - Overall final status: **`CONDITIONAL_GO`** (owner-accepted residual debt).
 - Full GO is not authorized.
-- `pnpm ai:doctor --open` still reports **80 open tasks** (P15 owner-accepted deferred debt; ledger unchanged).
+- `pnpm ai:doctor --open` reports **78 open tasks** (P18 closed 2 evidence-backed rows; G-02 remains owner-accepted deferred debt).
 - Remote state: last reconciled in P11 to P10g push state; use git history for current HEAD; P12 removed self-staling remote-commit claims from status surfaces.
 
 ## Post-M16 Program Results (P0–P16a)
@@ -69,27 +72,28 @@
 | P16   | `P16_FINAL_CONDITIONAL_GO`                 | full validation green; G-03 DONE; CONDITIONAL_GO declared                                                             |
 | P16a  | `P16A_CONDITIONAL_GO_CONSISTENCY_REPAIRED` | ledger §0 + implementation log + DECISIONS consistency; no runtime change                                             |
 | P17   | `P17_C06_RESIDUAL_ALLOWLIST_REDUCED`       | PrimeVue exact allowlist 8→7 via adapter `PrimeVuePopoverInstance` type facade; showcase untouched; full GO unchanged |
+| P18   | `P18_G02_LEDGER_REDUCED`                   | G-02 repair-ledger 80→78; closed P1-HttpContract-Contracts + P2-Vite8-Progress stale rows                             |
 
 ## Issue Status After P16a
 
-| Issue ID | Status                           | Notes                                                 |
-| -------- | -------------------------------- | ----------------------------------------------------- |
-| `B-07`   | `DONE`                           | App-owned crypto terminal boundary (D-016 A)          |
-| `B-08`   | `DONE`                           | App-owned compression terminal boundary (D-019 A)     |
-| `D-016`  | `APPROVED`                       | Option A, 2026-06-01                                  |
-| `D-017`  | `APPROVED`                       | Options A+D+E, 2026-06-01                             |
-| `D-019`  | `APPROVED`                       | B-08 compression Option A (new)                       |
-| `C-06`   | `OPEN` (owner-accepted residual) | 7 exact allowlist + showcase; P14 E1/E2 + P17 reduced |
-| `G-02`   | `ACCEPTED_DEFERRED_DEBT`         | 80 tasks owner-accepted deferred debt (P15)           |
-| `G-03`   | `DONE`                           | Completion gate satisfied (P16)                       |
-| `M12`    | `PARTIAL`                        | E1/E2 + P17 done; E4 reviewed; E3 showcase deferred   |
+| Issue ID | Status                           | Notes                                                                           |
+| -------- | -------------------------------- | ------------------------------------------------------------------------------- |
+| `B-07`   | `DONE`                           | App-owned crypto terminal boundary (D-016 A)                                    |
+| `B-08`   | `DONE`                           | App-owned compression terminal boundary (D-019 A)                               |
+| `D-016`  | `APPROVED`                       | Option A, 2026-06-01                                                            |
+| `D-017`  | `APPROVED`                       | Options A+D+E, 2026-06-01                                                       |
+| `D-019`  | `APPROVED`                       | B-08 compression Option A (new)                                                 |
+| `C-06`   | `OPEN` (owner-accepted residual) | 7 exact allowlist + showcase; P14 E1/E2 + P17 reduced                           |
+| `G-02`   | `ACCEPTED_DEFERRED_DEBT`         | 78 tasks owner-accepted deferred debt (P15 acceptance; P18 closed 2 stale rows) |
+| `G-03`   | `DONE`                           | Completion gate satisfied (P16)                                                 |
+| `M12`    | `PARTIAL`                        | E1/E2 + P17 done; E4 reviewed; E3 showcase deferred                             |
 
 ## Unresolved Blockers And Decisions
 
 | ID          | Status                           | Required next action                                                                                                       |
 | ----------- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | `C-06`      | `OPEN` (owner-accepted residual) | 7 exact rows + showcase remain (P17 removed 1); further reduction requires separate owner authorization beyond E3 showcase |
-| `G-02`      | `ACCEPTED_DEFERRED_DEBT`         | Owner accepted 80 deferred ledger tasks (P15); code closure blocked by hard rules                                          |
+| `G-02`      | `ACCEPTED_DEFERRED_DEBT`         | Owner accepted 78 deferred ledger tasks (P15 acceptance; P18 closed 2 evidence-backed rows)                                |
 | `G-03`      | `DONE`                           | P16 completion gate satisfied with owner-accepted residual debt                                                            |
 | `M12`       | `PARTIAL`                        | E1/E2/E4 + P17 type-facade slice complete; E3 showcase long-lived per D-017 Option D                                       |
 | remote push | `DONE`                           | P10g manual push to `origin/main` completed (2026-06-01); verify HEAD via git history                                      |

@@ -4,6 +4,7 @@
 
 - Final decision: `CONDITIONAL_GO`
 - Current program: `CCD post-M16 blocker-resolution program` (P0–P16a)
+- P18 reconciliation status: `P18_G02_LEDGER_REDUCED` — repair-ledger open count 80 → 78 via 2 evidence-backed stale-row closures; CONDITIONAL_GO unchanged; full GO still unauthorized.
 - P17 reconciliation status: `P17_C06_RESIDUAL_ALLOWLIST_REDUCED` — one type-only exact allowlist row removed (8 → 7); CONDITIONAL_GO unchanged; full GO still unauthorized.
 - P16a reconciliation status: `P16A_CONDITIONAL_GO_CONSISTENCY_REPAIRED`
 - P16 reconciliation status: `P16_FINAL_CONDITIONAL_GO`
@@ -13,10 +14,13 @@
 - P10g push status: completed manually to `origin/main` (2026-06-01)
 - P16 evidence directory: `docs/ai-runs/20260601-160000-ccd-p16-final-go-no-go-reconciliation/`
 - P16a evidence directory: `docs/ai-runs/20260601-161000-ccd-p16a-conditional-go-consistency-repair/`
+- P18 evidence directory: `docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/`
 - P17 evidence directory: `docs/ai-runs/20260601-125343-ccd-p17-c06-primevue-residual-allowlist-closure/`
 - Full GO authorized: no
 
 P16a (2026-06-01) repaired internal contradictions between top-level `CONDITIONAL_GO` and ledger body entries that still stated `NO_GO` after P10f. Formalized owner-accepted residual debt for C-06 (8 exact allowlist + showcase) and G-02 (80 deferred ledger tasks). `CONDITIONAL_GO` is based on owner-accepted residual debt, not full resolution. Full GO remains unauthorized.
+
+P18 (2026-06-01) closed two evidence-backed stale repair-ledger rows without runtime source changes: `P1-HttpContract-Contracts` (type-only HTTP contracts already implemented in commit `892dad30`) and `P2-Vite8-Progress` (active `vite-plugin-progress` usage already removed in P2 BUILD-003). Open count dropped **80 → 78**. G-02 remains `ACCEPTED_DEFERRED_DEBT`; top-level `CONDITIONAL_GO` unchanged; full GO remains unauthorized.
 
 P17 (2026-06-01) executed one narrow D-017 Option E residual-reduction slice: a type-only `primevue/popover` import in `apps/web-demo/src/views/example/system-configuration/layout.vue` was moved behind the adapter-owned `PrimeVuePopoverInstance` type facade, allowing removal of one exact allowlist row. The PrimeVue exact allowlist dropped from **8 → 7** rows. Showcase exceptions (D-017 Option D) were untouched. C-06 remains `OPEN` owner-accepted residual debt (7 exact rows + showcase), M12 remains `PARTIAL`, and full GO remains unauthorized. Full validation matrix passed (see P17 evidence directory).
 
@@ -31,10 +35,10 @@ P1–P3 resolved owner decisions for safeStorage crypto (D-016 Option A), compre
 | `C-06`                  | `OPEN` (owner-accepted residual) | 7 exact allowlist + showcase remain (P17 removed 1); P14 E1/E2 + P17 reduced; E3 deferred per D-017 Option D. |
 | `D-016`                 | `APPROVED`                       | Option A recorded 2026-06-01.                                                                                 |
 | `D-017`                 | `APPROVED`                       | Options A+D+E recorded 2026-06-01; M12 E1/E2/E4 + P17 slice complete; E3 deferred.                            |
-| `G-02`                  | `ACCEPTED_DEFERRED_DEBT`         | 80 tasks owner-accepted as deferred debt (P15); ledger open count unchanged.                                  |
+| `G-02`                  | `ACCEPTED_DEFERRED_DEBT`         | 78 tasks owner-accepted as deferred debt (P15 acceptance; P18 closed 2 evidence-backed rows).                 |
 | `G-03`                  | `DONE`                           | Completion gate satisfied with owner-accepted residual debt (P16).                                            |
 | `M12`                   | `PARTIAL`                        | E1/E2 + P17 slices done; E4 reviewed; E3 showcase long-lived exception.                                       |
-| `pnpm ai:doctor --open` | 80 open tasks (owner-accepted)   | repair ledger open count unchanged; classified deferred debt.                                                 |
+| `pnpm ai:doctor --open` | 78 open tasks (owner-accepted)   | repair ledger reduced by 2 evidence-backed closures; 78 remain classified deferred debt.                      |
 | `pnpm codex:preflight`  | pass (P16)                       | P10a quarantine resolved inherited failure.                                                                   |
 | remote push (P10g)      | `DONE`                           | Manual push to `origin/main` completed (2026-06-01); verify current HEAD via git history.                     |
 
@@ -80,7 +84,7 @@ Any unresolved blocker remains without owner acceptance, validation fails on req
 
 ## Final Rationale
 
-The final state is **`CONDITIONAL_GO`**. Owner decisions closed B-07/B-08/D-016/D-019 and approved D-017 guard posture plus Option E staged reduction. P10g pushed local commits plus evidence to `origin/main`; P11–P12 reconciled status surfaces. P14 reduced PrimeVue exact allowlist from 13 to 8 rows via adapter/vue-ui facades. P15 owner-accepted 80 deferred ledger tasks. P16 full validation matrix passed including previously inherited codex:preflight failure. P17 reduced the PrimeVue exact allowlist from 8 to 7 rows via one type-only adapter facade (`PrimeVuePopoverInstance`) with full validation green. Residual debt is explicit and owner-accepted: C-06 (7 allowlist + showcase), G-02 (80 open ledger tasks). Full GO remains unauthorized.
+The final state is **`CONDITIONAL_GO`**. Owner decisions closed B-07/B-08/D-016/D-019 and approved D-017 guard posture plus Option E staged reduction. P10g pushed local commits plus evidence to `origin/main`; P11–P12 reconciled status surfaces. P14 reduced PrimeVue exact allowlist from 13 to 8 rows via adapter/vue-ui facades. P15 owner-accepted 80 deferred ledger tasks. P16 full validation matrix passed including previously inherited codex:preflight failure. P17 reduced the PrimeVue exact allowlist from 8 to 7 rows via one type-only adapter facade (`PrimeVuePopoverInstance`) with full validation green. P18 closed 2 evidence-backed stale ledger rows (HTTP contracts + vite-plugin-progress status), reducing open count to 78. Residual debt is explicit and owner-accepted: C-06 (7 allowlist + showcase), G-02 (78 open ledger tasks). Full GO remains unauthorized.
 
 ## Recommended Next Action
 
