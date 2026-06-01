@@ -3,13 +3,13 @@
 ## 0. Machine-Readable Summary
 
 ```yaml
-document_version: 2026-06-01.p21a
+document_version: 2026-06-01.p22
 last_updated: 2026-06-01
 repository: /Users/cc/MyPorject/ccd
 baseline_branch: main
 baseline_commit: cc255d1a
 last_remote_state_reconciliation: P11 reconciled P10g push state; evidence snapshot only — verify current HEAD via git history
-current_lane: P21a API surface generated sync after CcdTag (generated sync only; no source change)
+current_lane: P22 G-02 repair-ledger closure pass 2 (docs-only; P22_NO_SAFE_LEDGER_CLOSURE; no source/checkbox change)
 primevue_exact_allowlist_count: 5
 primevue_exact_allowlist_count_before_p21: 5
 primevue_exact_allowlist_count_before_p21a: 5
@@ -1906,6 +1906,15 @@ M6b owner decision review:
 - implementation result: closed 2 ledger rows — `P1-HttpContract-Contracts` (HTTP-001 contracts already implemented, commit `892dad30`) and `P2-Vite8-Progress` (active `vite-plugin-progress` already removed in P2 BUILD-003). No runtime source, manifest, lockfile, or allowlist changes.
 - issue status result: `G-02` remains `ACCEPTED_DEFERRED_DEBT` with open count **80 → 78**; top-level `CONDITIONAL_GO` unchanged; full GO not authorized.
 - final status: `P18_G02_LEDGER_REDUCED`.
+
+### P22 g02-repair-ledger-closure-pass-2 (2026-06-01)
+
+- evidence: `docs/ai-runs/20260601-171004-ccd-p22-g02-repair-ledger-closure-pass-2/`
+- baseline: HEAD `f7a5f44e` (P21a, local-only and explicitly accepted as local baseline per task), origin/main `9cbdd5cc`.
+- objective: Second evidence-based closure pass over G-02 accepted-deferred tasks after P18 reduced open tasks 80 → 78; close only tasks provable from M1–P21a evidence.
+- implementation result: full 78-task closure table built (`reports/g02-task-closure-table-pass-2.md`). Every open task is externally gated or strategic-deferred with no completion evidence — P1-Guard (owner Decisions 2/3/4/signoff), P2-Vite8 + P2-Deps + P2-GitHub (operator approval, no implementation evidence per closure rule 2), P3-Login ×47 (M11 operator approval, closure rule 3), P4 ×6 (strategic deferred / owner sign-off). The only two evidence-backed stale rows were already closed by P18; P21 already confirmed no safe bootstrap/generated C-06 reduction. Zero safe closures. No `.ai/runtime/repair_list.md` checkbox changed; documentation-only update.
+- issue status result: `G-02` remains `ACCEPTED_DEFERRED_DEBT` with open count **78 → 78** (unchanged); `C-06` `OPEN` (5 exact rows + showcase), `M12` `PARTIAL`, top-level `CONDITIONAL_GO` unchanged; full GO not authorized.
+- final status: `P22_NO_SAFE_LEDGER_CLOSURE`.
 
 ## 12. Validation Matrix
 

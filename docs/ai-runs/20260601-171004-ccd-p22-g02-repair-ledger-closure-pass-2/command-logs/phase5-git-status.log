@@ -1,0 +1,20 @@
+ M docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md
+ M docs/ai-plan/FINAL_GO_NO_GO.md
+ M docs/ai-plan/STATUS.md
+?? docs/ai-runs/20260601-171004-ccd-p22-g02-repair-ledger-closure-pass-2/command-logs/phase1-ai-doctor-open.log
+?? docs/ai-runs/20260601-171004-ccd-p22-g02-repair-ledger-closure-pass-2/command-logs/phase1-baseline.log
+?? docs/ai-runs/20260601-171004-ccd-p22-g02-repair-ledger-closure-pass-2/command-logs/phase5-ai-doctor-open.log
+?? docs/ai-runs/20260601-171004-ccd-p22-g02-repair-ledger-closure-pass-2/command-logs/phase5-ai-doctor.log
+?? docs/ai-runs/20260601-171004-ccd-p22-g02-repair-ledger-closure-pass-2/command-logs/phase5-build-desktop.log
+?? docs/ai-runs/20260601-171004-ccd-p22-g02-repair-ledger-closure-pass-2/command-logs/phase5-build-web-demo.log
+?? docs/ai-runs/20260601-171004-ccd-p22-g02-repair-ledger-closure-pass-2/command-logs/phase5-docs-commands.log
+?? docs/ai-runs/20260601-171004-ccd-p22-g02-repair-ledger-closure-pass-2/command-logs/phase5-git-diff-auto-imports.log
+?? docs/ai-runs/20260601-171004-ccd-p22-g02-repair-ledger-closure-pass-2/command-logs/phase5-git-diff-check.log
+?? docs/ai-runs/20260601-171004-ccd-p22-g02-repair-ledger-closure-pass-2/command-logs/phase5-git-status.log
+?? docs/ai-runs/20260601-171004-ccd-p22-g02-repair-ledger-closure-pass-2/command-logs/phase5-prettier-auto-imports.log
+?? docs/ai-runs/20260601-171004-ccd-p22-g02-repair-ledger-closure-pass-2/command-logs/phase5-test-run.log
+?? docs/ai-runs/20260601-171004-ccd-p22-g02-repair-ledger-closure-pass-2/command-logs/phase5-type-check.log
+?? docs/ai-runs/20260601-171004-ccd-p22-g02-repair-ledger-closure-pass-2/command-logs/phase5-validate-governance.log
+?? docs/ai-runs/20260601-171004-ccd-p22-g02-repair-ledger-closure-pass-2/reports/g02-task-closure-table-pass-2.md
+?? docs/ai-runs/20260601-171004-ccd-p22-g02-repair-ledger-closure-pass-2/reports/ledger-before-after.md
+?? docs/ai-runs/20260601-171004-ccd-p22-g02-repair-ledger-closure-pass-2/reports/p22-selected-closure-batch.md

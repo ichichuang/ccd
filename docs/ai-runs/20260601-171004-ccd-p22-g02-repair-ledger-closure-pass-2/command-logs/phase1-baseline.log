@@ -1,0 +1,58 @@
+# P22 Phase 1 Baseline (2026-06-01 17:10:04 +08:00)
+
+## git fetch origin main
+From github.com:ichichuang/ccd
+ * branch              main       -> FETCH_HEAD
+
+## git branch --show-current
+main
+
+## git rev-parse --short HEAD
+f7a5f44e
+
+## git rev-parse --short origin/main
+9cbdd5cc
+
+## git status --short --untracked-files=all
+(clean — no output)
+
+## git log --oneline -12
+f7a5f44e docs(governance): 同步 CcdTag 公共 API 生成报告
+95e352f5 docs(architecture): 记录 C-06 启动与生成边界残余白名单评估
+9cbdd5cc refactor(primevue): 继续减少 C-06 精确白名单残余
+e0135e10 refactor(primevue): 继续收敛 C-06 残余白名单引用
+517b15b1 docs(governance): 收敛 G-02 修复台账延期债务
+f1880c1e refactor(primevue): 收敛 C-06 残余直接引用白名单
+cc813fe3 docs(architecture): 补充 P16c 提交后验证日志
+8ffce7c0 docs(architecture): 修正 P16a 远程已推送后的状态面措辞
+d53aa9c3 docs(architecture): 修正 P16 条件通过状态与残余债务表述
+f86b3bb0 docs(architecture): P16 最终对账 CONDITIONAL_GO
+12f71e0a docs(architecture): P15 修复台账 owner 接受延期债务
+ebb89829 docs(architecture): P14 E4 生成类型与 resolver 边界审查
+
+## test ! -e .cursor
+repo_root_cursor_absent
+
+## test ! -e CCD_ARCHITECTURE_ISSUE_REPAIR_LOG.md
+root_duplicate_absent
+
+## git diff --check
+diff_check_clean
+
+## pnpm ai:doctor --open
+78 open tasks (full output: phase1-ai-doctor-open.log)
+
+## STOP-condition evaluation
+- branch is main: PASS (not stopped)
+- working tree clean: PASS (not stopped)
+- .cursor exists: ABSENT → PASS (not stopped)
+- root duplicate repair log exists: ABSENT → PASS (not stopped)
+- git diff --check fails: PASS (clean, not stopped)
+- P21/P21a pushed or explicitly accepted as local baseline:
+  HEAD f7a5f44e is 2 commits ahead of origin/main 9cbdd5cc.
+  P21 (95e352f5) and P21a (f7a5f44e) are LOCAL-ONLY, NOT pushed.
+  Task CURRENT ACCEPTED STATE explicitly lists P21/P21a as accepted, and
+  PUSH POLICY = do not push. Therefore P21/P21a are EXPLICITLY ACCEPTED AS
+  LOCAL BASELINE per the STOP-condition exception → PASS (not stopped).
+
+Baseline conclusion: all STOP conditions cleared; proceed to Phase 2.

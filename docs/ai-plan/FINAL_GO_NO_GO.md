@@ -4,6 +4,7 @@
 
 - Final decision: `CONDITIONAL_GO`
 - Current program: `CCD post-M16 blocker-resolution program` (P0–P16a)
+- P22 reconciliation status: `P22_NO_SAFE_LEDGER_CLOSURE` — second evidence-based G-02 closure pass after P18 (80 → 78); built full 78-task closure table; every open task is externally gated (owner/operator/M11) or strategic-deferred with no completion evidence; zero safe closures; no `repair_list.md` checkbox changed; docs-only; `CONDITIONAL_GO` unchanged; full GO still unauthorized.
 - P21a reconciliation status: `P21A_API_SURFACE_SYNCED` — synced stale `docs/generated/api-surface-report.{md,json}` after P20 `CcdTag` using owning commands; `pnpm validate:governance` passes twice; P21 is validation-closed; `CONDITIONAL_GO` unchanged; full GO still unauthorized.
 - P21 reconciliation status: `P21_NO_SAFE_RESIDUAL_REDUCTION` — reviewed five bootstrap/generated exact allowlist rows; count remains 5; no runtime or guard change; validation drift later closed by P21a; CONDITIONAL_GO unchanged; full GO still unauthorized.
 - P20 reconciliation status: `P20_C06_RESIDUAL_ALLOWLIST_REDUCED` — one more non-showcase exact allowlist row removed (6 → 5) by adding `@ccd/vue-ui` `CcdTag` wrapper and migrating `use-app-element-size.vue`; CONDITIONAL_GO unchanged; full GO still unauthorized.
@@ -18,6 +19,7 @@
 - P10g push status: completed manually to `origin/main` (2026-06-01)
 - P16 evidence directory: `docs/ai-runs/20260601-160000-ccd-p16-final-go-no-go-reconciliation/`
 - P16a evidence directory: `docs/ai-runs/20260601-161000-ccd-p16a-conditional-go-consistency-repair/`
+- P22 evidence directory: `docs/ai-runs/20260601-171004-ccd-p22-g02-repair-ledger-closure-pass-2/`
 - P21a evidence directory: `docs/ai-runs/20260601-164744-ccd-p21a-api-surface-generated-sync-after-ccdtag/`
 - P21 evidence directory: `docs/ai-runs/20260601-211500-ccd-p21-c06-bootstrap-generated-residual-review/`
 - P20 evidence directory: `docs/ai-runs/20260601-200000-ccd-p20-c06-residual-allowlist-closure-pass-3/`
@@ -27,6 +29,8 @@
 - Full GO authorized: no
 
 P16a (2026-06-01) repaired internal contradictions between top-level `CONDITIONAL_GO` and ledger body entries that still stated `NO_GO` after P10f. Formalized owner-accepted residual debt for C-06 (8 exact allowlist + showcase) and G-02 (80 deferred ledger tasks). `CONDITIONAL_GO` is based on owner-accepted residual debt, not full resolution. Full GO remains unauthorized.
+
+P22 (2026-06-01) ran a second evidence-based closure pass over the G-02 repair-ledger accepted-deferred tasks after P18 reduced open tasks 80 → 78. It built a full 78-task closure table (`reports/g02-task-closure-table-pass-2.md`) and classified every open task as externally gated or strategic-deferred with no completion evidence: P1-Guard ×8 (owner Decisions 2/3/4 + signoff), P2-Vite8 ×8 + P2-Deps ×7 + P2-GitHub ×2 (operator approval, no implementation evidence per closure rule 2), P3-Login ×47 (M11 operator approval, closure rule 3), and P4 ×6 (strategic deferred / owner sign-off). The only two evidence-backed stale rows were already closed by P18, and P21 already confirmed no safe bootstrap/generated C-06 reduction, so no documentation-only closure remained. Outcome **`P22_NO_SAFE_LEDGER_CLOSURE`** — G-02 open count stays **78**, no `.ai/runtime/repair_list.md` checkbox changed, `CONDITIONAL_GO` unchanged, full GO still unauthorized, push not performed. Evidence: P22 directory.
 
 P21 (2026-06-01) reviewed the five remaining bootstrap/generated exact allowlist rows after P20: desktop plugin install, web-demo build `PrimeVueResolver`, `AppPrimeVueGlobals` global shell, web `setupPrimeVue` plugin install, and generator-owned `components.d.ts`. None met P21 single-row safe-reduction criteria (plugin install needs paired adapter bootstrap API; build/registry rows need generator/build lanes; global shell needs overlay facades). Outcome **`P21_NO_SAFE_RESIDUAL_REDUCTION`** — exact allowlist stays **5**; showcase untouched; C-06/M12/G-02/CONDITIONAL_GO unchanged. Initial local validation was blocked by inherited P20 `CcdTag` api-surface-report drift; P21a later closed that generated sync debt through owning commands. Evidence: P21 directory.
 
@@ -51,10 +55,10 @@ P1–P3 resolved owner decisions for safeStorage crypto (D-016 Option A), compre
 | `C-06`                  | `OPEN` (owner-accepted residual) | 5 bootstrap/generated exact rows + showcase (P21 confirmed no safe reduction); P14 E1/E2 + P17 + P19 + P20 reduced feature rows; E3 deferred per D-017 Option D. |
 | `D-016`                 | `APPROVED`                       | Option A recorded 2026-06-01.                                                                                                                                    |
 | `D-017`                 | `APPROVED`                       | Options A+D+E recorded 2026-06-01; M12 E1/E2/E4 + P17 + P19 + P20 slices complete; E3 deferred.                                                                  |
-| `G-02`                  | `ACCEPTED_DEFERRED_DEBT`         | 78 tasks owner-accepted as deferred debt (P15 acceptance; P18 closed 2 evidence-backed rows).                                                                    |
+| `G-02`                  | `ACCEPTED_DEFERRED_DEBT`         | 78 tasks owner-accepted as deferred debt (P15 acceptance; P18 closed 2 evidence-backed rows; P22 second pass found zero further safe closures).                  |
 | `G-03`                  | `DONE`                           | Completion gate satisfied with owner-accepted residual debt (P16).                                                                                               |
 | `M12`                   | `PARTIAL`                        | E1/E2 + P17 + P19 + P20 slices done; E4 reviewed; E3 showcase long-lived exception.                                                                              |
-| `pnpm ai:doctor --open` | 78 open tasks (owner-accepted)   | repair ledger reduced by 2 evidence-backed closures; 78 remain classified deferred debt.                                                                         |
+| `pnpm ai:doctor --open` | 78 open tasks (owner-accepted)   | repair ledger reduced by 2 evidence-backed closures (P18); P22 second pass confirmed no further safe closure; 78 remain classified deferred debt.                |
 | `pnpm codex:preflight`  | pass (P16)                       | P10a quarantine resolved inherited failure.                                                                                                                      |
 | remote push (P10g)      | `DONE`                           | Manual push to `origin/main` completed (2026-06-01); verify current HEAD via git history.                                                                        |
 
@@ -104,4 +108,4 @@ The final state is **`CONDITIONAL_GO`**. Owner decisions closed B-07/B-08/D-016/
 
 ## Recommended Next Action
 
-Treat P12–P16 as complete for the architecture-only program. Further work on C-06 remainder, G-02 ledger closure, or E3 showcase cleanup requires separate owner authorization. Do not declare full GO without code-closing residual debt or fresh owner approval. P20 is present on `origin/main`; P21 and P21a remain local-only until separately authorized. Verify current HEAD via git history.
+Treat P12–P16 as complete for the architecture-only program. Further work on C-06 remainder, G-02 ledger closure, or E3 showcase cleanup requires separate owner authorization. P22 confirmed that the 78 remaining G-02 tasks cannot be closed without owner/operator/product decisions or actual source implementation, so further G-02 reduction needs a dedicated approved lane. Do not declare full GO without code-closing residual debt or fresh owner approval. P20 is present on `origin/main`; P21, P21a, and P22 remain local-only until separately authorized. Verify current HEAD via git history.
