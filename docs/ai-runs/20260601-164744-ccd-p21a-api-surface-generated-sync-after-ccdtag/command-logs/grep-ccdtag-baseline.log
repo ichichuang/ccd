@@ -1,0 +1,7 @@
+$ grep -R "CcdTag" packages/vue-ui/src docs/generated/api-surface-report.md || true
+packages/vue-ui/src/CcdPrimeControls/CcdTag.spec.ts:import { CcdTag } from './index'
+packages/vue-ui/src/CcdPrimeControls/CcdTag.spec.ts:describe('CcdTag', () => {
+packages/vue-ui/src/CcdPrimeControls/CcdTag.spec.ts:    const wrapper = mount(CcdTag, {
+packages/vue-ui/src/CcdPrimeControls/index.ts:const ccdTag = createCcdPrimeControl('CcdTag', PrimeTag)
+packages/vue-ui/src/CcdPrimeControls/index.ts:  ccdTag as CcdTag,
+packages/vue-ui/src/index.ts:  CcdTag,

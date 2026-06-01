@@ -283,6 +283,7 @@
         "CcdPopover",
         "CcdSelect",
         "CcdSelectButton",
+        "CcdTag",
         "CcdTieredMenu",
         "CcdToggleSwitch",
         "ColumnRenderParams",

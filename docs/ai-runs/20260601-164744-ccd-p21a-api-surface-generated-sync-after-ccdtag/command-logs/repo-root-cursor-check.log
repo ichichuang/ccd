@@ -1,0 +1,2 @@
+$ test ! -e .cursor && echo repo_root_cursor_absent || echo repo_root_cursor_present
+repo_root_cursor_absent

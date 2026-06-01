@@ -1,0 +1,2 @@
+$ test ! -e CCD_ARCHITECTURE_ISSUE_REPAIR_LOG.md && echo root_duplicate_absent || echo root_duplicate_present
+root_duplicate_absent
