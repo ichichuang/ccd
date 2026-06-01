@@ -15,7 +15,7 @@ Do not mark generated tasks as `DONE` initially.
 
 ## Current full-remediation overlay
 
-Active execution overlay: `P26_D020_PRIMEVUE_BOOTSTRAP_DONE`.
+Active execution overlay: `P27_D021_GENERATED_REGISTRY_DONE`.
 
 The owner has approved the P23 residual-debt menu items D-020 through D-024 for bounded execution. Execute in this order unless validation evidence requires stopping:
 
@@ -23,7 +23,7 @@ The owner has approved the P23 residual-debt menu items D-020 through D-024 for 
 | ------------------------- | ------------------------------------------------------- | ------ | ---------------------------------------------------------------------------- |
 | Baseline approval capture | Baseline audit, owner approval record, no source change | `DONE` | `docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/`                |
 | D-020                     | PrimeVue bootstrap install adapter for R1/R4            | `DONE` | `docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/` |
-| D-021                     | Build resolver/generated registry boundary for R2/R5    | `TODO` | `docs/ai-runs/<timestamp>-ccd-full-remediation-d021-generated-registry/`     |
+| D-021                     | Build resolver/generated registry boundary for R2/R5    | `DONE` | `docs/ai-runs/20260601-205214-ccd-full-remediation-d021-generated-registry/` |
 | D-022                     | AppPrimeVueGlobals global shell facade for R3           | `TODO` | `docs/ai-runs/<timestamp>-ccd-full-remediation-d022-global-shell/`           |
 | D-024                     | Showcase exception cleanup                              | `TODO` | `docs/ai-runs/<timestamp>-ccd-full-remediation-d024-showcase/`               |
 | D-023                     | G-02 owner/operator/product closure wave                | `TODO` | `docs/ai-runs/<timestamp>-ccd-full-remediation-d023-g02-closure/`            |
@@ -32,6 +32,8 @@ The owner has approved the P23 residual-debt menu items D-020 through D-024 for 
 Baseline result: `main` and `origin/main` are both `6132c9c9`; `git diff --check`, `pnpm docs:commands`, `pnpm ai:doctor`, `pnpm ai:doctor --open`, `pnpm ai:guard -- --format=json`, and `pnpm validate:governance` passed. `pnpm ai:doctor --open` still reports 78 open tasks until the approved implementation/closure lanes resolve them.
 
 D-020 result: desktop and web PrimeVue bootstrap installs now use `@ccd/vue-primevue-adapter` `installPrimeVueRuntime()`; the R1/R4 app exact allowlist rows were removed after guard validation. C-06 remains open for D-021 R2/R5, D-022 R3, and D-024 showcase cleanup.
+
+D-021 result: `apps/web-demo/build/plugins.ts` now calls a build-only `createPrimeVueComponentResolver()` boundary, generated `components.d.ts` remains command-owned and hash-stable, and the R2/R5 exact allowlist rows were removed. C-06 remains open for D-022 R3 and D-024 showcase cleanup.
 
 ## Global execution rules
 

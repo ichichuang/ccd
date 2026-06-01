@@ -3,7 +3,8 @@
 ## Current Execution State
 
 - Current program: `CCD full architecture remediation execution program`
-- Current milestone: P26 `P26_D020_PRIMEVUE_BOOTSTRAP_DONE` — D-020 executed; desktop and web PrimeVue bootstrap installs migrated behind `@ccd/vue-primevue-adapter` `installPrimeVueRuntime()`; PrimeVue exact allowlist reduced 5 → 3 rows after guard validation; no ledger/manifest/lockfile/Clawd/theme/safeStorage/lz-string change; C-06 still has 3 exact rows plus showcase; G-02 (78 deferred ledger tasks), M12 (`PARTIAL`), and `CONDITIONAL_GO` remain until later lanes and final validation.
+- Current milestone: P27 `P27_D021_GENERATED_REGISTRY_DONE` — D-021 executed; build resolver moved behind a build-only boundary, generated `components.d.ts` stayed command-owned and hash-stable, and PrimeVue exact allowlist reduced 3 → 1 rows after guard validation; no ledger/manifest/lockfile/Clawd/theme/safeStorage/lz-string change; C-06 still has 1 exact row plus showcase; G-02 (78 deferred ledger tasks), M12 (`PARTIAL`), and `CONDITIONAL_GO` remain until later lanes and final validation.
+- Prior milestone: P26 `P26_D020_PRIMEVUE_BOOTSTRAP_DONE` — D-020 executed; desktop and web PrimeVue bootstrap installs migrated behind `@ccd/vue-primevue-adapter` `installPrimeVueRuntime()`; PrimeVue exact allowlist reduced 5 → 3 rows after guard validation; no ledger/manifest/lockfile/Clawd/theme/safeStorage/lz-string change; C-06 still has 3 exact rows plus showcase; G-02 (78 deferred ledger tasks), M12 (`PARTIAL`), and `CONDITIONAL_GO` remain until later lanes and final validation.
 - Prior milestone: P25 `P25_FULL_REMEDIATION_APPROVED_BASELINE` — owner explicitly approved D-020 through D-024 for bounded execution; baseline validation passed; no runtime/allowlist/ledger/manifest/lockfile change yet; C-06 (5 exact rows + showcase), G-02 (78 deferred ledger tasks), M12 (`PARTIAL`) unchanged until implementation evidence lands; `CONDITIONAL_GO` unchanged; full GO still unauthorized pending final validation.
 - Prior milestone: P24 `P24_NO_OWNER_DECISION_RECORDED` — owner declined to approve P23 future decision menu D-020–D-024; all remained `PROPOSED`; docs-only; no runtime/allowlist/ledger/manifest/lockfile change; C-06 (5 exact rows + showcase), G-02 (78 deferred ledger tasks), M12 (`PARTIAL`) unchanged; `CONDITIONAL_GO` unchanged; full GO still unauthorized.
 - Prior milestone: P23 `P23_RESIDUAL_DEBT_REGISTERED` — final owner-reviewable residual debt register after P17–P22; consolidated C-06 (5 exact allowlist rows + showcase), G-02 (78 deferred ledger tasks), M12 (`PARTIAL`), and full-GO blockers; future owner decision menu D-020–D-024 recorded as `PROPOSED` only; no runtime/allowlist/ledger/manifest/lockfile change; no safe unapproved reduction remains; `CONDITIONAL_GO` unchanged; full GO still unauthorized.
@@ -21,6 +22,7 @@
 - Baseline branch: `main`.
 - Pre-P10 baseline commit: `cc255d1a`.
 - Last remote-state reconciliation: P11 reconciled P10g push state; P11 itself was pushed after that reconciliation — use `git log` / remote history as source of truth for current HEAD.
+- P27 evidence directory: `docs/ai-runs/20260601-205214-ccd-full-remediation-d021-generated-registry/` (D-021 build resolver/generated registry boundary; R2/R5 migrated/classified; allowlist 3 → 1).
 - P26 evidence directory: `docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/` (D-020 PrimeVue bootstrap install adapter; R1/R4 migrated; allowlist 5 → 3).
 - P25 evidence directory: `docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/` (baseline and owner approval capture; D-020–D-024 approved for execution).
 - P24 evidence directory: `docs/ai-runs/20260601-180407-ccd-p24-owner-decision-residual-debt-menu/` (owner decision record; D-020–D-024 remained PROPOSED until P25).
@@ -48,7 +50,8 @@
 
 ## Top-Level Status
 
-- P26 reconciliation: `P26_D020_PRIMEVUE_BOOTSTRAP_DONE` (D-020 executed; app PrimeVue bootstrap installs now use `@ccd/vue-primevue-adapter`; exact allowlist 5 → 3; C-06 still open for R2/R3/R5 + showcase).
+- P27 reconciliation: `P27_D021_GENERATED_REGISTRY_DONE` (D-021 executed; build resolver/generator boundaries classified; exact allowlist 3 → 1; C-06 still open for R3 + showcase).
+- P26 reconciliation: `P26_D020_PRIMEVUE_BOOTSTRAP_DONE` (D-020 executed; app PrimeVue bootstrap installs now use `@ccd/vue-primevue-adapter`; exact allowlist 5 → 3; C-06 remained open for R2/R3/R5 + showcase until P27).
 - P25 reconciliation: `P25_FULL_REMEDIATION_APPROVED_BASELINE` (owner approved D-020–D-024 for bounded execution; baseline validation passed; no source residual closed until P26).
 - P24 reconciliation: `P24_NO_OWNER_DECISION_RECORDED` (owner declined approval for D-020–D-024; all remained `PROPOSED` until P25; docs-only; C-06/G-02/M12 unchanged).
 - P23 reconciliation: `P23_RESIDUAL_DEBT_REGISTERED` (final residual debt register; C-06 5 rows + showcase, G-02 78 tasks, M12 `PARTIAL`; future owner decision menu D-020–D-024 `PROPOSED` only; docs-only; no safe unapproved reduction remains).
@@ -66,8 +69,8 @@
 - P13 reconciliation: `P13_M12_APPROVED`.
 - P12 reconciliation: `P12_STATUS_SURFACE_ANTI_DRIFT_REPAIRED`.
 - P11 reconciliation: `P11_REMOTE_STATE_RECONCILED_NO_GO`.
-- Overall final status: **`CONDITIONAL_GO`** (owner-accepted residual debt remains after P26).
-- Full GO is not authorized yet; D-021–D-024 execution remains authorized, but final GO requires evidence-backed residual closure plus the final validation matrix.
+- Overall final status: **`CONDITIONAL_GO`** (owner-accepted residual debt remains after P27).
+- Full GO is not authorized yet; D-022–D-024 execution remains authorized, but final GO requires evidence-backed residual closure plus the final validation matrix.
 - `pnpm ai:doctor --open` reports **78 open tasks** (P18 closed 2 evidence-backed rows; P22 second pass found zero further safe closures; G-02 remains owner-accepted deferred debt).
 - Remote state: last reconciled in P11 to P10g push state; use git history for current HEAD; P12 removed self-staling remote-commit claims from status surfaces.
 
@@ -109,30 +112,31 @@
 | P24   | `P24_NO_OWNER_DECISION_RECORDED`           | Owner declined to approve D-020–D-024; all remain PROPOSED; docs-only; C-06/G-02/M12 unchanged; full GO unchanged                                               |
 | P25   | `P25_FULL_REMEDIATION_APPROVED_BASELINE`   | Owner approved D-020–D-024 for bounded execution; baseline validation passed; no residual closed yet; full GO still pending final validation                    |
 | P26   | `P26_D020_PRIMEVUE_BOOTSTRAP_DONE`         | D-020 migrated desktop/web PrimeVue bootstrap installs behind `installPrimeVueRuntime`; exact allowlist 5→3; full GO still pending later lanes                  |
+| P27   | `P27_D021_GENERATED_REGISTRY_DONE`         | D-021 moved build resolver behind a boundary and classified generated registry; exact allowlist 3→1; full GO still pending later lanes                          |
 
 ## Issue Status After P16a
 
-| Issue ID | Status                           | Notes                                                                                                               |
-| -------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `B-07`   | `DONE`                           | App-owned crypto terminal boundary (D-016 A)                                                                        |
-| `B-08`   | `DONE`                           | App-owned compression terminal boundary (D-019 A)                                                                   |
-| `D-016`  | `APPROVED`                       | Option A, 2026-06-01                                                                                                |
-| `D-017`  | `APPROVED`                       | Options A+D+E, 2026-06-01                                                                                           |
-| `D-019`  | `APPROVED`                       | B-08 compression Option A (new)                                                                                     |
-| `C-06`   | `OPEN` (owner-accepted residual) | 3 exact allowlist + showcase; P26 closed R1/R4 bootstrap installs; R2/R3/R5 + showcase remain for D-021/D-022/D-024 |
-| `G-02`   | `ACCEPTED_DEFERRED_DEBT`         | 78 tasks owner-accepted deferred debt (P15 acceptance; P18 closed 2 stale rows)                                     |
-| `G-03`   | `DONE`                           | Completion gate satisfied (P16)                                                                                     |
-| `M12`    | `PARTIAL`                        | E1/E2 + P17 + P19 + P20 + P26 bootstrap slice done; E4 reviewed; E3 showcase still pending D-024                    |
+| Issue ID | Status                           | Notes                                                                                                  |
+| -------- | -------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `B-07`   | `DONE`                           | App-owned crypto terminal boundary (D-016 A)                                                           |
+| `B-08`   | `DONE`                           | App-owned compression terminal boundary (D-019 A)                                                      |
+| `D-016`  | `APPROVED`                       | Option A, 2026-06-01                                                                                   |
+| `D-017`  | `APPROVED`                       | Options A+D+E, 2026-06-01                                                                              |
+| `D-019`  | `APPROVED`                       | B-08 compression Option A (new)                                                                        |
+| `C-06`   | `OPEN` (owner-accepted residual) | 1 exact allowlist + showcase; P26 closed R1/R4, P27 closed R2/R5; R3 + showcase remain for D-022/D-024 |
+| `G-02`   | `ACCEPTED_DEFERRED_DEBT`         | 78 tasks owner-accepted deferred debt (P15 acceptance; P18 closed 2 stale rows)                        |
+| `G-03`   | `DONE`                           | Completion gate satisfied (P16)                                                                        |
+| `M12`    | `PARTIAL`                        | E1/E2 + P17 + P19 + P20 + P26 + P27 slices done; E4 reviewed; E3 showcase still pending D-024          |
 
 ## Unresolved Blockers And Decisions
 
-| ID          | Status                           | Required next action                                                                                                    |
-| ----------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `C-06`      | `OPEN` (owner-accepted residual) | 3 generated/global-shell exact rows + showcase remain after P26; further reduction requires D-021/D-022/D-024 execution |
-| `G-02`      | `ACCEPTED_DEFERRED_DEBT`         | Owner accepted 78 deferred ledger tasks (P15 acceptance; P18 closed 2 evidence-backed rows)                             |
-| `G-03`      | `DONE`                           | P16 completion gate satisfied with owner-accepted residual debt                                                         |
-| `M12`       | `PARTIAL`                        | E1/E2/E4 + P17 + P19 + P20 + P26 slices complete; E3 showcase pending D-024                                             |
-| remote push | `DONE`                           | P10g manual push to `origin/main` completed (2026-06-01); verify HEAD via git history                                   |
+| ID          | Status                           | Required next action                                                                                   |
+| ----------- | -------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `C-06`      | `OPEN` (owner-accepted residual) | 1 global-shell exact row + showcase remain after P27; further reduction requires D-022/D-024 execution |
+| `G-02`      | `ACCEPTED_DEFERRED_DEBT`         | Owner accepted 78 deferred ledger tasks (P15 acceptance; P18 closed 2 evidence-backed rows)            |
+| `G-03`      | `DONE`                           | P16 completion gate satisfied with owner-accepted residual debt                                        |
+| `M12`       | `PARTIAL`                        | E1/E2/E4 + P17 + P19 + P20 + P26 + P27 slices complete; E3 showcase pending D-024                      |
+| remote push | `DONE`                           | P10g manual push to `origin/main` completed (2026-06-01); verify HEAD via git history                  |
 
 ## M16a Evidence Path (P9a reconciled)
 

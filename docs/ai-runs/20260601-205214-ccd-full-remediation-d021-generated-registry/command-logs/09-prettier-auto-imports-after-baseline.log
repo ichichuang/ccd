@@ -1,0 +1,4 @@
+$ pnpm exec prettier --write apps/web-demo/src/types/auto-imports.d.ts
+apps/web-demo/src/types/auto-imports.d.ts 40ms
+
+[exit:0]

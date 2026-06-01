@@ -6,10 +6,10 @@ import path from 'node:path'
 import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
-import { PrimeVueResolver } from '@primevue/auto-import-resolver'
 import type { PluginOption, ViteDevServer } from 'vite'
 import { getCustomIconClasses, invalidateIconCaches } from '@ccd/unocss-preset'
 import type { ViteEnv } from './utils'
+import { createPrimeVueComponentResolver } from './resolvers/primevue'
 
 // ✅ 引入模块化的构建插件
 import { configCompressPlugin } from './compress'
@@ -175,7 +175,7 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
       version: 3,
       include: [/\.vue$/, /\.vue\?vue/, /\.tsx$/],
       // PrimeVue 按需解析：模板中用到的组件自动 import，支持 Tree-shaking
-      resolvers: [sharedArchitectureComponentResolver(), PrimeVueResolver()],
+      resolvers: [sharedArchitectureComponentResolver(), createPrimeVueComponentResolver()],
     }),
   ]
 

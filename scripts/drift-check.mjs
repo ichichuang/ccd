@@ -16,6 +16,14 @@ const VIEWS_DIR = join(ROOT, 'apps', 'web-demo', 'src', 'views')
 const BUILD_SYSTEM_MD = join(ROOT, 'docs', 'ai-specs', 'BUILD_SYSTEM.md')
 const VITE_CONFIG = join(ROOT, 'apps', 'web-demo', 'vite.config.ts')
 const BUILD_PLUGINS = join(ROOT, 'apps', 'web-demo', 'build', 'plugins.ts')
+const PRIMEVUE_RESOLVER_BOUNDARY = join(
+  ROOT,
+  'apps',
+  'web-demo',
+  'build',
+  'resolvers',
+  'primevue.ts'
+)
 
 /** 禁止：十六进制颜色 #fff, #ff0000, #ff0000ff */
 const HEX_REGEX = /#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\b/g
@@ -220,10 +228,23 @@ function checkBuildPluginsDrift() {
         'apps/web-demo/build/plugins.ts: Components.exclude 需包含 src/layouts 目录，防止布局组件被自动导入。'
       )
     }
-    if (!content.includes('PrimeVueResolver()')) {
+    if (!content.includes('createPrimeVueComponentResolver()')) {
       errors.push(
-        'apps/web-demo/build/plugins.ts: Components.resolvers 需包含 PrimeVueResolver() 以保持 PrimeVue 组件按需引入。'
+        'apps/web-demo/build/plugins.ts: Components.resolvers 需包含 createPrimeVueComponentResolver() 以保持 PrimeVue 组件按需引入。'
       )
+    }
+    if (!existsSync(PRIMEVUE_RESOLVER_BOUNDARY)) {
+      errors.push('apps/web-demo/build/resolvers/primevue.ts: PrimeVue resolver boundary 缺失。')
+    } else {
+      const resolverBoundaryContent = readFileSync(PRIMEVUE_RESOLVER_BOUNDARY, 'utf-8')
+      if (
+        !resolverBoundaryContent.includes("from '@primevue/auto-import-resolver'") ||
+        !resolverBoundaryContent.includes('PrimeVueResolver()')
+      ) {
+        errors.push(
+          'apps/web-demo/build/resolvers/primevue.ts: PrimeVue resolver boundary 必须集中调用 PrimeVueResolver()。'
+        )
+      }
     }
   }
 

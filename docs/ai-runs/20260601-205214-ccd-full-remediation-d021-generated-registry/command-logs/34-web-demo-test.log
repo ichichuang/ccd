@@ -1,0 +1,184 @@
+$ pnpm --filter @ccd/web-demo test
+
+> @ccd/web-demo@1.0.38 test /Users/cc/MyPorject/ccd/apps/web-demo
+> vitest run --passWithNoTests
+
+🎉 欢迎使用 ccd
+📦 版本: 1.0.38
+⚡ 基于 Vue ^3.5.12 + Vite 构建
+🛠️ UI 架构: PrimeVue + UnoCSS
+🎨 UnoCSS: ^66.6.0
+🕒 构建时间: 6/1/2026, 9:02:31 PM
+
+
+ RUN  v4.0.18 /Users/cc/MyPorject/ccd/apps/web-demo
+
+ ✓ src/hooks/modules/useDialog.spec.ts (3 tests) 308ms
+     ✓ builds translated info dialogs over the package dialog core  307ms
+ ✓ src/utils/http/requestLayer.spec.ts (10 tests) 135ms
+ ✓ src/hooks/modules/useHttpRequest.spec.ts (3 tests) 222ms
+stderr | src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > does not retry invalid token failures and clears the session immediately
+根据 token 恢复用户信息失败: AuthApiError: invalid token
+    at /Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:162:7
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vitest+runner@4.0.18/node_modules/@vitest/runner/dist/index.js:915:20 {
+  code: 'AUTH_TOKEN_INVALID'
+}
+
+stderr | src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > stops a transient retry sequence when a later failure becomes 401 terminal auth
+根据 token 恢复用户信息失败: HttpRequestError: unauthorized
+    at /Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:227:9
+    at file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vitest+runner@4.0.18/node_modules/@vitest/runner/dist/index.js:915:20 {
+  type: 'AUTH',
+  code: 'AUTH_ERROR',
+  status: 401,
+  statusText: 'Unauthorized',
+  data: undefined,
+  retryable: false
+}
+
+stderr | src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > fails closed after network retry exhaustion and emits one non-sensitive message
+根据 token 恢复用户信息失败: HttpRequestError: network unavailable
+    at networkError (/Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:98:3)
+    at /Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:248:58
+    at file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vitest+runner@4.0.18/node_modules/@vitest/runner/dist/index.js:915:20 {
+  type: 'NETWORK',
+  code: 'NETWORK_ERROR',
+  status: undefined,
+  statusText: undefined,
+  data: undefined,
+  retryable: true
+}
+
+stderr | src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > uses a 5000ms per-attempt timeout and fails closed when all attempts time out
+根据 token 恢复用户信息失败: HttpRequestError: Restore login timed out
+    at /Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.ts:129:9
+    at file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vueuse+shared@13.9.0_vue@3.5.25_typescript@5.9.3_/node_modules/@vueuse/shared/index.mjs:1318:7
+    at callTimer (file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/vitest@4.0.18_@types+node@24.12.4_jiti@2.6.1_jsdom@28.1.0_sass@1.97.3_terser@5.46.0_tsx@4.21.0_yaml@2.8.2/node_modules/vitest/dist/chunks/vi.2VT5v0um.js:2111:25)
+    at doTickInner (file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/vitest@4.0.18_@types+node@24.12.4_jiti@2.6.1_jsdom@28.1.0_sass@1.97.3_terser@5.46.0_tsx@4.21.0_yaml@2.8.2/node_modules/vitest/dist/chunks/vi.2VT5v0um.js:2714:30)
+    at Immediate.nextPromiseTick (file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/vitest@4.0.18_@types+node@24.12.4_jiti@2.6.1_jsdom@28.1.0_sass@1.97.3_terser@5.46.0_tsx@4.21.0_yaml@2.8.2/node_modules/vitest/dist/chunks/vi.2VT5v0um.js:2775:26)
+    at processImmediate (node:internal/timers:504:21) {
+  type: 'TIMEOUT',
+  code: 'TIMEOUT_ERROR',
+  status: undefined,
+  statusText: undefined,
+  data: undefined,
+  retryable: true
+}
+
+stderr | src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > keeps offline read-only startup blocked by clearing unverified protected state
+根据 token 恢复用户信息失败: HttpRequestError: network unavailable
+    at networkError (/Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:98:3)
+    at /Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:294:58
+    at file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vitest+runner@4.0.18/node_modules/@vitest/runner/dist/index.js:915:20 {
+  type: 'NETWORK',
+  code: 'NETWORK_ERROR',
+  status: undefined,
+  statusText: undefined,
+  data: undefined,
+  retryable: true
+}
+
+ ✓ src/hooks/modules/useAuth.spec.ts (8 tests) 252ms
+ ✓ src/stores/modules/system/theme.spec.ts (10 tests) 92ms
+ ✓ src/stores/modules/system/layout.spec.ts (20 tests) 414ms
+       ✓ closing showHeader caches and hides showLogo + showMenu  371ms
+ ✓ src/hooks/modules/useAutoMitt.spec.ts (1 test) 445ms
+     ✓ binds the app event map emitter and keeps package-owned auto cleanup  444ms
+ ✓ src/sync/systemPreferences/model.spec.ts (1 test) 398ms
+     ✓ applies remote preferences to theme, size, layout, and locale stores  397ms
+ ✓ src/layouts/modules/LayoutAdmin.spec.ts (3 tests) 440ms
+     ✓ renders the admin shell with header, sidebar, and content in vertical mode  436ms
+ ✓ src/stores/modules/system/device.spec.ts (10 tests) 92ms
+stderr | src/hooks/layout/useLoading.spec.ts > useLoading counter semantics > keeps global loading active until every concurrent stop handle is released
+[Layout Store] setIsLoading() is deprecated and corrupts concurrent loading counter. Use beginGlobalLoading()/endGlobalLoading() instead.
+[Layout Store] setIsPageLoading() is deprecated. Use beginPageLoading()/endPageLoading() instead.
+
+stderr | src/hooks/layout/useLoading.spec.ts > useLoading counter semantics > does not underflow when callers over-release global and page loading
+[Layout Store] setIsLoading() is deprecated and corrupts concurrent loading counter. Use beginGlobalLoading()/endGlobalLoading() instead.
+[Layout Store] setIsPageLoading() is deprecated. Use beginPageLoading()/endPageLoading() instead.
+
+stderr | src/hooks/layout/useLoading.spec.ts > useLoading counter semantics > releases global loading when wrapped work rejects or is cancelled by the caller
+[Layout Store] setIsLoading() is deprecated and corrupts concurrent loading counter. Use beginGlobalLoading()/endGlobalLoading() instead.
+[Layout Store] setIsPageLoading() is deprecated. Use beginPageLoading()/endPageLoading() instead.
+
+stderr | src/hooks/layout/useLoading.spec.ts > useLoading counter semantics > keeps page loading active across overlapping route-like work
+[Layout Store] setIsLoading() is deprecated and corrupts concurrent loading counter. Use beginGlobalLoading()/endGlobalLoading() instead.
+[Layout Store] setIsPageLoading() is deprecated. Use beginPageLoading()/endPageLoading() instead.
+
+stderr | src/hooks/layout/useLoading.spec.ts > useLoading counter semantics > stays balanced after an unauthorized-reset style force clear
+[Layout Store] setIsLoading() is deprecated and corrupts concurrent loading counter. Use beginGlobalLoading()/endGlobalLoading() instead.
+[Layout Store] setIsPageLoading() is deprecated. Use beginPageLoading()/endPageLoading() instead.
+
+stderr | src/hooks/layout/useLoading.spec.ts > useLoading counter semantics > stays balanced after an unauthorized-reset style force clear
+[Layout Store] setIsLoading() is deprecated and corrupts concurrent loading counter. Use beginGlobalLoading()/endGlobalLoading() instead.
+
+ ✓ src/hooks/layout/useLoading.spec.ts (5 tests) 682ms
+     ✓ keeps global loading active until every concurrent stop handle is released  656ms
+ ✓ src/plugins/setupPlugins.spec.ts (1 test) 661ms
+     ✓ initializes critical plugins before mount and keeps DateUtils hydration explicit  661ms
+ ✓ src/plugins/modules/primevue.spec.ts (1 test) 713ms
+     ✓ installs PrimeVue v4 with design-system pt and services  713ms
+ ✓ src/constants/theme.spec.ts (5 tests) 13ms
+ ✓ src/utils/theme/validate.spec.ts (4 tests) 12ms
+ ✓ src/utils/http/interceptors.spec.ts (15 tests) 17ms
+ ✓ src/stores/modules/system/size.spec.ts (5 tests) 54ms
+ ✓ src/utils/http/policies/httpPolicies.spec.ts (6 tests) 24ms
+ ✓ src/utils/http/validation.spec.ts (3 tests) 4ms
+ ✓ src/stores/modules/system/locale.spec.ts (6 tests) 27ms
+ ✓ src/hooks/modules/useThemeSwitch.spec.ts (2 tests) 1025ms
+     ✓ queues the latest target mode during an active transition and shares animation state  1013ms
+stderr | src/hooks/layout/useAdminTabs.spec.ts > useAdminTabs > closeAll keeps dashboard and navigates to dashboard when current tab was closed
+[Vue warn]: onMounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+[Vue warn]: onUnmounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+
+stderr | src/hooks/layout/useAdminTabs.spec.ts > useAdminTabs > closeOthers keeps dashboard plus target tab
+[Vue warn]: onMounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+[Vue warn]: onUnmounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+
+stderr | src/hooks/layout/useAdminTabs.spec.ts > useAdminTabs > close current fixed tab is a no-op
+[Vue warn]: onMounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+[Vue warn]: onUnmounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+
+stderr | src/hooks/layout/useAdminTabs.spec.ts > useAdminTabs > closeAll safely falls back when no fixed tabs are eligible
+[Vue warn]: onMounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+[Vue warn]: onUnmounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+
+ ✓ src/hooks/layout/useAdminTabs.spec.ts (4 tests) 55ms
+ ✓ src/stores/modules/session/user.spec.ts (9 tests) 36ms
+ ✓ src/stores/modules/session/permission.spec.ts (23 tests) 49ms
+ ✓ src/utils/theme/engine.spec.ts (59 tests) 62ms
+ ✓ src/hooks/modules/useProTableUrlSync.spec.ts (4 tests) 4ms
+ ✓ src/api/example/users.spec.ts (6 tests) 6ms
+ ✓ src/constants/runtime.spec.ts (3 tests) 3ms
+ ✓ src/adapters/http.adapter.spec.ts (15 tests) 4ms
+ ✓ src/utils/theme/colors.spec.ts (27 tests) 3ms
+ ✓ src/sync/syncAction.spec.ts (3 tests) 3ms
+ ✓ src/infra/auth/tokenProvider.spec.ts (5 tests) 4ms
+ ✓ src/stores/modules/ui/tableDrawer.spec.ts (5 tests) 3ms
+stderr | src/utils/safeStorage/piniaSerializer.spec.ts
+[SafeStorage] Using hardcoded fallback key. Set VITE_PUBLIC_STORAGE_OBFUSCATION_KEY in your .env for client-visible storage obfuscation.
+
+ ✓ src/utils/safeStorage/piniaSerializer.spec.ts (3 tests) 5ms
+ ✓ src/constants/size.spec.ts (3 tests) 2ms
+ ✓ src/router/utils/moduleLoader.spec.ts (2 tests) 3ms
+ ✓ src/layouts/runtime/layoutRuntime.spec.ts (8 tests) 5ms
+ ✓ src/constants/enums.spec.ts (3 tests) 4ms
+ ✓ src/sync/systemPreferences/middleware.spec.ts (2 tests) 2ms
+ ✓ src/hooks/layout/usePageTitle.spec.ts (5 tests) 2ms
+ ✓ src/directives/auth.spec.ts (9 tests) 7ms
+ ✓ src/plugins/modules/errorHandler.spec.ts (2 tests) 3ms
+ ✓ src/layouts/components/admin/adminSidebarMenu.shared.spec.ts (3 tests) 2ms
+ ✓ src/infra/router/routeProvider.spec.ts (3 tests) 1ms
+ ✓ src/directives/swipe.spec.ts (1 test) 1ms
+ ✓ src/directives/tap.spec.ts (1 test) 1ms
+ ✓ src/directives/longPress.spec.ts (1 test) 1ms
+ ✓ src/utils/theme/sizeEngine.spec.ts (8 tests) 2ms
+
+ Test Files  48 passed (48)
+      Tests  339 passed (339)
+   Start at  21:02:32
+   Duration  2.58s (transform 4.51s, setup 0ms, import 5.94s, tests 6.30s, environment 9.75s)
+
+
+[exit:0]
