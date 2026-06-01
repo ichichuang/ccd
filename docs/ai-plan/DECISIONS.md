@@ -1045,3 +1045,31 @@ Run the P3 final validation matrix and preserve the active run evidence director
 
 - `docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/M0-20260530-114939-pnpm-ai-doctor-open.log`
 - `docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/M0-20260530-114939-p3-actionable-scan.log`
+
+---
+
+## P17 note — C-06 residual PrimeVue exact allowlist reduction (no approval-semantics change)
+
+- Date: 2026-06-01
+- Status: informational note under existing `D-017` (Options A+D+E); does NOT change any approval semantics.
+
+### Context
+
+P17 executed one narrow, authorized residual-reduction slice against C-06 after P16a/P16d. It continues the D-017 Option E staged PrimeVue allowlist reduction (the same mechanism used by P14 E1/E2/E4).
+
+### What was done
+
+- Added adapter-owned type facade `PrimeVuePopoverInstance = InstanceType<typeof Popover>` in `packages/vue-primevue-adapter/src/overlayTypes.ts`, exported from the adapter public surface (mirroring the existing `PrimeVueTieredMenuInstance` facade).
+- Replaced the type-only direct import `import type Popover from 'primevue/popover'` in `apps/web-demo/src/views/example/system-configuration/layout.vue` with the adapter facade.
+- Removed exactly one row from `approvedPrimeVueAppImportFiles` in `scripts/ai-architecture-guard.mjs` after the source import was gone and validation passed.
+
+### Semantics unchanged
+
+- D-017 remains `APPROVED` (Options A+D+E). No options added or removed.
+- C-06 remains `OPEN` owner-accepted residual debt (7 exact rows + showcase remain).
+- M12 remains `PARTIAL`. G-02 remains `ACCEPTED_DEFERRED_DEBT`. Final status remains `CONDITIONAL_GO`. Full GO remains unauthorized.
+- Showcase exceptions (D-017 Option D, `primevue-collection/**`) untouched.
+
+### Evidence
+
+- `docs/ai-runs/20260601-125343-ccd-p17-c06-primevue-residual-allowlist-closure/`

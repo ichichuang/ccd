@@ -398,6 +398,7 @@
         "PRIMEVUE_TOAST_SEVERITY_ICONS",
         "PrimeVueMenuItem",
         "PrimeVueMessageApi",
+        "PrimeVuePopoverInstance",
         "PrimeVueServiceInstallOptions",
         "PrimeVueSizeSource",
         "PrimeVueTieredMenuInstance",

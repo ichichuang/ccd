@@ -27,6 +27,7 @@ import { primeVueTooltipDirective } from './directives.js'
 import { PRIMEVUE_TOAST_FALLBACK_ICON, PRIMEVUE_TOAST_SEVERITY_ICONS } from './toastIcons.js'
 
 export type { PrimeVueMenuItem, PrimeVueTieredMenuInstance } from './menuTypes.js'
+export type { PrimeVuePopoverInstance } from './overlayTypes.js'
 export {
   DEFAULT_PRIMEVUE_TOAST_LIFE_MS,
   PRIMEVUE_TOAST_FALLBACK_ICON,

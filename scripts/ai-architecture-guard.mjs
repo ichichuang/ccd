@@ -144,7 +144,6 @@ const approvedPrimeVueAppImportFiles = new Set([
   'apps/web-demo/src/types/components.d.ts',
   'apps/web-demo/src/views/example/hooks/layout-breadcrumbs.vue',
   'apps/web-demo/src/views/example/hooks/use-app-element-size.vue',
-  'apps/web-demo/src/views/example/system-configuration/layout.vue',
 ])
 
 const isPrimeVueCollectionExampleFile = relPath =>

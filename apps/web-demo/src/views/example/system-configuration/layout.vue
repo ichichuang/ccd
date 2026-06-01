@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'LayoutSystemPage' })
 
-import type Popover from 'primevue/popover'
+import type { PrimeVuePopoverInstance } from '@ccd/vue-primevue-adapter'
 import { goToRoute } from '@/router/utils/helper'
 
 const layoutStore = useLayoutStore()
@@ -23,7 +23,7 @@ interface VisibilityRowConfig {
   modeLocked: boolean
 }
 
-const fabPopoverRef = ref<InstanceType<typeof Popover> | null>(null)
+const fabPopoverRef = ref<PrimeVuePopoverInstance | null>(null)
 
 const modeOptions = computed<Array<{ label: string; value: AdminLayoutMode }>>(() => [
   { label: 'Vertical（侧栏 + 内容区）', value: 'vertical' },
