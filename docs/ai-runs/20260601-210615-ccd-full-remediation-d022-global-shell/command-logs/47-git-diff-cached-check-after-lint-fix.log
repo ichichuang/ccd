@@ -1,0 +1,295 @@
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/05-adapter-test.log:14: new blank line at EOF.
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/06-adapter-build.log:4: new blank line at EOF.
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/07-web-demo-type-check.log:4: new blank line at EOF.
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/09-web-demo-test.log:182: new blank line at EOF.
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/10-build-web-demo.log:136: trailing whitespace.
++[plugin vite:reporter]
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/10-build-web-demo.log:143: new blank line at EOF.
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/13-web-demo-dev-server.log:19: trailing whitespace.
++AggregateError [ECONNREFUSED]:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/13-web-demo-dev-server.log:23: trailing whitespace.
++AggregateError [ECONNREFUSED]:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:7: trailing whitespace.
++package.json                               | name                 | ccd                                                                         | ccd                                                                         | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:8: trailing whitespace.
++package.json                               | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:9: trailing whitespace.
++package.json                               | description          | Self-protecting deterministic multi-runtime platform architecture.          | Self-protecting deterministic multi-runtime platform architecture.          | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:10: trailing whitespace.
++package.json                               | author               | Chi Chuang                                                                  | Chi Chuang                                                                  | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:11: trailing whitespace.
++package.json                               | license              | GPL-3.0                                                                     | GPL-3.0                                                                     | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:12: trailing whitespace.
++package.json                               | homepage             | https://www.ccd.wzdxcc.cloudns.org/                                         | https://www.ccd.wzdxcc.cloudns.org/                                         | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:13: trailing whitespace.
++package.json                               | keywords             | ["vue3","typescript","vite","tauri","monorepo","governance","architecture"] | ["vue3","typescript","vite","tauri","monorepo","governance","architecture"] | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:14: trailing whitespace.
++apps/web-demo/src/constants/brand.ts       | name                 | ccd                                                                         | ccd                                                                         | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:15: trailing whitespace.
++apps/web-demo/src/constants/brand.ts       | displayName          | CCD                                                                         | CCD                                                                         | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:16: trailing whitespace.
++apps/web-demo/src/constants/brand.ts       | subtitle             | Platform                                                                    | Platform                                                                    | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:17: trailing whitespace.
++apps/web-demo/src/constants/brand.ts       | description          | Self-protecting deterministic multi-runtime platform architecture.          | Self-protecting deterministic multi-runtime platform architecture.          | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:18: trailing whitespace.
++apps/web-demo/src/constants/brand.ts       | slogan               | Self-protecting deterministic multi-runtime platform architecture           | Self-protecting deterministic multi-runtime platform architecture           | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:19: trailing whitespace.
++apps/web-demo/src/constants/brand.ts       | author               | Chi Chuang                                                                  | Chi Chuang                                                                  | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:20: trailing whitespace.
++apps/desktop/package.json                  | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:21: trailing whitespace.
++apps/web-demo/package.json                 | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:22: trailing whitespace.
++packages/contracts/package.json            | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:23: trailing whitespace.
++packages/core/package.json                 | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:24: trailing whitespace.
++packages/design-tokens/package.json        | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:25: trailing whitespace.
++packages/shared-utils/package.json         | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:26: trailing whitespace.
++packages/unocss-preset/package.json        | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:27: trailing whitespace.
++packages/vue-app-platform/package.json     | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:28: trailing whitespace.
++packages/vue-charts/package.json           | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:29: trailing whitespace.
++packages/vue-hooks/package.json            | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:30: trailing whitespace.
++packages/vue-primevue-adapter/package.json | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:31: trailing whitespace.
++packages/vue-ui/package.json               | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:32: trailing whitespace.
++apps/desktop/src-tauri/tauri.conf.json     | productName          | CCD Desktop                                                                 | CCD Desktop                                                                 | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:33: trailing whitespace.
++apps/desktop/src-tauri/tauri.conf.json     | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:34: trailing whitespace.
++apps/desktop/src-tauri/tauri.conf.json     | identifier           | com.ccd.desktop                                                             | com.ccd.desktop                                                             | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:35: trailing whitespace.
++apps/desktop/src-tauri/tauri.conf.json     | app.windows[0].title | CCD Desktop                                                                 | CCD Desktop                                                                 | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:36: trailing whitespace.
++.ai/governance/policies/version.json       | policyVersion        | 2026.05.18                                                                  | 2026.05.18                                                                  | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log:37: trailing whitespace.
++.ai/governance/policies/version.json       | governancePhase      | phase-4-self-protecting-platform                                            | phase-4-self-protecting-platform                                            | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:17: trailing whitespace.
++package.json                               | name                 | ccd                                                                         | ccd                                                                         | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:18: trailing whitespace.
++package.json                               | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:19: trailing whitespace.
++package.json                               | description          | Self-protecting deterministic multi-runtime platform architecture.          | Self-protecting deterministic multi-runtime platform architecture.          | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:20: trailing whitespace.
++package.json                               | author               | Chi Chuang                                                                  | Chi Chuang                                                                  | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:21: trailing whitespace.
++package.json                               | license              | GPL-3.0                                                                     | GPL-3.0                                                                     | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:22: trailing whitespace.
++package.json                               | homepage             | https://www.ccd.wzdxcc.cloudns.org/                                         | https://www.ccd.wzdxcc.cloudns.org/                                         | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:23: trailing whitespace.
++package.json                               | keywords             | ["vue3","typescript","vite","tauri","monorepo","governance","architecture"] | ["vue3","typescript","vite","tauri","monorepo","governance","architecture"] | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:24: trailing whitespace.
++apps/web-demo/src/constants/brand.ts       | name                 | ccd                                                                         | ccd                                                                         | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:25: trailing whitespace.
++apps/web-demo/src/constants/brand.ts       | displayName          | CCD                                                                         | CCD                                                                         | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:26: trailing whitespace.
++apps/web-demo/src/constants/brand.ts       | subtitle             | Platform                                                                    | Platform                                                                    | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:27: trailing whitespace.
++apps/web-demo/src/constants/brand.ts       | description          | Self-protecting deterministic multi-runtime platform architecture.          | Self-protecting deterministic multi-runtime platform architecture.          | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:28: trailing whitespace.
++apps/web-demo/src/constants/brand.ts       | slogan               | Self-protecting deterministic multi-runtime platform architecture           | Self-protecting deterministic multi-runtime platform architecture           | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:29: trailing whitespace.
++apps/web-demo/src/constants/brand.ts       | author               | Chi Chuang                                                                  | Chi Chuang                                                                  | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:30: trailing whitespace.
++apps/desktop/package.json                  | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:31: trailing whitespace.
++apps/web-demo/package.json                 | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:32: trailing whitespace.
++packages/contracts/package.json            | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:33: trailing whitespace.
++packages/core/package.json                 | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:34: trailing whitespace.
++packages/design-tokens/package.json        | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:35: trailing whitespace.
++packages/shared-utils/package.json         | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:36: trailing whitespace.
++packages/unocss-preset/package.json        | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:37: trailing whitespace.
++packages/vue-app-platform/package.json     | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:38: trailing whitespace.
++packages/vue-charts/package.json           | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:39: trailing whitespace.
++packages/vue-hooks/package.json            | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:40: trailing whitespace.
++packages/vue-primevue-adapter/package.json | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:41: trailing whitespace.
++packages/vue-ui/package.json               | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:42: trailing whitespace.
++apps/desktop/src-tauri/tauri.conf.json     | productName          | CCD Desktop                                                                 | CCD Desktop                                                                 | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:43: trailing whitespace.
++apps/desktop/src-tauri/tauri.conf.json     | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:44: trailing whitespace.
++apps/desktop/src-tauri/tauri.conf.json     | identifier           | com.ccd.desktop                                                             | com.ccd.desktop                                                             | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:45: trailing whitespace.
++apps/desktop/src-tauri/tauri.conf.json     | app.windows[0].title | CCD Desktop                                                                 | CCD Desktop                                                                 | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:46: trailing whitespace.
++.ai/governance/policies/version.json       | policyVersion        | 2026.05.18                                                                  | 2026.05.18                                                                  | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log:47: trailing whitespace.
++.ai/governance/policies/version.json       | governancePhase      | phase-4-self-protecting-platform                                            | phase-4-self-protecting-platform                                            | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:17: trailing whitespace.
++@ccd/shared-utils:build:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:20: trailing whitespace.
++@ccd/shared-utils:build:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:21: trailing whitespace.
++@ccd/shared-utils:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:24: trailing whitespace.
++@ccd/shared-utils:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:25: trailing whitespace.
++@ccd/design-tokens:build:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:28: trailing whitespace.
++@ccd/design-tokens:build:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:29: trailing whitespace.
++@ccd/contracts:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:32: trailing whitespace.
++@ccd/contracts:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:33: trailing whitespace.
++@ccd/contracts:build:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:36: trailing whitespace.
++@ccd/contracts:build:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:37: trailing whitespace.
++@ccd/design-tokens:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:40: trailing whitespace.
++@ccd/design-tokens:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:43: trailing whitespace.
++@ccd/core:build:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:46: trailing whitespace.
++@ccd/core:build:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:47: trailing whitespace.
++@ccd/core:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:50: trailing whitespace.
++@ccd/core:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:60: trailing whitespace.
++@ccd/vue-hooks:build:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:63: trailing whitespace.
++@ccd/vue-hooks:build:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:64: trailing whitespace.
++@ccd/vue-hooks:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:67: trailing whitespace.
++@ccd/vue-hooks:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:69: trailing whitespace.
++@ccd/unocss-preset:build:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:72: trailing whitespace.
++@ccd/unocss-preset:build:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:73: trailing whitespace.
++@ccd/vue-primevue-adapter:build:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:76: trailing whitespace.
++@ccd/vue-primevue-adapter:build:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:77: trailing whitespace.
++@ccd/vue-charts:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:80: trailing whitespace.
++@ccd/vue-charts:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:81: trailing whitespace.
++@ccd/vue-app-platform:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:84: trailing whitespace.
++@ccd/vue-app-platform:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:85: trailing whitespace.
++@ccd/vue-charts:build:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:88: trailing whitespace.
++@ccd/vue-charts:build:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:89: trailing whitespace.
++@ccd/vue-primevue-adapter:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:92: trailing whitespace.
++@ccd/vue-primevue-adapter:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:93: trailing whitespace.
++@ccd/unocss-preset:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:96: trailing whitespace.
++@ccd/unocss-preset:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:97: trailing whitespace.
++@ccd/vue-app-platform:build:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:100: trailing whitespace.
++@ccd/vue-app-platform:build:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:111: trailing whitespace.
++@ccd/vue-ui:build:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:114: trailing whitespace.
++@ccd/vue-ui:build:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:115: trailing whitespace.
++@ccd/vue-ui:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:118: trailing whitespace.
++@ccd/vue-ui:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:129: trailing whitespace.
++@ccd/web-demo:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:132: trailing whitespace.
++@ccd/web-demo:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:133: trailing whitespace.
++@ccd/desktop:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:136: trailing whitespace.
++@ccd/desktop:type-check:
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:140: trailing whitespace.
++  Time:    10.206s
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log:141: new blank line at EOF.
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/31-root-test-run.log:261: new blank line at EOF.
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/32-build-web-demo-final.log:136: trailing whitespace.
++[plugin vite:reporter]
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/32-build-web-demo-final.log:143: new blank line at EOF.
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:17: trailing whitespace.
++package.json                               | name                 | ccd                                                                         | ccd                                                                         | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:18: trailing whitespace.
++package.json                               | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:19: trailing whitespace.
++package.json                               | description          | Self-protecting deterministic multi-runtime platform architecture.          | Self-protecting deterministic multi-runtime platform architecture.          | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:20: trailing whitespace.
++package.json                               | author               | Chi Chuang                                                                  | Chi Chuang                                                                  | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:21: trailing whitespace.
++package.json                               | license              | GPL-3.0                                                                     | GPL-3.0                                                                     | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:22: trailing whitespace.
++package.json                               | homepage             | https://www.ccd.wzdxcc.cloudns.org/                                         | https://www.ccd.wzdxcc.cloudns.org/                                         | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:23: trailing whitespace.
++package.json                               | keywords             | ["vue3","typescript","vite","tauri","monorepo","governance","architecture"] | ["vue3","typescript","vite","tauri","monorepo","governance","architecture"] | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:24: trailing whitespace.
++apps/web-demo/src/constants/brand.ts       | name                 | ccd                                                                         | ccd                                                                         | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:25: trailing whitespace.
++apps/web-demo/src/constants/brand.ts       | displayName          | CCD                                                                         | CCD                                                                         | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:26: trailing whitespace.
++apps/web-demo/src/constants/brand.ts       | subtitle             | Platform                                                                    | Platform                                                                    | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:27: trailing whitespace.
++apps/web-demo/src/constants/brand.ts       | description          | Self-protecting deterministic multi-runtime platform architecture.          | Self-protecting deterministic multi-runtime platform architecture.          | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:28: trailing whitespace.
++apps/web-demo/src/constants/brand.ts       | slogan               | Self-protecting deterministic multi-runtime platform architecture           | Self-protecting deterministic multi-runtime platform architecture           | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:29: trailing whitespace.
++apps/web-demo/src/constants/brand.ts       | author               | Chi Chuang                                                                  | Chi Chuang                                                                  | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:30: trailing whitespace.
++apps/desktop/package.json                  | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:31: trailing whitespace.
++apps/web-demo/package.json                 | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:32: trailing whitespace.
++packages/contracts/package.json            | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:33: trailing whitespace.
++packages/core/package.json                 | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:34: trailing whitespace.
++packages/design-tokens/package.json        | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:35: trailing whitespace.
++packages/shared-utils/package.json         | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:36: trailing whitespace.
++packages/unocss-preset/package.json        | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:37: trailing whitespace.
++packages/vue-app-platform/package.json     | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:38: trailing whitespace.
++packages/vue-charts/package.json           | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:39: trailing whitespace.
++packages/vue-hooks/package.json            | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:40: trailing whitespace.
++packages/vue-primevue-adapter/package.json | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:41: trailing whitespace.
++packages/vue-ui/package.json               | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:42: trailing whitespace.
++apps/desktop/src-tauri/tauri.conf.json     | productName          | CCD Desktop                                                                 | CCD Desktop                                                                 | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:43: trailing whitespace.
++apps/desktop/src-tauri/tauri.conf.json     | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:44: trailing whitespace.
++apps/desktop/src-tauri/tauri.conf.json     | identifier           | com.ccd.desktop                                                             | com.ccd.desktop                                                             | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:45: trailing whitespace.
++apps/desktop/src-tauri/tauri.conf.json     | app.windows[0].title | CCD Desktop                                                                 | CCD Desktop                                                                 | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:46: trailing whitespace.
++.ai/governance/policies/version.json       | policyVersion        | 2026.05.18                                                                  | 2026.05.18                                                                  | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log:47: trailing whitespace.
++.ai/governance/policies/version.json       | governancePhase      | phase-4-self-protecting-platform                                            | phase-4-self-protecting-platform                                            | ok
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/42-adapter-test-after-lint-fix.log:14: new blank line at EOF.
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/43-adapter-build-after-lint-fix.log:4: new blank line at EOF.
+docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/44-web-demo-type-check-after-lint-fix.log:4: new blank line at EOF.

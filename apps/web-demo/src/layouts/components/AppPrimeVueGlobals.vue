@@ -1,31 +1,31 @@
 <script setup lang="ts">
 /**
- * 布局层：PrimeVue 全局 UI 与 window.$toast / window.$message 挂载
- * 职责：Toast、ConfirmPopup、DynamicDialog、PrimeDialog；
- *       useToast 封装并挂到 window；PrimeVue locale 同步；useDialog + PrimeDialog
+ * 布局层：全局 UI 与 window.$toast / window.$message 挂载
+ * PrimeVue 运行时组件与服务通过 @ccd/vue-primevue-adapter facade 注入。
  */
-import Toast from 'primevue/toast'
-import ConfirmPopup from 'primevue/confirmpopup'
-import DynamicDialog from 'primevue/dynamicdialog'
-import { useToast } from 'primevue/usetoast'
-import { usePrimeVue } from 'primevue/config'
 import { PRIMEVUE_LOCALE_MAP } from '@/locales/primevue-locales'
 import { useLocaleStore } from '@/stores/modules/system'
 import { PrimeDialog } from '@ccd/vue-ui'
 import {
+  PrimeVueGlobalConfirmPopup,
+  PrimeVueGlobalDynamicDialog,
+  PrimeVueGlobalToast,
   applyPrimeVueLocale,
-  createPrimeVueMessageApi,
-  createPrimeVueToastApi,
+  clearPrimeVueGlobalMessageApis,
+  clearPrimeVueToastGroups,
+  mountPrimeVueGlobalMessageApis,
   PRIMEVUE_TOAST_FALLBACK_ICON,
   PRIMEVUE_TOAST_SEVERITY_ICONS,
+  usePrimeVueRuntimeConfig,
+  usePrimeVueToastService,
 } from '@ccd/vue-primevue-adapter'
 import { useDialog } from '@/hooks/modules/useDialog'
 import ToastMessageContent from '@/layouts/components/ToastMessageContent.vue'
 
 const { dialogStore, closeDialog, removeDialog, closeAll } = useDialog()
-const toast = useToast()
+const toast = usePrimeVueToastService()
 const localeStore = useLocaleStore()
-const primevue = usePrimeVue()
+const primevue = usePrimeVueRuntimeConfig()
 const route = useRoute()
 
 watch(
@@ -51,23 +51,21 @@ const TOAST_FALLBACK_ICON = PRIMEVUE_TOAST_FALLBACK_ICON
 
 onMounted(() => {
   if (typeof window !== 'undefined') {
-    window.$toast = createPrimeVueToastApi(toast) as typeof window.$toast
-    window.$message = createPrimeVueMessageApi(toast)
+    mountPrimeVueGlobalMessageApis(window, toast)
   }
 })
 
 onUnmounted(() => {
   if (typeof window !== 'undefined') {
-    window.$toast = undefined
-    window.$message = undefined
+    clearPrimeVueGlobalMessageApis(window)
   }
   closeAll()
-  ;(toast as { removeAllGroups?: () => void }).removeAllGroups?.()
+  clearPrimeVueToastGroups(toast)
 })
 </script>
 
 <template>
-  <Toast
+  <PrimeVueGlobalToast
     position="top-left"
     group="tl"
   >
@@ -78,8 +76,8 @@ onUnmounted(() => {
         :fallback-icon="TOAST_FALLBACK_ICON"
       />
     </template>
-  </Toast>
-  <Toast
+  </PrimeVueGlobalToast>
+  <PrimeVueGlobalToast
     position="top-center"
     group="tc"
   >
@@ -90,8 +88,8 @@ onUnmounted(() => {
         :fallback-icon="TOAST_FALLBACK_ICON"
       />
     </template>
-  </Toast>
-  <Toast
+  </PrimeVueGlobalToast>
+  <PrimeVueGlobalToast
     position="top-right"
     group="tr"
   >
@@ -102,8 +100,8 @@ onUnmounted(() => {
         :fallback-icon="TOAST_FALLBACK_ICON"
       />
     </template>
-  </Toast>
-  <Toast
+  </PrimeVueGlobalToast>
+  <PrimeVueGlobalToast
     position="bottom-left"
     group="bl"
   >
@@ -114,8 +112,8 @@ onUnmounted(() => {
         :fallback-icon="TOAST_FALLBACK_ICON"
       />
     </template>
-  </Toast>
-  <Toast
+  </PrimeVueGlobalToast>
+  <PrimeVueGlobalToast
     position="bottom-center"
     group="bc"
   >
@@ -126,8 +124,8 @@ onUnmounted(() => {
         :fallback-icon="TOAST_FALLBACK_ICON"
       />
     </template>
-  </Toast>
-  <Toast
+  </PrimeVueGlobalToast>
+  <PrimeVueGlobalToast
     position="bottom-right"
     group="br"
   >
@@ -138,9 +136,9 @@ onUnmounted(() => {
         :fallback-icon="TOAST_FALLBACK_ICON"
       />
     </template>
-  </Toast>
-  <ConfirmPopup />
-  <DynamicDialog />
+  </PrimeVueGlobalToast>
+  <PrimeVueGlobalConfirmPopup />
+  <PrimeVueGlobalDynamicDialog />
   <PrimeDialog
     :dialog-store="dialogStore"
     @close="(_options, index, args) => closeDialog(index, args)"

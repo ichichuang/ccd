@@ -1,8 +1,13 @@
-import type { App } from 'vue'
+import type { App, Component } from 'vue'
 import ConfirmationService from 'primevue/confirmationservice'
+import ConfirmPopup from 'primevue/confirmpopup'
 import DialogService from 'primevue/dialogservice'
+import DynamicDialog from 'primevue/dynamicdialog'
+import PrimeVueToast from 'primevue/toast'
 import ToastService from 'primevue/toastservice'
 import Tooltip from 'primevue/tooltip'
+import { usePrimeVue } from 'primevue/config'
+import { useToast } from 'primevue/usetoast'
 
 export interface PrimeVueServiceInstallOptions {
   toast?: boolean
@@ -57,6 +62,22 @@ export interface PrimeVueMessageApi {
   warn(message: string, title?: string): void
 }
 
+export interface PrimeVueRuntimeConfig<TLocaleConfig = unknown> {
+  config: {
+    locale?: TLocaleConfig
+  }
+}
+
+export interface PrimeVueGlobalMessageApis {
+  toast: PrimeVueToastApi
+  message: PrimeVueMessageApi
+}
+
+export interface PrimeVueGlobalMessageTarget {
+  $toast?: unknown
+  $message?: unknown
+}
+
 export const DEFAULT_PRIMEVUE_TOAST_LIFE_MS = 3000
 
 export const PRIMEVUE_TOAST_GROUP_BY_POSITION: Record<PrimeVueToastPosition, string> = {
@@ -66,6 +87,16 @@ export const PRIMEVUE_TOAST_GROUP_BY_POSITION: Record<PrimeVueToastPosition, str
   'bottom-left': 'bl',
   'bottom-center': 'bc',
   'bottom-right': 'br',
+}
+
+const primeVueGlobalToast: Component = PrimeVueToast
+const primeVueGlobalConfirmPopup: Component = ConfirmPopup
+const primeVueGlobalDynamicDialog: Component = DynamicDialog
+
+export {
+  primeVueGlobalConfirmPopup as PrimeVueGlobalConfirmPopup,
+  primeVueGlobalDynamicDialog as PrimeVueGlobalDynamicDialog,
+  primeVueGlobalToast as PrimeVueGlobalToast,
 }
 
 export function installPrimeVueServices(
@@ -89,6 +120,16 @@ export function installPrimeVueServices(
   if (tooltip) {
     app.directive('tooltip', Tooltip)
   }
+}
+
+export function usePrimeVueToastService(): PrimeVueToastServiceLike {
+  return useToast() as PrimeVueToastServiceLike
+}
+
+export function usePrimeVueRuntimeConfig<
+  TLocaleConfig = unknown,
+>(): PrimeVueRuntimeConfig<TLocaleConfig> {
+  return usePrimeVue() as PrimeVueRuntimeConfig<TLocaleConfig>
 }
 
 function normalizeToastSeverity(
@@ -160,6 +201,33 @@ export function createPrimeVueMessageApi(toast: PrimeVueToastServiceLike): Prime
     info: (message, title) => show('info', message, title),
     warn: (message, title) => show('warn', message, title),
   }
+}
+
+export function createPrimeVueGlobalMessageApis(
+  toast: PrimeVueToastServiceLike
+): PrimeVueGlobalMessageApis {
+  return {
+    toast: createPrimeVueToastApi(toast),
+    message: createPrimeVueMessageApi(toast),
+  }
+}
+
+export function mountPrimeVueGlobalMessageApis(
+  target: PrimeVueGlobalMessageTarget,
+  toast: PrimeVueToastServiceLike
+): void {
+  const apis = createPrimeVueGlobalMessageApis(toast)
+  target.$toast = apis.toast
+  target.$message = apis.message
+}
+
+export function clearPrimeVueGlobalMessageApis(target: PrimeVueGlobalMessageTarget): void {
+  target.$toast = undefined
+  target.$message = undefined
+}
+
+export function clearPrimeVueToastGroups(toast: PrimeVueToastServiceLike): void {
+  toast.removeAllGroups?.()
 }
 
 export function resolvePrimeVueLocale<TLocaleConfig>(

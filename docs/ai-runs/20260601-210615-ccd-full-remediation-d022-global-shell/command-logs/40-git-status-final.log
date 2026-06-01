@@ -1,0 +1,63 @@
+## main...origin/main [ahead 3]
+ M apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue
+ M docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md
+ M docs/ai-plan/DECISIONS.md
+ M docs/ai-plan/FINAL_GO_NO_GO.md
+ M docs/ai-plan/PLAN.md
+ M docs/ai-plan/STATUS.md
+ M docs/generated/api-surface-report.json
+ M docs/generated/api-surface-report.md
+ M packages/vue-primevue-adapter/src/index.ts
+ M packages/vue-primevue-adapter/src/services.spec.ts
+ M packages/vue-primevue-adapter/src/services.ts
+ M scripts/ai-architecture-guard.mjs
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/browser-smoke.png
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/00-git-status.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/01-git-fetch-origin-main.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/02-stop-check-cursor.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/03-stop-check-root-duplicate.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/04-d022-plan-search.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/05-adapter-test.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/06-adapter-build.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/07-web-demo-type-check.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/08-ai-guard.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/09-web-demo-test.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/10-build-web-demo.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/11-api-report.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/12-prettier-auto-imports.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/13-web-demo-dev-server.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/14-browser-smoke.json
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/15-browser-global-api-recheck.json
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/16-playwright-global-api-smoke.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/17-prettier-auto-imports-after-smoke.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/18-git-diff-check.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/19-docs-commands.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/20-project-doctor.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/21-ai-doctor.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/22-ai-doctor-open.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/23-codex-preflight.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/24-drift-check.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/25-arch-runtime.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/26-arch-boundaries.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/27-api-report-postdocs.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/28-ai-guard-json-postdocs.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/29-validate-governance.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/30-root-type-check.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/31-root-test-run.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/32-build-web-demo-final.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/33-prettier-auto-imports-final.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/34-verify-generated-diff-clean.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/35-build-desktop.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/36-git-diff-check-after-reports.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/37-docs-commands-after-reports.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/38-ai-guard-json-after-reports.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/39-validate-governance-after-reports.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/command-logs/40-git-status-final.log
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/playwright-smoke.png
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/reports/before-after.md
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/reports/final-status.md
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/reports/global-shell-behavior-inventory.md
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/reports/inventory.md
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/reports/risk-notes.md
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/reports/summary.md
+?? docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/reports/validation-summary.md

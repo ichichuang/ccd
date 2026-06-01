@@ -1148,3 +1148,12 @@ Until an owner/operator/product records a decision for any item above, `CONDITIO
 - Boundary effect: the R2/R5 exact allowlist rows were removed. `scripts/drift-check.mjs` now asserts the resolver boundary exists and centrally calls `PrimeVueResolver()`.
 - Remaining scope: C-06 still has 1 exact row (`AppPrimeVueGlobals`) plus the showcase exception. D-022, D-023, and D-024 remain approved but not yet executed in this entry.
 - Full GO effect: no immediate GO. `CONDITIONAL_GO` remains current until the remaining residual lanes and the final validation matrix pass.
+
+### P28 D-022 execution result — 2026-06-01
+
+- Execution run: `docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/`
+- Decision executed: D-022 AppPrimeVueGlobals global shell facade lane for C-06 R3.
+- Result: `APPROVED` and `DONE` for R3. `apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue` no longer imports raw PrimeVue component, config, or toast composable modules.
+- Facade effect: `@ccd/vue-primevue-adapter` now owns the global shell component facades (`PrimeVueGlobalToast`, `PrimeVueGlobalConfirmPopup`, `PrimeVueGlobalDynamicDialog`), runtime composable facades, and `window.$toast` / `window.$message` mount/clear helpers. Existing toast severity mapping, six toast groups, locale sync, route dialog reset, and teardown behavior are preserved.
+- Boundary effect: the final exact `approvedPrimeVueAppImportFiles` row was removed after `pnpm ai:guard -- --format=json` passed. C-06 now has 0 exact app allowlist rows, but the `primevue-collection/**` showcase exception remains for D-024.
+- Full GO effect: no immediate GO. `CONDITIONAL_GO` remains current until D-024 showcase cleanup, D-023 G-02 closure, and the final validation matrix pass.

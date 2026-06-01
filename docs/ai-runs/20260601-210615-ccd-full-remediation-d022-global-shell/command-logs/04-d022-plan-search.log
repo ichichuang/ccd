@@ -1,0 +1,198 @@
+$ rg -n D-022|AppPrimeVueGlobals|global shell|Toast|ConfirmPopup|DynamicDialog|window\.$toast|window\.$message|R3 ccd-full-architecture-remediation-plan-package docs/ai-plan .ai/rules apps/web-demo/src packages/vue-primevue-adapter packages/vue-ui scripts -g !node_modules -g !dist
+docs/ai-plan/DECISIONS.md:113:- App global shell files may import global PrimeVue surfaces such as Toast, ConfirmPopup, DynamicDialog, `useToast`, and `usePrimeVue` only while they own app-wide global UI behavior.
+docs/ai-plan/DECISIONS.md:124:- `apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue`
+docs/ai-plan/DECISIONS.md:149:The current direct import surface is broad and includes valid bootstrap, adapter, generated typing, global shell, package primitive, demo, and test cases. Exact allowlisting prevents new PrimeVue leakage without requiring a same-lane component migration.
+docs/ai-plan/DECISIONS.md:567:- Recommended first slice: **E1** — adapter-only global PrimeVue service/config/directive reduction (`AdminSidebarMenuCollapsed.tsx`, `AdminSidebarMenuInline.tsx`, narrow `AppPrimeVueGlobals.vue`).
+docs/ai-plan/DECISIONS.md:1089:- **D-022 (PROPOSED) — AppPrimeVueGlobals global shell facade lane (C-06 R3):** provide adapter/vue-ui Toast/ConfirmPopup/DynamicDialog shell facades + composable re-exports preserving the six Toast groups, locale watch, route dialog reset, and `window.$toast`/`$message`, then migrate the layout host off direct imports. Decision owner: owner. Risk: high. Not approved.
+docs/ai-plan/DECISIONS.md:1105:| D-022 (global shell facade R3)                    | NO_DECISION        | PROPOSED      |
+docs/ai-plan/DECISIONS.md:1124:| D-022 (global shell facade R3)                    | APPROVED           | APPROVED      | D-022 AppPrimeVueGlobals global shell facade     |
+docs/ai-plan/DECISIONS.md:1139:- Remaining scope: C-06 still has 3 exact rows plus the showcase exception. D-021, D-022, D-023, and D-024 remain approved but not yet executed in this entry.
+docs/ai-plan/DECISIONS.md:1149:- Remaining scope: C-06 still has 1 exact row (`AppPrimeVueGlobals`) plus the showcase exception. D-022, D-023, and D-024 remain approved but not yet executed in this entry.
+.ai/rules/design-system/03-material-system.mdc:63:| `z-toast` | 100 | Toast notifications (always on top) |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:718:- M5 planning outcome: No allowlist row can be removed safely without source migration; future reductions are grouped by plugin/global shell, generated registry, showcase exception, ProForm/ProTable/Dialog wrappers, and exact legacy/demo entries.
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:723:- P20 reduction: PrimeVue exact allowlist reduced from 6 → 5 rows. The direct `primevue/tag` import in the example page `apps/web-demo/src/views/example/hooks/use-app-element-size.vue` was migrated to the governed `@ccd/vue-ui` `CcdTag` wrapper (added via `createCcdPrimeControl` with minimal spec); template/TSX Tag usages switched to `CcdTag`; the matching row was removed from `approvedPrimeVueAppImportFiles`. Presentational props only, full validation green, auto-imports diff empty. Remaining 5 exact rows are owner-accepted residual debt: desktop plugin bootstrap, web-demo build plugins, AppPrimeVueGlobals global shell, primevue plugin config, generated `components.d.ts`. Showcase exception (`primevue-collection/**`) untouched.
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:724:- P21 review: PrimeVue exact allowlist unchanged at **5** rows (`P21_NO_SAFE_RESIDUAL_REDUCTION`). All five remaining rows are bootstrap plugin install (desktop + web), build-time `PrimeVueResolver`, global shell (`AppPrimeVueGlobals`), or generator-owned `components.d.ts`. None qualify for a single-row narrow slice without M6 Option C bootstrap API, build/generator lane, or global-shell facades. No runtime or guard changes. Initial local validation was blocked by inherited P20 `CcdTag` api-surface-report drift; P21a later closed that generated sync debt. Evidence: `docs/ai-runs/20260601-211500-ccd-p21-c06-bootstrap-generated-residual-review/`.
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:728:- P25 approval: PrimeVue exact allowlist unchanged at **5** rows in the baseline lane. Owner approved D-020 (R1/R4), D-021 (R2/R5), D-022 (R3), D-023 (G-02), and D-024 (showcase) for bounded execution. No source/allowlist/manifest/lockfile/checkbox change occurred in P25; C-06 remains `OPEN` until implementation lanes land; full GO remains unauthorized pending final validation.
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:729:- P23 final register: PrimeVue exact allowlist unchanged at **5** rows. P23 produced the final owner-reviewable residual debt register (`docs/ai-runs/20260601-173110-ccd-p23-conditional-go-residual-debt-final-review/reports/residual-debt-register.md`) mapping R1 desktop install / R2 build resolver / R3 global shell / R4 web install / R5 generated registry to future lanes D-020 (R1/R4), D-021 (R2/R5), D-022 (R3). No source/allowlist/manifest/lockfile/checkbox change. C-06 remains `OPEN` owner-accepted residual debt; full GO remains unauthorized.
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:730:- Residual risk: New direct imports may require owner allowlist updates. Remaining 1 exact row is the global-shell surface for D-022, plus the D-024 showcase exception; full GO remains unauthorized until later lanes and final validation.
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1384:| `apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue`               | app global PrimeVue shell    | web app            | C-06                                                                   | app-plugin                             | app shell integration                                            | allowed exact app integration                                                                                                  | no feature-specific wrappers                                                                      | ai guard                                                               |
+docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md:1674:- allowed paths: `packages/vue-ui/src/**`, `packages/vue-primevue-adapter/src/**`, `apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue`, exact migrated app feature/example files, `scripts/ai-architecture-guard.mjs`, generated type registry only through its owning generator
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/FULL_PLANNING_SYSTEM.md:264:### FR-03 AppPrimeVueGlobals global shell residual
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/FULL_PLANNING_SYSTEM.md:265:Move global shell responsibilities behind an explicit facade only if behavior can be preserved and validated.
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/FULL_PLANNING_SYSTEM.md:293:- Application bootstrap, generated registry, and global shell changes require focused migration and validation.
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/FULL_PLANNING_SYSTEM.md:405:- Out of scope: Build resolver, generated registry, global shell, showcase.
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/FULL_PLANNING_SYSTEM.md:474:## M3 — D-022 AppPrimeVueGlobals global shell facade lane
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/FULL_PLANNING_SYSTEM.md:477:- Name: Global shell facade for AppPrimeVueGlobals
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/FULL_PLANNING_SYSTEM.md:478:- Purpose: Resolve R3 by moving global service/shell details behind a governed facade if behavior can be preserved.
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/FULL_PLANNING_SYSTEM.md:479:- Preconditions: D-022 explicitly APPROVED.
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/FULL_PLANNING_SYSTEM.md:480:- Scope: `AppPrimeVueGlobals.vue`, service facade APIs, tests.
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/FULL_PLANNING_SYSTEM.md:496:- Objective: Move global shell dependencies behind `@ccd/vue-primevue-adapter` or `@ccd/vue-ui` facade.
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/FULL_PLANNING_SYSTEM.md:497:- Acceptance criteria: AppPrimeVueGlobals no longer needs exact PrimeVue allowlist row if migration succeeds.
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/FULL_PLANNING_SYSTEM.md:852:## D-022 — AppPrimeVueGlobals global shell facade lane
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/FULL_PLANNING_SYSTEM.md:855:- Target residual debt: C-06 R3 global shell.
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/FULL_PLANNING_SYSTEM.md:863:Toast, overlay, global service, `window` access, and app shell behavior may regress.
+packages/vue-primevue-adapter/src/services.ts:4:import ToastService from 'primevue/toastservice'
+packages/vue-primevue-adapter/src/services.ts:14:export type PrimeVueToastPosition =
+packages/vue-primevue-adapter/src/services.ts:22:export type PrimeVueToastSeverity = 'success' | 'info' | 'warn' | 'error' | 'secondary' | 'contrast'
+packages/vue-primevue-adapter/src/services.ts:24:export interface PrimeVueToastMessageOptions {
+packages/vue-primevue-adapter/src/services.ts:25:  severity?: PrimeVueToastSeverity | 'danger'
+packages/vue-primevue-adapter/src/services.ts:33:export interface PrimeVueToastServiceLike {
+packages/vue-primevue-adapter/src/services.ts:34:  add(options: PrimeVueToastMessageOptions): void
+packages/vue-primevue-adapter/src/services.ts:40:export interface PrimeVueToastApi {
+packages/vue-primevue-adapter/src/services.ts:41:  add(options: PrimeVueToastMessageOptions): void
+packages/vue-primevue-adapter/src/services.ts:42:  dangerIn(position: PrimeVueToastPosition, summary: string, detail?: string): void
+packages/vue-primevue-adapter/src/services.ts:43:  successIn(position: PrimeVueToastPosition, summary: string, detail?: string): void
+packages/vue-primevue-adapter/src/services.ts:44:  infoIn(position: PrimeVueToastPosition, summary: string, detail?: string): void
+packages/vue-primevue-adapter/src/services.ts:45:  warnIn(position: PrimeVueToastPosition, summary: string, detail?: string): void
+packages/vue-primevue-adapter/src/services.ts:46:  secondaryIn(position: PrimeVueToastPosition, summary: string, detail?: string): void
+packages/vue-primevue-adapter/src/services.ts:47:  contrastIn(position: PrimeVueToastPosition, summary: string, detail?: string): void
+packages/vue-primevue-adapter/src/services.ts:62:export const PRIMEVUE_TOAST_GROUP_BY_POSITION: Record<PrimeVueToastPosition, string> = {
+packages/vue-primevue-adapter/src/services.ts:78:    app.use(ToastService)
+packages/vue-primevue-adapter/src/services.ts:94:function normalizeToastSeverity(
+packages/vue-primevue-adapter/src/services.ts:95:  severity: PrimeVueToastMessageOptions['severity']
+packages/vue-primevue-adapter/src/services.ts:96:): PrimeVueToastSeverity | undefined {
+packages/vue-primevue-adapter/src/services.ts:101:  toast: PrimeVueToastServiceLike,
+packages/vue-primevue-adapter/src/services.ts:102:  severity: PrimeVueToastSeverity,
+packages/vue-primevue-adapter/src/services.ts:103:  position: PrimeVueToastPosition,
+packages/vue-primevue-adapter/src/services.ts:116:export function createPrimeVueToastApi(toast: PrimeVueToastServiceLike): PrimeVueToastApi {
+packages/vue-primevue-adapter/src/services.ts:121:        severity: normalizeToastSeverity(options.severity),
+packages/vue-primevue-adapter/src/services.ts:141:export function createPrimeVueMessageApi(toast: PrimeVueToastServiceLike): PrimeVueMessageApi {
+packages/vue-primevue-adapter/src/services.ts:143:    severity: Extract<PrimeVueToastSeverity, 'success' | 'info' | 'warn' | 'error'>,
+docs/ai-plan/STATUS.md:53:- P27 reconciliation: `P27_D021_GENERATED_REGISTRY_DONE` (D-021 executed; build resolver/generator boundaries classified; exact allowlist 3 → 1; C-06 still open for R3 + showcase).
+docs/ai-plan/STATUS.md:54:- P26 reconciliation: `P26_D020_PRIMEVUE_BOOTSTRAP_DONE` (D-020 executed; app PrimeVue bootstrap installs now use `@ccd/vue-primevue-adapter`; exact allowlist 5 → 3; C-06 remained open for R2/R3/R5 + showcase until P27).
+docs/ai-plan/STATUS.md:73:- Full GO is not authorized yet; D-022–D-024 execution remains authorized, but final GO requires evidence-backed residual closure plus the final validation matrix.
+docs/ai-plan/STATUS.md:126:| `C-06`   | `OPEN` (owner-accepted residual) | 1 exact allowlist + showcase; P26 closed R1/R4, P27 closed R2/R5; R3 + showcase remain for D-022/D-024 |
+docs/ai-plan/STATUS.md:135:| `C-06`      | `OPEN` (owner-accepted residual) | 1 global-shell exact row + showcase remain after P27; further reduction requires D-022/D-024 execution |
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/DECISIONS.md:69:## D-022 — AppPrimeVueGlobals global shell facade lane
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/DECISIONS.md:72:- Target residual debt: C-06 R3 global shell.
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/DECISIONS.md:80:Toast, overlay, global service, `window` access, and app shell behavior may regress.
+packages/vue-primevue-adapter/src/index.ts:17:  createPrimeVueToastApi,
+packages/vue-primevue-adapter/src/index.ts:22:  type PrimeVueToastApi,
+packages/vue-primevue-adapter/src/index.ts:23:  type PrimeVueToastMessageOptions,
+packages/vue-primevue-adapter/src/index.ts:24:  type PrimeVueToastPosition,
+packages/vue-primevue-adapter/src/index.ts:25:  type PrimeVueToastServiceLike,
+packages/vue-primevue-adapter/src/index.ts:26:  type PrimeVueToastSeverity,
+packages/vue-primevue-adapter/src/index.ts:41:  createPrimeVueToastApi,
+packages/vue-primevue-adapter/src/index.ts:52:  PrimeVueToastApi,
+packages/vue-primevue-adapter/src/index.ts:53:  PrimeVueToastMessageOptions,
+packages/vue-primevue-adapter/src/index.ts:54:  PrimeVueToastPosition,
+packages/vue-primevue-adapter/src/index.ts:55:  PrimeVueToastServiceLike,
+packages/vue-primevue-adapter/src/index.ts:56:  PrimeVueToastSeverity,
+apps/web-demo/src/router/modules/example.ts:403:      name: 'ExamplePrimeVueToast',
+.ai/rules/components/00-primevue-ecosystem.mdc:80:- **Feedback Channel (ABSOLUTE RULE):** NEVER use raw PrimeVue `Toast` instances in business code and NEVER use native `alert` / `confirm` for user feedback. You MUST route feedback through the internal abstraction (`@/components/ProToast` or the project's configured toast service APIs such as `window.$toast` / `window.$message`) to preserve queue policy, theme consistency, and cross-module UX behavior.
+.ai/rules/components/00-primevue-ecosystem.mdc:110:`Select` · `MultiSelect` · `InputNumber` · `Password` · `DatePicker` · `Slider` · `InputMask` · `Rating` · `Card` · `Panel` · `Fieldset` · `Accordion` · `Dialog` · `Drawer` · `Popover` · `ConfirmPopup` · `Menu` · `Tabs` · `Stepper` · `FloatLabel` · `SelectButton` · `Paginator`
+.ai/rules/components/00-primevue-ecosystem.mdc:130:- Replace scattered raw Toast usage with the internal feedback abstraction (`ProToast` / configured service APIs).
+.ai/rules/integrations/00-network-routing-guardrails.mdc:79:### FORBIDDEN — "Double-Toast" 反模式
+.ai/rules/integrations/00-network-routing-guardrails.mdc:316:| 2 | HTTP Client | 组件中直接 `alovaInstance.Get()` | `useHttpRequest(() => buildXxxMethod(...))` | `01-http-alova` R3 |
+.ai/rules/integrations/00-network-routing-guardrails.mdc:325:| 11 | Navigation | `router.push({ path: '/system/user' })` | `goToRoute('SystemUser')` | `02-router-rbac` R3 |
+docs/ai-plan/FINAL_GO_NO_GO.md:7:- P27 reconciliation status: `P27_D021_GENERATED_REGISTRY_DONE` — D-021 executed; build `PrimeVueResolver` construction moved behind a build-only resolver boundary; generated `components.d.ts` stayed command-owned and hash-stable; exact allowlist reduced 3 → 1 after guard validation; C-06 still open for R3 plus showcase, G-02 remains 78, M12 remains `PARTIAL`, and full GO remains unauthorized.
+docs/ai-plan/FINAL_GO_NO_GO.md:8:- P26 reconciliation status: `P26_D020_PRIMEVUE_BOOTSTRAP_DONE` — D-020 executed; desktop and web PrimeVue bootstrap installs now use adapter-owned `installPrimeVueRuntime()`; direct `primevue/config` app imports removed for R1/R4; exact allowlist reduced 5 → 3 after guard validation; C-06 still open for R2/R3/R5 plus showcase, G-02 remains 78, M12 remains `PARTIAL`, and full GO remains unauthorized.
+docs/ai-plan/FINAL_GO_NO_GO.md:43:P25 (2026-06-01) recorded a fresh owner instruction approving and authorizing execution of D-020, D-021, D-022, D-023, and D-024. The approval unlocks bounded implementation lanes for PrimeVue bootstrap install ownership, build resolver/generated registry ownership, AppPrimeVueGlobals global-shell facade ownership, G-02 owner/operator/product closure, and showcase cleanup. P25 itself is baseline and approval capture only: no runtime source, allowlist, repair-ledger checkbox, package manifest, or lockfile changed; C-06 remains 5 exact rows plus showcase; G-02 remains 78 open tasks; M12 remains `PARTIAL`; `CONDITIONAL_GO` remains current until final reassessment. Evidence: P25 directory.
+docs/ai-plan/FINAL_GO_NO_GO.md:45:P26 (2026-06-01) executed D-020. It added `installPrimeVueRuntime()` to `@ccd/vue-primevue-adapter`, migrated the desktop and web app PrimeVue bootstrap installs to that adapter-owned API, preserved web dialog runtime provide ownership, and removed the two matching app exact allowlist rows after guard validation. C-06 is reduced from 5 exact rows plus showcase to 3 exact rows plus showcase. D-021, D-022, D-023, and D-024 remain approved but not yet executed. `CONDITIONAL_GO` remains current until the remaining residual lanes and final validation matrix close.
+docs/ai-plan/FINAL_GO_NO_GO.md:47:P27 (2026-06-01) executed D-021. It moved the build-time `PrimeVueResolver()` call out of `apps/web-demo/build/plugins.ts` into a build-only resolver boundary, updated drift-check to enforce that boundary, and reclassified generator-owned `components.d.ts` as a governed generated registry surface rather than an exact app allowlist row. `components.d.ts` was not manually edited and remained hash-stable across `pnpm build:web-demo`. C-06 is reduced from 3 exact rows plus showcase to 1 exact row plus showcase. D-022, D-023, and D-024 remain approved but not yet executed. `CONDITIONAL_GO` remains current.
+docs/ai-plan/FINAL_GO_NO_GO.md:51:P23 (2026-06-01) produced the final owner-reviewable residual debt register after P17–P22 without implementing any source change. It consolidated the remaining C-06 exact allowlist rows (5: R1 desktop install, R2 build resolver, R3 global shell, R4 web install, R5 generated registry) plus the long-lived showcase exception, the G-02 task groups (P1-Guard ×8, P2-Vite8 ×8, P2-Deps ×7, P2-GitHub ×2, P3-Login ×47, P4-Deferred ×6 = 78), the M12 `PARTIAL` slices, and the explicit full-GO blockers. It recorded a future owner decision menu (D-020 bootstrap install adapter R1/R4, D-021 build resolver/generated registry R2/R5, D-022 global shell facade R3, D-023 G-02 operator/product closure wave, D-024 showcase exception cleanup) as **`PROPOSED` only**. P21/P22 already confirmed no safe unapproved reduction remains, so further progress requires explicit owner/operator/product decisions. Outcome **`P23_RESIDUAL_DEBT_REGISTERED`** — no runtime source, `scripts/ai-architecture-guard.mjs` allowlist, `.ai/runtime/repair_list.md` checkbox, package manifest, or lockfile change; `CONDITIONAL_GO` unchanged; full GO still unauthorized; push not performed. Evidence: P23 directory (`reports/residual-debt-register.md`, `reports/future-owner-decision-menu.md`).
+docs/ai-plan/FINAL_GO_NO_GO.md:55:P21 (2026-06-01) reviewed the five remaining bootstrap/generated exact allowlist rows after P20: desktop plugin install, web-demo build `PrimeVueResolver`, `AppPrimeVueGlobals` global shell, web `setupPrimeVue` plugin install, and generator-owned `components.d.ts`. None met P21 single-row safe-reduction criteria (plugin install needs paired adapter bootstrap API; build/registry rows need generator/build lanes; global shell needs overlay facades). Outcome **`P21_NO_SAFE_RESIDUAL_REDUCTION`** — exact allowlist stays **5**; showcase untouched; C-06/M12/G-02/CONDITIONAL_GO unchanged. Initial local validation was blocked by inherited P20 `CcdTag` api-surface-report drift; P21a later closed that generated sync debt through owning commands. Evidence: P21 directory.
+docs/ai-plan/FINAL_GO_NO_GO.md:75:| `C-06`                  | `OPEN` (owner-accepted residual) | 1 global-shell exact row + showcase after P27; D-022/D-024 remain required for C-06 full closure.                                                 |
+docs/ai-plan/FINAL_GO_NO_GO.md:131:Execute the remaining approved D-022 through D-024 lanes one at a time, preserving each lane's evidence, validation, status updates, and local commit. Do not declare full GO until C-06/G-02/M12 are code-closed or formally resolved under the approved criteria and the final validation matrix passes. Current remote baseline is `6132c9c9`; do not push without separate authorization.
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/SPEC.md:40:### FR-03 AppPrimeVueGlobals global shell residual
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/SPEC.md:41:Move global shell responsibilities behind an explicit facade only if behavior can be preserved and validated.
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/SPEC.md:69:- Application bootstrap, generated registry, and global shell changes require focused migration and validation.
+docs/ai-plan/PLAN.md:27:| D-022                     | AppPrimeVueGlobals global shell facade for R3           | `TODO` | `docs/ai-runs/<timestamp>-ccd-full-remediation-d022-global-shell/`           |
+docs/ai-plan/PLAN.md:34:D-020 result: desktop and web PrimeVue bootstrap installs now use `@ccd/vue-primevue-adapter` `installPrimeVueRuntime()`; the R1/R4 app exact allowlist rows were removed after guard validation. C-06 remains open for D-021 R2/R5, D-022 R3, and D-024 showcase cleanup.
+docs/ai-plan/PLAN.md:36:D-021 result: `apps/web-demo/build/plugins.ts` now calls a build-only `createPrimeVueComponentResolver()` boundary, generated `components.d.ts` remains command-owned and hash-stable, and the R2/R5 exact allowlist rows were removed. C-06 remains open for D-022 R3 and D-024 showcase cleanup.
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/PLAN.md:48:- Out of scope: Build resolver, generated registry, global shell, showcase.
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/PLAN.md:117:## M3 — D-022 AppPrimeVueGlobals global shell facade lane
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/PLAN.md:120:- Name: Global shell facade for AppPrimeVueGlobals
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/PLAN.md:121:- Purpose: Resolve R3 by moving global service/shell details behind a governed facade if behavior can be preserved.
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/PLAN.md:122:- Preconditions: D-022 explicitly APPROVED.
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/PLAN.md:123:- Scope: `AppPrimeVueGlobals.vue`, service facade APIs, tests.
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/PLAN.md:139:- Objective: Move global shell dependencies behind `@ccd/vue-primevue-adapter` or `@ccd/vue-ui` facade.
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/PLAN.md:140:- Acceptance criteria: AppPrimeVueGlobals no longer needs exact PrimeVue allowlist row if migration succeeds.
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/NEXT_ACTIONS.md:15:## If D-022 is approved
+ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/NEXT_ACTIONS.md:17:Run M3 global shell facade lane.
+apps/web-demo/src/App.vue:8:import AppPrimeVueGlobals from '@/layouts/components/AppPrimeVueGlobals.vue'
+apps/web-demo/src/App.vue:65:    <AppPrimeVueGlobals />
+packages/vue-primevue-adapter/src/theme/primevuePreset.ts:233:  const buildToastStatusEntry = (
+packages/vue-primevue-adapter/src/theme/primevuePreset.ts:250:  const toastDarkSemantic: Record<string, ReturnType<typeof buildToastStatusEntry>> = {}
+packages/vue-primevue-adapter/src/theme/primevuePreset.ts:252:    toastDarkSemantic[key] = buildToastStatusEntry(cssVar, fgVar, ' / 0.6', ' / 0.8')
+apps/web-demo/src/types/modules/utils.d.ts:29:  /** PrimeVue Toast 位置 */
+apps/web-demo/src/types/modules/utils.d.ts:30:  type ToastPosition =
+apps/web-demo/src/types/modules/utils.d.ts:38:  /** 全局 Toast API（基于 PrimeVue useToast，severity 统一用 danger/warn） */
+apps/web-demo/src/types/modules/utils.d.ts:39:  interface ToastApi {
+apps/web-demo/src/types/modules/utils.d.ts:47:    dangerIn: (position: ToastPosition, summary: string, detail?: string) => void
+apps/web-demo/src/types/modules/utils.d.ts:48:    successIn: (position: ToastPosition, summary: string, detail?: string) => void
+apps/web-demo/src/types/modules/utils.d.ts:49:    infoIn: (position: ToastPosition, summary: string, detail?: string) => void
+apps/web-demo/src/types/modules/utils.d.ts:50:    warnIn: (position: ToastPosition, summary: string, detail?: string) => void
+apps/web-demo/src/types/modules/utils.d.ts:51:    secondaryIn: (position: ToastPosition, summary: string, detail?: string) => void
+apps/web-demo/src/types/modules/utils.d.ts:52:    contrastIn: (position: ToastPosition, summary: string, detail?: string) => void
+apps/web-demo/src/types/modules/utils.d.ts:55:    /** 清除所有 Toast，内部调用 removeAllGroups() */
+apps/web-demo/src/types/modules/utils.d.ts:68:    /** 全局 Toast（PrimeVue），在 App 挂载后可用 */
+apps/web-demo/src/types/modules/utils.d.ts:69:    $toast?: ToastApi
+apps/web-demo/src/types/components.d.ts:26:    ConfirmPopup: typeof import('primevue/confirmpopup')['default']
+.ai/rules/core/00-global-architect.mdc:41:- **Smart Abstractions:** For common UI patterns, intelligently leverage internal advanced components instead of raw HTML (e.g., use the internal `Dialog`, `Toast`, `CScrollbar` wrappers).
+apps/web-demo/src/locales/lang/example/zh-CN.ts:20:          toast: '消息提示 (Toast)',
+apps/web-demo/src/locales/lang/example/en-US.ts:20:          toast: 'PrimeVue Toast',
+packages/vue-primevue-adapter/src/services.spec.ts:137:describe('PrimeVue global shell helpers', () => {
+packages/vue-primevue-adapter/src/services.spec.ts:139:    const { createPrimeVueToastApi } = await import('./services.js')
+packages/vue-primevue-adapter/src/services.spec.ts:148:    const api = createPrimeVueToastApi(toast)
+scripts/ai-architecture-guard.mjs:140:  'apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue',
+apps/web-demo/src/layouts/components/ToastMessageContent.vue:3: * Toast 消息内容（用于 #message slot）
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:4: * 职责：Toast、ConfirmPopup、DynamicDialog、PrimeDialog；
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:5: *       useToast 封装并挂到 window；PrimeVue locale 同步；useDialog + PrimeDialog
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:7:import Toast from 'primevue/toast'
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:8:import ConfirmPopup from 'primevue/confirmpopup'
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:9:import DynamicDialog from 'primevue/dynamicdialog'
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:10:import { useToast } from 'primevue/usetoast'
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:18:  createPrimeVueToastApi,
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:23:import ToastMessageContent from '@/layouts/components/ToastMessageContent.vue'
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:26:const toast = useToast()
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:48:/** Toast 各 severity 对应图标（PrimeVue 未为 secondary/contrast 定义，此处补充） */
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:54:    window.$toast = createPrimeVueToastApi(toast) as typeof window.$toast
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:70:  <Toast
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:75:      <ToastMessageContent
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:81:  </Toast>
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:82:  <Toast
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:87:      <ToastMessageContent
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:93:  </Toast>
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:94:  <Toast
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:99:      <ToastMessageContent
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:105:  </Toast>
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:106:  <Toast
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:111:      <ToastMessageContent
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:117:  </Toast>
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:118:  <Toast
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:123:      <ToastMessageContent
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:129:  </Toast>
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:130:  <Toast
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:135:      <ToastMessageContent
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:141:  </Toast>
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:142:  <ConfirmPopup />
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:143:  <DynamicDialog />
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:152: * EXCEPTION: Toast close-button positioning — cannot migrate to PT (PassThrough)
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:156:/* Toast 消息基础：相对定位 + 全宽 */
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:167:/* 关闭按钮贴右上角（仅对有关闭按钮的 Toast：排除 center） */
+apps/web-demo/src/views/example/common/constants.vue:38:const copyToastGroup = 'tr' as const
+apps/web-demo/src/views/example/common/constants.vue:74:        group: copyToastGroup,
+apps/web-demo/src/views/example/common/constants.vue:83:        group: copyToastGroup,
+apps/web-demo/src/plugins/modules/errorHandler.ts:35:  const showUserFriendlyToast = () => {
+apps/web-demo/src/plugins/modules/errorHandler.ts:76:      showUserFriendlyToast()
+apps/web-demo/src/plugins/modules/errorHandler.ts:121:          showUserFriendlyToast()
+apps/web-demo/src/plugins/modules/errorHandler.ts:140:      showUserFriendlyToast()
+apps/web-demo/src/plugins/modules/primevue.ts:14: * Locale 按当前系统语言设置，运行时切换由 AppPrimeVueGlobals.vue 的 watch 同步。
+apps/web-demo/src/views/example/components/primevue-collection/overview/index.vue:94:const openConfirmPopup = (event: Event): void => {
+apps/web-demo/src/views/example/components/primevue-collection/overview/index.vue:699:              label="ConfirmPopup 触发"
+apps/web-demo/src/views/example/components/primevue-collection/overview/index.vue:701:              @click="openConfirmPopup"
+apps/web-demo/src/views/example/components/primevue-collection/overview/index.vue:717:          <ConfirmPopup />
+apps/web-demo/src/views/example/system-configuration/unocss.vue:313:    uiRole: 'Toast 通知',
+apps/web-demo/src/views/example/system-configuration/unocss.vue:365:    description: '从 z-base 到 z-toast 的物理层级契约，确保 Modal/Popover/Toast 永不穿插',
+apps/web-demo/src/views/example/system-configuration/theme.vue:84:/** 与 AppPrimeVueGlobals 中 Toast `group="tr"` 对齐，否则多实例下无 group 不会展示 */
+apps/web-demo/src/views/example/system-configuration/theme.vue:274:  <!-- Toast：AppPrimeVueGlobals 挂载多组 Toast；复制反馈须带 group（见 copyClassName） -->
+apps/web-demo/src/views/example/components/primevue-collection/toast/index.vue:3: * Toast & Message 示例（V2）
+apps/web-demo/src/views/example/components/primevue-collection/toast/index.vue:16:const TOAST_POSITIONS: ToastPosition[] = [
+apps/web-demo/src/views/example/components/primevue-collection/toast/index.vue:25:const POSITION_LABELS: Record<ToastPosition, string> = {
+apps/web-demo/src/views/example/components/primevue-collection/toast/index.vue:43:  pos: ToastPosition,
+apps/web-demo/src/views/example/components/primevue-collection/toast/index.vue:49:  ;(toast[method] as (p: ToastPosition, s: string, d?: string) => void)(pos, summary, detail)
+apps/web-demo/src/views/example/components/primevue-collection/toast/index.vue:83:                    Toast Notifications
+apps/web-demo/src/views/example/components/primevue-collection/toast/index.vue:130:          <h2 class="text-lg font-semibold">2. Toast 快捷方法（6 种 severity × 6 种位置）</h2>
+
+[exit:0]

@@ -385,9 +385,12 @@
       "exports": ["."],
       "rootSymbols": [
         "applyPrimeVueLocale",
+        "clearPrimeVueGlobalMessageApis",
+        "clearPrimeVueToastGroups",
         "createCustomPreset",
         "createPrimeVueAdapterConfig",
         "CreatePrimeVueAdapterConfigOptions",
+        "createPrimeVueGlobalMessageApis",
         "createPrimeVueMessageApi",
         "createPrimeVueToastApi",
         "DEFAULT_PRIMEVUE_TOAST_LIFE_MS",
@@ -395,12 +398,19 @@
         "installPrimeVueRuntime",
         "installPrimeVueServices",
         "menuPt",
+        "mountPrimeVueGlobalMessageApis",
         "PRIMEVUE_TOAST_FALLBACK_ICON",
         "PRIMEVUE_TOAST_GROUP_BY_POSITION",
         "PRIMEVUE_TOAST_SEVERITY_ICONS",
+        "PrimeVueGlobalConfirmPopup",
+        "PrimeVueGlobalDynamicDialog",
+        "PrimeVueGlobalMessageApis",
+        "PrimeVueGlobalMessageTarget",
+        "PrimeVueGlobalToast",
         "PrimeVueMenuItem",
         "PrimeVueMessageApi",
         "PrimeVuePopoverInstance",
+        "PrimeVueRuntimeConfig",
         "PrimeVueRuntimeInstallOptions",
         "PrimeVueServiceInstallOptions",
         "PrimeVueSizeSource",
@@ -411,7 +421,9 @@
         "PrimeVueToastServiceLike",
         "PrimeVueToastSeverity",
         "primeVueTooltipDirective",
-        "resolvePrimeVueLocale"
+        "resolvePrimeVueLocale",
+        "usePrimeVueRuntimeConfig",
+        "usePrimeVueToastService"
       ]
     },
     {

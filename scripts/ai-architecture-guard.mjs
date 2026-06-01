@@ -136,9 +136,7 @@ const approvedDirectTransportFiles = new Set([
 const stripJsComments = content =>
   content.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1')
 
-const approvedPrimeVueAppImportFiles = new Set([
-  'apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue',
-])
+const approvedPrimeVueAppImportFiles = new Set()
 
 const isPrimeVueCollectionExampleFile = relPath =>
   relPath.startsWith('apps/web-demo/src/views/example/components/primevue-collection/')

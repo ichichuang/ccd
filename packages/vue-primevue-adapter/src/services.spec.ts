@@ -15,6 +15,13 @@ interface DirectiveCall {
 
 const serviceState = vi.hoisted(() => ({
   directives: [] as DirectiveCall[],
+  primevueConfig: { config: {} as { locale?: unknown } },
+  toastService: {
+    add: vi.fn(),
+    remove: vi.fn(),
+    removeGroup: vi.fn(),
+    removeAllGroups: vi.fn(),
+  },
   useCalls: [] as UseCall[],
 }))
 
@@ -24,6 +31,19 @@ vi.mock('primevue/toastservice', () => ({
 
 vi.mock('primevue/config', () => ({
   default: { install: vi.fn() },
+  usePrimeVue: vi.fn(() => serviceState.primevueConfig),
+}))
+
+vi.mock('primevue/toast', () => ({
+  default: { name: 'PrimeVueToastMock' },
+}))
+
+vi.mock('primevue/confirmpopup', () => ({
+  default: { name: 'PrimeVueConfirmPopupMock' },
+}))
+
+vi.mock('primevue/dynamicdialog', () => ({
+  default: { name: 'PrimeVueDynamicDialogMock' },
 }))
 
 vi.mock('primevue/confirmationservice', () => ({
@@ -36,6 +56,10 @@ vi.mock('primevue/dialogservice', () => ({
 
 vi.mock('primevue/tooltip', () => ({
   default: { mounted: vi.fn() },
+}))
+
+vi.mock('primevue/usetoast', () => ({
+  useToast: vi.fn(() => serviceState.toastService),
 }))
 
 function createInstrumentedApp(): App {
@@ -135,6 +159,22 @@ describe('installPrimeVueRuntime', () => {
 })
 
 describe('PrimeVue global shell helpers', () => {
+  beforeEach(() => {
+    serviceState.primevueConfig = { config: {} }
+    serviceState.toastService.add.mockClear()
+    serviceState.toastService.remove.mockClear()
+    serviceState.toastService.removeGroup.mockClear()
+    serviceState.toastService.removeAllGroups.mockClear()
+  })
+
+  it('exposes PrimeVue global shell components behind adapter facades', async () => {
+    const services = await import('./services.js')
+
+    expect(services.PrimeVueGlobalToast).toEqual({ name: 'PrimeVueToastMock' })
+    expect(services.PrimeVueGlobalConfirmPopup).toEqual({ name: 'PrimeVueConfirmPopupMock' })
+    expect(services.PrimeVueGlobalDynamicDialog).toEqual({ name: 'PrimeVueDynamicDialogMock' })
+  })
+
   it('maps toast positions and danger severity through the adapter API', async () => {
     const { createPrimeVueToastApi } = await import('./services.js')
     const calls: unknown[] = []
@@ -181,6 +221,57 @@ describe('PrimeVue global shell helpers', () => {
       group: 'tc',
       closable: false,
     })
+  })
+
+  it('mounts and clears global toast/message APIs on the host target', async () => {
+    const { clearPrimeVueGlobalMessageApis, mountPrimeVueGlobalMessageApis } =
+      await import('./services.js')
+    const target: { $toast?: unknown; $message?: unknown } = {}
+    const toast = {
+      add: vi.fn(),
+      remove: vi.fn(),
+      removeGroup: vi.fn(),
+      removeAllGroups: vi.fn(),
+    }
+
+    mountPrimeVueGlobalMessageApis(target, toast)
+
+    expect(target.$toast).toEqual(
+      expect.objectContaining({
+        dangerIn: expect.any(Function),
+        successIn: expect.any(Function),
+        clear: expect.any(Function),
+      })
+    )
+    expect(target.$message).toEqual(
+      expect.objectContaining({
+        success: expect.any(Function),
+        danger: expect.any(Function),
+      })
+    )
+
+    clearPrimeVueGlobalMessageApis(target)
+
+    expect(target.$toast).toBeUndefined()
+    expect(target.$message).toBeUndefined()
+  })
+
+  it('wraps runtime composables and toast cleanup behind adapter APIs', async () => {
+    const {
+      applyPrimeVueLocale,
+      clearPrimeVueToastGroups,
+      usePrimeVueRuntimeConfig,
+      usePrimeVueToastService,
+    } = await import('./services.js')
+
+    const runtimeConfig = usePrimeVueRuntimeConfig<{ ok: boolean }>()
+    const toast = usePrimeVueToastService()
+
+    applyPrimeVueLocale(runtimeConfig, 'en-US', { 'zh-CN': { ok: true } }, 'zh-CN')
+    clearPrimeVueToastGroups(toast)
+
+    expect(runtimeConfig.config.locale).toEqual({ ok: true })
+    expect(serviceState.toastService.removeAllGroups).toHaveBeenCalledOnce()
   })
 
   it('applies locale with a fallback', async () => {
