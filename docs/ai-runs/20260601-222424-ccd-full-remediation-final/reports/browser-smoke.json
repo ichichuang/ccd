@@ -1,0 +1,8 @@
+{
+  "routes": [
+    "/example/primevue-collection/overview",
+    "/example/primevue-collection/pro-table/advanced"
+  ],
+  "visualMode": true,
+  "errors": []
+}

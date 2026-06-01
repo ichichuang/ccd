@@ -1,5 +1,37 @@
 # Final Validation Matrix
 
+## P31 Full Remediation Final Matrix
+
+Evidence directory: `docs/ai-runs/20260601-222424-ccd-full-remediation-final/`.
+
+| Check                 | Command / method                                                                  | Result             | Evidence log                                               |
+| --------------------- | --------------------------------------------------------------------------------- | ------------------ | ---------------------------------------------------------- |
+| Diff check            | `git diff --check`                                                                | PASS               | `command-logs/01_git_diff_check.log`                       |
+| Docs commands         | `pnpm docs:commands`                                                              | PASS               | `command-logs/02_docs_commands.log`                        |
+| Project doctor        | `pnpm project:doctor`                                                             | PASS               | `command-logs/03_project_doctor.log`                       |
+| AI doctor             | `pnpm ai:doctor`                                                                  | PASS               | `command-logs/04_ai_doctor.log`                            |
+| AI doctor open ledger | `pnpm ai:doctor --open`                                                           | PASS, 0 open tasks | `command-logs/05_ai_doctor_open.log`                       |
+| Codex preflight       | `pnpm codex:preflight`                                                            | PASS               | `command-logs/06_codex_preflight.log`                      |
+| Internal prepare      | `pnpm ci:prepare-internal`                                                        | PASS               | `command-logs/07_ci_prepare_internal.log`                  |
+| Package smoke         | `pnpm ci:smoke:packages`                                                          | PASS               | `command-logs/08_ci_smoke_packages.log`                    |
+| Runtime architecture  | `pnpm arch:runtime`                                                               | PASS               | `command-logs/09_arch_runtime.log`                         |
+| Boundary architecture | `pnpm arch:boundaries`                                                            | PASS               | `command-logs/10_arch_boundaries.log`                      |
+| API report            | `pnpm api:report`                                                                 | PASS               | `command-logs/11_api_report.log`                           |
+| AI guard              | `pnpm ai:guard -- --format=json`                                                  | PASS               | `command-logs/12_ai_guard_json.log`                        |
+| Governance            | `pnpm validate:governance`                                                        | PASS               | `command-logs/13_validate_governance.log`                  |
+| Type check            | `pnpm type-check`                                                                 | PASS               | `command-logs/14_type_check.log`                           |
+| Root tests            | `pnpm test:run`                                                                   | PASS               | `command-logs/15_test_run.log`                             |
+| Web-demo tests        | `pnpm --filter @ccd/web-demo test`                                                | PASS               | `command-logs/16_web_demo_test.log`                        |
+| Web-demo build        | `pnpm build:web-demo`                                                             | PASS               | `command-logs/17_build_web_demo.log`                       |
+| Auto-imports format   | `pnpm exec prettier --write apps/web-demo/src/types/auto-imports.d.ts`            | PASS               | `command-logs/18_prettier_auto_imports.log`                |
+| Auto-imports drift    | `git diff --exit-code -- apps/web-demo/src/types/auto-imports.d.ts`               | PASS               | `command-logs/19_verify_auto_imports_no_diff.log`          |
+| Desktop build         | `pnpm build:desktop`                                                              | PASS               | `command-logs/20_build_desktop.log`                        |
+| Generated drift       | `pnpm drift-check`                                                                | PASS               | `command-logs/21_drift_check.log`                          |
+| Final git status      | `git status --short --branch --untracked-files=all`                               | PASS               | `command-logs/22_final_git_status.log`                     |
+| Browser smoke         | Authenticated Playwright smoke for PrimeVue overview and ProTable advanced routes | PASS               | `command-logs/25_browser_primevue_authenticated_smoke.log` |
+
+P31 result: final architecture decision is `GO`. Push was not performed.
+
 ## Active P1 Run Matrix
 
 | Check                       | Command / method                                                    |             Last run |       Exit code / result | Evidence log                                                                                                                                                                | Notes                                                                     |

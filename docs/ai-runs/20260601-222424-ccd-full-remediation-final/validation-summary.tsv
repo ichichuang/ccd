@@ -1,0 +1,23 @@
+label	command	exit_code	seconds
+01_git_diff_check	git diff --check	0	0
+02_docs_commands	pnpm docs:commands	0	0
+03_project_doctor	pnpm project:doctor	0	0
+04_ai_doctor	pnpm ai:doctor	0	9
+05_ai_doctor_open	pnpm ai:doctor --open	0	0
+06_codex_preflight	pnpm codex:preflight	0	10
+07_ci_prepare_internal	pnpm ci:prepare-internal	0	8
+08_ci_smoke_packages	pnpm ci:smoke:packages	0	1
+09_arch_runtime	pnpm arch:runtime	0	1
+10_arch_boundaries	pnpm arch:boundaries	0	1
+11_api_report	pnpm api:report	0	1
+12_ai_guard_json	pnpm ai:guard -- --format=json	0	0
+13_validate_governance	pnpm validate:governance	0	13
+14_type_check	pnpm type-check	0	1
+15_test_run	pnpm test:run	0	13
+16_web_demo_test	pnpm --filter @ccd/web-demo test	0	3
+17_build_web_demo	pnpm build:web-demo	0	33
+18_prettier_auto_imports	pnpm exec prettier --write apps/web-demo/src/types/auto-imports.d.ts	0	0
+19_verify_auto_imports_no_diff	git diff --exit-code -- apps/web-demo/src/types/auto-imports.d.ts	0	0
+20_build_desktop	pnpm build:desktop	0	19
+21_drift_check	pnpm drift-check	0	0
+22_final_git_status	git status --short --branch --untracked-files=all	0	0

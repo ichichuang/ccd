@@ -1,5 +1,18 @@
 # CCD Architecture Repair Risk Register
 
+## 2026-06-01 P31 Full Remediation Risk Outcome
+
+The risks that blocked Full GO for the approved D-020 through D-024 remediation program are closed or mitigated by evidence:
+
+- PrimeVue bootstrap install semantics: mitigated by D-020 adapter migration and final web/desktop builds.
+- PrimeVue generated registry/build resolver drift: mitigated by D-021 boundary, `pnpm api:report`, `pnpm build:web-demo`, auto-imports diff check, and `pnpm drift-check`.
+- AppPrimeVueGlobals global services: mitigated by D-022 adapter facades and final type/test/build validation.
+- Showcase migration behavior: mitigated by D-024 wrapper/facade migration, `pnpm ai:guard -- --format=json`, and authenticated browser smoke.
+- Repair-ledger overstatement: closed by D-023 owner/operator/product decisions and `pnpm ai:doctor --open` reporting 0 open tasks.
+- Generated manual-edit risk: mitigated by owning commands and stable generated drift checks.
+
+Future-charter items such as Vite major migration, dependency modernization, GitHub remote/settings, Login Diorama, desktop drift CI, and stricter guard expansion remain separately approval-gated and are not current Full GO prerequisites.
+
 | Risk ID | Description                                                                                                                                            | Probability | Impact | Detection signal                                                                                                                                           | Mitigation                                                                                                                                                                                                                                 | Owner / responsible role | Status    | Residual risk | Escalation trigger                                                  |
 | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------: | -----: | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------ | --------- | ------------- | ------------------------------------------------------------------- |
 | R-001   | Local ahead 7 stack not fully validated after latest commit                                                                                            |      Medium |   High | post-7 checkpoint missing/fails                                                                                                                            | M0-T3 checkpoint passed after doc-command wording fix and generated sync rerun                                                                                                                                                             | Operator/Codex           | MITIGATED | Low           | Future baseline failure                                             |

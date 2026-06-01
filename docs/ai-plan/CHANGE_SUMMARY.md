@@ -1,5 +1,21 @@
 # CCD Change Summary
 
+## 2026-06-01 Full Architecture Remediation Final GO
+
+Active evidence directory: `docs/ai-runs/20260601-222424-ccd-full-remediation-final/`.
+
+Executed lanes:
+
+- Baseline approval capture: recorded owner approval for D-020 through D-024.
+- D-020: migrated web/desktop PrimeVue bootstrap installs behind `@ccd/vue-primevue-adapter`.
+- D-021: moved build resolver and generated registry ownership behind governed resolver/generator boundaries.
+- D-022: moved `AppPrimeVueGlobals` raw PrimeVue dependencies behind adapter-owned global-shell facades.
+- D-024: migrated showcase direct PrimeVue imports to `@ccd/vue-ui` wrappers or `@ccd/vue-primevue-adapter` facades and removed the showcase guard exception.
+- D-023: formally resolved the remaining 78 G-02 repair-ledger tasks by exact owner/operator/product decisions.
+- Final: ran the required final validation matrix, verified generated drift stability, added authenticated browser smoke evidence, and declared `GO`.
+
+Final validation passed. No package manifest, lockfile, Clawd/theme, safeStorage crypto/HMAC/WebCrypto, lz-string, auth-flow, `.github/**`, remote, clean/reset/rebase, or push operation was performed.
+
 ## 2026-05-29 P1 Platform Extraction Update
 
 Active evidence directory: `docs/ai-runs/20260529-170536-ccd-p1-platform-extraction-and-boundaries/`.

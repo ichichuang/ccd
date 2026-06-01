@@ -1,0 +1,53 @@
+cwd: /Users/cc/MyPorject/ccd
+command: git status --short --branch --untracked-files=all
+started_at: 2026-06-01T22:44:51+08:00
+--- output ---
+## main...origin/main [ahead 6]
+ M README.md
+ M docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md
+ M docs/ai-plan/CHANGE_SUMMARY.md
+ M docs/ai-plan/DECISIONS.md
+ M docs/ai-plan/FINAL_GO_NO_GO.md
+ M docs/ai-plan/FINAL_VALIDATION_MATRIX.md
+ M docs/ai-plan/NEXT_ACTIONS.md
+ M docs/ai-plan/PLAN.md
+ M docs/ai-plan/RISK_REGISTER.md
+ M docs/ai-plan/STATUS.md
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/before-after.md
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/01_git_diff_check.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/02_docs_commands.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/03_project_doctor.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/04_ai_doctor.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/05_ai_doctor_open.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/06_codex_preflight.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/07_ci_prepare_internal.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/08_ci_smoke_packages.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/09_arch_runtime.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/10_arch_boundaries.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/11_api_report.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/12_ai_guard_json.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/13_validate_governance.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/14_type_check.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/15_test_run.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/16_web_demo_test.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/17_build_web_demo.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/18_prettier_auto_imports.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/19_verify_auto_imports_no_diff.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/20_build_desktop.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/21_drift_check.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/22_final_git_status.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/23_browser_preview_server.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/24_browser_primevue_overview.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/command-logs/25_browser_primevue_authenticated_smoke.log
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/final-status.md
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/inventory.md
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/reports/browser-primevue-overview-authenticated.png
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/reports/browser-primevue-overview.png
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/reports/browser-primevue-pro-table-advanced.png
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/reports/browser-smoke.json
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/risk-notes.md
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/summary.md
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/validation-summary.md
+?? docs/ai-runs/20260601-222424-ccd-full-remediation-final/validation-summary.tsv
+--- exit_code: 0 ---
+finished_at: 2026-06-01T22:44:51+08:00

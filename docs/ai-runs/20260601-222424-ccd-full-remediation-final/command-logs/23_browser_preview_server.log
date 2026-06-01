@@ -1,0 +1,7 @@
+
+> @ccd/web-demo@1.0.38 preview /Users/cc/MyPorject/ccd/apps/web-demo
+> vite preview -- --host 127.0.0.1 --port 4173
+
+/Users/cc/MyPorject/ccd/apps/web-demo:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @ccd/web-demo@1.0.38 preview: `vite preview -- --host 127.0.0.1 --port 4173`
+Command failed with signal "SIGINT"

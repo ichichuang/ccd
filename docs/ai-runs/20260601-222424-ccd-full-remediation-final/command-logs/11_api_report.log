@@ -1,0 +1,11 @@
+cwd: /Users/cc/MyPorject/ccd
+command: pnpm api:report
+started_at: 2026-06-01T22:43:28+08:00
+--- output ---
+
+> ccd@1.0.38 api:report /Users/cc/MyPorject/ccd
+> node scripts/architecture/check-api-surface.mjs
+
+API surface report generated: docs/generated/api-surface-report.json
+--- exit_code: 0 ---
+finished_at: 2026-06-01T22:43:29+08:00

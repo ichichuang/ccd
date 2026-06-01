@@ -1,0 +1,11 @@
+cwd: /Users/cc/MyPorject/ccd
+command: pnpm drift-check
+started_at: 2026-06-01T22:44:51+08:00
+--- output ---
+
+> ccd@1.0.38 drift-check /Users/cc/MyPorject/ccd
+> node scripts/drift-check.mjs
+
+✅ Drift Check 通过: 所有 data-archetype 与 page.state.ts 一致，无 Style Drift
+--- exit_code: 0 ---
+finished_at: 2026-06-01T22:44:51+08:00

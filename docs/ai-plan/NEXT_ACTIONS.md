@@ -2,15 +2,19 @@
 
 ## Current Priority
 
-Active lane: P3 feature and runtime refactors.
+Active lane: none for the approved full-remediation program.
 
 Evidence directory:
 
-- `docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/`
+- `docs/ai-runs/20260601-222424-ccd-full-remediation-final/`
 
-Implementable P3 items in the active lane:
+Current state:
 
-- None. The P3 plan and ledgers currently contain no actionable `OPEN` P3 item.
+- Final architecture decision: `GO`.
+- D-020 through D-024: `DONE`.
+- `C-06`, `M12`, and `G-02`: `DONE`.
+- `pnpm ai:doctor --open`: 0 open tasks.
+- Local commits are not pushed.
 
 ## Blocked or Deferred P3 Items
 
@@ -49,14 +53,18 @@ git status --short --untracked-files=all
 
 Do not push, stage, commit, switch branches, rewrite history, upgrade dependencies, start Vite 8 migration, or mutate GitHub remote settings in this lane.
 
-## Recommended Next Lane After P3
+## Recommended Next Lane After Full GO
 
-If final validation passes, the next useful owner action is deciding one blocked lane:
+No next lane is required for current Full GO. If work resumes, open exactly one separately approved future-charter lane:
 
-- approve or reject Login Diorama M11 product/owner lane;
-- approve or reject PrimeVue dependency review lane;
-- approve or reject alova lane after HTTP contract prerequisites;
-- accept remaining blocked P3/P4 items as governance exceptions.
+- Vite major migration.
+- Dependency modernization.
+- GitHub remote/settings or `.github/**` governance changes.
+- Login Diorama product lane.
+- Desktop drift CI.
+- Stricter guard expansion.
+
+Do not push the P25-P31 local commit stack without separate authorization.
 
 ## Archived P1 Notes
 

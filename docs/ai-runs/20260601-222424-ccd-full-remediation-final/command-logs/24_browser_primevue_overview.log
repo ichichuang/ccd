@@ -1,0 +1,6 @@
+cwd: /Users/cc/MyPorject/ccd
+command: pnpm exec playwright screenshot --wait-for-timeout=3000 http://127.0.0.1:4173/example/primevue-collection/overview docs/ai-runs/20260601-222424-ccd-full-remediation-final/reports/browser-primevue-overview.png
+Navigating to http://127.0.0.1:4173/example/primevue-collection/overview
+Waiting for timeout 3000...
+Capturing screenshot into docs/ai-runs/20260601-222424-ccd-full-remediation-final/reports/browser-primevue-overview.png
+exit_code: 0
