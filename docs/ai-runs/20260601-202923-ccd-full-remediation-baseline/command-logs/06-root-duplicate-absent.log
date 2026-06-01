@@ -1,0 +1,3 @@
+$ test ! -e CCD_ARCHITECTURE_ISSUE_REPAIR_LOG.md
+
+[exit_code] 0

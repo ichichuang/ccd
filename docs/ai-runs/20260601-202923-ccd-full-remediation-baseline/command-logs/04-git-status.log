@@ -1,0 +1,28 @@
+$ git status --short --untracked-files=all
+?? ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/FULL_PLANNING_SYSTEM.md
+?? ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/README.md
+?? ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/CHANGE_SUMMARY.md
+?? ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/CODEX_GOAL_PROMPT.md
+?? ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/DECISIONS.md
+?? ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/EVIDENCE_POLICY.md
+?? ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/FINAL_GO_NO_GO.md
+?? ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/FINAL_VALIDATION_MATRIX.md
+?? ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/NEXT_ACTIONS.md
+?? ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/OPERATOR_SOP.md
+?? ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/PLAN.md
+?? ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/REVIEW_CHECKLIST.md
+?? ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/RISK_REGISTER.md
+?? ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/ROLLBACK.md
+?? ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/SECURITY_AND_APPROVALS.md
+?? ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/SPEC.md
+?? ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/STATUS.md
+?? ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/VALIDATION.md
+?? ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-plan/WORKFLOW_RECOMMENDATIONS.md
+?? ccd-full-architecture-remediation-plan-package/ccd-full-architecture-remediation-plan-package/docs/ai-runs/README.md
+?? docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/command-logs/00-git-fetch-origin-main.log
+?? docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/command-logs/01-git-branch.log
+?? docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/command-logs/02-git-rev-parse-head.log
+?? docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/command-logs/03-git-rev-parse-origin-main.log
+?? docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/command-logs/04-git-status.log
+
+[exit_code] 0

@@ -1108,3 +1108,23 @@ Until an owner/operator/product records a decision for any item above, `CONDITIO
 
 - Authorization effect: none of D-020–D-024 are approved, rejected, or deferred by P24. C-06, G-02, M12, and `CONDITIONAL_GO` semantics unchanged. Full GO remains unauthorized.
 - P24 final status: `P24_NO_OWNER_DECISION_RECORDED`.
+
+### P25 owner approval — 2026-06-01
+
+- Review run: `docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/`
+- Owner input: explicit approval to approve and execute P23 residual-debt menu items D-020 through D-024 as bounded lanes.
+- Baseline: `main` at `6132c9c9`; `origin/main` at `6132c9c9`; `.cursor` absent; root duplicate repair log absent.
+- External controlling input: `ccd-full-architecture-remediation-plan-package/` was supplied in the working tree and locally excluded from Git status after the baseline log so it is not accidentally committed as a repository artifact.
+- Per-item result:
+
+| menu_id                                           | P25 owner_decision | result_status | execution lane                                   |
+| ------------------------------------------------- | ------------------ | ------------- | ------------------------------------------------ |
+| D-020 (bootstrap install adapter R1/R4)           | APPROVED           | APPROVED      | D-020 PrimeVue bootstrap install adapter         |
+| D-021 (build resolver / generated registry R2/R5) | APPROVED           | APPROVED      | D-021 build resolver/generated registry boundary |
+| D-022 (global shell facade R3)                    | APPROVED           | APPROVED      | D-022 AppPrimeVueGlobals global shell facade     |
+| D-023 (G-02 closure wave, 78 tasks)               | APPROVED           | APPROVED      | D-023 owner/operator/product closure wave        |
+| D-024 (showcase exception cleanup)                | APPROVED           | APPROVED      | D-024 showcase cleanup decision                  |
+
+- Authorization effect: source migration may proceed only inside the approved lane scope and only after lane inventory evidence. Package manifest, lockfile, dependency, destructive Git, Clawd/theme, safeStorage crypto/HMAC/WebCrypto ownership, and lz-string ownership changes remain forbidden unless separately proven and approved.
+- Full GO effect: no immediate GO. `CONDITIONAL_GO` remains the current state until C-06/G-02/M12 are resolved or formally closed with evidence and the final validation matrix passes.
+- P25 final status: `P25_FULL_REMEDIATION_APPROVED_BASELINE`.

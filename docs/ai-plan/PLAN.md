@@ -13,6 +13,24 @@ Use only:
 
 Do not mark generated tasks as `DONE` initially.
 
+## Current full-remediation overlay
+
+Active execution overlay: `P25_FULL_REMEDIATION_APPROVED_BASELINE`.
+
+The owner has approved the P23 residual-debt menu items D-020 through D-024 for bounded execution. Execute in this order unless validation evidence requires stopping:
+
+| Lane                      | Scope                                                   | Status | Evidence directory                                                       |
+| ------------------------- | ------------------------------------------------------- | ------ | ------------------------------------------------------------------------ |
+| Baseline approval capture | Baseline audit, owner approval record, no source change | `DONE` | `docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/`            |
+| D-020                     | PrimeVue bootstrap install adapter for R1/R4            | `TODO` | `docs/ai-runs/<timestamp>-ccd-full-remediation-d020-primevue-bootstrap/` |
+| D-021                     | Build resolver/generated registry boundary for R2/R5    | `TODO` | `docs/ai-runs/<timestamp>-ccd-full-remediation-d021-generated-registry/` |
+| D-022                     | AppPrimeVueGlobals global shell facade for R3           | `TODO` | `docs/ai-runs/<timestamp>-ccd-full-remediation-d022-global-shell/`       |
+| D-024                     | Showcase exception cleanup                              | `TODO` | `docs/ai-runs/<timestamp>-ccd-full-remediation-d024-showcase/`           |
+| D-023                     | G-02 owner/operator/product closure wave                | `TODO` | `docs/ai-runs/<timestamp>-ccd-full-remediation-d023-g02-closure/`        |
+| Final                     | Final validation matrix and GO reassessment             | `TODO` | `docs/ai-runs/<timestamp>-ccd-full-remediation-final/`                   |
+
+Baseline result: `main` and `origin/main` are both `6132c9c9`; `git diff --check`, `pnpm docs:commands`, `pnpm ai:doctor`, `pnpm ai:doctor --open`, `pnpm ai:guard -- --format=json`, and `pnpm validate:governance` passed. `pnpm ai:doctor --open` still reports 78 open tasks until the approved implementation/closure lanes resolve them.
+
 ## Global execution rules
 
 - Execute one milestone at a time.

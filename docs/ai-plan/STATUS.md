@@ -2,8 +2,9 @@
 
 ## Current Execution State
 
-- Current program: `CCD post-M16 blocker-resolution program`
-- Current milestone: P24 `P24_NO_OWNER_DECISION_RECORDED` — owner declined to approve P23 future decision menu D-020–D-024; all remain `PROPOSED`; docs-only; no runtime/allowlist/ledger/manifest/lockfile change; C-06 (5 exact rows + showcase), G-02 (78 deferred ledger tasks), M12 (`PARTIAL`) unchanged; `CONDITIONAL_GO` unchanged; full GO still unauthorized.
+- Current program: `CCD full architecture remediation execution program`
+- Current milestone: P25 `P25_FULL_REMEDIATION_APPROVED_BASELINE` — owner explicitly approved D-020 through D-024 for bounded execution; baseline validation passed; no runtime/allowlist/ledger/manifest/lockfile change yet; C-06 (5 exact rows + showcase), G-02 (78 deferred ledger tasks), M12 (`PARTIAL`) unchanged until implementation evidence lands; `CONDITIONAL_GO` unchanged; full GO still unauthorized pending final validation.
+- Prior milestone: P24 `P24_NO_OWNER_DECISION_RECORDED` — owner declined to approve P23 future decision menu D-020–D-024; all remained `PROPOSED`; docs-only; no runtime/allowlist/ledger/manifest/lockfile change; C-06 (5 exact rows + showcase), G-02 (78 deferred ledger tasks), M12 (`PARTIAL`) unchanged; `CONDITIONAL_GO` unchanged; full GO still unauthorized.
 - Prior milestone: P23 `P23_RESIDUAL_DEBT_REGISTERED` — final owner-reviewable residual debt register after P17–P22; consolidated C-06 (5 exact allowlist rows + showcase), G-02 (78 deferred ledger tasks), M12 (`PARTIAL`), and full-GO blockers; future owner decision menu D-020–D-024 recorded as `PROPOSED` only; no runtime/allowlist/ledger/manifest/lockfile change; no safe unapproved reduction remains; `CONDITIONAL_GO` unchanged; full GO still unauthorized.
 - Prior milestone: P22 `P22_NO_SAFE_LEDGER_CLOSURE` — second evidence-based G-02 closure pass after P18 (80 → 78); built full 78-task closure table; every open task is externally gated (owner/operator/M11) or strategic-deferred with no completion evidence; zero safe closures; no `repair_list.md` checkbox changed; docs-only; `CONDITIONAL_GO` unchanged; full GO still unauthorized.
 - Prior milestone: P21a `P21A_API_SURFACE_SYNCED` — synced stale `docs/generated/api-surface-report.{md,json}` after P20 `CcdTag`; `pnpm api:report` plus double `pnpm validate:governance` pass; P21 is now validation-closed as `P21_NO_SAFE_RESIDUAL_REDUCTION`; `CONDITIONAL_GO` unchanged; full GO still unauthorized.
@@ -19,7 +20,8 @@
 - Baseline branch: `main`.
 - Pre-P10 baseline commit: `cc255d1a`.
 - Last remote-state reconciliation: P11 reconciled P10g push state; P11 itself was pushed after that reconciliation — use `git log` / remote history as source of truth for current HEAD.
-- P24 evidence directory: `docs/ai-runs/20260601-180407-ccd-p24-owner-decision-residual-debt-menu/` (owner decision record; D-020–D-024 remain PROPOSED).
+- P25 evidence directory: `docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/` (baseline and owner approval capture; D-020–D-024 approved for execution).
+- P24 evidence directory: `docs/ai-runs/20260601-180407-ccd-p24-owner-decision-residual-debt-menu/` (owner decision record; D-020–D-024 remained PROPOSED until P25).
 - P23 evidence directory: `docs/ai-runs/20260601-173110-ccd-p23-conditional-go-residual-debt-final-review/` (residual debt register + future owner decision menu).
 - P22 evidence directory: `docs/ai-runs/20260601-171004-ccd-p22-g02-repair-ledger-closure-pass-2/`.
 - P21a evidence directory: `docs/ai-runs/20260601-164744-ccd-p21a-api-surface-generated-sync-after-ccdtag/`.
@@ -37,14 +39,15 @@
 - P0–P8 evidence roots: `docs/ai-runs/20260601-100000-ccd-p0-post-m16-blocker-baseline/` through `docs/ai-runs/20260601-105000-ccd-p7-repair-ledger-reconciliation/`.
 - Runtime source changed in P4: comment-only in `apps/web-demo/src/utils/safeStorage/index.ts`.
 - Package manifests or lockfile changed in P0–P20: no.
-- P12–P23 commits are present on `origin/main` through P23 commit `218d941e`; P24 remains local-only until separately authorized; no clean/reset/rebase was performed.
+- P12–P24 commits are present on `origin/main` through current commit `6132c9c9`; P25 is local execution only until separately authorized for push; no clean/reset/rebase was performed.
 - Current local HEAD before P21a commit: `95e352f5` (`docs(architecture): 记录 C-06 启动与生成边界残余白名单评估`); verify current HEAD via git history after any new local commit.
 - P10 local commits (2026-06-01): **6 commits created** (G5→G2→G3→G6→G1→G4); pre-commit passed without `--no-verify` after P10a quarantine; see `docs/ai-runs/20260601-121000-ccd-p10-local-commits/reports/summary.md` and `docs/ai-runs/20260601-130000-ccd-p10a-cursor-retired-path-quarantine/`.
 - P10g push (2026-06-01): **manual push to `origin/main` completed**; current HEAD must be verified via git history, not hardcoded status docs.
 
 ## Top-Level Status
 
-- P24 reconciliation: `P24_NO_OWNER_DECISION_RECORDED` (owner declined approval for D-020–D-024; all remain `PROPOSED`; docs-only; C-06/G-02/M12 unchanged).
+- P25 reconciliation: `P25_FULL_REMEDIATION_APPROVED_BASELINE` (owner approved D-020–D-024 for bounded execution; baseline validation passed; implementation not yet started; C-06/G-02/M12 unchanged).
+- P24 reconciliation: `P24_NO_OWNER_DECISION_RECORDED` (owner declined approval for D-020–D-024; all remained `PROPOSED` until P25; docs-only; C-06/G-02/M12 unchanged).
 - P23 reconciliation: `P23_RESIDUAL_DEBT_REGISTERED` (final residual debt register; C-06 5 rows + showcase, G-02 78 tasks, M12 `PARTIAL`; future owner decision menu D-020–D-024 `PROPOSED` only; docs-only; no safe unapproved reduction remains).
 - P22 reconciliation: `P22_NO_SAFE_LEDGER_CLOSURE` (second G-02 closure pass; 78-task closure table built; zero safe closures; no `repair_list.md` checkbox change; docs-only).
 - P21a reconciliation: `P21A_API_SURFACE_SYNCED` (`docs/generated/api-surface-report.{md,json}` regenerated by owning commands after P20 `CcdTag`; `pnpm validate:governance` passes twice; no runtime or guard change).
@@ -61,7 +64,7 @@
 - P12 reconciliation: `P12_STATUS_SURFACE_ANTI_DRIFT_REPAIRED`.
 - P11 reconciliation: `P11_REMOTE_STATE_RECONCILED_NO_GO`.
 - Overall final status: **`CONDITIONAL_GO`** (owner-accepted residual debt).
-- Full GO is not authorized.
+- Full GO is not authorized yet; D-020–D-024 execution is authorized, but final GO requires evidence-backed residual closure plus the final validation matrix.
 - `pnpm ai:doctor --open` reports **78 open tasks** (P18 closed 2 evidence-backed rows; P22 second pass found zero further safe closures; G-02 remains owner-accepted deferred debt).
 - Remote state: last reconciled in P11 to P10g push state; use git history for current HEAD; P12 removed self-staling remote-commit claims from status surfaces.
 
@@ -101,6 +104,7 @@
 | P22   | `P22_NO_SAFE_LEDGER_CLOSURE`               | Second G-02 closure pass; 78-task closure table; zero safe closures; no checkbox change; docs-only; full GO unchanged                                           |
 | P23   | `P23_RESIDUAL_DEBT_REGISTERED`             | Final residual debt register (C-06 5 rows + showcase, G-02 78, M12 PARTIAL); future owner decision menu D-020–D-024 PROPOSED only; docs-only; full GO unchanged |
 | P24   | `P24_NO_OWNER_DECISION_RECORDED`           | Owner declined to approve D-020–D-024; all remain PROPOSED; docs-only; C-06/G-02/M12 unchanged; full GO unchanged                                               |
+| P25   | `P25_FULL_REMEDIATION_APPROVED_BASELINE`   | Owner approved D-020–D-024 for bounded execution; baseline validation passed; no residual closed yet; full GO still pending final validation                    |
 
 ## Issue Status After P16a
 

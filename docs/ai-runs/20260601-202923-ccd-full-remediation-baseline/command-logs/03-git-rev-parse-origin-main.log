@@ -1,0 +1,4 @@
+$ git rev-parse --short origin/main
+6132c9c9
+
+[exit_code] 0

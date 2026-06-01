@@ -1,0 +1,19 @@
+$ grep/add local git exclude for external planning package
+exclude added
+?? docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/command-logs/00-git-fetch-origin-main.log
+?? docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/command-logs/01-git-branch.log
+?? docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/command-logs/02-git-rev-parse-head.log
+?? docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/command-logs/03-git-rev-parse-origin-main.log
+?? docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/command-logs/04-git-status.log
+?? docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/command-logs/05-cursor-absent.log
+?? docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/command-logs/06-root-duplicate-absent.log
+?? docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/command-logs/07-git-diff-check.log
+?? docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/command-logs/08-pnpm-docs-commands.log
+?? docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/command-logs/09-pnpm-ai-doctor.log
+?? docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/command-logs/10-pnpm-ai-doctor-open.log
+?? docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/command-logs/11-pnpm-ai-guard-json.log
+?? docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/command-logs/12-pnpm-validate-governance.log
+?? docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/command-logs/13-git-log.log
+?? docs/ai-runs/20260601-202923-ccd-full-remediation-baseline/command-logs/14-local-exclude-plan-package.log
+
+[exit_code] 0
