@@ -9,8 +9,9 @@ repository: /Users/cc/MyPorject/ccd
 baseline_branch: main
 baseline_commit: cc255d1a
 last_remote_state_reconciliation: P11 reconciled P10g push state; evidence snapshot only — verify current HEAD via git history
-current_lane: P20 C-06 residual PrimeVue allowlist closure pass 3 (6 → 5, CcdTag wrapper)
+current_lane: P21 C-06 bootstrap/generated residual allowlist review (5 → 5, no safe reduction)
 primevue_exact_allowlist_count: 5
+primevue_exact_allowlist_count_before_p21: 5
 primevue_exact_allowlist_count_before_p20: 6
 primevue_exact_allowlist_count_before_p17: 8
 source_of_truth_files:
@@ -717,8 +718,9 @@ Forbidden actions in this lane:
 - P17 reduction: PrimeVue exact allowlist reduced from 8 → 7 rows. The type-only `primevue/popover` import in `apps/web-demo/src/views/example/system-configuration/layout.vue` was moved behind the adapter-owned `PrimeVuePopoverInstance` type facade; the matching row was removed from `approvedPrimeVueAppImportFiles`. Type-only, no runtime behavior change, full validation green. Showcase exception (`primevue-collection/**`) untouched.
 - P19 reduction: PrimeVue exact allowlist reduced from 7 → 6 rows. The direct `primevue/tieredmenu` import in the example page `apps/web-demo/src/views/example/hooks/layout-breadcrumbs.vue` was migrated to the governed `@ccd/vue-ui` `CcdTieredMenu` wrapper (aliased to `TieredMenu`), mirroring production `AdminBreadcrumbBar.vue`; the matching row was removed from `approvedPrimeVueAppImportFiles`. Behavior preserved (ref API limited to forwarded `.hide()`/`.toggle()`), full validation green, auto-imports diff empty. Showcase exception (`primevue-collection/**`) untouched.
 - P20 reduction: PrimeVue exact allowlist reduced from 6 → 5 rows. The direct `primevue/tag` import in the example page `apps/web-demo/src/views/example/hooks/use-app-element-size.vue` was migrated to the governed `@ccd/vue-ui` `CcdTag` wrapper (added via `createCcdPrimeControl` with minimal spec); template/TSX Tag usages switched to `CcdTag`; the matching row was removed from `approvedPrimeVueAppImportFiles`. Presentational props only, full validation green, auto-imports diff empty. Remaining 5 exact rows are owner-accepted residual debt: desktop plugin bootstrap, web-demo build plugins, AppPrimeVueGlobals global shell, primevue plugin config, generated `components.d.ts`. Showcase exception (`primevue-collection/**`) untouched.
+- P21 review: PrimeVue exact allowlist unchanged at **5** rows (`P21_NO_SAFE_RESIDUAL_REDUCTION`). All five remaining rows are bootstrap plugin install (desktop + web), build-time `PrimeVueResolver`, global shell (`AppPrimeVueGlobals`), or generator-owned `components.d.ts`. None qualify for a single-row narrow slice without M6 Option C bootstrap API, build/generator lane, or global-shell facades. No runtime or guard changes. Inherited `validate:governance` failure: P20 `CcdTag` api-surface-report sync not committed on `main` (out of P21 allowed paths). Evidence: `docs/ai-runs/20260601-211500-ccd-p21-c06-bootstrap-generated-residual-review/`.
 - Residual risk: New direct imports may require owner allowlist updates. Remaining 5 exact rows are bootstrap/generated surfaces out of narrow wrapper lane scope.
-- Last updated: 2026-06-01 (P20)
+- Last updated: 2026-06-01 (P21)
 
 ### D-01 - Governance report contracts dependency drift
 

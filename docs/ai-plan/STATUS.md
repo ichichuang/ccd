@@ -3,7 +3,8 @@
 ## Current Execution State
 
 - Current program: `CCD post-M16 blocker-resolution program`
-- Current milestone: P20 `P20_C06_RESIDUAL_ALLOWLIST_REDUCED` — one more non-showcase PrimeVue exact allowlist row removed (6 → 5) by adding `@ccd/vue-ui` `CcdTag` wrapper and migrating `use-app-element-size.vue`; CONDITIONAL_GO unchanged; full GO still unauthorized.
+- Current milestone: P21 `P21_NO_SAFE_RESIDUAL_REDUCTION` — reviewed five bootstrap/generated exact allowlist rows; none removable without broader install/build/shell/generator architecture; exact count remains 5; CONDITIONAL_GO unchanged; full GO still unauthorized.
+- Prior milestone: P20 `P20_C06_RESIDUAL_ALLOWLIST_REDUCED` — one more non-showcase PrimeVue exact allowlist row removed (6 → 5) by adding `@ccd/vue-ui` `CcdTag` wrapper and migrating `use-app-element-size.vue`; CONDITIONAL_GO unchanged; full GO still unauthorized.
 - Prior milestone: P19 `P19_C06_RESIDUAL_ALLOWLIST_REDUCED` — one more non-showcase PrimeVue exact allowlist row removed (7 → 6) by migrating an example-page `primevue/tieredmenu` import to the `@ccd/vue-ui` `CcdTieredMenu` wrapper; CONDITIONAL_GO unchanged; full GO still unauthorized.
 - Prior milestone: P18 `P18_G02_LEDGER_REDUCED` — closed 2 stale/evidence-backed repair-ledger rows (80 → 78); CONDITIONAL_GO unchanged; full GO still unauthorized.
 - Prior milestone: P17 `P17_C06_RESIDUAL_ALLOWLIST_REDUCED` — one type-only PrimeVue exact allowlist row removed (8 → 7) via adapter `PrimeVuePopoverInstance` facade; CONDITIONAL_GO unchanged; full GO still unauthorized.
@@ -14,6 +15,7 @@
 - Baseline branch: `main`.
 - Pre-P10 baseline commit: `cc255d1a`.
 - Last remote-state reconciliation: P11 reconciled P10g push state; P11 itself was pushed after that reconciliation — use `git log` / remote history as source of truth for current HEAD.
+- P21 evidence directory: `docs/ai-runs/20260601-211500-ccd-p21-c06-bootstrap-generated-residual-review/`.
 - P20 evidence directory: `docs/ai-runs/20260601-200000-ccd-p20-c06-residual-allowlist-closure-pass-3/`.
 - P19 evidence directory: `docs/ai-runs/20260601-190000-ccd-p19-c06-residual-allowlist-closure-pass-2/`.
 - P18 evidence directory: `docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/`.
@@ -34,6 +36,7 @@
 
 ## Top-Level Status
 
+- P21 reconciliation: `P21_NO_SAFE_RESIDUAL_REDUCTION` (PrimeVue exact allowlist 5 → 5; bootstrap/generated/global-shell review; no guard or runtime change; showcase untouched).
 - P20 reconciliation: `P20_C06_RESIDUAL_ALLOWLIST_REDUCED` (PrimeVue exact allowlist 6 → 5; example-page `primevue/tag` → `@ccd/vue-ui` `CcdTag` wrapper; showcase untouched).
 - P19 reconciliation: `P19_C06_RESIDUAL_ALLOWLIST_REDUCED` (PrimeVue exact allowlist 7 → 6; example-page `primevue/tieredmenu` → `@ccd/vue-ui` `CcdTieredMenu` wrapper; showcase untouched).
 - P18 reconciliation: `P18_G02_LEDGER_REDUCED` (repair-ledger 80 → 78; 2 evidence-backed stale-row closures).
@@ -80,31 +83,32 @@
 | P17   | `P17_C06_RESIDUAL_ALLOWLIST_REDUCED`       | PrimeVue exact allowlist 8→7 via adapter `PrimeVuePopoverInstance` type facade; showcase untouched; full GO unchanged                           |
 | P18   | `P18_G02_LEDGER_REDUCED`                   | G-02 repair-ledger 80→78; closed P1-HttpContract-Contracts + P2-Vite8-Progress stale rows                                                       |
 | P19   | `P19_C06_RESIDUAL_ALLOWLIST_REDUCED`       | PrimeVue exact allowlist 7→6; example-page `primevue/tieredmenu` → `@ccd/vue-ui` `CcdTieredMenu` wrapper; showcase untouched; full GO unchanged |
+| P21   | `P21_NO_SAFE_RESIDUAL_REDUCTION`           | PrimeVue exact allowlist 5→5; bootstrap/generated residual review; no safe row; full GO unchanged                                               |
 | P20   | `P20_C06_RESIDUAL_ALLOWLIST_REDUCED`       | PrimeVue exact allowlist 6→5; example-page `primevue/tag` → `@ccd/vue-ui` `CcdTag` wrapper; showcase untouched; full GO unchanged               |
 
 ## Issue Status After P16a
 
-| Issue ID | Status                           | Notes                                                                           |
-| -------- | -------------------------------- | ------------------------------------------------------------------------------- |
-| `B-07`   | `DONE`                           | App-owned crypto terminal boundary (D-016 A)                                    |
-| `B-08`   | `DONE`                           | App-owned compression terminal boundary (D-019 A)                               |
-| `D-016`  | `APPROVED`                       | Option A, 2026-06-01                                                            |
-| `D-017`  | `APPROVED`                       | Options A+D+E, 2026-06-01                                                       |
-| `D-019`  | `APPROVED`                       | B-08 compression Option A (new)                                                 |
-| `C-06`   | `OPEN` (owner-accepted residual) | 5 exact allowlist + showcase; P14 E1/E2 + P17 + P19 + P20 reduced               |
-| `G-02`   | `ACCEPTED_DEFERRED_DEBT`         | 78 tasks owner-accepted deferred debt (P15 acceptance; P18 closed 2 stale rows) |
-| `G-03`   | `DONE`                           | Completion gate satisfied (P16)                                                 |
-| `M12`    | `PARTIAL`                        | E1/E2 + P17 + P19 + P20 done; E4 reviewed; E3 showcase deferred                 |
+| Issue ID | Status                           | Notes                                                                                                                 |
+| -------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `B-07`   | `DONE`                           | App-owned crypto terminal boundary (D-016 A)                                                                          |
+| `B-08`   | `DONE`                           | App-owned compression terminal boundary (D-019 A)                                                                     |
+| `D-016`  | `APPROVED`                       | Option A, 2026-06-01                                                                                                  |
+| `D-017`  | `APPROVED`                       | Options A+D+E, 2026-06-01                                                                                             |
+| `D-019`  | `APPROVED`                       | B-08 compression Option A (new)                                                                                       |
+| `C-06`   | `OPEN` (owner-accepted residual) | 5 exact allowlist + showcase; P14 E1/E2 + P17 + P19 + P20 reduced; P21 review confirmed bootstrap/generated remainder |
+| `G-02`   | `ACCEPTED_DEFERRED_DEBT`         | 78 tasks owner-accepted deferred debt (P15 acceptance; P18 closed 2 stale rows)                                       |
+| `G-03`   | `DONE`                           | Completion gate satisfied (P16)                                                                                       |
+| `M12`    | `PARTIAL`                        | E1/E2 + P17 + P19 + P20 done; E4 reviewed; E3 showcase deferred                                                       |
 
 ## Unresolved Blockers And Decisions
 
-| ID          | Status                           | Required next action                                                                                                                    |
-| ----------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `C-06`      | `OPEN` (owner-accepted residual) | 5 exact rows + showcase remain (P17/P19/P20 removed 1 each); further reduction requires separate owner authorization beyond E3 showcase |
-| `G-02`      | `ACCEPTED_DEFERRED_DEBT`         | Owner accepted 78 deferred ledger tasks (P15 acceptance; P18 closed 2 evidence-backed rows)                                             |
-| `G-03`      | `DONE`                           | P16 completion gate satisfied with owner-accepted residual debt                                                                         |
-| `M12`       | `PARTIAL`                        | E1/E2/E4 + P17 + P19 slices complete; E3 showcase long-lived per D-017 Option D                                                         |
-| remote push | `DONE`                           | P10g manual push to `origin/main` completed (2026-06-01); verify HEAD via git history                                                   |
+| ID          | Status                           | Required next action                                                                                                                                              |
+| ----------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `C-06`      | `OPEN` (owner-accepted residual) | 5 bootstrap/generated exact rows + showcase (P21 confirmed no safe single-row reduction); further reduction requires Option C bootstrap / build / generator lanes |
+| `G-02`      | `ACCEPTED_DEFERRED_DEBT`         | Owner accepted 78 deferred ledger tasks (P15 acceptance; P18 closed 2 evidence-backed rows)                                                                       |
+| `G-03`      | `DONE`                           | P16 completion gate satisfied with owner-accepted residual debt                                                                                                   |
+| `M12`       | `PARTIAL`                        | E1/E2/E4 + P17 + P19 slices complete; E3 showcase long-lived per D-017 Option D                                                                                   |
+| remote push | `DONE`                           | P10g manual push to `origin/main` completed (2026-06-01); verify HEAD via git history                                                                             |
 
 ## M16a Evidence Path (P9a reconciled)
 
