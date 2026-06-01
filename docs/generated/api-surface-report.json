@@ -279,6 +279,7 @@
         "ButtonProps",
         "CcdButton",
         "CcdDrawer",
+        "CcdInputText",
         "CcdPanelMenu",
         "CcdPopover",
         "CcdSelect",
@@ -402,6 +403,8 @@
         "PRIMEVUE_TOAST_FALLBACK_ICON",
         "PRIMEVUE_TOAST_GROUP_BY_POSITION",
         "PRIMEVUE_TOAST_SEVERITY_ICONS",
+        "PrimeVueConfirmOptions",
+        "PrimeVueConfirmService",
         "PrimeVueGlobalConfirmPopup",
         "PrimeVueGlobalDynamicDialog",
         "PrimeVueGlobalMessageApis",
@@ -422,6 +425,7 @@
         "PrimeVueToastSeverity",
         "primeVueTooltipDirective",
         "resolvePrimeVueLocale",
+        "usePrimeVueConfirmService",
         "usePrimeVueRuntimeConfig",
         "usePrimeVueToastService"
       ]

@@ -1,0 +1,21 @@
+{
+  "overview": {
+    "bodyTextSample": "CCD\n\nAI 治理操作系统\n\n* 邮箱或用户名\n* 密码\n记住我\n忘记密码？\n登录\nAdmin\nUser\n简体",
+    "hasConfirmButton": false,
+    "hasConfirmPopupRootBeforeClick": false,
+    "hasPrimeVueOverview": false,
+    "url": "http://127.0.0.1:8088/#/login?redirect=/example/primevue-collection/overview"
+  },
+  "triggerCount": 0,
+  "afterClick": {
+    "confirmPopupText": "",
+    "confirmPopupVisible": false
+  },
+  "proForm": {
+    "buttonCount": 3,
+    "hasAdvancedTitle": false,
+    "inputTextCount": 2,
+    "selectCount": 0,
+    "url": "http://127.0.0.1:8088/#/login?redirect=/example/primevue-collection/pro-form/advanced"
+  }
+}

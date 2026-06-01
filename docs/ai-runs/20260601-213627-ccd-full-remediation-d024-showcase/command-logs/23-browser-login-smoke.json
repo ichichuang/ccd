@@ -1,0 +1,10 @@
+{
+  "adminCount": 1,
+  "submitCount": 1,
+  "loginResult": {
+    "hasLogin": true,
+    "hasPrimeVueOverview": false,
+    "textSample": "CCD\n\nAI 治理操作系统\n\n* 邮箱或用户名\n* 密码\n记住我\n忘记密码？\n登录\nAdmin\nUser\n简体",
+    "url": "http://127.0.0.1:8088/#/login?redirect=/example/primevue-collection/overview"
+  }
+}

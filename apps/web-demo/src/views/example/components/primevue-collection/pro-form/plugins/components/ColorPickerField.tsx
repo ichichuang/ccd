@@ -1,6 +1,6 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
-import InputText from 'primevue/inputtext'
+import { CcdInputText as InputText } from '@ccd/vue-ui'
 
 export default defineComponent({
   name: 'ColorPickerField',

@@ -15,7 +15,7 @@ Do not mark generated tasks as `DONE` initially.
 
 ## Current full-remediation overlay
 
-Active execution overlay: `P28_D022_GLOBAL_SHELL_DONE`.
+Active execution overlay: `P29_D024_SHOWCASE_DONE`.
 
 The owner has approved the P23 residual-debt menu items D-020 through D-024 for bounded execution. Execute in this order unless validation evidence requires stopping:
 
@@ -25,7 +25,7 @@ The owner has approved the P23 residual-debt menu items D-020 through D-024 for 
 | D-020                     | PrimeVue bootstrap install adapter for R1/R4            | `DONE` | `docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/` |
 | D-021                     | Build resolver/generated registry boundary for R2/R5    | `DONE` | `docs/ai-runs/20260601-205214-ccd-full-remediation-d021-generated-registry/` |
 | D-022                     | AppPrimeVueGlobals global shell facade for R3           | `DONE` | `docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/`       |
-| D-024                     | Showcase exception cleanup                              | `TODO` | `docs/ai-runs/<timestamp>-ccd-full-remediation-d024-showcase/`               |
+| D-024                     | Showcase exception cleanup                              | `DONE` | `docs/ai-runs/20260601-213627-ccd-full-remediation-d024-showcase/`           |
 | D-023                     | G-02 owner/operator/product closure wave                | `TODO` | `docs/ai-runs/<timestamp>-ccd-full-remediation-d023-g02-closure/`            |
 | Final                     | Final validation matrix and GO reassessment             | `TODO` | `docs/ai-runs/<timestamp>-ccd-full-remediation-final/`                       |
 
@@ -36,6 +36,8 @@ D-020 result: desktop and web PrimeVue bootstrap installs now use `@ccd/vue-prim
 D-021 result: `apps/web-demo/build/plugins.ts` now calls a build-only `createPrimeVueComponentResolver()` boundary, generated `components.d.ts` remains command-owned and hash-stable, and the R2/R5 exact allowlist rows were removed. C-06 remains open for D-022 R3 and D-024 showcase cleanup.
 
 D-022 result: `AppPrimeVueGlobals.vue` now consumes adapter-owned global shell component/composable/message facades from `@ccd/vue-primevue-adapter`; the R3 exact allowlist row was removed after guard and runtime validation. C-06 has no remaining exact app allowlist rows, but remains open for D-024 showcase cleanup.
+
+D-024 result: `primevue-collection/**` direct PrimeVue imports were migrated to governed `@ccd/vue-ui` wrappers or `@ccd/vue-primevue-adapter` confirm facade; the showcase path exception was removed from `ai:guard`. C-06 has no remaining exact app allowlist rows and no path-scoped showcase exception.
 
 ## Global execution rules
 

@@ -1,5 +1,4 @@
-import Button from 'primevue/button'
-import type { ColumnRenderParams, ProTableColumn } from '@ccd/vue-ui'
+import { CcdButton as Button, type ColumnRenderParams, type ProTableColumn } from '@ccd/vue-ui'
 import {
   EMPLOYEE_DEPARTMENTS,
   EMPLOYEE_STATUS_LABELS,

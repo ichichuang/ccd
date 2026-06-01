@@ -1,4 +1,6 @@
 import type { App, Component } from 'vue'
+import type { ConfirmationOptions } from 'primevue/confirmationoptions'
+import type { ConfirmationServiceMethods } from 'primevue/confirmationservice'
 import ConfirmationService from 'primevue/confirmationservice'
 import ConfirmPopup from 'primevue/confirmpopup'
 import DialogService from 'primevue/dialogservice'
@@ -7,6 +9,7 @@ import PrimeVueToast from 'primevue/toast'
 import ToastService from 'primevue/toastservice'
 import Tooltip from 'primevue/tooltip'
 import { usePrimeVue } from 'primevue/config'
+import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
 
 export interface PrimeVueServiceInstallOptions {
@@ -78,6 +81,9 @@ export interface PrimeVueGlobalMessageTarget {
   $message?: unknown
 }
 
+export type PrimeVueConfirmOptions = ConfirmationOptions
+export type PrimeVueConfirmService = ConfirmationServiceMethods
+
 export const DEFAULT_PRIMEVUE_TOAST_LIFE_MS = 3000
 
 export const PRIMEVUE_TOAST_GROUP_BY_POSITION: Record<PrimeVueToastPosition, string> = {
@@ -130,6 +136,10 @@ export function usePrimeVueRuntimeConfig<
   TLocaleConfig = unknown,
 >(): PrimeVueRuntimeConfig<TLocaleConfig> {
   return usePrimeVue() as PrimeVueRuntimeConfig<TLocaleConfig>
+}
+
+export function usePrimeVueConfirmService(): PrimeVueConfirmService {
+  return useConfirm() as PrimeVueConfirmService
 }
 
 function normalizeToastSeverity(

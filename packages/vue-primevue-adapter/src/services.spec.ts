@@ -16,6 +16,10 @@ interface DirectiveCall {
 const serviceState = vi.hoisted(() => ({
   directives: [] as DirectiveCall[],
   primevueConfig: { config: {} as { locale?: unknown } },
+  confirmService: {
+    close: vi.fn(),
+    require: vi.fn(),
+  },
   toastService: {
     add: vi.fn(),
     remove: vi.fn(),
@@ -60,6 +64,10 @@ vi.mock('primevue/tooltip', () => ({
 
 vi.mock('primevue/usetoast', () => ({
   useToast: vi.fn(() => serviceState.toastService),
+}))
+
+vi.mock('primevue/useconfirm', () => ({
+  useConfirm: vi.fn(() => serviceState.confirmService),
 }))
 
 function createInstrumentedApp(): App {
@@ -161,6 +169,8 @@ describe('installPrimeVueRuntime', () => {
 describe('PrimeVue global shell helpers', () => {
   beforeEach(() => {
     serviceState.primevueConfig = { config: {} }
+    serviceState.confirmService.close.mockClear()
+    serviceState.confirmService.require.mockClear()
     serviceState.toastService.add.mockClear()
     serviceState.toastService.remove.mockClear()
     serviceState.toastService.removeGroup.mockClear()
@@ -260,16 +270,20 @@ describe('PrimeVue global shell helpers', () => {
     const {
       applyPrimeVueLocale,
       clearPrimeVueToastGroups,
+      usePrimeVueConfirmService,
       usePrimeVueRuntimeConfig,
       usePrimeVueToastService,
     } = await import('./services.js')
 
+    const confirm = usePrimeVueConfirmService()
     const runtimeConfig = usePrimeVueRuntimeConfig<{ ok: boolean }>()
     const toast = usePrimeVueToastService()
 
+    confirm.close()
     applyPrimeVueLocale(runtimeConfig, 'en-US', { 'zh-CN': { ok: true } }, 'zh-CN')
     clearPrimeVueToastGroups(toast)
 
+    expect(serviceState.confirmService.close).toHaveBeenCalledOnce()
     expect(runtimeConfig.config.locale).toEqual({ ok: true })
     expect(serviceState.toastService.removeAllGroups).toHaveBeenCalledOnce()
   })

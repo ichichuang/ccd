@@ -1,5 +1,6 @@
 import PrimeButton from 'primevue/button'
 import PrimeDrawer from 'primevue/drawer'
+import PrimeInputText from 'primevue/inputtext'
 import PrimePanelMenu from 'primevue/panelmenu'
 import PrimePopover from 'primevue/popover'
 import PrimeSelect from 'primevue/select'
@@ -60,6 +61,7 @@ function createCcdPrimeControl<TComponent extends Component>(
 
 const ccdButton = createCcdPrimeControl('CcdButton', PrimeButton)
 const ccdDrawer = createCcdPrimeControl('CcdDrawer', PrimeDrawer)
+const ccdInputText = createCcdPrimeControl('CcdInputText', PrimeInputText)
 const ccdPanelMenu = createCcdPrimeControl('CcdPanelMenu', PrimePanelMenu)
 const ccdPopover = createCcdPrimeControl('CcdPopover', PrimePopover, {
   methods: ['toggle', 'show', 'hide'],
@@ -76,6 +78,7 @@ const ccdToggleSwitch = createCcdPrimeControl('CcdToggleSwitch', PrimeToggleSwit
 export {
   ccdButton as CcdButton,
   ccdDrawer as CcdDrawer,
+  ccdInputText as CcdInputText,
   ccdPanelMenu as CcdPanelMenu,
   ccdPopover as CcdPopover,
   ccdSelect as CcdSelect,

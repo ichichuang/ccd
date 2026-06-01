@@ -1,0 +1,15 @@
+{
+  "before": {
+    "url": "http://127.0.0.1:8088/#/example/primevue-collection/overview",
+    "hasPrimeVueOverview": true,
+    "hasConfirmButton": true,
+    "buttons": 62,
+    "inputs": 11,
+    "selects": 1
+  },
+  "after": {
+    "confirmPopupVisible": true,
+    "confirmPopupText": "确认执行该操作吗？取消确认"
+  },
+  "errors": []
+}

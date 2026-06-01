@@ -3,13 +3,17 @@ defineOptions({ name: 'ExampleProFormAdvancedPage' })
 
 import type { PropType, VNode } from 'vue'
 import type { FormSchema, ProFormExpose } from '@ccd/vue-ui'
-import { DraftStorage, useFieldArray, useFormContext } from '@ccd/vue-ui'
+import {
+  CcdButton as Button,
+  CcdInputText as InputText,
+  CcdSelect as Select,
+  DraftStorage,
+  Icons,
+  useFieldArray,
+  useFormContext,
+} from '@ccd/vue-ui'
 import { DateFormatEnum } from '@/utils/date/types'
 import { castValue } from '@ccd/shared-utils'
-import Button from 'primevue/button'
-import InputText from 'primevue/inputtext'
-import Select from 'primevue/select'
-import { Icons } from '@ccd/vue-ui'
 
 interface ContactItem {
   type: 'email' | 'phone' | 'wechat'

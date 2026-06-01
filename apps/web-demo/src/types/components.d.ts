@@ -23,7 +23,6 @@ declare module 'vue' {
     Checkbox: typeof import('primevue/checkbox')['default']
     Chip: typeof import('primevue/chip')['default']
     Column: typeof import('primevue/column')['default']
-    ConfirmPopup: typeof import('primevue/confirmpopup')['default']
     CScrollbar: typeof import('@ccd/vue-ui')['CScrollbar']
     DataTable: typeof import('primevue/datatable')['default']
     DatePicker: typeof import('primevue/datepicker')['default']

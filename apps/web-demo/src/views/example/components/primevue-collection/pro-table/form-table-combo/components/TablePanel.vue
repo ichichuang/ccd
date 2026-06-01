@@ -6,13 +6,13 @@ import {
   type V1UserListItemDTO,
 } from '@/api/example/users'
 import {
+  CcdButton as Button,
   ProTableCrudFormModalBody,
   ProTableCrudViewModalBody,
   type ColumnRenderParams,
   type ProTableExposed,
 } from '@ccd/vue-ui'
 import { useRecordOverlay } from '@/hooks/modules/useRecordOverlay'
-import Button from 'primevue/button'
 import { userColumns, userFormSchema, userViewFormSchema } from '../config'
 import { userListApiExecutor } from '../../shared/apiExecutor'
 

@@ -25,6 +25,7 @@ export type * from './Icons/utils/types'
 export {
   CcdButton,
   CcdDrawer,
+  CcdInputText,
   CcdPanelMenu,
   CcdPopover,
   CcdSelect,

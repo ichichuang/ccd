@@ -1,11 +1,10 @@
-import { Icons } from '@ccd/vue-ui'
+import { CcdButton as Button, Icons } from '@ccd/vue-ui'
 import type { ColumnRenderParams, ProTableColumn } from '@ccd/vue-ui'
 import {
   PRODUCT_CATEGORY_CLASS,
   PRODUCT_CATEGORY_FILTER_OPTIONS,
   PRODUCT_STATUS_DISPLAY,
 } from '@/constants/enums'
-import Button from 'primevue/button'
 export interface ProductRow extends Record<string, unknown> {
   id: number
   sku: string

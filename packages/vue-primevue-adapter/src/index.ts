@@ -24,8 +24,11 @@ import {
   installPrimeVueServices,
   mountPrimeVueGlobalMessageApis,
   resolvePrimeVueLocale,
+  usePrimeVueConfirmService,
   usePrimeVueRuntimeConfig,
   usePrimeVueToastService,
+  type PrimeVueConfirmOptions,
+  type PrimeVueConfirmService,
   type PrimeVueGlobalMessageApis,
   type PrimeVueGlobalMessageTarget,
   type PrimeVueMessageApi,
@@ -63,11 +66,14 @@ export {
   mountPrimeVueGlobalMessageApis,
   primeVueTooltipDirective,
   resolvePrimeVueLocale,
+  usePrimeVueConfirmService,
   usePrimeVueRuntimeConfig,
   usePrimeVueToastService,
 }
 export type { PrimeVueSizeSource }
 export type {
+  PrimeVueConfirmOptions,
+  PrimeVueConfirmService,
   PrimeVueGlobalMessageApis,
   PrimeVueGlobalMessageTarget,
   PrimeVueMessageApi,

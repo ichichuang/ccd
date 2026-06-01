@@ -3,7 +3,8 @@
 ## Current Execution State
 
 - Current program: `CCD full architecture remediation execution program`
-- Current milestone: P28 `P28_D022_GLOBAL_SHELL_DONE` — D-022 executed; `AppPrimeVueGlobals.vue` now consumes adapter-owned global shell facades and no longer imports raw PrimeVue modules; PrimeVue exact allowlist reduced 1 → 0 rows after guard and runtime validation; no ledger/manifest/lockfile/Clawd/theme/safeStorage/lz-string change; C-06 still has the showcase exception; G-02 (78 deferred ledger tasks), M12 (`PARTIAL`), and `CONDITIONAL_GO` remain until later lanes and final validation.
+- Current milestone: P29 `P29_D024_SHOWCASE_DONE` — D-024 executed; `primevue-collection/**` direct PrimeVue imports now consume governed `@ccd/vue-ui` wrappers or `@ccd/vue-primevue-adapter` facades; the showcase path exception was removed from `ai:guard`; no ledger/manifest/lockfile/Clawd/theme/safeStorage/lz-string change; C-06 and M12 showcase E3 are closed by implementation evidence; G-02 (78 deferred ledger tasks) and `CONDITIONAL_GO` remain until D-023 and final validation.
+- Prior milestone: P28 `P28_D022_GLOBAL_SHELL_DONE` — D-022 executed; `AppPrimeVueGlobals.vue` now consumes adapter-owned global shell facades and no longer imports raw PrimeVue modules; PrimeVue exact allowlist reduced 1 → 0 rows after guard and runtime validation; no ledger/manifest/lockfile/Clawd/theme/safeStorage/lz-string change; C-06 still had the showcase exception until P29; G-02 (78 deferred ledger tasks), M12 (`PARTIAL`), and `CONDITIONAL_GO` remained until later lanes and final validation.
 - Prior milestone: P27 `P27_D021_GENERATED_REGISTRY_DONE` — D-021 executed; build resolver moved behind a build-only boundary, generated `components.d.ts` stayed command-owned and hash-stable, and PrimeVue exact allowlist reduced 3 → 1 rows after guard validation; no ledger/manifest/lockfile/Clawd/theme/safeStorage/lz-string change; C-06 still has 1 exact row plus showcase; G-02 (78 deferred ledger tasks), M12 (`PARTIAL`), and `CONDITIONAL_GO` remain until later lanes and final validation.
 - Prior milestone: P26 `P26_D020_PRIMEVUE_BOOTSTRAP_DONE` — D-020 executed; desktop and web PrimeVue bootstrap installs migrated behind `@ccd/vue-primevue-adapter` `installPrimeVueRuntime()`; PrimeVue exact allowlist reduced 5 → 3 rows after guard validation; no ledger/manifest/lockfile/Clawd/theme/safeStorage/lz-string change; C-06 still has 3 exact rows plus showcase; G-02 (78 deferred ledger tasks), M12 (`PARTIAL`), and `CONDITIONAL_GO` remain until later lanes and final validation.
 - Prior milestone: P25 `P25_FULL_REMEDIATION_APPROVED_BASELINE` — owner explicitly approved D-020 through D-024 for bounded execution; baseline validation passed; no runtime/allowlist/ledger/manifest/lockfile change yet; C-06 (5 exact rows + showcase), G-02 (78 deferred ledger tasks), M12 (`PARTIAL`) unchanged until implementation evidence lands; `CONDITIONAL_GO` unchanged; full GO still unauthorized pending final validation.
@@ -23,6 +24,7 @@
 - Baseline branch: `main`.
 - Pre-P10 baseline commit: `cc255d1a`.
 - Last remote-state reconciliation: P11 reconciled P10g push state; P11 itself was pushed after that reconciliation — use `git log` / remote history as source of truth for current HEAD.
+- P29 evidence directory: `docs/ai-runs/20260601-213627-ccd-full-remediation-d024-showcase/` (D-024 showcase exception cleanup; path exception removed).
 - P28 evidence directory: `docs/ai-runs/20260601-210615-ccd-full-remediation-d022-global-shell/` (D-022 global shell facade; R3 migrated; allowlist 1 → 0).
 - P27 evidence directory: `docs/ai-runs/20260601-205214-ccd-full-remediation-d021-generated-registry/` (D-021 build resolver/generated registry boundary; R2/R5 migrated/classified; allowlist 3 → 1).
 - P26 evidence directory: `docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/` (D-020 PrimeVue bootstrap install adapter; R1/R4 migrated; allowlist 5 → 3).
@@ -52,7 +54,8 @@
 
 ## Top-Level Status
 
-- P28 reconciliation: `P28_D022_GLOBAL_SHELL_DONE` (D-022 executed; AppPrimeVueGlobals global shell moved behind adapter facades; exact allowlist 1 → 0; C-06 still open for showcase).
+- P29 reconciliation: `P29_D024_SHOWCASE_DONE` (D-024 executed; showcase direct imports moved behind governed wrappers/facades; path exception removed; C-06 closed).
+- P28 reconciliation: `P28_D022_GLOBAL_SHELL_DONE` (D-022 executed; AppPrimeVueGlobals global shell moved behind adapter facades; exact allowlist 1 → 0; C-06 remained open for showcase until P29).
 - P27 reconciliation: `P27_D021_GENERATED_REGISTRY_DONE` (D-021 executed; build resolver/generator boundaries classified; exact allowlist 3 → 1; C-06 remained open for R3 + showcase until P28).
 - P26 reconciliation: `P26_D020_PRIMEVUE_BOOTSTRAP_DONE` (D-020 executed; app PrimeVue bootstrap installs now use `@ccd/vue-primevue-adapter`; exact allowlist 5 → 3; C-06 remained open for R2/R3/R5 + showcase until P27).
 - P25 reconciliation: `P25_FULL_REMEDIATION_APPROVED_BASELINE` (owner approved D-020–D-024 for bounded execution; baseline validation passed; no source residual closed until P26).
@@ -72,75 +75,76 @@
 - P13 reconciliation: `P13_M12_APPROVED`.
 - P12 reconciliation: `P12_STATUS_SURFACE_ANTI_DRIFT_REPAIRED`.
 - P11 reconciliation: `P11_REMOTE_STATE_RECONCILED_NO_GO`.
-- Overall final status: **`CONDITIONAL_GO`** (owner-accepted residual debt remains after P28).
-- Full GO is not authorized yet; D-024 and D-023 execution remain authorized, but final GO requires evidence-backed residual closure plus the final validation matrix.
+- Overall final status: **`CONDITIONAL_GO`** (G-02 accepted deferred debt remains after P29).
+- Full GO is not authorized yet; D-023 execution remains authorized, but final GO requires evidence-backed G-02 closure plus the final validation matrix.
 - `pnpm ai:doctor --open` reports **78 open tasks** (P18 closed 2 evidence-backed rows; P22 second pass found zero further safe closures; G-02 remains owner-accepted deferred debt).
 - Remote state: last reconciled in P11 to P10g push state; use git history for current HEAD; P12 removed self-staling remote-commit claims from status surfaces.
 
 ## Post-M16 Program Results (P0–P16a)
 
-| Phase | Status                                     | Key outcome                                                                                                                                                     |
-| ----- | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| P0    | `P0_BLOCKER_BASELINE_CONFIRMED`            | Baseline + blocker table; M16a evidence gap noted                                                                                                               |
-| P1    | `P1_D016_APPROVED`                         | D-016 Option A; B-07 DONE (app-owned)                                                                                                                           |
-| P2    | `P2_B08_APP_OWNED_DECIDED`                 | D-019 Option A; B-08 DONE (app-owned)                                                                                                                           |
-| P3    | `P3_D017_APPROVED`                         | Options A+D; C-06 OPEN; M12 blocked                                                                                                                             |
-| P4    | `P4_SAFE_STORAGE_NOOP_CONFIRMED`           | Facade boundary comment only                                                                                                                                    |
-| P5    | skipped                                    | compression app-owned                                                                                                                                           |
-| P6    | skipped                                    | no allowlist reduction authorized                                                                                                                               |
-| P7    | `P7_REPAIR_LEDGER_CLASSIFIED_NONZERO`      | 80 tasks classified                                                                                                                                             |
-| P8    | `P8_FINAL_NO_GO`                           | validation matrix mostly pass; codex:preflight fail inherited                                                                                                   |
-| P9    | `P9_REVIEW_PACKAGE_READY`                  | commit grouping prepared                                                                                                                                        |
-| P9a   | `P9A_EVIDENCE_RECONCILED`                  | M16a path verified; codex exception documented                                                                                                                  |
-| P10a  | `P10A_CURSOR_QUARANTINED`                  | `.cursor` moved to sibling quarantine; ai:doctor unblocked                                                                                                      |
-| P10   | `P10_LOCAL_COMMITS_CREATED`                | G1–G6 committed locally (6)                                                                                                                                     |
-| P10c  | `P10C_REMAINING_DIRTY_CLASSIFIED`          | supplemental commit recommendations                                                                                                                             |
-| P10f  | `P10F_PUSH_READINESS_RESTORED`             | auto-imports/vue-charts build prep                                                                                                                              |
-| P10g  | `P10G_REMOTE_PUSH_COMPLETED`               | manual push to `origin/main` completed (2026-06-01)                                                                                                             |
-| P11   | `P11_REMOTE_STATE_RECONCILED`              | status surfaces aligned to remote post-push state                                                                                                               |
-| P12   | `P12_STATUS_SURFACE_ANTI_DRIFT_REPAIRED`   | volatile remote HEAD wording replaced with stable reconciliation event                                                                                          |
-| P13   | `P13_M12_APPROVED`                         | owner approved Option E staged PrimeVue reduction; P14 unlocked                                                                                                 |
-| P14   | `P14_M12_SLICE_DONE`                       | E1/E2 allowlist 13→8; E4 review; E3 showcase deferred                                                                                                           |
-| P15   | `P15_REPAIR_LEDGER_ACCEPTED_DEBT`          | G-02 owner-accepted; 80 open tasks unchanged                                                                                                                    |
-| P16   | `P16_FINAL_CONDITIONAL_GO`                 | full validation green; G-03 DONE; CONDITIONAL_GO declared                                                                                                       |
-| P16a  | `P16A_CONDITIONAL_GO_CONSISTENCY_REPAIRED` | ledger §0 + implementation log + DECISIONS consistency; no runtime change                                                                                       |
-| P17   | `P17_C06_RESIDUAL_ALLOWLIST_REDUCED`       | PrimeVue exact allowlist 8→7 via adapter `PrimeVuePopoverInstance` type facade; showcase untouched; full GO unchanged                                           |
-| P18   | `P18_G02_LEDGER_REDUCED`                   | G-02 repair-ledger 80→78; closed P1-HttpContract-Contracts + P2-Vite8-Progress stale rows                                                                       |
-| P19   | `P19_C06_RESIDUAL_ALLOWLIST_REDUCED`       | PrimeVue exact allowlist 7→6; example-page `primevue/tieredmenu` → `@ccd/vue-ui` `CcdTieredMenu` wrapper; showcase untouched; full GO unchanged                 |
-| P20   | `P20_C06_RESIDUAL_ALLOWLIST_REDUCED`       | PrimeVue exact allowlist 6→5; example-page `primevue/tag` → `@ccd/vue-ui` `CcdTag` wrapper; showcase untouched; full GO unchanged                               |
-| P21   | `P21_NO_SAFE_RESIDUAL_REDUCTION`           | PrimeVue exact allowlist 5→5; bootstrap/generated residual review; no safe row; full GO unchanged                                                               |
-| P21a  | `P21A_API_SURFACE_SYNCED`                  | `api-surface-report` synced after P20 `CcdTag`; governance validation passes twice; P21 validation block closed                                                 |
-| P22   | `P22_NO_SAFE_LEDGER_CLOSURE`               | Second G-02 closure pass; 78-task closure table; zero safe closures; no checkbox change; docs-only; full GO unchanged                                           |
-| P23   | `P23_RESIDUAL_DEBT_REGISTERED`             | Final residual debt register (C-06 5 rows + showcase, G-02 78, M12 PARTIAL); future owner decision menu D-020–D-024 PROPOSED only; docs-only; full GO unchanged |
-| P24   | `P24_NO_OWNER_DECISION_RECORDED`           | Owner declined to approve D-020–D-024; all remain PROPOSED; docs-only; C-06/G-02/M12 unchanged; full GO unchanged                                               |
-| P25   | `P25_FULL_REMEDIATION_APPROVED_BASELINE`   | Owner approved D-020–D-024 for bounded execution; baseline validation passed; no residual closed yet; full GO still pending final validation                    |
-| P26   | `P26_D020_PRIMEVUE_BOOTSTRAP_DONE`         | D-020 migrated desktop/web PrimeVue bootstrap installs behind `installPrimeVueRuntime`; exact allowlist 5→3; full GO still pending later lanes                  |
-| P27   | `P27_D021_GENERATED_REGISTRY_DONE`         | D-021 moved build resolver behind a boundary and classified generated registry; exact allowlist 3→1; full GO still pending later lanes                          |
-| P28   | `P28_D022_GLOBAL_SHELL_DONE`               | D-022 moved AppPrimeVueGlobals global shell behind adapter facades; exact allowlist 1→0; full GO still pending D-024/D-023/final validation                     |
+| Phase | Status                                     | Key outcome                                                                                                                                                       |
+| ----- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P0    | `P0_BLOCKER_BASELINE_CONFIRMED`            | Baseline + blocker table; M16a evidence gap noted                                                                                                                 |
+| P1    | `P1_D016_APPROVED`                         | D-016 Option A; B-07 DONE (app-owned)                                                                                                                             |
+| P2    | `P2_B08_APP_OWNED_DECIDED`                 | D-019 Option A; B-08 DONE (app-owned)                                                                                                                             |
+| P3    | `P3_D017_APPROVED`                         | Options A+D; C-06 OPEN; M12 blocked                                                                                                                               |
+| P4    | `P4_SAFE_STORAGE_NOOP_CONFIRMED`           | Facade boundary comment only                                                                                                                                      |
+| P5    | skipped                                    | compression app-owned                                                                                                                                             |
+| P6    | skipped                                    | no allowlist reduction authorized                                                                                                                                 |
+| P7    | `P7_REPAIR_LEDGER_CLASSIFIED_NONZERO`      | 80 tasks classified                                                                                                                                               |
+| P8    | `P8_FINAL_NO_GO`                           | validation matrix mostly pass; codex:preflight fail inherited                                                                                                     |
+| P9    | `P9_REVIEW_PACKAGE_READY`                  | commit grouping prepared                                                                                                                                          |
+| P9a   | `P9A_EVIDENCE_RECONCILED`                  | M16a path verified; codex exception documented                                                                                                                    |
+| P10a  | `P10A_CURSOR_QUARANTINED`                  | `.cursor` moved to sibling quarantine; ai:doctor unblocked                                                                                                        |
+| P10   | `P10_LOCAL_COMMITS_CREATED`                | G1–G6 committed locally (6)                                                                                                                                       |
+| P10c  | `P10C_REMAINING_DIRTY_CLASSIFIED`          | supplemental commit recommendations                                                                                                                               |
+| P10f  | `P10F_PUSH_READINESS_RESTORED`             | auto-imports/vue-charts build prep                                                                                                                                |
+| P10g  | `P10G_REMOTE_PUSH_COMPLETED`               | manual push to `origin/main` completed (2026-06-01)                                                                                                               |
+| P11   | `P11_REMOTE_STATE_RECONCILED`              | status surfaces aligned to remote post-push state                                                                                                                 |
+| P12   | `P12_STATUS_SURFACE_ANTI_DRIFT_REPAIRED`   | volatile remote HEAD wording replaced with stable reconciliation event                                                                                            |
+| P13   | `P13_M12_APPROVED`                         | owner approved Option E staged PrimeVue reduction; P14 unlocked                                                                                                   |
+| P14   | `P14_M12_SLICE_DONE`                       | E1/E2 allowlist 13→8; E4 review; E3 showcase deferred                                                                                                             |
+| P15   | `P15_REPAIR_LEDGER_ACCEPTED_DEBT`          | G-02 owner-accepted; 80 open tasks unchanged                                                                                                                      |
+| P16   | `P16_FINAL_CONDITIONAL_GO`                 | full validation green; G-03 DONE; CONDITIONAL_GO declared                                                                                                         |
+| P16a  | `P16A_CONDITIONAL_GO_CONSISTENCY_REPAIRED` | ledger §0 + implementation log + DECISIONS consistency; no runtime change                                                                                         |
+| P17   | `P17_C06_RESIDUAL_ALLOWLIST_REDUCED`       | PrimeVue exact allowlist 8→7 via adapter `PrimeVuePopoverInstance` type facade; showcase untouched; full GO unchanged                                             |
+| P18   | `P18_G02_LEDGER_REDUCED`                   | G-02 repair-ledger 80→78; closed P1-HttpContract-Contracts + P2-Vite8-Progress stale rows                                                                         |
+| P19   | `P19_C06_RESIDUAL_ALLOWLIST_REDUCED`       | PrimeVue exact allowlist 7→6; example-page `primevue/tieredmenu` → `@ccd/vue-ui` `CcdTieredMenu` wrapper; showcase untouched; full GO unchanged                   |
+| P20   | `P20_C06_RESIDUAL_ALLOWLIST_REDUCED`       | PrimeVue exact allowlist 6→5; example-page `primevue/tag` → `@ccd/vue-ui` `CcdTag` wrapper; showcase untouched; full GO unchanged                                 |
+| P21   | `P21_NO_SAFE_RESIDUAL_REDUCTION`           | PrimeVue exact allowlist 5→5; bootstrap/generated residual review; no safe row; full GO unchanged                                                                 |
+| P21a  | `P21A_API_SURFACE_SYNCED`                  | `api-surface-report` synced after P20 `CcdTag`; governance validation passes twice; P21 validation block closed                                                   |
+| P22   | `P22_NO_SAFE_LEDGER_CLOSURE`               | Second G-02 closure pass; 78-task closure table; zero safe closures; no checkbox change; docs-only; full GO unchanged                                             |
+| P23   | `P23_RESIDUAL_DEBT_REGISTERED`             | Final residual debt register (C-06 5 rows + showcase, G-02 78, M12 PARTIAL); future owner decision menu D-020–D-024 PROPOSED only; docs-only; full GO unchanged   |
+| P24   | `P24_NO_OWNER_DECISION_RECORDED`           | Owner declined to approve D-020–D-024; all remain PROPOSED; docs-only; C-06/G-02/M12 unchanged; full GO unchanged                                                 |
+| P25   | `P25_FULL_REMEDIATION_APPROVED_BASELINE`   | Owner approved D-020–D-024 for bounded execution; baseline validation passed; no residual closed yet; full GO still pending final validation                      |
+| P26   | `P26_D020_PRIMEVUE_BOOTSTRAP_DONE`         | D-020 migrated desktop/web PrimeVue bootstrap installs behind `installPrimeVueRuntime`; exact allowlist 5→3; full GO still pending later lanes                    |
+| P27   | `P27_D021_GENERATED_REGISTRY_DONE`         | D-021 moved build resolver behind a boundary and classified generated registry; exact allowlist 3→1; full GO still pending later lanes                            |
+| P28   | `P28_D022_GLOBAL_SHELL_DONE`               | D-022 moved AppPrimeVueGlobals global shell behind adapter facades; exact allowlist 1→0; full GO still pending D-024/D-023/final validation                       |
+| P29   | `P29_D024_SHOWCASE_DONE`                   | D-024 migrated `primevue-collection/**` direct imports behind governed wrappers/facades; showcase exception removed; full GO still pending D-023/final validation |
 
 ## Issue Status After P16a
 
-| Issue ID | Status                           | Notes                                                                                                            |
-| -------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `B-07`   | `DONE`                           | App-owned crypto terminal boundary (D-016 A)                                                                     |
-| `B-08`   | `DONE`                           | App-owned compression terminal boundary (D-019 A)                                                                |
-| `D-016`  | `APPROVED`                       | Option A, 2026-06-01                                                                                             |
-| `D-017`  | `APPROVED`                       | Options A+D+E, 2026-06-01                                                                                        |
-| `D-019`  | `APPROVED`                       | B-08 compression Option A (new)                                                                                  |
-| `C-06`   | `OPEN` (owner-accepted residual) | 0 exact allowlist rows + showcase; P26 closed R1/R4, P27 closed R2/R5, P28 closed R3; showcase remains for D-024 |
-| `G-02`   | `ACCEPTED_DEFERRED_DEBT`         | 78 tasks owner-accepted deferred debt (P15 acceptance; P18 closed 2 stale rows)                                  |
-| `G-03`   | `DONE`                           | Completion gate satisfied (P16)                                                                                  |
-| `M12`    | `PARTIAL`                        | E1/E2 + P17 + P19 + P20 + P26 + P27 + P28 slices done; E4 reviewed; E3 showcase still pending D-024              |
+| Issue ID | Status                   | Notes                                                                                                                              |
+| -------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `B-07`   | `DONE`                   | App-owned crypto terminal boundary (D-016 A)                                                                                       |
+| `B-08`   | `DONE`                   | App-owned compression terminal boundary (D-019 A)                                                                                  |
+| `D-016`  | `APPROVED`               | Option A, 2026-06-01                                                                                                               |
+| `D-017`  | `APPROVED`               | Options A+D+E, 2026-06-01                                                                                                          |
+| `D-019`  | `APPROVED`               | B-08 compression Option A (new)                                                                                                    |
+| `C-06`   | `DONE`                   | 0 exact allowlist rows and no showcase exception after P29; P26 closed R1/R4, P27 closed R2/R5, P28 closed R3, P29 closed showcase |
+| `G-02`   | `ACCEPTED_DEFERRED_DEBT` | 78 tasks owner-accepted deferred debt (P15 acceptance; P18 closed 2 stale rows)                                                    |
+| `G-03`   | `DONE`                   | Completion gate satisfied (P16)                                                                                                    |
+| `M12`    | `DONE`                   | E1/E2 + P17 + P19 + P20 + P26 + P27 + P28 + P29 slices done; E4 reviewed; E3 showcase migrated                                     |
 
 ## Unresolved Blockers And Decisions
 
-| ID          | Status                           | Required next action                                                                        |
-| ----------- | -------------------------------- | ------------------------------------------------------------------------------------------- |
-| `C-06`      | `OPEN` (owner-accepted residual) | 0 exact app allowlist rows remain after P28; showcase exception remains for D-024 execution |
-| `G-02`      | `ACCEPTED_DEFERRED_DEBT`         | Owner accepted 78 deferred ledger tasks (P15 acceptance; P18 closed 2 evidence-backed rows) |
-| `G-03`      | `DONE`                           | P16 completion gate satisfied with owner-accepted residual debt                             |
-| `M12`       | `PARTIAL`                        | E1/E2/E4 + P17 + P19 + P20 + P26 + P27 + P28 slices complete; E3 showcase pending D-024     |
-| remote push | `DONE`                           | P10g manual push to `origin/main` completed (2026-06-01); verify HEAD via git history       |
+| ID          | Status                   | Required next action                                                                        |
+| ----------- | ------------------------ | ------------------------------------------------------------------------------------------- |
+| `C-06`      | `DONE`                   | 0 exact app allowlist rows and no showcase exception remain after P29                       |
+| `G-02`      | `ACCEPTED_DEFERRED_DEBT` | Owner accepted 78 deferred ledger tasks (P15 acceptance; P18 closed 2 evidence-backed rows) |
+| `G-03`      | `DONE`                   | P16 completion gate satisfied with owner-accepted residual debt                             |
+| `M12`       | `DONE`                   | E1/E2/E4 + P17 + P19 + P20 + P26 + P27 + P28 + P29 slices complete; E3 showcase migrated    |
+| remote push | `DONE`                   | P10g manual push to `origin/main` completed (2026-06-01); verify HEAD via git history       |
 
 ## M16a Evidence Path (P9a reconciled)
 

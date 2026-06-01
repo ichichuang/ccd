@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useConfirm } from 'primevue/useconfirm'
+import { usePrimeVueConfirmService as useConfirm } from '@ccd/vue-primevue-adapter'
 import { createAdvancedColumns, makeAdvancedMockData } from './configs/columns'
 import type { AdvancedRow } from './configs/columns'
 

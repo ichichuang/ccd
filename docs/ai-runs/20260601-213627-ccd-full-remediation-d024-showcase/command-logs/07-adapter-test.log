@@ -1,0 +1,13 @@
+
+> @ccd/vue-primevue-adapter@1.0.38 test /Users/cc/MyPorject/ccd/packages/vue-primevue-adapter
+> pnpm --workspace-root vitest run packages/vue-primevue-adapter/src/services.spec.ts --passWithNoTests
+
+
+ RUN  v4.0.18 /Users/cc/MyPorject/ccd
+
+ ✓ |node| packages/vue-primevue-adapter/src/services.spec.ts (10 tests) 104ms
+
+ Test Files  1 passed (1)
+      Tests  10 passed (10)
+   Start at  21:41:13
+   Duration  424ms (transform 86ms, setup 0ms, import 53ms, tests 104ms, environment 206ms)

@@ -138,9 +138,6 @@ const stripJsComments = content =>
 
 const approvedPrimeVueAppImportFiles = new Set()
 
-const isPrimeVueCollectionExampleFile = relPath =>
-  relPath.startsWith('apps/web-demo/src/views/example/components/primevue-collection/')
-
 const isPrimeVueBuildResolverBoundaryFile = relPath =>
   relPath === 'apps/web-demo/build/resolvers/primevue.ts'
 
@@ -204,7 +201,6 @@ for (const relPath of primeVueBoundaryFiles) {
   if (isPrimeVueAdapterFile(relPath) || isTestFile(relPath)) continue
   if (isPrimeVueBuildResolverBoundaryFile(relPath)) continue
   if (isPrimeVueGeneratedComponentRegistryFile(relPath, readText(relPath))) continue
-  if (isPrimeVueCollectionExampleFile(relPath)) continue
   if (approvedPrimeVueAppImportFiles.has(relPath)) continue
 
   const [reference] = references

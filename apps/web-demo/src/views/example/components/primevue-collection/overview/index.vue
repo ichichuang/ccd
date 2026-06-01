@@ -1,6 +1,9 @@
 <script setup lang="ts">
 defineOptions({ name: 'PrimeVueExampleView' })
-import { useConfirm } from 'primevue/useconfirm'
+import {
+  PrimeVueGlobalConfirmPopup,
+  usePrimeVueConfirmService as useConfirm,
+} from '@ccd/vue-primevue-adapter'
 
 interface OptionItem {
   label: string
@@ -714,7 +717,7 @@ const pulseProgress = (): void => {
               <span class="text-xs text-muted-foreground">用于轻量悬浮说明</span>
             </div>
           </Popover>
-          <ConfirmPopup />
+          <PrimeVueGlobalConfirmPopup />
         </section>
       </div>
       <div class="p-md text-muted-foreground text-center text-sm">

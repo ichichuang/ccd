@@ -1,0 +1,24 @@
+{
+  "overview": {
+    "url": "http://127.0.0.1:8088/#/example/primevue-collection/overview",
+    "hasPrimeVueOverview": false,
+    "hasConfirmButton": false,
+    "componentMarkers": {
+      "buttons": 0,
+      "inputs": 0,
+      "selects": 0
+    }
+  },
+  "confirmPopup": {
+    "visible": true,
+    "text": "确认执行该操作吗？取消确认"
+  },
+  "proForm": {
+    "url": "http://127.0.0.1:8088/#/example/primevue-collection/pro-form/advanced",
+    "textSample": "CCD\nPlatform\n仪表盘\n系统配置\n组件合集\nPrimeVue 合集\nPrimeVue 概览\n消息提示 (Toast)\n二次封装弹窗\nProForm 超级表单\nProTable 超级表格\n图标大全 (Icons)\nECharts 图表\n自定义滚动条\n空状态提示\n动画包装器\nHooks 引擎\nUtils 工具链\nCommon 规范\n架构级演示\n组件合集\nPrimeVue 合集\nPrimeVue 概览\n仪表盘\nPrimeVue 概览\nPrimeVue Overview\nCOMPONENT\nPrimeVue v4 全量官方组件示例，不包含内部封装组件。\nButton Family\nPrimary\nSecondary\nSuccess\nWarn\nDanger\nOutlined\nText\nSplitButton\nLeft\nCenter\nRight\nSubmit\nPrimary\nSecondary\nSuccess\nInfo\nWarn\nHelp\nDanger\nContrast\nPrimary\nSecondary\nSuccess\nInfo\nWarn\nHelp\nDanger\nContrast\nPr",
+    "inputTextCount": 11,
+    "buttonCount": 66,
+    "selectCount": 1
+  },
+  "errors": []
+}

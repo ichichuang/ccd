@@ -1,0 +1,21 @@
+
+> @ccd/vue-ui@1.0.38 test /Users/cc/MyPorject/ccd/packages/vue-ui
+> vitest run --passWithNoTests
+
+
+ RUN  v4.0.18 /Users/cc/MyPorject/ccd/packages/vue-ui
+
+ ✓ src/ProForm/engine/validation/schemaResolver.spec.ts (2 tests) 7ms
+ ✓ src/ProTable/engine/config/apiAdapter.spec.ts (3 tests) 4ms
+ ✓ src/ProForm/engine/persistence/DraftStorage.spec.ts (1 test) 2ms
+ ✓ src/ProTable/engine/core/TableController.spec.ts (4 tests) 4ms
+ ✓ src/PrimeDialog/useDialog.spec.ts (2 tests) 4ms
+ ✓ src/ProForm/engine/core/FormController.spec.ts (4 tests) 207ms
+ ✓ src/CcdPrimeControls/CcdTag.spec.ts (2 tests) 39ms
+ ✓ src/CScrollbar/CScrollbar.spec.ts (2 tests) 21ms
+ ✓ src/ProForm/renderers/PrimeVueRenderer.spec.ts (1 test) 7ms
+
+ Test Files  9 passed (9)
+      Tests  21 passed (21)
+   Start at  21:41:40
+   Duration  941ms (transform 1.21s, setup 0ms, import 2.78s, tests 296ms, environment 1.23s)
