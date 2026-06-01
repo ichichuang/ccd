@@ -4,6 +4,7 @@ import PrimePanelMenu from 'primevue/panelmenu'
 import PrimePopover from 'primevue/popover'
 import PrimeSelect from 'primevue/select'
 import PrimeSelectButton from 'primevue/selectbutton'
+import PrimeTag from 'primevue/tag'
 import PrimeTieredMenu from 'primevue/tieredmenu'
 import PrimeToggleSwitch from 'primevue/toggleswitch'
 import { defineComponent, h, ref, type Component } from 'vue'
@@ -65,6 +66,7 @@ const ccdPopover = createCcdPrimeControl('CcdPopover', PrimePopover, {
 })
 const ccdSelect = createCcdPrimeControl('CcdSelect', PrimeSelect)
 const ccdSelectButton = createCcdPrimeControl('CcdSelectButton', PrimeSelectButton)
+const ccdTag = createCcdPrimeControl('CcdTag', PrimeTag)
 const ccdTieredMenu = createCcdPrimeControl('CcdTieredMenu', PrimeTieredMenu, {
   methods: ['toggle', 'show', 'hide'],
   properties: ['container', 'target'],
@@ -78,6 +80,7 @@ export {
   ccdPopover as CcdPopover,
   ccdSelect as CcdSelect,
   ccdSelectButton as CcdSelectButton,
+  ccdTag as CcdTag,
   ccdTieredMenu as CcdTieredMenu,
   ccdToggleSwitch as CcdToggleSwitch,
 }

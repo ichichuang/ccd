@@ -29,6 +29,7 @@ export {
   CcdPopover,
   CcdSelect,
   CcdSelectButton,
+  CcdTag,
   CcdTieredMenu,
   CcdToggleSwitch,
 } from './CcdPrimeControls'

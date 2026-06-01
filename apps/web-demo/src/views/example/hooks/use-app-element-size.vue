@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { useAppElementSize } from '@ccd/vue-hooks'
 import type { UseElementSizeOptions } from '@ccd/vue-hooks'
-import Tag from 'primevue/tag'
+import { CcdTag } from '@ccd/vue-ui'
 
 defineOptions({ name: 'UseAppElementSize' })
 
@@ -62,15 +62,15 @@ const SizeProbe = defineComponent({
 
         <div class="col-stretch gap-sm min-w-0">
           <div class="row-start flex-wrap gap-sm min-w-0">
-            <Tag
+            <CcdTag
               value={`width=${width.value}`}
               severity="secondary"
             />
-            <Tag
+            <CcdTag
               value={`height=${height.value}`}
               severity="secondary"
             />
-            <Tag
+            <CcdTag
               value={`callbackCount=${callbackCount.value}`}
               severity="info"
             />
@@ -121,11 +121,11 @@ const SizeProbe = defineComponent({
               </div>
             </div>
             <div class="row-center gap-sm min-w-0">
-              <Tag
+              <CcdTag
                 :value="`mode=${mode}`"
                 severity="secondary"
               />
-              <Tag
+              <CcdTag
                 :value="`delay=${delay}ms`"
                 severity="secondary"
               />

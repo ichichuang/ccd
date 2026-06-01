@@ -3,7 +3,8 @@
 ## Current Execution State
 
 - Current program: `CCD post-M16 blocker-resolution program`
-- Current milestone: P19 `P19_C06_RESIDUAL_ALLOWLIST_REDUCED` — one more non-showcase PrimeVue exact allowlist row removed (7 → 6) by migrating an example-page `primevue/tieredmenu` import to the `@ccd/vue-ui` `CcdTieredMenu` wrapper; CONDITIONAL_GO unchanged; full GO still unauthorized.
+- Current milestone: P20 `P20_C06_RESIDUAL_ALLOWLIST_REDUCED` — one more non-showcase PrimeVue exact allowlist row removed (6 → 5) by adding `@ccd/vue-ui` `CcdTag` wrapper and migrating `use-app-element-size.vue`; CONDITIONAL_GO unchanged; full GO still unauthorized.
+- Prior milestone: P19 `P19_C06_RESIDUAL_ALLOWLIST_REDUCED` — one more non-showcase PrimeVue exact allowlist row removed (7 → 6) by migrating an example-page `primevue/tieredmenu` import to the `@ccd/vue-ui` `CcdTieredMenu` wrapper; CONDITIONAL_GO unchanged; full GO still unauthorized.
 - Prior milestone: P18 `P18_G02_LEDGER_REDUCED` — closed 2 stale/evidence-backed repair-ledger rows (80 → 78); CONDITIONAL_GO unchanged; full GO still unauthorized.
 - Prior milestone: P17 `P17_C06_RESIDUAL_ALLOWLIST_REDUCED` — one type-only PrimeVue exact allowlist row removed (8 → 7) via adapter `PrimeVuePopoverInstance` facade; CONDITIONAL_GO unchanged; full GO still unauthorized.
 - Prior milestone: P16a `P16A_CONDITIONAL_GO_CONSISTENCY_REPAIRED` — status-surface consistency repair; owner-accepted residual debt formalized.
@@ -13,6 +14,7 @@
 - Baseline branch: `main`.
 - Pre-P10 baseline commit: `cc255d1a`.
 - Last remote-state reconciliation: P11 reconciled P10g push state; P11 itself was pushed after that reconciliation — use `git log` / remote history as source of truth for current HEAD.
+- P20 evidence directory: `docs/ai-runs/20260601-200000-ccd-p20-c06-residual-allowlist-closure-pass-3/`.
 - P19 evidence directory: `docs/ai-runs/20260601-190000-ccd-p19-c06-residual-allowlist-closure-pass-2/`.
 - P18 evidence directory: `docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/`.
 - P17 evidence directory: `docs/ai-runs/20260601-125343-ccd-p17-c06-primevue-residual-allowlist-closure/`.
@@ -24,14 +26,15 @@
 - P11 evidence directory: `docs/ai-runs/20260601-140000-ccd-p11-remote-state-surface-reconciliation/`.
 - P0–P8 evidence roots: `docs/ai-runs/20260601-100000-ccd-p0-post-m16-blocker-baseline/` through `docs/ai-runs/20260601-105000-ccd-p7-repair-ledger-reconciliation/`.
 - Runtime source changed in P4: comment-only in `apps/web-demo/src/utils/safeStorage/index.ts`.
-- Package manifests or lockfile changed in P0–P19: no.
-- P12–P16a have been pushed to origin/main; no clean/reset/rebase was performed.
-- P12–P16a commits are present on origin/main through d53aa9c3.
+- Package manifests or lockfile changed in P0–P20: no.
+- P12–P20 have been pushed to origin/main through P19 reconciliation commit `e0135e10`; P20 is local-only until separately authorized; no clean/reset/rebase was performed.
+- P12–P19 commits are present on origin/main; verify current HEAD via git history.
 - P10 local commits (2026-06-01): **6 commits created** (G5→G2→G3→G6→G1→G4); pre-commit passed without `--no-verify` after P10a quarantine; see `docs/ai-runs/20260601-121000-ccd-p10-local-commits/reports/summary.md` and `docs/ai-runs/20260601-130000-ccd-p10a-cursor-retired-path-quarantine/`.
 - P10g push (2026-06-01): **manual push to `origin/main` completed**; current HEAD must be verified via git history, not hardcoded status docs.
 
 ## Top-Level Status
 
+- P20 reconciliation: `P20_C06_RESIDUAL_ALLOWLIST_REDUCED` (PrimeVue exact allowlist 6 → 5; example-page `primevue/tag` → `@ccd/vue-ui` `CcdTag` wrapper; showcase untouched).
 - P19 reconciliation: `P19_C06_RESIDUAL_ALLOWLIST_REDUCED` (PrimeVue exact allowlist 7 → 6; example-page `primevue/tieredmenu` → `@ccd/vue-ui` `CcdTieredMenu` wrapper; showcase untouched).
 - P18 reconciliation: `P18_G02_LEDGER_REDUCED` (repair-ledger 80 → 78; 2 evidence-backed stale-row closures).
 - P17 reconciliation: `P17_C06_RESIDUAL_ALLOWLIST_REDUCED` (PrimeVue exact allowlist 8 → 7; type-only adapter facade; showcase untouched).
@@ -77,6 +80,7 @@
 | P17   | `P17_C06_RESIDUAL_ALLOWLIST_REDUCED`       | PrimeVue exact allowlist 8→7 via adapter `PrimeVuePopoverInstance` type facade; showcase untouched; full GO unchanged                           |
 | P18   | `P18_G02_LEDGER_REDUCED`                   | G-02 repair-ledger 80→78; closed P1-HttpContract-Contracts + P2-Vite8-Progress stale rows                                                       |
 | P19   | `P19_C06_RESIDUAL_ALLOWLIST_REDUCED`       | PrimeVue exact allowlist 7→6; example-page `primevue/tieredmenu` → `@ccd/vue-ui` `CcdTieredMenu` wrapper; showcase untouched; full GO unchanged |
+| P20   | `P20_C06_RESIDUAL_ALLOWLIST_REDUCED`       | PrimeVue exact allowlist 6→5; example-page `primevue/tag` → `@ccd/vue-ui` `CcdTag` wrapper; showcase untouched; full GO unchanged               |
 
 ## Issue Status After P16a
 
@@ -87,20 +91,20 @@
 | `D-016`  | `APPROVED`                       | Option A, 2026-06-01                                                            |
 | `D-017`  | `APPROVED`                       | Options A+D+E, 2026-06-01                                                       |
 | `D-019`  | `APPROVED`                       | B-08 compression Option A (new)                                                 |
-| `C-06`   | `OPEN` (owner-accepted residual) | 6 exact allowlist + showcase; P14 E1/E2 + P17 + P19 reduced                     |
+| `C-06`   | `OPEN` (owner-accepted residual) | 5 exact allowlist + showcase; P14 E1/E2 + P17 + P19 + P20 reduced               |
 | `G-02`   | `ACCEPTED_DEFERRED_DEBT`         | 78 tasks owner-accepted deferred debt (P15 acceptance; P18 closed 2 stale rows) |
 | `G-03`   | `DONE`                           | Completion gate satisfied (P16)                                                 |
-| `M12`    | `PARTIAL`                        | E1/E2 + P17 + P19 done; E4 reviewed; E3 showcase deferred                       |
+| `M12`    | `PARTIAL`                        | E1/E2 + P17 + P19 + P20 done; E4 reviewed; E3 showcase deferred                 |
 
 ## Unresolved Blockers And Decisions
 
-| ID          | Status                           | Required next action                                                                                                                      |
-| ----------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `C-06`      | `OPEN` (owner-accepted residual) | 6 exact rows + showcase remain (P17 removed 1, P19 removed 1); further reduction requires separate owner authorization beyond E3 showcase |
-| `G-02`      | `ACCEPTED_DEFERRED_DEBT`         | Owner accepted 78 deferred ledger tasks (P15 acceptance; P18 closed 2 evidence-backed rows)                                               |
-| `G-03`      | `DONE`                           | P16 completion gate satisfied with owner-accepted residual debt                                                                           |
-| `M12`       | `PARTIAL`                        | E1/E2/E4 + P17 + P19 slices complete; E3 showcase long-lived per D-017 Option D                                                           |
-| remote push | `DONE`                           | P10g manual push to `origin/main` completed (2026-06-01); verify HEAD via git history                                                     |
+| ID          | Status                           | Required next action                                                                                                                    |
+| ----------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `C-06`      | `OPEN` (owner-accepted residual) | 5 exact rows + showcase remain (P17/P19/P20 removed 1 each); further reduction requires separate owner authorization beyond E3 showcase |
+| `G-02`      | `ACCEPTED_DEFERRED_DEBT`         | Owner accepted 78 deferred ledger tasks (P15 acceptance; P18 closed 2 evidence-backed rows)                                             |
+| `G-03`      | `DONE`                           | P16 completion gate satisfied with owner-accepted residual debt                                                                         |
+| `M12`       | `PARTIAL`                        | E1/E2/E4 + P17 + P19 slices complete; E3 showcase long-lived per D-017 Option D                                                         |
+| remote push | `DONE`                           | P10g manual push to `origin/main` completed (2026-06-01); verify HEAD via git history                                                   |
 
 ## M16a Evidence Path (P9a reconciled)
 
