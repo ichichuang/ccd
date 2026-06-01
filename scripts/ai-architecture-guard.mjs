@@ -137,10 +137,8 @@ const stripJsComments = content =>
   content.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1')
 
 const approvedPrimeVueAppImportFiles = new Set([
-  'apps/desktop/src/plugins/index.ts',
   'apps/web-demo/build/plugins.ts',
   'apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue',
-  'apps/web-demo/src/plugins/modules/primevue.ts',
   'apps/web-demo/src/types/components.d.ts',
 ])
 

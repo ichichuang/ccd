@@ -1,0 +1,5 @@
+$ git status --short --branch --untracked-files=all
+## main...origin/main [ahead 1]
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/00-git-status.log
+
+[exit_code] 0

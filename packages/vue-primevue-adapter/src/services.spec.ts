@@ -22,6 +22,10 @@ vi.mock('primevue/toastservice', () => ({
   default: { install: vi.fn() },
 }))
 
+vi.mock('primevue/config', () => ({
+  default: { install: vi.fn() },
+}))
+
 vi.mock('primevue/confirmationservice', () => ({
   default: { install: vi.fn() },
 }))
@@ -83,6 +87,46 @@ describe('installPrimeVueServices', () => {
       confirmation: false,
       dialog: true,
       tooltip: false,
+    })
+
+    expect(serviceState.useCalls).toHaveLength(1)
+    expect(serviceState.directives).toHaveLength(0)
+  })
+})
+
+describe('installPrimeVueRuntime', () => {
+  beforeEach(() => {
+    serviceState.useCalls = []
+    serviceState.directives = []
+  })
+
+  it('installs PrimeVue config before services', async () => {
+    const { installPrimeVueRuntime } = await import('./index.js')
+    const app = createInstrumentedApp()
+
+    installPrimeVueRuntime(app, {
+      sizeSource: {
+        sizeName: 'comfortable',
+      },
+    })
+
+    expect(serviceState.useCalls).toHaveLength(4)
+    expect(serviceState.directives).toEqual([
+      expect.objectContaining({
+        name: 'tooltip',
+      }),
+    ])
+  })
+
+  it('can install PrimeVue config without services', async () => {
+    const { installPrimeVueRuntime } = await import('./index.js')
+    const app = createInstrumentedApp()
+
+    installPrimeVueRuntime(app, {
+      sizeSource: {
+        sizeName: 'comfortable',
+      },
+      services: false,
     })
 
     expect(serviceState.useCalls).toHaveLength(1)

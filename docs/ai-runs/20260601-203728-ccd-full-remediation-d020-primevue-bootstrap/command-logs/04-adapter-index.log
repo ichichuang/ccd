@@ -1,6 +1,5 @@
+$ sed -n 1,220p packages/vue-primevue-adapter/src/index.ts
 import type { PrimeVueConfiguration } from '@primevue/core/config'
-import type { App } from 'vue'
-import PrimeVue from 'primevue/config'
 import { createCustomPreset, type PrimeVueSizeSource } from './theme/primevuePreset'
 import {
   formControlsPt,
@@ -128,10 +127,6 @@ export interface CreatePrimeVueAdapterConfigOptions {
   locale?: PrimeVueConfiguration['locale']
 }
 
-export interface PrimeVueRuntimeInstallOptions extends CreatePrimeVueAdapterConfigOptions {
-  services?: PrimeVueServiceInstallOptions | false
-}
-
 export function createPrimeVueAdapterConfig(
   options: CreatePrimeVueAdapterConfigOptions
 ): PrimeVueConfiguration {
@@ -153,10 +148,4 @@ export function createPrimeVueAdapterConfig(
   }
 }
 
-export function installPrimeVueRuntime(app: App, options: PrimeVueRuntimeInstallOptions): void {
-  app.use(PrimeVue, createPrimeVueAdapterConfig(options))
-
-  if (options.services !== false) {
-    installPrimeVueServices(app, options.services)
-  }
-}
+[exit_code] 0

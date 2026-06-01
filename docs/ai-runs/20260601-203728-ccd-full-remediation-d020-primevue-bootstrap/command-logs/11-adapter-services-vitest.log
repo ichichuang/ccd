@@ -1,0 +1,13 @@
+$ pnpm exec vitest run packages/vue-primevue-adapter/src/services.spec.ts
+
+ RUN  v4.0.18 /Users/cc/MyPorject/ccd
+
+ ✓ |node| packages/vue-primevue-adapter/src/services.spec.ts (7 tests) 107ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  20:39:13
+   Duration  606ms (transform 81ms, setup 0ms, import 49ms, tests 107ms, environment 380ms)
+
+
+[exit_code] 0

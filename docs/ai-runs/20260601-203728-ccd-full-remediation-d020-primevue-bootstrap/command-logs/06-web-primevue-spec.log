@@ -1,3 +1,4 @@
+$ sed -n 1,180p apps/web-demo/src/plugins/modules/primevue.spec.ts
 // @vitest-environment jsdom
 
 import type { App, Plugin } from 'vue'
@@ -45,24 +46,21 @@ vi.mock('@/stores/modules/system', () => ({
 }))
 
 vi.mock('@ccd/vue-primevue-adapter', () => ({
-  installPrimeVueRuntime: (app: App, { locale }: { locale: unknown }) => {
-    app.use(
-      { install: vi.fn() },
-      {
-        theme: {
-          preset: { semantic: { primary: { 500: '{primary.500}' } } },
-          options: { prefix: 'p', darkModeSelector: '.dark' },
-        },
-        pt: {
-          drawer: { root: { class: 'glass-panel' } },
-          inputtext: { root: { class: 'text-foreground' } },
-          menu: { root: { class: 'text-foreground' } },
-        },
-        ptOptions: { mergeSections: true, mergeProps: true },
-        ripple: true,
-        locale,
-      }
-    )
+  createPrimeVueAdapterConfig: ({ locale }: { locale: unknown }) => ({
+    theme: {
+      preset: { semantic: { primary: { 500: '{primary.500}' } } },
+      options: { prefix: 'p', darkModeSelector: '.dark' },
+    },
+    pt: {
+      drawer: { root: { class: 'glass-panel' } },
+      inputtext: { root: { class: 'text-foreground' } },
+      menu: { root: { class: 'text-foreground' } },
+    },
+    ptOptions: { mergeSections: true, mergeProps: true },
+    ripple: true,
+    locale,
+  }),
+  installPrimeVueServices: (app: App) => {
     app.use({ install: vi.fn() })
     app.use({ install: vi.fn() })
     app.use({ install: vi.fn() })
@@ -120,3 +118,5 @@ describe('setupPrimeVue', () => {
     expect(primevueCall.options).toHaveProperty('locale')
   })
 })
+
+[exit_code] 0

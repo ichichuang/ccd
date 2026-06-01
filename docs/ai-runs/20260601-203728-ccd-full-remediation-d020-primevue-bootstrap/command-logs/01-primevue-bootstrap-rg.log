@@ -1,0 +1,42 @@
+$ rg -n primevue/config|createPrimeVueAdapterConfig|installPrimeVueServices|app\.use\(PrimeVue|setupPrimeVue|setupPlugins apps/desktop apps/web-demo packages/vue-primevue-adapter scripts/ai-architecture-guard.mjs --glob !**/dist/**
+packages/vue-primevue-adapter/src/services.ts:71:export function installPrimeVueServices(
+packages/vue-primevue-adapter/src/index.ts:16:  installPrimeVueServices,
+packages/vue-primevue-adapter/src/index.ts:41:  installPrimeVueServices,
+packages/vue-primevue-adapter/src/index.ts:129:export function createPrimeVueAdapterConfig(
+apps/desktop/src/plugins/index.ts:2:import PrimeVue from 'primevue/config'
+apps/desktop/src/plugins/index.ts:3:import { createPrimeVueAdapterConfig, installPrimeVueServices } from '@ccd/vue-primevue-adapter'
+apps/desktop/src/plugins/index.ts:7:export function setupPlugins(app: App): void {
+apps/desktop/src/plugins/index.ts:10:    createPrimeVueAdapterConfig({
+apps/desktop/src/plugins/index.ts:15:  installPrimeVueServices(app)
+apps/desktop/src/main.ts:13:import { setupPlugins } from './plugins'
+apps/desktop/src/main.ts:32:  setupPlugins(app)
+packages/vue-primevue-adapter/src/services.spec.ts:57:describe('installPrimeVueServices', () => {
+packages/vue-primevue-adapter/src/services.spec.ts:64:    const { installPrimeVueServices } = await import('./services.js')
+packages/vue-primevue-adapter/src/services.spec.ts:67:    installPrimeVueServices(app)
+packages/vue-primevue-adapter/src/services.spec.ts:78:    const { installPrimeVueServices } = await import('./services.js')
+packages/vue-primevue-adapter/src/services.spec.ts:81:    installPrimeVueServices(app, {
+apps/web-demo/build/optimize.ts:28:  'primevue/config',
+apps/web-demo/src/plugins/modules/primevue.spec.ts:17:vi.mock('primevue/config', () => ({
+apps/web-demo/src/plugins/modules/primevue.spec.ts:48:  createPrimeVueAdapterConfig: ({ locale }: { locale: unknown }) => ({
+apps/web-demo/src/plugins/modules/primevue.spec.ts:62:  installPrimeVueServices: (app: App) => {
+apps/web-demo/src/plugins/modules/primevue.spec.ts:87:describe('setupPrimeVue', () => {
+apps/web-demo/src/plugins/modules/primevue.spec.ts:94:    const { setupPrimeVue } = await import('./primevue')
+apps/web-demo/src/plugins/modules/primevue.spec.ts:97:    setupPrimeVue(app)
+apps/web-demo/src/plugins/modules/primevue.ts:2:import PrimeVue from 'primevue/config'
+apps/web-demo/src/plugins/modules/primevue.ts:9:import { createPrimeVueAdapterConfig, installPrimeVueServices } from '@ccd/vue-primevue-adapter'
+apps/web-demo/src/plugins/modules/primevue.ts:17:export function setupPrimeVue(app: App) {
+apps/web-demo/src/plugins/modules/primevue.ts:26:    createPrimeVueAdapterConfig({
+apps/web-demo/src/plugins/modules/primevue.ts:32:  installPrimeVueServices(app)
+apps/web-demo/src/plugins/setupPlugins.spec.ts:27:  setupPrimeVue: () => calls.order.push('primevue'),
+apps/web-demo/src/plugins/setupPlugins.spec.ts:62:describe('setupPlugins bootstrap order', () => {
+apps/web-demo/src/plugins/setupPlugins.spec.ts:68:    const { setupDeferredPlugins, setupPlugins } = await import('./index')
+apps/web-demo/src/plugins/setupPlugins.spec.ts:72:    setupPlugins(app)
+apps/web-demo/src/stores/modules/system/layout.ts:38:    // 启动阶段默认处于全局 loading（由 setupPlugins finally 结束）
+apps/web-demo/src/plugins/index.ts:7:import { setupPrimeVue } from '@/plugins/modules/primevue'
+apps/web-demo/src/plugins/index.ts:19:export const setupPlugins = (app: App) => {
+apps/web-demo/src/plugins/index.ts:27:  setupPrimeVue(app)
+apps/web-demo/src/main.ts:17:import { setupDeferredPlugins, setupPlugins } from '@/plugins'
+apps/web-demo/src/main.ts:34:  setupPlugins(app)
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:11:import { usePrimeVue } from 'primevue/config'
+
+[exit_code] 0

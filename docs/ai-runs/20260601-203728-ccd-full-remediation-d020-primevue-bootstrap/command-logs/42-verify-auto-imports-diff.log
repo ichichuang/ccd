@@ -1,0 +1,3 @@
+$ git diff --exit-code -- apps/web-demo/src/types/auto-imports.d.ts
+
+[exit:0]

@@ -1,11 +1,13 @@
+$ sed -n 1,220p apps/web-demo/src/plugins/modules/primevue.ts
 import type { App } from 'vue'
+import PrimeVue from 'primevue/config'
 import { primevueZhCN } from '@/locales/primevue-zh-CN'
 import { PRIMEVUE_LOCALE_MAP } from '@/locales/primevue-locales'
 import { t, type SupportedLocale } from '@/locales'
 import store from '@/stores'
 import { useDeviceStore, useLocaleStore } from '@/stores/modules/system'
 import { useSizeStore } from '@/stores/modules/system'
-import { installPrimeVueRuntime } from '@ccd/vue-primevue-adapter'
+import { createPrimeVueAdapterConfig, installPrimeVueServices } from '@ccd/vue-primevue-adapter'
 import { PRIME_DIALOG_RUNTIME_CONFIG_KEY } from '@ccd/vue-ui'
 
 /**
@@ -20,12 +22,19 @@ export function setupPrimeVue(app: App) {
   const initialLocale: SupportedLocale = localeStore.locale
   const initialPrimeLocale = PRIMEVUE_LOCALE_MAP[initialLocale] ?? primevueZhCN
 
-  installPrimeVueRuntime(app, {
-    sizeSource: sizeStore,
-    locale: initialPrimeLocale,
-  })
+  app.use(
+    PrimeVue,
+    createPrimeVueAdapterConfig({
+      sizeSource: sizeStore,
+      locale: initialPrimeLocale,
+    })
+  )
+
+  installPrimeVueServices(app)
   app.provide(PRIME_DIALOG_RUNTIME_CONFIG_KEY, {
     translate: t,
     isDialogDraggable: () => deviceStore.isPCLayout || deviceStore.isTabletLayout,
   })
 }
+
+[exit_code] 0

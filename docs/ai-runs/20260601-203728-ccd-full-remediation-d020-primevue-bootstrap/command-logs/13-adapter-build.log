@@ -1,0 +1,12 @@
+$ pnpm --filter @ccd/vue-primevue-adapter build
+
+> @ccd/vue-primevue-adapter@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-primevue-adapter
+> rm -f ../../node_modules/.tmp/packages-vue-primevue-adapter.tsbuildinfo && tsc -p tsconfig.json
+
+src/services.spec.ts(109,13): error TS2322: Type 'string' is not assignable to type 'SizeMode'.
+src/services.spec.ts(129,13): error TS2322: Type 'string' is not assignable to type 'SizeMode'.
+/Users/cc/MyPorject/ccd/packages/vue-primevue-adapter:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @ccd/vue-primevue-adapter@1.0.38 build: `rm -f ../../node_modules/.tmp/packages-vue-primevue-adapter.tsbuildinfo && tsc -p tsconfig.json`
+Exit status 2
+
+[exit_code] 2

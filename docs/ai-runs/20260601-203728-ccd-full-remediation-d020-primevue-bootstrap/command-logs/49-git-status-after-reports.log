@@ -1,0 +1,68 @@
+$ git status --short --branch --untracked-files=all
+## main...origin/main [ahead 1]
+ M apps/desktop/src/plugins/index.ts
+ M apps/web-demo/src/plugins/modules/primevue.spec.ts
+ M apps/web-demo/src/plugins/modules/primevue.ts
+ M docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md
+ M docs/ai-plan/DECISIONS.md
+ M docs/ai-plan/FINAL_GO_NO_GO.md
+ M docs/ai-plan/PLAN.md
+ M docs/ai-plan/STATUS.md
+ M docs/generated/api-surface-report.json
+ M docs/generated/api-surface-report.md
+ M packages/vue-primevue-adapter/src/index.ts
+ M packages/vue-primevue-adapter/src/services.spec.ts
+ M scripts/ai-architecture-guard.mjs
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/00-git-status.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/01-primevue-bootstrap-rg.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/02-desktop-plugin.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/03-web-primevue-plugin.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/04-adapter-index.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/05-adapter-services.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/06-web-primevue-spec.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/07-guard-primevue-allowlist.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/10-pnpm-ai-guard-json.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/11-adapter-services-vitest.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/12-web-primevue-vitest.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/13-adapter-build.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/14-web-demo-type-check.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/15-adapter-build-after-size-fix.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/16-adapter-services-vitest-after-size-fix.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/20-git-fetch-origin-main.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/21-stop-check-cursor.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/22-stop-check-root-duplicate.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/23-git-diff-check.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/24-docs-commands.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/25-project-doctor.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/26-ai-doctor.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/27-ai-doctor-open.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/28-codex-preflight.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/29-arch-runtime.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/30-arch-boundaries.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/31-api-report.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/32-ai-guard-json.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/33-validate-governance.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/34-adapter-build.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/35-vue-ui-test.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/36-web-demo-type-check.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/37-web-demo-test.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/38-root-type-check.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/39-root-test-run.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/40-build-web-demo.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/41-prettier-auto-imports.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/42-verify-auto-imports-diff.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/43-build-desktop.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/44-git-status-final.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/45-git-diff-check-after-reports.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/46-docs-commands-after-reports.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/47-ai-guard-json-after-reports.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/48-validate-governance-after-reports.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/command-logs/49-git-status-after-reports.log
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/reports/before-after.md
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/reports/final-status.md
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/reports/inventory.md
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/reports/risk-notes.md
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/reports/summary.md
+?? docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/reports/validation-summary.md
+
+[exit:0]

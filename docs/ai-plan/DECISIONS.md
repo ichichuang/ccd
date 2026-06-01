@@ -1128,3 +1128,13 @@ Until an owner/operator/product records a decision for any item above, `CONDITIO
 - Authorization effect: source migration may proceed only inside the approved lane scope and only after lane inventory evidence. Package manifest, lockfile, dependency, destructive Git, Clawd/theme, safeStorage crypto/HMAC/WebCrypto ownership, and lz-string ownership changes remain forbidden unless separately proven and approved.
 - Full GO effect: no immediate GO. `CONDITIONAL_GO` remains the current state until C-06/G-02/M12 are resolved or formally closed with evidence and the final validation matrix passes.
 - P25 final status: `P25_FULL_REMEDIATION_APPROVED_BASELINE`.
+
+### P26 D-020 execution result — 2026-06-01
+
+- Execution run: `docs/ai-runs/20260601-203728-ccd-full-remediation-d020-primevue-bootstrap/`
+- Decision executed: D-020 PrimeVue bootstrap install adapter lane for C-06 R1/R4.
+- Result: `APPROVED` and `DONE` for R1/R4. Desktop and web app bootstrap installs now call adapter-owned `installPrimeVueRuntime()` from `@ccd/vue-primevue-adapter`.
+- Boundary effect: direct `primevue/config` imports were removed from `apps/desktop/src/plugins/index.ts` and `apps/web-demo/src/plugins/modules/primevue.ts`; the two matching exact allowlist rows were removed after `pnpm ai:guard -- --format=json` passed.
+- Compatibility effect: PrimeVue config order, service installation, tooltip directive registration, locale, size source, and web dialog runtime provide semantics are preserved. `PRIME_DIALOG_RUNTIME_CONFIG_KEY` remains app-owned.
+- Remaining scope: C-06 still has 3 exact rows plus the showcase exception. D-021, D-022, D-023, and D-024 remain approved but not yet executed in this entry.
+- Full GO effect: no immediate GO. `CONDITIONAL_GO` remains current until all approved residual lanes are closed and the final validation matrix passes.
