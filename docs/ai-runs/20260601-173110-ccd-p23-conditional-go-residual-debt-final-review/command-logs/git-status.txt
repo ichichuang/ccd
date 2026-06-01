@@ -1,0 +1,5 @@
+?? docs/ai-runs/20260601-173110-ccd-p23-conditional-go-residual-debt-final-review/command-logs/git-branch.txt
+?? docs/ai-runs/20260601-173110-ccd-p23-conditional-go-residual-debt-final-review/command-logs/git-fetch.txt
+?? docs/ai-runs/20260601-173110-ccd-p23-conditional-go-residual-debt-final-review/command-logs/git-head.txt
+?? docs/ai-runs/20260601-173110-ccd-p23-conditional-go-residual-debt-final-review/command-logs/git-origin-main.txt
+?? docs/ai-runs/20260601-173110-ccd-p23-conditional-go-residual-debt-final-review/command-logs/git-status.txt

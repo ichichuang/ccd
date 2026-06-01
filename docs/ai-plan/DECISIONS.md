@@ -1073,3 +1073,21 @@ P17 executed one narrow, authorized residual-reduction slice against C-06 after 
 ### Evidence
 
 - `docs/ai-runs/20260601-125343-ccd-p17-c06-primevue-residual-allowlist-closure/`
+
+---
+
+## P23 future owner decision menu (PROPOSED only)
+
+- Date: 2026-06-01
+- Lane: P23 conditional-go residual debt final review
+- Status: every item below is **`PROPOSED`** — none are approved by this entry.
+
+ID note: the menu identifiers `D-020`–`D-024` are P23 residual-debt closure-lane labels and are recorded here as menu items only. They intentionally do **not** reuse the existing `## D-020` (M11) / `## D-021` (M13a) decision headings above; the canonical menu lives in `docs/ai-runs/20260601-173110-ccd-p23-conditional-go-residual-debt-final-review/reports/future-owner-decision-menu.md`. Listing here adds future decision options without approving them and does not change `CONDITIONAL_GO`, C-06, G-02, or M12.
+
+- **D-020 (PROPOSED) — PrimeVue bootstrap install adapter lane (C-06 R1/R4):** introduce an adapter-owned `installPrimeVueRuntime` bootstrap API and migrate desktop + web plugin installs together, preserving locale/size-store coupling and the dialog runtime provide. Decision owner: owner. Risk: high. Not approved.
+- **D-021 (PROPOSED) — PrimeVue build resolver / generated registry lane (C-06 R2/R5):** move `PrimeVueResolver` into a governed build package or change the `unplugin-vue-components` resolver/registry so generated types reference `@ccd/vue-ui`/adapter facades, then regenerate `components.d.ts`. Decision owner: operator + owner. Risk: high. Not approved.
+- **D-022 (PROPOSED) — AppPrimeVueGlobals global shell facade lane (C-06 R3):** provide adapter/vue-ui Toast/ConfirmPopup/DynamicDialog shell facades + composable re-exports preserving the six Toast groups, locale watch, route dialog reset, and `window.$toast`/`$message`, then migrate the layout host off direct imports. Decision owner: owner. Risk: high. Not approved.
+- **D-023 (PROPOSED) — G-02 operator/product closure wave (78 tasks):** open separate owner/operator/product lanes per task group (P1-Guard owner Decisions 2/3/4+signoff; P2-Vite8 isolated branch; P2-Deps single dependency lanes; P2-GitHub `.github/**` approval; P3-Login M11 product/operator approval; P4 strategic owner decisions + desktop drift CI scope), closing tasks only with evidence per closure rules 1–8. Decision owner: owner + operator + product. Risk: medium-to-high. Not approved.
+- **D-024 (PROPOSED) — Showcase exception cleanup decision (M12 E3 / showcase):** owner/product decides whether the `primevue-collection/**` showcase stays a permanent long-lived exception (D-017 Option D) or is migrated/retired, and defines cleanup scope/validation if chosen. Decision owner: owner + product. Risk: low-to-medium. Not approved.
+
+Until an owner/operator/product records a decision for any item above, `CONDITIONAL_GO` holds and full GO stays unauthorized.
