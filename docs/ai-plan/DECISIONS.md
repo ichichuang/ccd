@@ -1091,3 +1091,20 @@ ID note: the menu identifiers `D-020`–`D-024` are P23 residual-debt closure-la
 - **D-024 (PROPOSED) — Showcase exception cleanup decision (M12 E3 / showcase):** owner/product decides whether the `primevue-collection/**` showcase stays a permanent long-lived exception (D-017 Option D) or is migrated/retired, and defines cleanup scope/validation if chosen. Decision owner: owner + product. Risk: low-to-medium. Not approved.
 
 Until an owner/operator/product records a decision for any item above, `CONDITIONAL_GO` holds and full GO stays unauthorized.
+
+### P24 owner decision (no approval) — 2026-06-01
+
+- Review run: `docs/ai-runs/20260601-180407-ccd-p24-owner-decision-residual-debt-menu/`
+- Owner input: **no approval** — keep all P23 menu items `PROPOSED`; no implicit approvals.
+- Per-item result:
+
+| menu_id                                           | P24 owner_decision | result_status |
+| ------------------------------------------------- | ------------------ | ------------- |
+| D-020 (bootstrap install adapter R1/R4)           | NO_DECISION        | PROPOSED      |
+| D-021 (build resolver / generated registry R2/R5) | NO_DECISION        | PROPOSED      |
+| D-022 (global shell facade R3)                    | NO_DECISION        | PROPOSED      |
+| D-023 (G-02 closure wave, 78 tasks)               | NO_DECISION        | PROPOSED      |
+| D-024 (showcase exception cleanup)                | NO_DECISION        | PROPOSED      |
+
+- Authorization effect: none of D-020–D-024 are approved, rejected, or deferred by P24. C-06, G-02, M12, and `CONDITIONAL_GO` semantics unchanged. Full GO remains unauthorized.
+- P24 final status: `P24_NO_OWNER_DECISION_RECORDED`.

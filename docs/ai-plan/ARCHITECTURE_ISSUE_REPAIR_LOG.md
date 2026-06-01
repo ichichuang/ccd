@@ -3,13 +3,13 @@
 ## 0. Machine-Readable Summary
 
 ```yaml
-document_version: 2026-06-01.p23
+document_version: 2026-06-01.p24
 last_updated: 2026-06-01
 repository: /Users/cc/MyPorject/ccd
 baseline_branch: main
 baseline_commit: cc255d1a
 last_remote_state_reconciliation: P11 reconciled P10g push state; evidence snapshot only — verify current HEAD via git history
-current_lane: P23 conditional-go residual debt final review (docs-only; P23_RESIDUAL_DEBT_REGISTERED; no source/allowlist/checkbox/manifest/lockfile change)
+current_lane: P24 owner decision residual debt menu (docs-only; P24_NO_OWNER_DECISION_RECORDED; D-020–D-024 remain PROPOSED; no source/allowlist/checkbox/manifest/lockfile change)
 primevue_exact_allowlist_count: 5
 primevue_exact_allowlist_count_before_p21: 5
 primevue_exact_allowlist_count_before_p21a: 5
@@ -1925,6 +1925,15 @@ M6b owner decision review:
 - implementation result: built `reports/residual-debt-register.md` (C-06 5 exact rows R1–R5 + showcase; G-02 task groups P1-Guard ×8 / P2-Vite8 ×8 / P2-Deps ×7 / P2-GitHub ×2 / P3-Login ×47 / P4-Deferred ×6 = 78; M12 `PARTIAL` slices; full-GO blockers with exact clear conditions) and `reports/future-owner-decision-menu.md` (D-020–D-024, all `PROPOSED`). P21/P22 already confirmed no safe unapproved reduction remains on either surface.
 - issue status result: `C-06` `OPEN` (5 exact rows + showcase) unchanged; `G-02` `ACCEPTED_DEFERRED_DEBT` (78) unchanged; `M12` `PARTIAL` unchanged; top-level `CONDITIONAL_GO` unchanged; full GO not authorized; no technical debt closed.
 - final status: `P23_RESIDUAL_DEBT_REGISTERED`.
+
+### P24 owner-decision-residual-debt-menu (2026-06-01)
+
+- evidence: `docs/ai-runs/20260601-180407-ccd-p24-owner-decision-residual-debt-menu/`
+- baseline: branch `main`, HEAD `218d941e`, origin/main `218d941e` (in sync); `git diff --check` clean; `pnpm ai:guard -- --format=json` `{ ok: true, findings: [] }`; `pnpm ai:doctor --open` 78 open; `pnpm validate:governance` `[gate:pass]`.
+- objective: record explicit owner decisions for P23 future decision menu D-020–D-024 without implementing any source change; no allowlist/ledger checkbox/manifest/lockfile/generated change; do not change `CONDITIONAL_GO` to GO.
+- implementation result: owner declined to approve any menu item; built `reports/decision-menu-review.md`, `reports/owner-decision-record.md`, and `reports/next-lane-authorization.md`; updated `docs/ai-plan/DECISIONS.md`, `STATUS.md`, `FINAL_GO_NO_GO.md`, and this log. D-020–D-024 all remain `PROPOSED`.
+- issue status result: `C-06` `OPEN` (5 exact rows + showcase) unchanged; `G-02` `ACCEPTED_DEFERRED_DEBT` (78) unchanged; `M12` `PARTIAL` unchanged; top-level `CONDITIONAL_GO` unchanged; full GO not authorized; no technical debt closed.
+- final status: `P24_NO_OWNER_DECISION_RECORDED`.
 
 ## 12. Validation Matrix
 

@@ -1,0 +1,12 @@
+218d941e docs(architecture): 汇总 CONDITIONAL_GO 残余债务与后续审批菜单
+f98350f3 docs(governance): 继续收敛 G-02 修复台账延期债务
+f7a5f44e docs(governance): 同步 CcdTag 公共 API 生成报告
+95e352f5 docs(architecture): 记录 C-06 启动与生成边界残余白名单评估
+9cbdd5cc refactor(primevue): 继续减少 C-06 精确白名单残余
+e0135e10 refactor(primevue): 继续收敛 C-06 残余白名单引用
+517b15b1 docs(governance): 收敛 G-02 修复台账延期债务
+f1880c1e refactor(primevue): 收敛 C-06 残余直接引用白名单
+cc813fe3 docs(architecture): 补充 P16c 提交后验证日志
+8ffce7c0 docs(architecture): 修正 P16a 远程已推送后的状态面措辞
+d53aa9c3 docs(architecture): 修正 P16 条件通过状态与残余债务表述
+f86b3bb0 docs(architecture): P16 最终对账 CONDITIONAL_GO
