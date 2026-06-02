@@ -64,3 +64,11 @@
 - Classified `auto-imports.d.ts`, `components.d.ts`, icon list output, API reports, governance reports, and dependency graphs as generated-owned.
 - Confirmed `apps/web-demo/build/resolvers/primevue.ts` remains the build-only PrimeVue resolver boundary.
 - Ran M6 build/generator validation successfully with empty generated type and governance/API diffs after owning commands.
+
+## M7 — App-owned register and guard coverage
+
+- Created evidence directory `docs/ai-runs/20260602-110032-ccd-post-go-app-public-layer-m7-guard-register/`.
+- Produced the final app-owned register for remaining app, facade, generated, demo, and deferred surfaces.
+- Produced guard coverage matrix for PrimeVue direct imports, resolver boundary, generated staging, runtime leaks, package boundaries, and governance sync.
+- Confirmed no unclassified M1 candidate remains.
+- Made no guard source change because deterministic guard coverage already exists.
