@@ -1,0 +1,8 @@
+apps/web-demo/build/compress.ts
+apps/web-demo/build/html.ts
+apps/web-demo/build/info.ts
+apps/web-demo/build/optimize.ts
+apps/web-demo/build/performance.ts
+apps/web-demo/build/plugins.ts
+apps/web-demo/build/resolvers/primevue.ts
+apps/web-demo/build/utils.ts

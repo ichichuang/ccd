@@ -56,3 +56,11 @@
 - Confirmed `@ccd/vue-ui` and `@ccd/vue-primevue-adapter` remain the governed UI/PrimeVue package owners.
 - Ran M5 UI/PrimeVue validation successfully.
 - Recorded and normalized build-produced `auto-imports.d.ts` formatting drift with an empty post-prettier diff.
+
+## M6 — Build and generated boundary review
+
+- Created evidence directory `docs/ai-runs/20260602-105455-ccd-post-go-app-public-layer-m6-build-generated-boundary/`.
+- Classified app build utilities and Vite configs as app build-owned because no governed build package owner exists.
+- Classified `auto-imports.d.ts`, `components.d.ts`, icon list output, API reports, governance reports, and dependency graphs as generated-owned.
+- Confirmed `apps/web-demo/build/resolvers/primevue.ts` remains the build-only PrimeVue resolver boundary.
+- Ran M6 build/generator validation successfully with empty generated type and governance/API diffs after owning commands.
