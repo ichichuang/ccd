@@ -72,3 +72,11 @@
 - Produced guard coverage matrix for PrimeVue direct imports, resolver boundary, generated staging, runtime leaks, package boundaries, and governance sync.
 - Confirmed no unclassified M1 candidate remains.
 - Made no guard source change because deterministic guard coverage already exists.
+
+## M8 — Final validation and certification
+
+- Created evidence directory `docs/ai-runs/20260602-110559-ccd-post-go-app-public-layer-m8-final-validation/`.
+- Ran the final validation matrix successfully across docs, doctors, preflight, package smoke, runtime/boundary architecture, API reports, AI guard, governance, type-check, tests, web build, desktop build, and drift check.
+- Confirmed generated/API/governance/type diff checks were empty after owning commands.
+- Recorded final non-blocking residual risks.
+- Certified the plan as `APP_PUBLIC_LAYER_EXHAUSTIVENESS_CERTIFIED`.
