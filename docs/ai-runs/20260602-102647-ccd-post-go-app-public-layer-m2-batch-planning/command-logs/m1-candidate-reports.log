@@ -1,0 +1,54 @@
+$ sed M1 candidate reports
+# M1 Candidate Dependency Map
+
+## Candidate groups
+
+| Candidate | Current surface | Potential owner | Dependencies/coupling | M1 note | Status |
+| --- | --- | --- | --- | --- | --- |
+| M3-DESKTOP-THEME | apps/desktop/src/theme/index.ts | @ccd/design-tokens for pure var derivation; app keeps DOM write | design tokens only plus document write | review pure createThemeVars/createSizeVars duplication; no manifest change expected | M2_REVIEW |
+| M3-ROUTE-ACCESS | apps/web-demo/src/router/utils/accessControl.ts | @ccd/vue-app-platform or contracts after route/menu type extraction | pure string/list logic plus global MenuItem shape | eligible only if route/menu contracts are explicit and tests move with it | M2_REVIEW |
+| M3-SYSTEM-PREF-GUARDS | apps/web-demo/src/sync/systemPreferences/guards.ts | @ccd/shared-utils or contracts after preference type owner exists | @ccd/shared-utils castValue; app preference type | not eligible until SystemPreferencePayload contract is package-owned | M2_REVIEW |
+| M3-DTO-CONTRACTS | apps/web-demo/src/types/dto/*.ts; src/types/api.ts | @ccd/contracts if type-only; schema package only with approval | zod, RouteMeta, app route DTO aliases | manifest change would be needed for schema migration; type-only split may be possible | M2_REVIEW |
+| M3-PURE-UTILITY-REVIEW | apps/web-demo/src/router/utils/menu.ts; transform.ts; resolver.ts | @ccd/vue-app-platform only for isolated pure subsets | Vue Router types, app logger, import.meta.glob, route meta globals | most of the module stays app-owned; only small pure reducers may be extractable | M2_REVIEW |
+| M6-BUILD-GENERATOR | apps/web-demo/build/**; vite.config.ts | no current governed build package owner | Vite, process.env, package.json, PrimeVue resolver/generated typing | requires M6 owner decision; do not create package or manifest changes in M1 | M2_REVIEW |
+| BLOCK-SAFESTORAGE-CRYPTO | apps/web-demo/src/utils/safeStorage/crypto.ts | apps/web-demo | crypto-es, Web Crypto/fallback, logger/env/security policy | D-016 terminal app-owned; do not migrate | APP_OWNED_TERMINAL |
+| BLOCK-SAFESTORAGE-COMPRESSION | apps/web-demo/src/utils/safeStorage/lzstring.ts | apps/web-demo | lz-string declared in app package only | D-019 terminal app-owned; manifest change forbidden | APP_OWNED_TERMINAL |
+| BLOCK-DATEUTILS | apps/web-demo/src/utils/date/** | apps/web-demo | dayjs plugins, dynamic locale/timezone, mitt/window integration | needs future package/dependency owner decision; not eligible now | NOT_SAFE_TO_MOVE |
+| BLOCK-HTTP-RUNTIME | apps/web-demo/src/utils/http/**; src/api/** | apps/web-demo | alova, browser fetch/download, notification/window policy, auth refresh | runtime adapter boundary; contracts already hold shared HTTP types | APP_OWNED_RUNTIME_ADAPTER |
+| FACADE-THEME-TOKENS | apps/web-demo/src/utils/theme/**; constants/theme*; constants/size* | @ccd/design-tokens plus @ccd/vue-app-platform | facade delegates pure logic; app keeps DOM/storage/preload | already migrated foundation; keep app facade unless M2 proves narrow leftover | APP_COMPATIBILITY_FACADE |
+| FACADE-VUE-HOOKS | directives tap/swipe/longPress; useAutoMitt | @ccd/vue-hooks | app compatibility re-exports/wrapper | already package-owned; keep app facade for import compatibility | APP_COMPATIBILITY_FACADE |
+| FACADE-VUE-UI | useDialog; useProTableUrlSync; proform/protable plugin shells | @ccd/vue-ui plus app router/i18n injection | router/i18n/storage capability injection | M11/D-020 classify as app facade/plugin shell | APP_COMPATIBILITY_FACADE |
+| FACADE-CHARTS | apps/web-demo/src/adapters/charts/UseEcharts.vue | @ccd/vue-charts | app import facade over package component/types | already package-owned | APP_COMPATIBILITY_FACADE |
+| GENERATED-PRIMEVUE-REGISTRY | apps/web-demo/src/types/components.d.ts; build/resolvers/primevue.ts | owning generators/build config | generated registry and PrimeVue resolver | guarded/generated-owned; only owning generator may change | GENERATED_OWNED |
+
+## Dependency observations
+
+- `@ccd/contracts` has no runtime dependencies; moving Zod schemas into it would require manifest approval.
+- `@ccd/shared-utils` depends only on `lodash-es` and `uuid`; `dayjs`, `zod`, `lz-string`, and browser APIs are not approved there.
+- `@ccd/core` remains runtime-neutral and depends only on contracts; no app utility should move there without orchestration value.
+- `@ccd/vue-app-platform` already owns bootstrap, preloader, theme runtime, and layout runtime helpers.
+- `@ccd/vue-hooks`, `@ccd/vue-ui`, `@ccd/vue-primevue-adapter`, and `@ccd/vue-charts` already own the main reusable Vue/UI/PrimeVue/chart surfaces.
+# M1 App-Owned Justification Register
+
+| Area | Paths | Classification | Justification |
+| --- | --- | --- | --- |
+| App shell/bootstrap | main.ts, App.vue, index.html, plugins/** | APP_OWNED_PLUGIN_SHELL | Creates concrete app, installs router/i18n/stores/PrimeVue services, owns preloader/error shell. |
+| Desktop/Tauri adapters | apps/desktop/src/adapters/**, src-tauri/** | APP_OWNED_RUNTIME_ADAPTER | @tauri-apps invoke and desktop permissions must stay in desktop adapter boundary. |
+| Router/routes | router/** | APP_OWNED_ROUTE_OR_FEATURE | Route tables, view loaders, route meta, guards, and window navigation are app-owned; pure subsets need M2 review. |
+| Pinia stores | stores/** | APP_OWNED_STORE | Concrete persisted state, store IDs, syncAction, localStorage, and app singleton coupling remain app-owned. |
+| HTTP/API runtime | utils/http/**, api/**, adapters/http.adapter.ts | APP_OWNED_RUNTIME_ADAPTER | Alova, fetch/download, auth refresh, notification policy, and browser network runtime stay app-owned. |
+| SafeStorage | utils/safeStorage/** | APP_OWNED_RUNTIME_ADAPTER / NOT_SAFE_TO_MOVE | D-016/D-019 keep crypto and compression app-owned; JSON codec is already in @ccd/shared-utils. |
+| Theme/size facade | utils/theme/**, constants/theme*, constants/size* | APP_COMPATIBILITY_FACADE | Pure token logic already package-owned; DOM/localStorage/preload compatibility stays app-owned. |
+| Hooks facades | hooks/modules/useAutoMitt.ts, useDialog.tsx, useProTableUrlSync.ts | APP_COMPATIBILITY_FACADE | Facades preserve app i18n/router behavior while packages own reusable core. |
+| Layout/admin shell | layouts/** | APP_OWNED_ROUTE_OR_FEATURE | Admin chrome, global shell, context menu, and window.$toast/message host are app UI shell. |
+| Locales | locales/** | APP_OWNED_ROUTE_OR_FEATURE | App message catalog and current i18n runtime. |
+| Generated registries | types/components.d.ts, auto-imports.d.ts, iconLists.generated.ts | GENERATED_OWNED | Only owning generators may update; manual edits forbidden. |
+| Examples/showcases | views/example/**, public demo assets | DEMO_OR_SHOWCASE | Demonstration routes and sample configs are not shared production package API. |
+| Build utilities | build/**, vite.config.ts | NEEDS_OWNER_DECISION | Potential shared build concerns exist, but no governed build package owner is approved. |
+
+## Guard posture
+
+- `pnpm ai:guard -- --format=json` passed in M0 and current PrimeVue direct surfaces are either package-owned, generated, app build config, or test mocks.
+- `pnpm arch:runtime` passed inside M0 `pnpm validate:governance`; runtime APIs remain governed by existing exact exceptions and package policies.
+- M1 did not weaken guards and did not add new app-owned exceptions.
+exit_code=0
