@@ -1,0 +1,3 @@
+$ git rev-parse --short origin/main
+1d691428
+exit_code=0

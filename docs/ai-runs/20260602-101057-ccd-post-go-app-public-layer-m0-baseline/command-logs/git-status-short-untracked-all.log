@@ -1,0 +1,26 @@
+$ git status --short --untracked-files=all
+?? ccd-post-go-app-public-layer-exhaustiveness-plan-package/docs/ai-plan/CHANGE_SUMMARY.md
+?? ccd-post-go-app-public-layer-exhaustiveness-plan-package/docs/ai-plan/CODEX_GOAL_PROMPT.md
+?? ccd-post-go-app-public-layer-exhaustiveness-plan-package/docs/ai-plan/DECISIONS.md
+?? ccd-post-go-app-public-layer-exhaustiveness-plan-package/docs/ai-plan/EVIDENCE_POLICY.md
+?? ccd-post-go-app-public-layer-exhaustiveness-plan-package/docs/ai-plan/FINAL_GO_NO_GO.md
+?? ccd-post-go-app-public-layer-exhaustiveness-plan-package/docs/ai-plan/FINAL_VALIDATION_MATRIX.md
+?? ccd-post-go-app-public-layer-exhaustiveness-plan-package/docs/ai-plan/NEXT_ACTIONS.md
+?? ccd-post-go-app-public-layer-exhaustiveness-plan-package/docs/ai-plan/OPERATOR_SOP.md
+?? ccd-post-go-app-public-layer-exhaustiveness-plan-package/docs/ai-plan/PLAN.md
+?? ccd-post-go-app-public-layer-exhaustiveness-plan-package/docs/ai-plan/REVIEW_CHECKLIST.md
+?? ccd-post-go-app-public-layer-exhaustiveness-plan-package/docs/ai-plan/RISK_REGISTER.md
+?? ccd-post-go-app-public-layer-exhaustiveness-plan-package/docs/ai-plan/ROLLBACK.md
+?? ccd-post-go-app-public-layer-exhaustiveness-plan-package/docs/ai-plan/SECURITY_AND_APPROVALS.md
+?? ccd-post-go-app-public-layer-exhaustiveness-plan-package/docs/ai-plan/SPEC.md
+?? ccd-post-go-app-public-layer-exhaustiveness-plan-package/docs/ai-plan/STATUS.md
+?? ccd-post-go-app-public-layer-exhaustiveness-plan-package/docs/ai-plan/VALIDATION.md
+?? ccd-post-go-app-public-layer-exhaustiveness-plan-package/docs/ai-plan/WORKFLOW_RECOMMENDATIONS.md
+?? ccd-post-go-app-public-layer-exhaustiveness-plan-package/docs/ai-runs/README.md
+?? docs/ai-runs/20260602-101057-ccd-post-go-app-public-layer-m0-baseline/command-logs/git-branch-show-current.log
+?? docs/ai-runs/20260602-101057-ccd-post-go-app-public-layer-m0-baseline/command-logs/git-diff-check.log
+?? docs/ai-runs/20260602-101057-ccd-post-go-app-public-layer-m0-baseline/command-logs/git-fetch-origin-main.log
+?? docs/ai-runs/20260602-101057-ccd-post-go-app-public-layer-m0-baseline/command-logs/git-rev-parse-head.log
+?? docs/ai-runs/20260602-101057-ccd-post-go-app-public-layer-m0-baseline/command-logs/git-rev-parse-origin-main.log
+?? docs/ai-runs/20260602-101057-ccd-post-go-app-public-layer-m0-baseline/command-logs/git-status-short-untracked-all.log
+exit_code=0

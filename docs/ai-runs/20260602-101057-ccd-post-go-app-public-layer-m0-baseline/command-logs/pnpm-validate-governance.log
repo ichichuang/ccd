@@ -1,0 +1,178 @@
+$ pnpm validate:governance
+
+> ccd@1.0.38 validate:governance /Users/cc/MyPorject/ccd
+> pnpm governance:gate
+
+
+> ccd@1.0.38 governance:gate /Users/cc/MyPorject/ccd
+> bash scripts/exec.sh node scripts/governance/gate.mjs
+
+
+[gate] project metadata drift
+
+> ccd@1.0.38 project:doctor /Users/cc/MyPorject/ccd
+> node scripts/project-config.mjs doctor
+
+file                                       | field                | expected                                                                    | actual                                                                      | status
+-------------------------------------------|----------------------|-----------------------------------------------------------------------------|-----------------------------------------------------------------------------|-------
+package.json                               | name                 | ccd                                                                         | ccd                                                                         | ok    
+package.json                               | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+package.json                               | description          | Self-protecting deterministic multi-runtime platform architecture.          | Self-protecting deterministic multi-runtime platform architecture.          | ok    
+package.json                               | author               | Chi Chuang                                                                  | Chi Chuang                                                                  | ok    
+package.json                               | license              | GPL-3.0                                                                     | GPL-3.0                                                                     | ok    
+package.json                               | homepage             | https://www.ccd.wzdxcc.cloudns.org/                                         | https://www.ccd.wzdxcc.cloudns.org/                                         | ok    
+package.json                               | keywords             | ["vue3","typescript","vite","tauri","monorepo","governance","architecture"] | ["vue3","typescript","vite","tauri","monorepo","governance","architecture"] | ok    
+apps/web-demo/src/constants/brand.ts       | name                 | ccd                                                                         | ccd                                                                         | ok    
+apps/web-demo/src/constants/brand.ts       | displayName          | CCD                                                                         | CCD                                                                         | ok    
+apps/web-demo/src/constants/brand.ts       | subtitle             | Platform                                                                    | Platform                                                                    | ok    
+apps/web-demo/src/constants/brand.ts       | description          | Self-protecting deterministic multi-runtime platform architecture.          | Self-protecting deterministic multi-runtime platform architecture.          | ok    
+apps/web-demo/src/constants/brand.ts       | slogan               | Self-protecting deterministic multi-runtime platform architecture           | Self-protecting deterministic multi-runtime platform architecture           | ok    
+apps/web-demo/src/constants/brand.ts       | author               | Chi Chuang                                                                  | Chi Chuang                                                                  | ok    
+apps/desktop/package.json                  | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+apps/web-demo/package.json                 | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/contracts/package.json            | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/core/package.json                 | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/design-tokens/package.json        | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/shared-utils/package.json         | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/unocss-preset/package.json        | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/vue-app-platform/package.json     | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/vue-charts/package.json           | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/vue-hooks/package.json            | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/vue-primevue-adapter/package.json | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/vue-ui/package.json               | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+apps/desktop/src-tauri/tauri.conf.json     | productName          | CCD Desktop                                                                 | CCD Desktop                                                                 | ok    
+apps/desktop/src-tauri/tauri.conf.json     | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+apps/desktop/src-tauri/tauri.conf.json     | identifier           | com.ccd.desktop                                                             | com.ccd.desktop                                                             | ok    
+apps/desktop/src-tauri/tauri.conf.json     | app.windows[0].title | CCD Desktop                                                                 | CCD Desktop                                                                 | ok    
+.ai/governance/policies/version.json       | policyVersion        | 2026.05.18                                                                  | 2026.05.18                                                                  | ok    
+.ai/governance/policies/version.json       | governancePhase      | phase-4-self-protecting-platform                                            | phase-4-self-protecting-platform                                            | ok    
+
+[gate] governance assets
+
+> ccd@1.0.38 governance:validate /Users/cc/MyPorject/ccd
+> node scripts/governance/validate.mjs
+
+[OK] governance asset: .ai/protocol/version.json
+[OK] governance asset: .ai/governance/policies/version.json
+[OK] governance asset: .ai/governance/policies/topology.json
+[OK] governance asset: .ai/governance/policies/runtime.json
+[OK] governance asset: .ai/governance/policies/ai.json
+[OK] governance asset: .ai/governance/policies/api.json
+[OK] governance asset: .ai/governance/policies/supply-chain.json
+[OK] governance asset: .ai/governance/policies/release.json
+[OK] governance asset: .ai/orchestration/manifest.json
+[OK] governance asset: .ai/runtime-profile/local/profile.json
+[OK] governance asset: .ai/runtime-profile/desktop/profile.json
+[OK] governance asset: .changeset/config.json
+[OK] governance asset: .github/CODEOWNERS
+[OK] governance asset: mise.toml
+[OK] governance asset: scripts/env.sh
+[OK] governance asset: scripts/exec.sh
+[OK] governance asset: scripts/env-doctor.mjs
+[OK] governance asset: scripts/ai-os-doctor.mjs
+[OK] governance asset: scripts/bootstrap-runtime.sh
+[OK] governance asset: docs/architecture/stable-baseline.md
+[OK] governance asset: docs/runtime/execute-reliability.md
+[OK] governance asset: docs/runtime/runtime-isolation.md
+[OK] governance asset: docs/governance/protocol-versioning.md
+[OK] governance asset: docs/governance/adapter-architecture.md
+[OK] governance asset: docs/governance/ai-orchestration.md
+[OK] governance asset: docs/release/release-policy.md
+[OK] governance asset: docs/release/runtime-promotion-checklist.md
+[OK] governance asset: scripts/diagnostics/codex-execute-doctor.mjs
+[OK] governance asset: scripts/diagnostics/codex-cache-inspect.mjs
+[OK] governance asset: scripts/diagnostics/codex-provider-inspect.mjs
+[OK] governance asset: scripts/diagnostics/codex-routing-inspect.mjs
+[OK] governance asset: scripts/runtime/codex-exec-wrapper.mjs
+[OK] governance asset: scripts/runtime/cache-governance.mjs
+[OK] governance asset: scripts/runtime/provider-transport-validate.mjs
+[OK] governance asset: .ai/execution/execution-fingerprint.json
+[OK] governance asset: .ai/execution/provider-session.json
+[OK] governance asset: .ai/execution/runtime-session.json
+[OK] protocol version field: protocolVersion=1.0.0
+[OK] protocol version field: manifestVersion=1.0.0
+[OK] protocol version field: adapterVersion=1.0.0
+[OK] protocol version field: governanceVersion=1.0.0
+[OK] protocol version field: governanceBaselineVersion=2026.05-main-governance.1
+[OK] protocol version field: runtimeProfileSchemaVersion=1.0.0
+[OK] protocol version field: routerSchemaVersion=1.0.0
+[OK] pnpm workspace has no removed archive package paths
+
+[gate] AI architecture guard
+
+> ccd@1.0.38 ai:guard /Users/cc/MyPorject/ccd
+> node scripts/ai-architecture-guard.mjs -- --format=json
+
+{
+  "ok": true,
+  "mode": "full",
+  "scannedFiles": null,
+  "findings": []
+}
+
+[gate] architecture boundaries
+
+> ccd@1.0.38 arch:boundaries /Users/cc/MyPorject/ccd
+> depcruise --config .dependency-cruiser.cjs apps packages && node scripts/architecture/validate-boundaries.mjs
+
+
+✔ no dependency violations found (783 modules, 1676 dependencies cruised)
+
+Architecture boundary validation passed.
+
+[gate] runtime leak detection
+
+> ccd@1.0.38 arch:runtime /Users/cc/MyPorject/ccd
+> node scripts/architecture/check-runtime-leaks.mjs && node scripts/architecture/check-root-runtime-decommissioned.mjs
+
+Runtime surface validation passed. findings=386, exact_exceptions=297
+[root-runtime] root runtime decommission guard passed
+
+[gate] API snapshot compatibility
+
+> ccd@1.0.38 api:report /Users/cc/MyPorject/ccd
+> node scripts/architecture/check-api-surface.mjs
+
+API surface report generated: docs/generated/api-surface-report.json
+
+[gate] supply-chain policy
+
+> ccd@1.0.38 supply:check /Users/cc/MyPorject/ccd
+> node scripts/architecture/check-supply-chain.mjs
+
+Supply chain validation passed.
+
+[gate] release topology
+
+> ccd@1.0.38 release:governance /Users/cc/MyPorject/ccd
+> node scripts/architecture/check-release-governance.mjs
+
+Release governance validation passed.
+
+[gate] GitHub workflow registry hygiene
+GitHub workflow registry hygiene passed.
+
+[gate] governance report generation
+
+> ccd@1.0.38 arch:report /Users/cc/MyPorject/ccd
+> node scripts/governance/report.mjs
+
+[GENERATED] .ai/generated/governance-report.json
+[GENERATED] docs/generated/governance-report.md
+
+[gate] dependency graph generation
+
+> ccd@1.0.38 arch:graphs /Users/cc/MyPorject/ccd
+> node scripts/architecture/generate-dependency-graphs.mjs
+
+Generated dependency graphs in docs/generated/graphs
+
+[gate] documentation command validation
+[doc-commands] All pnpm command references in documentation are valid. (358 files scanned)
+
+[gate] normalizing generated artifacts before sync check
+
+[gate] governance artifact sync
+
+[gate:pass] unified governance gate passed
+exit_code=0
