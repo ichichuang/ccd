@@ -47,3 +47,12 @@
 - Confirmed platform bootstrap/runtime helpers are already owned by `@ccd/vue-app-platform`.
 - Kept app hook surfaces app-owned or app compatibility facades because they depend on app router, store, i18n, DOM, DateUtils, API, or runtime policy.
 - Ran M4 hook/platform validation successfully.
+
+## M5 — UI and PrimeVue wrapper review
+
+- Created evidence directory `docs/ai-runs/20260602-104926-ccd-post-go-app-public-layer-m5-ui-primevue-review/`.
+- Classified M5 as `NOT_APPLICABLE`: no production app UI/PrimeVue wrapper source remains eligible for migration.
+- Confirmed direct app PrimeVue findings are build resolver, generated registry, or dependency manifest surfaces.
+- Confirmed `@ccd/vue-ui` and `@ccd/vue-primevue-adapter` remain the governed UI/PrimeVue package owners.
+- Ran M5 UI/PrimeVue validation successfully.
+- Recorded and normalized build-produced `auto-imports.d.ts` formatting drift with an empty post-prettier diff.
