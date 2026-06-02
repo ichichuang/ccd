@@ -29,3 +29,12 @@
 - Approved only `M3-DESKTOP-THEME` for narrow M3 implementation review against existing `@ccd/design-tokens` APIs.
 - Deferred route access, system preference guards, DTO/Zod schemas, DateUtils, safeStorage crypto/compression, HTTP runtime, and build-package movement.
 - Ran M2 validation successfully with no production source, manifest, lockfile, generated registry, or guard source changes.
+
+## M3 — Pure utility and token migration
+
+- Created evidence directory `docs/ai-runs/20260602-103451-ccd-post-go-app-public-layer-m3-pure-utility-token-migration/`.
+- Migrated desktop duplicated theme derivation to `generateThemeVars` from `@ccd/design-tokens/theme-engine`.
+- Migrated desktop duplicated size scale derivation to `generateSizeVars` and package `resolveSizePreset` from `@ccd/design-tokens`.
+- Preserved app-owned DOM root writes, layout dimensions, root font size, dialog width, and PrimeVue size source.
+- Fixed the initial desktop type-check failure by importing `generateThemeVars` from the package subpath that actually exports it.
+- Ran M3 validation successfully after the import-path fix.
