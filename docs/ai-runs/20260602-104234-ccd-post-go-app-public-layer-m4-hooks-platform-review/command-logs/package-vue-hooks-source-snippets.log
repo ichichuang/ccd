@@ -1,0 +1,1075 @@
+packages/vue-hooks/src/directives/longPress.ts
+import { effectScope, type EffectScope, type ObjectDirective } from 'vue'
+import { useLongPressAction } from '../useInteraction/useLongPressAction'
+
+const LONG_PRESS_SCOPE: unique symbol = Symbol('v-long-press-scope')
+
+interface LongPressElement extends HTMLElement {
+  [LONG_PRESS_SCOPE]?: EffectScope
+}
+
+function mountLongPress(
+  el: LongPressElement,
+  handler: (event: PointerEvent) => void,
+  arg?: string
+): void {
+  const delay = arg ? Number.parseInt(arg, 10) : Number.NaN
+  const scope = effectScope()
+  scope.run(() => useLongPressAction(el, handler, Number.isFinite(delay) ? { delay } : undefined))
+  el[LONG_PRESS_SCOPE] = scope
+}
+
+export const vLongPress: ObjectDirective<HTMLElement, (event: PointerEvent) => void> = {
+  mounted(el: LongPressElement, binding) {
+    if (typeof binding.value !== 'function') return
+    mountLongPress(el, binding.value, binding.arg)
+  },
+
+  updated(el: LongPressElement, binding) {
+    el[LONG_PRESS_SCOPE]?.stop()
+    delete el[LONG_PRESS_SCOPE]
+    if (typeof binding.value !== 'function') return
+    mountLongPress(el, binding.value, binding.arg)
+  },
+
+  unmounted(el: LongPressElement) {
+    el[LONG_PRESS_SCOPE]?.stop()
+    delete el[LONG_PRESS_SCOPE]
+  },
+}
+packages/vue-hooks/src/directives/longPress.spec.ts
+// @vitest-environment jsdom
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+const { mockUseLongPressAction } = vi.hoisted(() => ({
+  mockUseLongPressAction: vi.fn(),
+}))
+
+vi.mock('../useInteraction/useLongPressAction', () => ({
+  useLongPressAction: mockUseLongPressAction,
+}))
+
+import type { DirectiveBinding, ObjectDirective, VNode } from 'vue'
+import { castValue } from '@ccd/shared-utils'
+import { vLongPress } from './longPress'
+
+type LongPressDirective = ObjectDirective<HTMLElement, (event: PointerEvent) => void>
+type DirectiveVNode = VNode<unknown, HTMLElement, Record<string, unknown>>
+
+function createBinding(
+  value: (event: PointerEvent) => void,
+  arg?: string
+): DirectiveBinding<(event: PointerEvent) => void> {
+  return {
+    value,
+    modifiers: {},
+    instance: null,
+    oldValue: null,
+    arg,
+    dir: castValue<LongPressDirective>(vLongPress),
+  }
+}
+
+function createInvalidBinding(
+  value: unknown,
+  arg?: string
+): DirectiveBinding<(event: PointerEvent) => void> {
+  return castValue<DirectiveBinding<(event: PointerEvent) => void>>({
+    value,
+    modifiers: {},
+    instance: null,
+    oldValue: null,
+    arg,
+    dir: castValue<LongPressDirective>(vLongPress),
+  })
+}
+
+function createMountedHookArgs() {
+  return [castValue<DirectiveVNode>({}), null] as const
+}
+
+function createUpdatedHookArgs() {
+  return [castValue<DirectiveVNode>({}), castValue<DirectiveVNode>({})] as const
+}
+
+describe('vLongPress', () => {
+  beforeEach(() => {
+    mockUseLongPressAction.mockReset()
+  })
+
+  it('sets up long-press handling on mount', () => {
+    const el = document.createElement('div')
+    const handler = vi.fn()
+
+    vLongPress.mounted?.(el, createBinding(handler), ...createMountedHookArgs())
+
+    expect(mockUseLongPressAction).toHaveBeenCalledWith(el, handler, undefined)
+  })
+
+  it('passes custom delay from arg', () => {
+    const el = document.createElement('div')
+    const handler = vi.fn()
+
+    vLongPress.mounted?.(el, createBinding(handler, '800'), ...createMountedHookArgs())
+
+    expect(mockUseLongPressAction).toHaveBeenCalledWith(el, handler, { delay: 800 })
+  })
+
+  it('ignores non-function values', () => {
+    const el = document.createElement('div')
+
+    vLongPress.mounted?.(el, createInvalidBinding('not-a-function'), ...createMountedHookArgs())
+
+    expect(mockUseLongPressAction).not.toHaveBeenCalled()
+  })
+
+  it('recreates the interaction scope when updated', () => {
+    const el = document.createElement('div')
+    const handler1 = vi.fn()
+    const handler2 = vi.fn()
+
+    vLongPress.mounted?.(el, createBinding(handler1), ...createMountedHookArgs())
+    vLongPress.updated?.(el, createBinding(handler2), ...createUpdatedHookArgs())
+
+    expect(mockUseLongPressAction).toHaveBeenCalledTimes(2)
+    expect(mockUseLongPressAction).toHaveBeenNthCalledWith(1, el, handler1, undefined)
+    expect(mockUseLongPressAction).toHaveBeenNthCalledWith(2, el, handler2, undefined)
+  })
+})
+packages/vue-hooks/src/directives/install.ts
+import type { App } from 'vue'
+import { vLongPress } from './longPress'
+import { vSwipe } from './swipe'
+import { vTap } from './tap'
+
+export interface InteractionDirectiveInstallOptions {
+  tapName?: string
+  swipeName?: string
+  longPressName?: string
+  tap?: boolean
+  swipe?: boolean
+  longPress?: boolean
+}
+
+export function installInteractionDirectives(
+  app: App,
+  options: InteractionDirectiveInstallOptions = {}
+): void {
+  const {
+    tapName = 'tap',
+    swipeName = 'swipe',
+    longPressName = 'long-press',
+    tap = true,
+    swipe = true,
+    longPress = true,
+  } = options
+
+  if (tap) {
+    app.directive(tapName, vTap)
+  }
+
+  if (swipe) {
+    app.directive(swipeName, vSwipe)
+  }
+
+  if (longPress) {
+    app.directive(longPressName, vLongPress)
+  }
+}
+packages/vue-hooks/src/directives/install.spec.ts
+// @vitest-environment jsdom
+import { describe, expect, it, vi } from 'vitest'
+import type { App } from 'vue'
+import { installInteractionDirectives } from './install'
+
+function createAppStub() {
+  return {
+    directive: vi.fn(),
+  } as unknown as App
+}
+
+describe('installInteractionDirectives', () => {
+  it('registers tap, swipe, and long-press by default', () => {
+    const app = createAppStub()
+
+    installInteractionDirectives(app)
+
+    expect(app.directive).toHaveBeenCalledTimes(3)
+    expect(app.directive).toHaveBeenNthCalledWith(1, 'tap', expect.any(Object))
+    expect(app.directive).toHaveBeenNthCalledWith(2, 'swipe', expect.any(Object))
+    expect(app.directive).toHaveBeenNthCalledWith(3, 'long-press', expect.any(Object))
+  })
+
+  it('supports disabling and renaming directives', () => {
+    const app = createAppStub()
+
+    installInteractionDirectives(app, {
+      tapName: 'press',
+      swipe: false,
+      longPressName: 'hold',
+    })
+
+    expect(app.directive).toHaveBeenCalledTimes(2)
+    expect(app.directive).toHaveBeenNthCalledWith(1, 'press', expect.any(Object))
+    expect(app.directive).toHaveBeenNthCalledWith(2, 'hold', expect.any(Object))
+  })
+})
+packages/vue-hooks/src/directives/tap.ts
+import { effectScope, type EffectScope, type ObjectDirective } from 'vue'
+import { useTap } from '../useInteraction/useTap'
+
+const TAP_SCOPE: unique symbol = Symbol('v-tap-scope')
+
+interface TapElement extends HTMLElement {
+  [TAP_SCOPE]?: EffectScope
+}
+
+function mountTap(el: TapElement, handler: (event: PointerEvent) => void): void {
+  const scope = effectScope()
+  scope.run(() => useTap(el, handler))
+  el[TAP_SCOPE] = scope
+}
+
+export const vTap: ObjectDirective<HTMLElement, (event: PointerEvent) => void> = {
+  mounted(el: TapElement, binding) {
+    if (typeof binding.value !== 'function') return
+    mountTap(el, binding.value)
+  },
+
+  updated(el: TapElement, binding) {
+    el[TAP_SCOPE]?.stop()
+    delete el[TAP_SCOPE]
+    if (typeof binding.value !== 'function') return
+    mountTap(el, binding.value)
+  },
+
+  unmounted(el: TapElement) {
+    el[TAP_SCOPE]?.stop()
+    delete el[TAP_SCOPE]
+  },
+}
+packages/vue-hooks/src/directives/swipe.spec.ts
+// @vitest-environment jsdom
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+const { mockUseSwipeAction } = vi.hoisted(() => ({
+  mockUseSwipeAction: vi.fn(),
+}))
+
+vi.mock('../useInteraction/useSwipeAction', () => ({
+  useSwipeAction: mockUseSwipeAction,
+}))
+
+import type { DirectiveBinding, ObjectDirective, VNode } from 'vue'
+import { castValue } from '@ccd/shared-utils'
+import type { SwipeDirection } from '../useInteraction/types'
+import { vSwipe } from './swipe'
+
+type SwipeDirective = ObjectDirective<HTMLElement, (direction: SwipeDirection) => void>
+type DirectiveVNode = VNode<unknown, HTMLElement, Record<string, unknown>>
+
+function createBinding(
+  value: (direction: SwipeDirection) => void,
+  arg?: string
+): DirectiveBinding<(direction: SwipeDirection) => void> {
+  return {
+    value,
+    modifiers: {},
+    instance: null,
+    oldValue: null,
+    arg,
+    dir: castValue<SwipeDirective>(vSwipe),
+  }
+}
+
+function createInvalidBinding(
+  value: unknown,
+  arg?: string
+): DirectiveBinding<(direction: SwipeDirection) => void> {
+  return castValue<DirectiveBinding<(direction: SwipeDirection) => void>>({
+    value,
+    modifiers: {},
+    instance: null,
+    oldValue: null,
+    arg,
+    dir: castValue<SwipeDirective>(vSwipe),
+  })
+}
+
+function createMountedHookArgs() {
+  return [castValue<DirectiveVNode>({}), null] as const
+}
+
+describe('vSwipe', () => {
+  beforeEach(() => {
+    mockUseSwipeAction.mockReset()
+  })
+
+  it('sets up swipe handling on mount', () => {
+    const el = document.createElement('div')
+    const handler = vi.fn()
+
+    vSwipe.mounted?.(el, createBinding(handler), ...createMountedHookArgs())
+
+    expect(mockUseSwipeAction).toHaveBeenCalledWith(el, handler, undefined)
+  })
+
+  it('passes direction filter from arg', () => {
+    const el = document.createElement('div')
+    const handler = vi.fn()
+
+    vSwipe.mounted?.(el, createBinding(handler, 'left'), ...createMountedHookArgs())
+
+    expect(mockUseSwipeAction).toHaveBeenCalledWith(el, handler, { directions: ['left'] })
+  })
+
+  it('ignores invalid directions', () => {
+    const el = document.createElement('div')
+    const handler = vi.fn()
+
+    vSwipe.mounted?.(el, createBinding(handler, 'diagonal'), ...createMountedHookArgs())
+
+    expect(mockUseSwipeAction).toHaveBeenCalledWith(el, handler, undefined)
+  })
+
+  it('ignores non-function values', () => {
+    const el = document.createElement('div')
+
+    vSwipe.mounted?.(el, createInvalidBinding('not-a-function'), ...createMountedHookArgs())
+
+    expect(mockUseSwipeAction).not.toHaveBeenCalled()
+  })
+})
+packages/vue-hooks/src/directives/index.ts
+export { vTap } from './tap.js'
+export { vSwipe } from './swipe.js'
+export { vLongPress } from './longPress.js'
+export { installInteractionDirectives, type InteractionDirectiveInstallOptions } from './install.js'
+packages/vue-hooks/src/directives/tap.spec.ts
+// @vitest-environment jsdom
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+const { mockUseTap } = vi.hoisted(() => ({
+  mockUseTap: vi.fn(),
+}))
+
+vi.mock('../useInteraction/useTap', () => ({
+  useTap: mockUseTap,
+}))
+
+import type { DirectiveBinding, ObjectDirective, VNode } from 'vue'
+import { castValue } from '@ccd/shared-utils'
+import { vTap } from './tap'
+
+type TapDirective = ObjectDirective<HTMLElement, (event: PointerEvent) => void>
+type DirectiveVNode = VNode<unknown, HTMLElement, Record<string, unknown>>
+
+function createBinding(
+  value: (event: PointerEvent) => void
+): DirectiveBinding<(event: PointerEvent) => void> {
+  return {
+    value,
+    modifiers: {},
+    instance: null,
+    oldValue: null,
+    arg: undefined,
+    dir: castValue<TapDirective>(vTap),
+  }
+}
+
+function createInvalidBinding(value: unknown): DirectiveBinding<(event: PointerEvent) => void> {
+  return castValue<DirectiveBinding<(event: PointerEvent) => void>>({
+    value,
+    modifiers: {},
+    instance: null,
+    oldValue: null,
+    arg: undefined,
+    dir: castValue<TapDirective>(vTap),
+  })
+}
+
+function createMountedHookArgs() {
+  return [castValue<DirectiveVNode>({}), null] as const
+}
+
+function createUpdatedHookArgs() {
+  return [castValue<DirectiveVNode>({}), castValue<DirectiveVNode>({})] as const
+}
+
+describe('vTap', () => {
+  beforeEach(() => {
+    mockUseTap.mockReset()
+  })
+
+  it('sets up tap handling on mount', () => {
+    const el = document.createElement('div')
+    const handler = vi.fn()
+
+    vTap.mounted?.(el, createBinding(handler), ...createMountedHookArgs())
+
+    expect(mockUseTap).toHaveBeenCalledWith(el, handler)
+  })
+
+  it('ignores non-function values', () => {
+    const el = document.createElement('div')
+
+    vTap.mounted?.(el, createInvalidBinding('not-a-function'), ...createMountedHookArgs())
+
+    expect(mockUseTap).not.toHaveBeenCalled()
+  })
+
+  it('recreates the interaction scope when updated', () => {
+    const el = document.createElement('div')
+    const handler1 = vi.fn()
+    const handler2 = vi.fn()
+
+    vTap.mounted?.(el, createBinding(handler1), ...createMountedHookArgs())
+    vTap.updated?.(el, createBinding(handler2), ...createUpdatedHookArgs())
+
+    expect(mockUseTap).toHaveBeenCalledTimes(2)
+    expect(mockUseTap).toHaveBeenNthCalledWith(1, el, handler1)
+    expect(mockUseTap).toHaveBeenNthCalledWith(2, el, handler2)
+  })
+})
+packages/vue-hooks/src/directives/swipe.ts
+import { effectScope, type EffectScope, type ObjectDirective } from 'vue'
+import type { SwipeDirection } from '../useInteraction/types'
+import { useSwipeAction } from '../useInteraction/useSwipeAction'
+
+const SWIPE_SCOPE: unique symbol = Symbol('v-swipe-scope')
+const VALID_DIRECTIONS = new Set<SwipeDirection>(['left', 'right', 'up', 'down'])
+
+interface SwipeElement extends HTMLElement {
+  [SWIPE_SCOPE]?: EffectScope
+}
+
+function mountSwipe(
+  el: SwipeElement,
+  handler: (direction: SwipeDirection) => void,
+  arg?: string
+): void {
+  const directions: SwipeDirection[] | undefined =
+    arg && VALID_DIRECTIONS.has(arg as SwipeDirection) ? [arg as SwipeDirection] : undefined
+  const scope = effectScope()
+  scope.run(() => useSwipeAction(el, handler, directions ? { directions } : undefined))
+  el[SWIPE_SCOPE] = scope
+}
+
+export const vSwipe: ObjectDirective<HTMLElement, (direction: SwipeDirection) => void> = {
+  mounted(el: SwipeElement, binding) {
+    if (typeof binding.value !== 'function') return
+    mountSwipe(el, binding.value, binding.arg)
+  },
+
+  updated(el: SwipeElement, binding) {
+    el[SWIPE_SCOPE]?.stop()
+    delete el[SWIPE_SCOPE]
+    if (typeof binding.value !== 'function') return
+    mountSwipe(el, binding.value, binding.arg)
+  },
+
+  unmounted(el: SwipeElement) {
+    el[SWIPE_SCOPE]?.stop()
+    delete el[SWIPE_SCOPE]
+  },
+}
+packages/vue-hooks/src/useAppElementSize.ts
+import type { Ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { debounceFn, throttleFn } from '@ccd/shared-utils'
+
+export interface UseElementSizeOptions {
+  mode?: 'throttle' | 'debounce' | 'none'
+  delay?: number
+}
+
+/**
+ * 监听容器尺寸变化，返回 reactive 的 width/height，同时可选 callback
+ *
+ * - targetRef 为 `ref<HTMLElement | null>` / `ref<HTMLElement | undefined>` 时：监听该元素
+ * - targetRef 为 `false` 时：默认监听 `document.documentElement` 尺寸（全局视口）
+ */
+export interface UseAppElementSizeReturn {
+  width: Ref<number>
+  height: Ref<number>
+}
+
+export function useAppElementSize(
+  targetRef: Ref<HTMLElement | null | undefined> | false,
+  callback?: (entry: DOMRectReadOnly) => void,
+  options: UseElementSizeOptions = {}
+): UseAppElementSizeReturn {
+  const width: Ref<number> = ref(0)
+  const height: Ref<number> = ref(0)
+
+  const { mode = 'none', delay = 200 } = options
+
+  let observer: ResizeObserver | null = null
+  let handler:
+    | (((entry: DOMRectReadOnly) => void) & { cancel?: () => void; flush?: () => void })
+    | null = null
+
+  const run = (entry: DOMRectReadOnly) => {
+    width.value = entry.width
+    height.value = entry.height
+    callback?.(entry)
+  }
+
+  const createHandler = () => {
+    if (mode === 'debounce') {
+      return debounceFn(run, delay) as typeof handler
+    }
+    if (mode === 'throttle') {
+      return throttleFn(run, delay) as typeof handler
+    }
+    return ((e: DOMRectReadOnly) => run(e)) as typeof handler
+  }
+
+  const cancelHandler = () => {
+    handler?.cancel?.()
+    handler = null
+  }
+
+  const setupObserver = (el: HTMLElement) => {
+    if (typeof ResizeObserver === 'undefined') {
+      // 环境不支持 ResizeObserver，仅初始化一次宽高，不做后续监听
+      const rect = el.getBoundingClientRect()
+      width.value = rect.width
+      height.value = rect.height
+      return
+    }
+
+    const rect = el.getBoundingClientRect()
+    width.value = rect.width
+    height.value = rect.height
+
+    handler = createHandler()
+    const ro = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        if (entry.target === el) {
+          handler!(entry.contentRect)
+        }
+      }
+    })
+    observer = ro
+    ro.observe(el)
+  }
+
+  const teardownObserver = () => {
+    observer?.disconnect()
+    observer = null
+    cancelHandler()
+  }
+
+  onMounted(() => {
+    if (targetRef === false) {
+      // 直接监听 document.documentElement
+      setupObserver(document.documentElement)
+    } else {
+      watch(
+        targetRef,
+        el => {
+          teardownObserver()
+          if (el instanceof HTMLElement) {
+            setupObserver(el)
+          }
+        },
+        { immediate: true }
+      )
+    }
+  })
+
+  onBeforeUnmount(() => {
+    teardownObserver()
+  })
+
+  return { width, height }
+}
+packages/vue-hooks/src/useInteraction/useInteraction.ts
+import { useTap } from './useTap'
+import { useSwipeAction } from './useSwipeAction'
+import { useDragAction } from './useDragAction'
+import { useLongPressAction } from './useLongPressAction'
+import type { UseInteractionReturn } from './types'
+
+/**
+ * Unified interaction facade.
+ *
+ * Returns all four interaction composables as a single object
+ * for convenient one-import usage in components.
+ *
+ * @example
+ * ```vue
+ * <script setup lang="ts">
+ * const cardRef = ref<HTMLElement | null>(null)
+ * const { tap, swipe, longPress } = useInteraction()
+ *
+ * tap(cardRef, () => emit('select'))
+ * swipe(cardRef, (dir) => { if (dir === 'left') emit('dismiss') })
+ * longPress(cardRef, () => emit('context'))
+ * </script>
+ * ```
+ */
+export function useInteraction(): UseInteractionReturn {
+  return {
+    tap: useTap,
+    swipe: useSwipeAction,
+    drag: useDragAction,
+    longPress: useLongPressAction,
+  }
+}
+packages/vue-hooks/src/useInteraction/useDragAction.ts
+import { useDraggable } from '@vueuse/core'
+import type { InteractionTarget, UseDragActionOptions, UseDragActionReturn } from './types'
+
+/**
+ * Element dragging based on PointerEvents.
+ *
+ * Wraps VueUse's `useDraggable` with a simplified option surface.
+ * Bind the returned `style` directly to the element for positioning.
+ */
+export function useDragAction(
+  target: InteractionTarget,
+  options: UseDragActionOptions = {}
+): UseDragActionReturn {
+  const { initialValue = { x: 0, y: 0 }, exact = false, onEnd } = options
+
+  const draggable = useDraggable(target, {
+    initialValue,
+    exact,
+    onEnd: onEnd ? (pos, e) => onEnd({ x: pos.x, y: pos.y }, e) : undefined,
+  })
+
+  return {
+    x: draggable.x,
+    y: draggable.y,
+    style: draggable.style,
+    isDragging: draggable.isDragging,
+  }
+}
+packages/vue-hooks/src/useInteraction/types.ts
+import type { MaybeRefOrGetter, Ref, ShallowRef } from 'vue'
+import type { UseSwipeDirection } from '@vueuse/core'
+
+// ---------------------------------------------------------------------------
+// Shared
+// ---------------------------------------------------------------------------
+
+/** Element target accepted by all interaction composables */
+export type InteractionTarget = MaybeRefOrGetter<HTMLElement | null | undefined>
+
+/** Cardinal swipe direction (excludes VueUse's 'none') */
+export type SwipeDirection = Exclude<UseSwipeDirection, 'none'>
+
+// ---------------------------------------------------------------------------
+// useTap
+// ---------------------------------------------------------------------------
+
+export interface UseTapOptions {
+  /**
+   * Maximum movement threshold (px) before a tap is cancelled.
+   * @default 10
+   */
+  threshold?: number
+}
+
+export interface UseTapReturn {
+  /** Whether a tap is in progress (pointer down, not yet moved past threshold) */
+  isTapping: Readonly<ShallowRef<boolean>>
+}
+
+// ---------------------------------------------------------------------------
+// useSwipeAction
+// ---------------------------------------------------------------------------
+
+export interface UseSwipeActionOptions {
+  /**
+   * Minimum distance (px) to register a swipe.
+   * @default 50
+   */
+  threshold?: number
+  /**
+   * Filter which directions to listen for. Default: all four.
+   */
+  directions?: SwipeDirection[]
+  /**
+   * Disable text selection during swipe.
+   * @default false
+   */
+  disableTextSelect?: boolean
+}
+
+export interface UseSwipeActionReturn {
+  /** Whether a swipe gesture is in progress */
+  isSwiping: Readonly<ShallowRef<boolean>>
+  /** Detected direction once threshold is crossed */
+  direction: Readonly<ShallowRef<SwipeDirection | null>>
+  /** Current horizontal displacement */
+  distanceX: Readonly<Ref<number>>
+  /** Current vertical displacement */
+  distanceY: Readonly<Ref<number>>
+  /** Stop listening for swipes */
+  stop: () => void
+}
+
+// ---------------------------------------------------------------------------
+// useDragAction
+// ---------------------------------------------------------------------------
+
+export interface UseDragActionOptions {
+  /** Initial position */
+  initialValue?: { x: number; y: number }
+  /**
+   * Only start dragging when clicking the element directly (not children).
+   * @default false
+   */
+  exact?: boolean
+  /** Callback on drag end */
+  onEnd?: (position: { x: number; y: number }, event: PointerEvent) => void
+}
+
+export interface UseDragActionReturn {
+  /** Current x position */
+  x: Ref<number>
+  /** Current y position */
+  y: Ref<number>
+  /** Computed CSS transform style string */
+  style: Readonly<Ref<string>>
+  /** Whether currently being dragged */
+  isDragging: Readonly<Ref<boolean>>
+}
+
+// ---------------------------------------------------------------------------
+// useLongPressAction
+// ---------------------------------------------------------------------------
+
+export interface UseLongPressActionOptions {
+  /**
+   * Delay in ms before long press fires.
+   * @default 500
+   */
+  delay?: number
+  /**
+   * Maximum movement distance (px) before cancelling.
+   * @default 10
+   */
+  distanceThreshold?: number
+}
+
+export interface UseLongPressActionReturn {
+  /** Whether the long-press timer is counting down */
+  isPressing: Readonly<ShallowRef<boolean>>
+}
+
+// ---------------------------------------------------------------------------
+// useInteraction (unified facade)
+// ---------------------------------------------------------------------------
+
+export interface UseInteractionReturn {
+  tap: (
+    target: InteractionTarget,
+packages/vue-hooks/src/useInteraction/useLongPressAction.ts
+import { onLongPress, useEventListener } from '@vueuse/core'
+import { computed, shallowRef, toValue } from 'vue'
+import type {
+  InteractionTarget,
+  UseLongPressActionOptions,
+  UseLongPressActionReturn,
+} from './types'
+
+/**
+ * Long-press detection based on PointerEvents.
+ *
+ * Wraps VueUse's `onLongPress`, adding a reactive `isPressing` state
+ * to indicate the timer countdown is active.
+ */
+export function useLongPressAction(
+  target: InteractionTarget,
+  handler: (event: PointerEvent) => void,
+  options: UseLongPressActionOptions = {}
+): UseLongPressActionReturn {
+  const { delay = 500, distanceThreshold = 10 } = options
+
+  const isPressing = shallowRef(false)
+
+  const el = computed(() => toValue(target) ?? null)
+
+  onLongPress(el, handler, {
+    delay,
+    distanceThreshold,
+    modifiers: { prevent: true },
+  })
+
+  // Track pressing state for UI feedback
+  useEventListener(target, 'pointerdown', () => {
+    isPressing.value = true
+  })
+
+  useEventListener(target, 'pointerup', () => {
+    isPressing.value = false
+  })
+
+  useEventListener(target, 'pointercancel', () => {
+    isPressing.value = false
+  })
+
+  useEventListener(target, 'pointerleave', () => {
+    isPressing.value = false
+  })
+
+  return { isPressing }
+}
+packages/vue-hooks/src/useInteraction/useTap.ts
+import { useEventListener } from '@vueuse/core'
+import { shallowRef } from 'vue'
+import type { InteractionTarget, UseTapOptions, UseTapReturn } from './types'
+
+/**
+ * Unified tap detection based on PointerEvents.
+ *
+ * Registers `pointerdown` / `pointerup` on the target element.
+ * If the pointer moves less than `threshold` px between down and up, fires `handler`.
+ * Works identically on mouse, touch, and pen inputs.
+ */
+export function useTap(
+  target: InteractionTarget,
+  handler: (event: PointerEvent) => void,
+  options: UseTapOptions = {}
+): UseTapReturn {
+  const { threshold = 10 } = options
+
+  const isTapping = shallowRef(false)
+
+  let startX = 0
+  let startY = 0
+
+  useEventListener(target, 'pointerdown', (e: PointerEvent) => {
+    startX = e.clientX
+    startY = e.clientY
+    isTapping.value = true
+  })
+
+  useEventListener(target, 'pointerup', (e: PointerEvent) => {
+    if (!isTapping.value) return
+    isTapping.value = false
+
+    const dx = e.clientX - startX
+    const dy = e.clientY - startY
+    if (Math.sqrt(dx * dx + dy * dy) <= threshold) {
+      handler(e)
+    }
+  })
+
+  // Cancel if pointer leaves element or is cancelled
+  useEventListener(target, 'pointercancel', () => {
+    isTapping.value = false
+  })
+
+  useEventListener(target, 'pointerleave', () => {
+    isTapping.value = false
+  })
+
+  return { isTapping }
+}
+packages/vue-hooks/src/useInteraction/useSwipeAction.ts
+import { usePointerSwipe } from '@vueuse/core'
+import { shallowRef, watch } from 'vue'
+import type {
+  InteractionTarget,
+  SwipeDirection,
+  UseSwipeActionOptions,
+  UseSwipeActionReturn,
+} from './types'
+
+/**
+ * Swipe detection based on PointerEvents (unified mouse + touch + pen).
+ *
+ * Wraps VueUse's `usePointerSwipe`, adding direction filtering
+ * and a simplified callback API.
+ */
+export function useSwipeAction(
+  target: InteractionTarget,
+  handler: (direction: SwipeDirection) => void,
+  options: UseSwipeActionOptions = {}
+): UseSwipeActionReturn {
+  const { threshold = 50, directions, disableTextSelect = false } = options
+
+  const direction = shallowRef<SwipeDirection | null>(null)
+
+  const swipe = usePointerSwipe(target, {
+    threshold,
+    disableTextSelect,
+    onSwipeEnd(_e, dir) {
+      if (dir === 'none') return
+      // Filter by allowed directions if specified
+      if (directions && !directions.includes(dir)) return
+      direction.value = dir
+      handler(dir)
+    },
+  })
+
+  // Reset direction when swipe starts
+  watch(swipe.isSwiping, swiping => {
+    if (swiping) direction.value = null
+  })
+
+  return {
+    isSwiping: swipe.isSwiping,
+    direction,
+    distanceX: swipe.distanceX,
+    distanceY: swipe.distanceY,
+    stop: swipe.stop,
+  }
+}
+packages/vue-hooks/src/useInteraction/index.ts
+export { useTap } from './useTap'
+export { useSwipeAction } from './useSwipeAction'
+export { useDragAction } from './useDragAction'
+export { useLongPressAction } from './useLongPressAction'
+export { useInteraction } from './useInteraction'
+export type * from './types'
+packages/vue-hooks/src/createAutoMittHook.spec.tsx
+// @vitest-environment jsdom
+import { describe, expect, it, vi } from 'vitest'
+import { mount } from '@vue/test-utils'
+import { createAutoMittHook } from './createAutoMittHook'
+
+type TestEvents = {
+  ping: { id: number }
+  text: string
+}
+
+type AutoMittHarnessRun = () => void
+
+function createAutoMittHarness(run: AutoMittHarnessRun) {
+  return {
+    name: 'AutoMittHarness',
+    setup() {
+      run()
+      return () => <div />
+    },
+  }
+}
+
+describe('createAutoMittHook', () => {
+  it('subscribes with emitter.on and unsubscribes on unmount', async () => {
+    const emitter = {
+      on: vi.fn(),
+      off: vi.fn(),
+    }
+
+    const useAutoMitt = createAutoMittHook<TestEvents>(emitter)
+    const pingHandler = vi.fn<(event: { id: number }) => void>()
+    const textHandler = vi.fn<(event: string) => void>()
+
+    const wrapper = mount(
+      createAutoMittHarness(() => {
+        const hook = useAutoMitt()
+        hook.on('ping', pingHandler)
+        hook.on('text', textHandler)
+      })
+    )
+
+    expect(emitter.on).toHaveBeenCalledTimes(2)
+    expect(emitter.on).toHaveBeenNthCalledWith(1, 'ping', pingHandler)
+    expect(emitter.on).toHaveBeenNthCalledWith(2, 'text', textHandler)
+
+    wrapper.unmount()
+
+    expect(emitter.off).toHaveBeenCalledTimes(2)
+    expect(emitter.off).toHaveBeenNthCalledWith(1, 'ping', pingHandler)
+    expect(emitter.off).toHaveBeenNthCalledWith(2, 'text', textHandler)
+  })
+
+  it('calls emitter.off directly when off is invoked', async () => {
+    const emitter = {
+      on: vi.fn(),
+      off: vi.fn(),
+    }
+
+    const useAutoMitt = createAutoMittHook<TestEvents>(emitter)
+    const pingHandler = vi.fn<(event: { id: number }) => void>()
+    const wrapper = mount(
+      createAutoMittHarness(() => {
+        const hook = useAutoMitt()
+        hook.off('ping', pingHandler)
+        hook.off('ping')
+      })
+    )
+
+    expect(emitter.off).toHaveBeenCalledTimes(2)
+    expect(emitter.off).toHaveBeenNthCalledWith(1, 'ping', pingHandler)
+    expect(emitter.off).toHaveBeenNthCalledWith(2, 'ping', undefined)
+
+    wrapper.unmount()
+  })
+})
+packages/vue-hooks/src/createAutoMittHook.ts
+import { onUnmounted } from 'vue'
+
+type EventMap = Record<string | symbol, unknown>
+
+type EmitterLike<Events extends EventMap> = {
+  on<T extends keyof Events>(type: T, handler: (event: Events[T]) => void): void
+  off<T extends keyof Events>(type: T, handler?: (event: Events[T]) => void): void
+}
+
+type UseAutoMittReturn<Events extends EventMap> = {
+  on<T extends keyof Events>(type: T, handler: (event: Events[T]) => void): void
+  off<T extends keyof Events>(type: T, handler?: (event: Events[T]) => void): void
+}
+
+export function createAutoMittHook<Events extends EventMap>(emitter: EmitterLike<Events>) {
+  return function useAutoMitt(): UseAutoMittReturn<Events> {
+    type Subscription = {
+      type: keyof Events
+      handler: (event: Events[keyof Events]) => void
+    }
+
+    const subscriptions: Subscription[] = []
+
+    onUnmounted(() => {
+      subscriptions.forEach(({ type, handler }) => emitter.off(type, handler))
+      subscriptions.length = 0
+    })
+
+    return {
+      on<T extends keyof Events>(type: T, handler: (event: Events[T]) => void) {
+        emitter.on(type, handler)
+        subscriptions.push({
+          type,
+          handler: handler as (event: Events[keyof Events]) => void,
+        })
+      },
+      off<T extends keyof Events>(type: T, handler?: (event: Events[T]) => void) {
+        emitter.off(type, handler)
+      },
+    }
+  }
+}
+packages/vue-hooks/src/index.ts
+export { useAppElementSize } from './useAppElementSize.js'
+export type { UseAppElementSizeReturn, UseElementSizeOptions } from './useAppElementSize.js'
+export { createAutoMittHook } from './createAutoMittHook.js'
+export {
+  useDragAction,
+  useInteraction,
+  useLongPressAction,
+  useSwipeAction,
+  useTap,
+} from './useInteraction/index.js'
+export type {
+  InteractionTarget,
+  SwipeDirection,
+  UseDragActionOptions,
+  UseDragActionReturn,
+  UseInteractionReturn,
+  UseLongPressActionOptions,
+  UseLongPressActionReturn,
+  UseSwipeActionOptions,
+  UseSwipeActionReturn,
+  UseTapOptions,
+  UseTapReturn,
+} from './useInteraction/index.js'
+export { installInteractionDirectives, vLongPress, vSwipe, vTap } from './directives/index.js'
+export type { InteractionDirectiveInstallOptions } from './directives/index.js'

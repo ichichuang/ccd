@@ -38,3 +38,12 @@
 - Preserved app-owned DOM root writes, layout dimensions, root font size, dialog width, and PrimeVue size source.
 - Fixed the initial desktop type-check failure by importing `generateThemeVars` from the package subpath that actually exports it.
 - Ran M3 validation successfully after the import-path fix.
+
+## M4 — Hooks and app-platform applicability review
+
+- Created evidence directory `docs/ai-runs/20260602-104234-ccd-post-go-app-public-layer-m4-hooks-platform-review/`.
+- Classified M4 as `NOT_APPLICABLE`: no additional hook/platform source migration is eligible under current rules.
+- Confirmed reusable lifecycle/directive primitives are already owned by `@ccd/vue-hooks`.
+- Confirmed platform bootstrap/runtime helpers are already owned by `@ccd/vue-app-platform`.
+- Kept app hook surfaces app-owned or app compatibility facades because they depend on app router, store, i18n, DOM, DateUtils, API, or runtime policy.
+- Ran M4 hook/platform validation successfully.
