@@ -40,6 +40,17 @@ export {
   type VitePreloadErrorRecoveryOptions,
 } from './preloadError.js'
 export {
+  checkRouteAccess,
+  checkRouteAuths,
+  checkRouteRoles,
+  filterMenuByAccess,
+  isWhiteListed,
+  parseSafeRedirect,
+  type MenuAccessNode,
+  type RouteAccessRequirement,
+  type SafeRedirectParseResult,
+} from './routeAccess.js'
+export {
   applyThemeVars,
   type ApplyThemeVarsOptions,
   type ThemeRuntimeStorage,

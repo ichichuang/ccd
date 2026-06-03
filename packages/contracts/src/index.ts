@@ -30,6 +30,13 @@ export type {
 } from './http'
 export type { Logger } from './logger'
 export type { NetworkClient, NetworkRequest, NetworkResponse } from './network'
+export type {
+  BackendRouteContract,
+  MenuAccessItem,
+  RouteAccessMeta,
+  RouteMenuNode,
+  SafeRedirectResult,
+} from './routing'
 export type { ScheduledTask, Scheduler } from './scheduler'
 export type {
   SafeStorageAdapter,
