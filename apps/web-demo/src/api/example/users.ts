@@ -6,7 +6,7 @@
 import { z } from 'zod'
 import { get, post, put, del } from '@/utils/http/methods'
 import { parseZodHttpPayload } from '@/adapters/http.adapter'
-import type { ApiResponse } from '@/types/api'
+import type { BackendApiResponseEnvelope } from '@ccd/contracts'
 import type { RequestConfig } from '@/utils/http/types'
 import type { alovaInstance } from '@/utils/http/instance'
 
@@ -40,7 +40,7 @@ const v1UserListApiResponseSchema = z.object({
   data: v1UserListResponseSchema,
 })
 
-type V1UserListApiResponse = ApiResponse<V1UserListResponse>
+type V1UserListApiResponse = BackendApiResponseEnvelope<V1UserListResponse>
 
 const v1UserItemApiResponseSchema = z.object({
   code: z.number(),
@@ -48,7 +48,7 @@ const v1UserItemApiResponseSchema = z.object({
   data: v1UserListItemSchema,
 })
 
-type V1UserItemApiResponse = ApiResponse<V1UserListItemDTO>
+type V1UserItemApiResponse = BackendApiResponseEnvelope<V1UserListItemDTO>
 
 export interface V1UserListReq {
   page: number

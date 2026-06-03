@@ -14,7 +14,7 @@ import {
   readSystemPreferencesFromStores,
   setupSystemPreferencesSync,
 } from '@/sync/systemPreferences'
-import type { SystemPreferences } from '@/types/systems/preferences'
+import type { SystemPreferences } from '@ccd/contracts'
 import { castValue } from '@ccd/shared-utils'
 
 export interface UseSystemPreferencesSyncReturn {

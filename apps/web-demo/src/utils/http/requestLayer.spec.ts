@@ -237,7 +237,7 @@ describe('request config mapping', () => {
 })
 
 describe('response unwrap and schema boundary', () => {
-  it('unwraps ApiResponse data before schema validation reaches callers', async () => {
+  it('unwraps BackendApiResponseEnvelope data before schema validation reaches callers', async () => {
     const { responseHandler } = await loadInterceptors()
     const schema = z.object({ id: z.string() })
     const response = new Response(

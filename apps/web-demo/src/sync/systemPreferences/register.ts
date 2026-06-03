@@ -21,7 +21,7 @@ import {
   sanitizeSizePayload,
   sanitizeThemePayload,
 } from './guards'
-import type { SystemPreferencePayload, SystemPreferences } from '@/types/systems/preferences'
+import type { SystemPreferencePayload, SystemPreferences } from '@ccd/contracts'
 import { markSystemPreferencesApplied, shouldApplySystemPreferences } from './state'
 
 function shouldApplyRemote(preferences: SystemPreferences): boolean {
