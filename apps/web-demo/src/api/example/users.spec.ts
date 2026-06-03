@@ -66,7 +66,7 @@ describe('requestUserList', () => {
     deleteMock.mockReset()
   })
 
-  it('validates the real ApiResponse envelope shape instead of a bare list payload', async () => {
+  it('validates the real BackendApiResponseEnvelope shape instead of a bare list payload', async () => {
     getMock.mockResolvedValue(apiResponse)
 
     await requestUserList({ page: 1, limit: 12 })
@@ -124,7 +124,7 @@ describe('user mutations', () => {
     deleteMock.mockReset()
   })
 
-  it('unwraps create responses from the ApiResponse envelope', async () => {
+  it('unwraps create responses from the BackendApiResponseEnvelope', async () => {
     postMock.mockResolvedValue(itemApiResponse)
 
     await expect(
@@ -136,7 +136,7 @@ describe('user mutations', () => {
     ).resolves.toEqual(itemApiResponse.data)
   })
 
-  it('unwraps update responses from the ApiResponse envelope', async () => {
+  it('unwraps update responses from the BackendApiResponseEnvelope', async () => {
     putMock.mockResolvedValue(itemApiResponse)
 
     await expect(

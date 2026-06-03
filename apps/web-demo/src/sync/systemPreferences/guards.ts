@@ -1,4 +1,4 @@
-import type { SystemPreferencePayload } from '@/types/systems/preferences'
+import type { SystemPreferencePayload } from '@ccd/contracts'
 import { castValue } from '@ccd/shared-utils'
 
 function isRecord(value: unknown): value is Record<string, unknown> {

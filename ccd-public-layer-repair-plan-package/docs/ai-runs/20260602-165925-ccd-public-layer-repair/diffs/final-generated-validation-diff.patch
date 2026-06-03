@@ -1,0 +1,167 @@
+diff --git a/apps/web-demo/src/types/auto-imports.d.ts b/apps/web-demo/src/types/auto-imports.d.ts
+index 793816b9..a6151e7a 100644
+--- a/apps/web-demo/src/types/auto-imports.d.ts
++++ b/apps/web-demo/src/types/auto-imports.d.ts
+@@ -402,41 +402,16 @@ declare global {
+ // for type re-export
+ declare global {
+   // @ts-ignore
+-  export type {
+-    Component,
+-    Slot,
+-    Slots,
+-    ComponentPublicInstance,
+-    ComputedRef,
+-    DirectiveBinding,
+-    ExtractDefaultPropTypes,
+-    ExtractPropTypes,
+-    ExtractPublicPropTypes,
+-    InjectionKey,
+-    PropType,
+-    Ref,
+-    ShallowRef,
+-    MaybeRef,
+-    MaybeRefOrGetter,
+-    VNode,
+-    WritableComputedRef,
+-  } from 'vue'
++  export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
+   import('vue')
+   // @ts-ignore
+   export type { TableDrawerState } from '../stores/modules/ui/tableDrawer'
+   import('../stores/modules/ui/tableDrawer')
+   // @ts-ignore
+-  export type {
+-    BreadcrumbChildItem,
+-    AdminBreadcrumbItem,
+-  } from '../hooks/layout/useAdminBreadcrumbs'
++  export type { BreadcrumbChildItem, AdminBreadcrumbItem } from '../hooks/layout/useAdminBreadcrumbs'
+   import('../hooks/layout/useAdminBreadcrumbs')
+   // @ts-ignore
+-  export type {
+-    ContextMenuAction,
+-    ContextMenuState,
+-    UseAdminTabsReturn,
+-  } from '../hooks/layout/useAdminTabs'
++  export type { ContextMenuAction, ContextMenuState, UseAdminTabsReturn } from '../hooks/layout/useAdminTabs'
+   import('../hooks/layout/useAdminTabs')
+   // @ts-ignore
+   export type { UseLayoutRuntimeReturn } from '../hooks/layout/useLayoutRuntime'
+diff --git a/docs/generated/graphs/dependency-graph.json b/docs/generated/graphs/dependency-graph.json
+index c015334f..03ca0246 100644
+--- a/docs/generated/graphs/dependency-graph.json
++++ b/docs/generated/graphs/dependency-graph.json
+@@ -33,7 +33,9 @@
+       "runtime": "none",
+       "criticality": "critical",
+       "responsibility": "Minimal runtime-neutral adapter facade; not a shared frontend bucket.",
+-      "allowedWorkspaceDependencies": ["@ccd/contracts"]
++      "allowedWorkspaceDependencies": [
++        "@ccd/contracts"
++      ]
+     },
+     {
+       "name": "@ccd/design-tokens",
+@@ -51,7 +53,9 @@
+       "runtime": "node-build",
+       "criticality": "protected",
+       "responsibility": "Shared UnoCSS preset, safelist, and build-time styling helpers.",
+-      "allowedWorkspaceDependencies": ["@ccd/design-tokens"]
++      "allowedWorkspaceDependencies": [
++        "@ccd/design-tokens"
++      ]
+     },
+     {
+       "name": "@ccd/shared-utils",
+@@ -69,7 +73,9 @@
+       "runtime": "web-library",
+       "criticality": "protected",
+       "responsibility": "Shared Vue/browser composables.",
+-      "allowedWorkspaceDependencies": ["@ccd/shared-utils"]
++      "allowedWorkspaceDependencies": [
++        "@ccd/shared-utils"
++      ]
+     },
+     {
+       "name": "@ccd/vue-app-platform",
+@@ -78,7 +84,9 @@
+       "runtime": "web-library",
+       "criticality": "protected",
+       "responsibility": "Shared frontend app bootstrap lifecycle and platform orchestration primitives.",
+-      "allowedWorkspaceDependencies": ["@ccd/design-tokens"]
++      "allowedWorkspaceDependencies": [
++        "@ccd/design-tokens"
++      ]
+     },
+     {
+       "name": "@ccd/vue-ui",
+@@ -87,7 +95,11 @@
+       "runtime": "web-library",
+       "criticality": "protected",
+       "responsibility": "Shared Vue UI primitives.",
+-      "allowedWorkspaceDependencies": ["@ccd/design-tokens", "@ccd/shared-utils", "@ccd/vue-hooks"]
++      "allowedWorkspaceDependencies": [
++        "@ccd/design-tokens",
++        "@ccd/shared-utils",
++        "@ccd/vue-hooks"
++      ]
+     },
+     {
+       "name": "@ccd/vue-primevue-adapter",
+@@ -96,7 +108,9 @@
+       "runtime": "web-library",
+       "criticality": "protected",
+       "responsibility": "PrimeVue-specific theme and adaptation layer.",
+-      "allowedWorkspaceDependencies": ["@ccd/design-tokens"]
++      "allowedWorkspaceDependencies": [
++        "@ccd/design-tokens"
++      ]
+     },
+     {
+       "name": "@ccd/vue-charts",
+@@ -105,7 +119,9 @@
+       "runtime": "web-library",
+       "criticality": "protected",
+       "responsibility": "Shared chart runtime and helpers.",
+-      "allowedWorkspaceDependencies": ["@ccd/design-tokens"]
++      "allowedWorkspaceDependencies": [
++        "@ccd/design-tokens"
++      ]
+     },
+     {
+       "name": "@ccd/web-demo",
+@@ -149,19 +165,29 @@
+   ],
+   "turbo": {
+     "build": {
+-      "dependsOn": ["^build"],
+-      "outputs": ["dist/**"]
++      "dependsOn": [
++        "^build"
++      ],
++      "outputs": [
++        "dist/**"
++      ]
+     },
+     "type-check": {
+-      "dependsOn": ["^build"],
++      "dependsOn": [
++        "^build"
++      ],
+       "outputs": []
+     },
+     "typecheck": {
+-      "dependsOn": ["type-check"],
++      "dependsOn": [
++        "type-check"
++      ],
+       "outputs": []
+     },
+     "test": {
+-      "dependsOn": ["^build"],
++      "dependsOn": [
++        "^build"
++      ],
+       "outputs": []
+     },
+     "lint": {

@@ -15,7 +15,11 @@ export type {
   HttpRequestConfig,
   HttpRequestMethod,
 } from './request'
-export type { HttpResponseEnvelope, HttpResponseMetadata } from './response'
+export type {
+  BackendApiResponseEnvelope,
+  HttpResponseEnvelope,
+  HttpResponseMetadata,
+} from './response'
 export type {
   HttpRetryBackoffStrategy,
   HttpRetryJitterStrategy,

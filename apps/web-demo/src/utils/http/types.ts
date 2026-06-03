@@ -20,7 +20,7 @@ export function isWithSafeStorage(data: unknown): data is WithSafeStorage<Record
   )
 }
 
-export interface ApiResponse<T = unknown> {
+export interface HttpClientResponseEnvelope<T = unknown> {
   success: boolean
   data?: T
   message?: string

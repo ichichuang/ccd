@@ -122,7 +122,7 @@ function validateRouteItems(routes: SystemAsyncRouteItem[]): SystemAsyncRouteIte
 
 /**
  * 真实请求实现（对接后端时启用）
- * 响应拦截器已统一解包标准 ApiResponse.data，本函数只接收并校验业务 payload。
+ * 响应拦截器已统一解包标准 BackendApiResponseEnvelope.data，本函数只接收并校验业务 payload。
  * 增强：基础字段校验，过滤无效路由项
  */
 export const requestSystemAsyncRoutesReal = async (): Promise<SystemAsyncRouteItem[]> => {

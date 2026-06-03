@@ -12,7 +12,7 @@ import type {
   SystemPreferenceEnvelope,
   SystemPreferencePayload,
   SystemPreferences,
-} from '@/types/systems/preferences'
+} from '@ccd/contracts'
 import { deepClone } from '@ccd/shared-utils'
 
 const LAYOUT_MODES: readonly AdminLayoutMode[] = ['vertical', 'horizontal', 'mix']
