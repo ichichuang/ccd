@@ -1,0 +1,13 @@
+[package]
+name = "ccd-desktop"
+version = "1.0.38"
+description = "Self-protecting deterministic multi-runtime platform architecture."
+authors = ["Chi Chuang"]
+edition = "2021"
+build = "build.rs"
+
+[dependencies]
+tauri = { version = "2", features = [] }
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
