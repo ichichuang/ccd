@@ -50,6 +50,23 @@ interface PageLoadingOverlayGeometry {
   spinner: DOMRectJSON
 }
 
+interface RoutePageLoadingObservation {
+  sawLocalOverlayVisible: boolean
+  sawLoadingContentVisible: boolean
+  sawRuntimeOverlayVisible: boolean
+  sawLocalPureCssLoaderVisible: boolean
+  finalHash: string
+  routeRendered: boolean
+  sampleCount: number
+  elapsedMs: number
+}
+
+interface RoutePageLoadingObservationOptions {
+  targetHash: string
+  routeHeading: string
+  timeoutMs: number
+}
+
 interface OverlaySpinnerGeometry {
   overlay: DOMRectJSON
   spinner: DOMRectJSON
@@ -191,6 +208,110 @@ async function expectPageLoadingOverlayCentered(page: Page): Promise<void> {
     await stopLoading.dispose()
     await expect(page.locator('.page-loading-overlay-content')).toBeHidden()
   }
+}
+
+async function observeRoutePageLoadingOutlet(
+  page: Page,
+  options: Omit<RoutePageLoadingObservationOptions, 'timeoutMs'> & { timeoutMs?: number }
+): Promise<RoutePageLoadingObservation> {
+  return page.evaluate<RoutePageLoadingObservation, RoutePageLoadingObservationOptions>(
+    ({ targetHash, routeHeading, timeoutMs }) =>
+      new Promise<RoutePageLoadingObservation>(resolve => {
+        const startedAt = performance.now()
+        const observation: RoutePageLoadingObservation = {
+          sawLocalOverlayVisible: false,
+          sawLoadingContentVisible: false,
+          sawRuntimeOverlayVisible: false,
+          sawLocalPureCssLoaderVisible: false,
+          finalHash: window.location.hash,
+          routeRendered: false,
+          sampleCount: 0,
+          elapsedMs: 0,
+        }
+        let frameId: number | null = null
+        let settled = false
+        let observer: MutationObserver | null = null
+
+        const isElementVisible = (element: Element | null): boolean => {
+          if (!element) return false
+          const rect = element.getBoundingClientRect()
+          if (rect.width <= 0 || rect.height <= 0) return false
+          const style = window.getComputedStyle(element)
+          return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0'
+        }
+
+        const isRouteRendered = (): boolean => {
+          if (window.location.hash !== targetHash) return false
+          return Array.from(document.querySelectorAll('h1')).some(
+            heading => heading.textContent?.trim() === routeHeading
+          )
+        }
+
+        const finish = (): void => {
+          if (settled) return
+          settled = true
+          if (frameId !== null) cancelAnimationFrame(frameId)
+          observer?.disconnect()
+          observation.finalHash = window.location.hash
+          observation.routeRendered = isRouteRendered()
+          observation.elapsedMs = Math.round(performance.now() - startedAt)
+          resolve({ ...observation })
+        }
+
+        const sample = (): void => {
+          if (settled) return
+          const localOverlay = document.querySelector('.page-loading-overlay-content')
+          const loadingContent =
+            localOverlay?.querySelector(
+              '.loading-fallback-spinner, [data-loading-animation="paper-airplane"]'
+            ) ?? null
+          const localPureCssLoader = localOverlay?.querySelector('.pure-css-loader') ?? null
+          const runtimeOverlay = document.querySelector('#runtime-loading-overlay')
+          const localOverlayVisible = isElementVisible(localOverlay)
+
+          observation.sampleCount += 1
+          observation.elapsedMs = Math.round(performance.now() - startedAt)
+          observation.finalHash = window.location.hash
+          observation.routeRendered = isRouteRendered()
+          observation.sawLocalOverlayVisible ||= localOverlayVisible
+          observation.sawLoadingContentVisible ||= isElementVisible(loadingContent)
+          observation.sawRuntimeOverlayVisible ||= isElementVisible(runtimeOverlay)
+          observation.sawLocalPureCssLoaderVisible ||= isElementVisible(localPureCssLoader)
+
+          const provedLocalLoading =
+            observation.finalHash === targetHash &&
+            observation.sawLocalOverlayVisible &&
+            observation.sawLoadingContentVisible
+          const settledWithoutProof =
+            observation.routeRendered && !localOverlayVisible && observation.elapsedMs >= 750
+
+          if (provedLocalLoading || settledWithoutProof || observation.elapsedMs >= timeoutMs) {
+            finish()
+          }
+        }
+
+        const scheduleNextSample = (): void => {
+          if (settled || frameId !== null) return
+          frameId = requestAnimationFrame(() => {
+            frameId = null
+            sample()
+            scheduleNextSample()
+          })
+        }
+
+        observer = new MutationObserver(sample)
+        observer.observe(document.documentElement, {
+          attributes: true,
+          childList: true,
+          subtree: true,
+        })
+        sample()
+        scheduleNextSample()
+        window.location.hash = targetHash
+        sample()
+      }),
+    { timeoutMs: options.timeoutMs ?? 10000, ...options }
+  )
 }
 
 async function expectNativePreloaderCentered(page: Page): Promise<void> {
@@ -804,15 +925,18 @@ test.describe('layout loading and route title stabilization', () => {
     await waitForRuntimeLoadingIdle(page)
 
     const overlayLocator = page.locator('.page-loading-overlay-content')
-    await page.evaluate(() => {
-      window.location.hash = '#/example/system-states'
+    const observation = await observeRoutePageLoadingOutlet(page, {
+      targetHash: '#/example/system-states',
+      routeHeading: 'System States',
     })
-    await expect(overlayLocator).toBeVisible({ timeout: 5000 })
+
+    expect(observation.sawLocalOverlayVisible).toBe(true)
+    expect(observation.sawLoadingContentVisible).toBe(true)
+    expect(observation.sawRuntimeOverlayVisible).toBe(false)
+    expect(observation.sawLocalPureCssLoaderVisible).toBe(false)
+    await expect(page).toHaveURL(/#\/example\/system-states$/)
+    await expect(page.getByRole('heading', { name: 'System States' })).toBeVisible()
     await expect(page.locator('#runtime-loading-overlay')).toBeHidden()
-    await expect(overlayLocator.locator('.pure-css-loader')).toBeHidden()
-    await expect(
-      overlayLocator.locator('.loading-fallback-spinner, [data-loading-animation="paper-airplane"]')
-    ).toBeVisible()
     await waitForRuntimeLoadingIdle(page)
     await expect(overlayLocator).toBeHidden({ timeout: 5000 })
   })
