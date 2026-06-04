@@ -31,10 +31,82 @@ type LayoutContract = {
   longTasks: number[]
 }
 
+type DashboardGeometry = {
+  width: number
+  height: number
+  textLength: number
+}
+
 function expectNoNetworkFailures(failures: NetworkFailureRecord[], scope: string): void {
   expect(failures, `${scope} should not produce failed requests or HTTP >= 400 responses`).toEqual(
     []
   )
+}
+
+function isDashboardGeometry(value: unknown): value is DashboardGeometry {
+  if (!value || typeof value !== 'object') return false
+  return (
+    'width' in value &&
+    'height' in value &&
+    'textLength' in value &&
+    typeof value.width === 'number' &&
+    typeof value.height === 'number' &&
+    typeof value.textLength === 'number'
+  )
+}
+
+async function waitForVisibleDashboardGeometry(page: Page): Promise<DashboardGeometry> {
+  const geometryHandle = await page.waitForFunction(
+    () =>
+      new Promise<DashboardGeometry | false>(resolve => {
+        const isVisible = (element: Element): boolean => {
+          const rect = element.getBoundingClientRect()
+          const style = window.getComputedStyle(element)
+          return (
+            rect.width > 0 &&
+            rect.height > 0 &&
+            style.display !== 'none' &&
+            style.visibility !== 'hidden'
+          )
+        }
+
+        const readGeometry = (): DashboardGeometry | false => {
+          const dashboards = Array.from(document.querySelectorAll('#dashboard-page'))
+          const visibleQuickAction = Array.from(
+            document.querySelectorAll('#dashboard-quick-action')
+          ).find(isVisible)
+
+          const dashboard =
+            dashboards.find(candidate =>
+              visibleQuickAction ? candidate.contains(visibleQuickAction) : isVisible(candidate)
+            ) ?? null
+
+          if (!dashboard || !isVisible(dashboard)) return false
+
+          const rect = dashboard.getBoundingClientRect()
+          return {
+            width: rect.width,
+            height: rect.height,
+            textLength: dashboard.textContent?.trim().length ?? 0,
+          }
+        }
+
+        window.requestAnimationFrame(() => {
+          const firstFrame = readGeometry()
+          window.requestAnimationFrame(() => {
+            const secondFrame = readGeometry()
+            resolve(firstFrame && secondFrame ? secondFrame : false)
+          })
+        })
+      }),
+    undefined,
+    { timeout: 15000 }
+  )
+  const geometry = await geometryHandle.jsonValue()
+  if (!isDashboardGeometry(geometry)) {
+    throw new Error('Expected visible dashboard geometry after consecutive animation frames.')
+  }
+  return geometry
 }
 
 async function expectNonBlankRoute(page: Page): Promise<void> {
@@ -458,14 +530,7 @@ test.describe('QA full regression repair matrix', () => {
     await expectNonBlankRoute(page)
     await expect(page.locator('#dashboard-quick-action')).toBeVisible()
 
-    const mobileGeometry = await page.locator('#dashboard-page').evaluate(element => {
-      const rect = element.getBoundingClientRect()
-      return {
-        width: rect.width,
-        height: rect.height,
-        textLength: element.textContent?.trim().length ?? 0,
-      }
-    })
+    const mobileGeometry = await waitForVisibleDashboardGeometry(page)
     expect(mobileGeometry.width * mobileGeometry.height).toBeGreaterThan(40_000)
     expect(mobileGeometry.height).toBeGreaterThan(600)
     expect(mobileGeometry.textLength).toBeGreaterThan(100)
