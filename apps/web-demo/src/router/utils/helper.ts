@@ -6,11 +6,11 @@ import {
 } from '@/constants/router'
 import { appLogger } from '@/adapters/logger.adapter'
 import router, { routeUtils } from '@/router'
-import { generateIdFromKey } from '@ccd/shared-utils'
 import { usePermissionStore } from '@/stores/modules/session'
 import type { LocationQueryRaw, RouteLocationNormalized, RouteMeta } from 'vue-router'
 import type { PrimeVueMenuItem } from '@ccd/vue-primevue-adapter'
 import { filterMenuByAccess } from './accessControl'
+import { ROUTE_WINDOW_KEY_QUERY_PARAM, generateRouteWindowKey } from './windowKeys'
 
 // ================= 窗口管理 =================
 
@@ -46,10 +46,6 @@ function initWindowChannel() {
       }
     })
   }
-}
-
-function generateWindowKey(routeName: string, query?: LocationQueryRaw): string {
-  return generateIdFromKey(`${routeName}:${JSON.stringify(query ?? {})}`)
 }
 
 /**
@@ -112,7 +108,9 @@ function buildRouteUrl(
       const queryString = new URLSearchParams(query as Record<string, string>).toString()
       url += (url.includes('?') ? '&' : '?') + queryString
     }
-    url += (url.includes('?') ? '&' : '?') + `_windowKey=${encodeURIComponent(windowKey)}`
+    url +=
+      (url.includes('?') ? '&' : '?') +
+      `${ROUTE_WINDOW_KEY_QUERY_PARAM}=${encodeURIComponent(windowKey)}`
   } else {
     const publicPath = import.meta.env.VITE_PUBLIC_PATH
     url = publicPath + targetRoute.path.replace(/^\//, '')
@@ -120,7 +118,9 @@ function buildRouteUrl(
       const queryString = new URLSearchParams(query as Record<string, string>).toString()
       url += (url.includes('?') ? '&' : '?') + queryString
     }
-    url += (url.includes('?') ? '&' : '?') + `_windowKey=${encodeURIComponent(windowKey)}`
+    url +=
+      (url.includes('?') ? '&' : '?') +
+      `${ROUTE_WINDOW_KEY_QUERY_PARAM}=${encodeURIComponent(windowKey)}`
   }
 
   return url
@@ -288,7 +288,7 @@ export const goToRoute = (
 
   if (shouldOpenNewWindow) {
     const permissionStore = usePermissionStore()
-    const windowKey = generateWindowKey(String(targetRoute.name), query)
+    const windowKey = generateRouteWindowKey(String(targetRoute.name), query)
     const shouldReuse = targetRoute.meta?.reuseWindow === true
 
     if (shouldReuse) {
@@ -301,7 +301,7 @@ export const goToRoute = (
 
     // === 新开窗口 ===
     const url = buildRouteUrl(targetRoute, query, windowKey)
-    const win = window.open(url, '_blank')
+    const win = window.open(url, shouldReuse ? windowKey : '_blank')
 
     if (win) {
       try {

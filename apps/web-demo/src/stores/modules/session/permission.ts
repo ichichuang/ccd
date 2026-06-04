@@ -1,6 +1,7 @@
-import { deepClone, generateIdFromKey } from '@ccd/shared-utils'
+import { deepClone } from '@ccd/shared-utils'
 import { getRouterCapabilities, isRouterCapabilitiesInstalled } from '@/infra/router/routeProvider'
 import { checkRouteAccess } from '@/router/utils/accessControl'
+import { generateRouteWindowKey, getRouteWindowKeyFromUrl } from '@/router/utils/windowKeys'
 import { useUserStoreWithOut } from '@/stores/modules/session/user'
 import store from '@/stores'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
@@ -169,7 +170,7 @@ export const usePermissionStore = defineStore('permission', {
      * ⚠️ 仅用于查询，不参与窗口是否存在的判断
      */
     getWindowByKey: (state: PermissionState) => (key: string) => {
-      return state.windows.find(w => w.key === key)
+      return state.windows.find(w => w.key === key || getRouteWindowKeyFromUrl(w.url) === key)
     },
   },
 
@@ -331,7 +332,7 @@ export const usePermissionStore = defineStore('permission', {
      * 注册新窗口元数据
      */
     registerWindow(routeName: string, query: LocationQueryRaw | undefined, url: string): string {
-      const key = generateWindowKey(routeName, query)
+      const key = generateRouteWindowKey(routeName, query)
       const existing = this.windows.find(w => w.key === key)
 
       if (existing) {
@@ -433,15 +434,6 @@ export const usePermissionStore = defineStore('permission', {
     },
   },
 })
-
-/**
- * 生成窗口唯一标识
- */
-function generateWindowKey(routeName: string, query?: LocationQueryRaw): string {
-  const queryString = query ? JSON.stringify(query) : ''
-  const keySource = `${routeName}:${queryString}`
-  return generateIdFromKey(keySource)
-}
 
 export const usePermissionStoreWithOut = () => {
   return usePermissionStore(store)

@@ -397,6 +397,31 @@ describe('usePermissionStore', () => {
       expect(store.windows[0].url).toBe('/dashboard?v=2')
     })
 
+    it('uses the same metadata key for undefined and empty query objects', () => {
+      const store = usePermissionStore()
+      const key1 = store.registerWindow('Dashboard', undefined, '/dashboard')
+      const key2 = store.registerWindow('Dashboard', {}, '/dashboard?v=2')
+
+      expect(key1).toBe(key2)
+      expect(store.windows).toHaveLength(1)
+      expect(store.windows[0].key).toBe('id-Dashboard:{}')
+    })
+
+    it('finds metadata by _windowKey in a hash-mode stored URL', () => {
+      const store = usePermissionStore()
+      store.windows = [
+        {
+          key: 'legacy-key',
+          routeName: 'Dashboard',
+          url: 'http://localhost/#/dashboard?_windowKey=id-Dashboard%3A%7B%7D',
+          openedAt: Date.now(),
+          isOpen: false,
+        },
+      ]
+
+      expect(store.getWindowByKey('id-Dashboard:{}')?.key).toBe('legacy-key')
+    })
+
     it('marks window as closed', () => {
       const store = usePermissionStore()
       const key = store.registerWindow('Dashboard', {}, '/dashboard')

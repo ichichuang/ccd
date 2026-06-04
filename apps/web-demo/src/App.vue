@@ -6,6 +6,7 @@ import {
 } from '@/utils/theme/sizeEngine'
 import LayoutManager from '@/layouts/index.vue'
 import AppPrimeVueGlobals from '@/layouts/components/AppPrimeVueGlobals.vue'
+import { getRouteWindowKeyFromLocation } from '@/router/utils/windowKeys'
 
 const sizeStore = useSizeStore()
 const deviceStore = useDeviceStore()
@@ -44,7 +45,7 @@ onMounted(() => {
   sizeStore.init()
 
   const permissionStore = usePermissionStore()
-  const key = new URLSearchParams(location.search).get('_windowKey')
+  const key = getRouteWindowKeyFromLocation(window.location)
   if (key) {
     const meta = permissionStore.getWindowByKey(key)
     if (meta) meta.isOpen = true

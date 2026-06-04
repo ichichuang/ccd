@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 
+import { nextTick } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import * as routeProvider from '@/infra/router/routeProvider'
@@ -151,5 +152,35 @@ describe('useAdminTabs', () => {
 
     expect(store.tabs).toEqual([])
     expect(routerPush).toHaveBeenCalledWith('/dashboard')
+  })
+
+  it('positions and scrolls an existing active tab into view', async () => {
+    const store = usePermissionStore()
+    store.addTab('Settings')
+    store.addTab('Reports')
+    routeState.path = '/reports'
+    const tabs = useAdminTabs()
+    const activeEl = document.createElement('div')
+    const scrollIntoView = vi.fn()
+
+    Object.defineProperty(activeEl, 'offsetLeft', { value: 160, configurable: true })
+    Object.defineProperty(activeEl, 'offsetWidth', { value: 88, configurable: true })
+    Object.defineProperty(activeEl, 'scrollIntoView', { value: scrollIntoView, configurable: true })
+
+    tabs.setTabRef(activeEl, '/reports')
+    tabs.updateActiveTabPosition('auto')
+    await nextTick()
+
+    expect(store.tabs.map(tab => tab.path)).toEqual(['/dashboard', '/settings', '/reports'])
+    expect(tabs.activeTabStyle.value).toEqual({
+      left: '160px',
+      width: '88px',
+      opacity: '1',
+    })
+    expect(scrollIntoView).toHaveBeenCalledWith({
+      behavior: 'auto',
+      block: 'nearest',
+      inline: 'center',
+    })
   })
 })

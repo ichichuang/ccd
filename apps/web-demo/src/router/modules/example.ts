@@ -443,6 +443,7 @@ const systemConfigurationRootRoute: RouteConfig = {
         rank: 1,
         icon: 'i-lucide-palette',
         parent: 'fullscreen',
+        reuseWindow: true,
       },
     },
     {
@@ -454,6 +455,7 @@ const systemConfigurationRootRoute: RouteConfig = {
         rank: 2,
         icon: 'i-lucide-maximize-2',
         parent: 'fullscreen',
+        reuseWindow: true,
       },
     },
     {
@@ -465,6 +467,7 @@ const systemConfigurationRootRoute: RouteConfig = {
         rank: 3,
         icon: 'i-lucide-diamond',
         parent: 'fullscreen',
+        reuseWindow: true,
       },
     },
     {
@@ -476,6 +479,7 @@ const systemConfigurationRootRoute: RouteConfig = {
         rank: 4,
         icon: 'i-lucide-monitor',
         parent: 'fullscreen',
+        reuseWindow: true,
       },
     },
     {
@@ -487,6 +491,7 @@ const systemConfigurationRootRoute: RouteConfig = {
         rank: 5,
         icon: 'i-lucide-layout-dashboard',
         parent: 'fullscreen',
+        reuseWindow: true,
       },
     },
   ],

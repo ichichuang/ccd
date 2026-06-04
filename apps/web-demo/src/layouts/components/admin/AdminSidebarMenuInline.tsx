@@ -421,6 +421,13 @@ export default defineComponent({
 
       if (item.route?.name) {
         const isExtLink = item.route.meta?.isLink === true
+        const routeParent = item.route.meta?.parent
+        const shouldUseRouteHelper =
+          isExtLink ||
+          isRootRow ||
+          item.route.meta?.reuseWindow === true ||
+          routeParent === 'fullscreen' ||
+          routeParent === 'ratio'
         const linkUrlRaw = item.route.meta?.linkUrl
         const extUrl = (typeof linkUrlRaw === 'string' ? linkUrlRaw : undefined) || item.route.path
 
@@ -460,12 +467,7 @@ export default defineComponent({
                     class={[linkClass, routeStateClasses].filter(Boolean).join(' ')}
                     onClick={(event: MouseEvent) => {
                       event.stopPropagation()
-                      if (isExtLink) {
-                        event.preventDefault()
-                        goToRoute(routeTarget, undefined, undefined, false)
-                        return
-                      }
-                      if (isRootRow) {
+                      if (shouldUseRouteHelper) {
                         event.preventDefault()
                         goToRoute(routeTarget, undefined, undefined, false)
                         return
