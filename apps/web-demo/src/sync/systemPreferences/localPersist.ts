@@ -1,5 +1,5 @@
 import { packDataSync, unpackDataSync } from '@/utils/safeStorage'
-import type { SystemPreferences } from '@/types/systems/preferences'
+import type { SystemPreferences } from '@ccd/contracts'
 import type { SyncMiddleware } from './middleware'
 import { readLocalStorageValue, writeLocalStorageValue } from '@/utils/safeStorage'
 import { normalizeSystemPreferences } from './model'

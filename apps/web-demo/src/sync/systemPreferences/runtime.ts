@@ -12,7 +12,7 @@ import type {
   SystemPreferencePayload,
   SystemPreferenceSyncType,
   SystemPreferences,
-} from '@/types/systems/preferences'
+} from '@ccd/contracts'
 import { registerSystemPreferenceSync } from './register'
 import { sanitizeSystemPreferencePayload } from './guards'
 import { resetSystemPreferenceSyncStateForTest } from './state'

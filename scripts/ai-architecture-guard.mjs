@@ -138,6 +138,50 @@ const stripJsComments = content =>
 
 const approvedPrimeVueAppImportFiles = new Set()
 
+const routeAccessFacadePath = 'apps/web-demo/src/router/utils/accessControl.ts'
+const routeAccessFacade = shouldRunSingletonCheck(routeAccessFacadePath)
+  ? readTextIfExists(routeAccessFacadePath)
+  : ''
+if (routeAccessFacade) {
+  if (!routeAccessFacade.includes("from '@ccd/vue-app-platform'")) {
+    fail(
+      'route-access-helper-owner',
+      routeAccessFacadePath,
+      'route access pure helpers must be owned by @ccd/vue-app-platform; app accessControl.ts may only remain as a compatibility facade'
+    )
+  }
+
+  for (const forbiddenImplementationToken of [
+    'function normalizePath',
+    'function checkMenuAuths',
+    'decodeURIComponent',
+  ]) {
+    if (routeAccessFacade.includes(forbiddenImplementationToken)) {
+      fail(
+        'route-access-helper-owner',
+        routeAccessFacadePath,
+        `app accessControl.ts must not reintroduce route access helper implementation token "${forbiddenImplementationToken}"`
+      )
+    }
+  }
+}
+
+for (const responseContractPath of [
+  'apps/web-demo/src/types/api.ts',
+  'apps/web-demo/src/utils/http/types.ts',
+]) {
+  const content = shouldRunSingletonCheck(responseContractPath)
+    ? stripJsComments(readTextIfExists(responseContractPath))
+    : ''
+  if (/\b(?:interface|type)\s+ApiResponse\b/.test(content)) {
+    fail(
+      'api-response-contract-name',
+      responseContractPath,
+      'ambiguous ApiResponse definitions are forbidden; use BackendApiResponseEnvelope or HttpClientResponseEnvelope'
+    )
+  }
+}
+
 const isPrimeVueBuildResolverBoundaryFile = relPath =>
   relPath === 'apps/web-demo/build/resolvers/primevue.ts'
 

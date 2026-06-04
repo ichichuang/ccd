@@ -1,5 +1,5 @@
 import type { alovaInstance } from '@/utils/http/instance'
-import type { SystemPreferences } from '@/types/systems/preferences'
+import type { SystemPreferences } from '@ccd/contracts'
 import { systemPreferencesSchema } from '@/types/systems/preferences'
 import { z } from 'zod'
 

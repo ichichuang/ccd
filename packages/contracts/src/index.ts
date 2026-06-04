@@ -16,6 +16,7 @@ export type {
   HttpRequestConfig,
   HttpRequestErrorShape,
   HttpRequestMethod,
+  BackendApiResponseEnvelope,
   HttpResponseEnvelope,
   HttpResponseMetadata,
   HttpRetryBackoffStrategy,
@@ -30,6 +31,22 @@ export type {
 } from './http'
 export type { Logger } from './logger'
 export type { NetworkClient, NetworkRequest, NetworkResponse } from './network'
+export type {
+  SystemPreferenceEnvelope,
+  SystemPreferenceLayoutState,
+  SystemPreferencePayload,
+  SystemPreferences,
+  SystemPreferenceSizeState,
+  SystemPreferenceSyncType,
+  SystemPreferenceThemeState,
+} from './preferences'
+export type {
+  BackendRouteContract,
+  MenuAccessItem,
+  RouteAccessMeta,
+  RouteMenuNode,
+  SafeRedirectResult,
+} from './routing'
 export type { ScheduledTask, Scheduler } from './scheduler'
 export type {
   SafeStorageAdapter,

@@ -1,0 +1,189 @@
+diff --git a/.ai/manifests/rule-index.json b/.ai/manifests/rule-index.json
+index 5577920f..9453a63b 100644
+--- a/.ai/manifests/rule-index.json
++++ b/.ai/manifests/rule-index.json
+@@ -60,8 +60,8 @@
+       "globs": [
+         "src/views/**/*.vue",
+         "src/views/**/*.tsx",
+-        "src/components/ProTable/**",
+-        "src/components/ProForm/**"
++        "packages/vue-ui/src/ProTable/**",
++        "packages/vue-ui/src/ProForm/**"
+       ],
+       "alwaysApply": true
+     },
+@@ -467,6 +467,12 @@
+     "package.json": [
+       ".ai/rules/integrations/10-desktop-preflight.mdc"
+     ],
++    "packages/vue-ui/src/ProForm/**": [
++      ".ai/rules/components/02-pro-components.mdc"
++    ],
++    "packages/vue-ui/src/ProTable/**": [
++      ".ai/rules/components/02-pro-components.mdc"
++    ],
+     "playwright.config.ts": [
+       ".ai/rules/integrations/08-playwright-visual-regression.mdc"
+     ],
+@@ -550,12 +556,6 @@
+       ".ai/rules/components/01-primevue-pt-styling.mdc",
+       ".ai/rules/components/03-echarts-theming.mdc"
+     ],
+-    "src/components/ProForm/**": [
+-      ".ai/rules/components/02-pro-components.mdc"
+-    ],
+-    "src/components/ProTable/**": [
+-      ".ai/rules/components/02-pro-components.mdc"
+-    ],
+     "src/components/UseEcharts/**/*.ts": [
+       ".ai/rules/components/03-echarts-theming.mdc"
+     ],
+diff --git a/apps/web-demo/src/types/auto-imports.d.ts b/apps/web-demo/src/types/auto-imports.d.ts
+index 793816b9..a6151e7a 100644
+--- a/apps/web-demo/src/types/auto-imports.d.ts
++++ b/apps/web-demo/src/types/auto-imports.d.ts
+@@ -402,41 +402,16 @@ declare global {
+ // for type re-export
+ declare global {
+   // @ts-ignore
+-  export type {
+-    Component,
+-    Slot,
+-    Slots,
+-    ComponentPublicInstance,
+-    ComputedRef,
+-    DirectiveBinding,
+-    ExtractDefaultPropTypes,
+-    ExtractPropTypes,
+-    ExtractPublicPropTypes,
+-    InjectionKey,
+-    PropType,
+-    Ref,
+-    ShallowRef,
+-    MaybeRef,
+-    MaybeRefOrGetter,
+-    VNode,
+-    WritableComputedRef,
+-  } from 'vue'
++  export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
+   import('vue')
+   // @ts-ignore
+   export type { TableDrawerState } from '../stores/modules/ui/tableDrawer'
+   import('../stores/modules/ui/tableDrawer')
+   // @ts-ignore
+-  export type {
+-    BreadcrumbChildItem,
+-    AdminBreadcrumbItem,
+-  } from '../hooks/layout/useAdminBreadcrumbs'
++  export type { BreadcrumbChildItem, AdminBreadcrumbItem } from '../hooks/layout/useAdminBreadcrumbs'
+   import('../hooks/layout/useAdminBreadcrumbs')
+   // @ts-ignore
+-  export type {
+-    ContextMenuAction,
+-    ContextMenuState,
+-    UseAdminTabsReturn,
+-  } from '../hooks/layout/useAdminTabs'
++  export type { ContextMenuAction, ContextMenuState, UseAdminTabsReturn } from '../hooks/layout/useAdminTabs'
+   import('../hooks/layout/useAdminTabs')
+   // @ts-ignore
+   export type { UseLayoutRuntimeReturn } from '../hooks/layout/useLayoutRuntime'
+diff --git a/docs/generated/api-surface-report.json b/docs/generated/api-surface-report.json
+index cfff081b..7921ef68 100644
+--- a/docs/generated/api-surface-report.json
++++ b/docs/generated/api-surface-report.json
+@@ -7,6 +7,8 @@
+       "path": "packages/contracts",
+       "exports": ["."],
+       "rootSymbols": [
++        "BackendApiResponseEnvelope",
++        "BackendRouteContract",
+         "CryptoProvider",
+         "EnvironmentProvider",
+         "FileSystemAdapter",
+@@ -36,9 +38,13 @@
+         "HttpTransportRequest",
+         "HttpTransportResponse",
+         "Logger",
++        "MenuAccessItem",
+         "NetworkClient",
+         "NetworkRequest",
+         "NetworkResponse",
++        "RouteAccessMeta",
++        "RouteMenuNode",
++        "SafeRedirectResult",
+         "SafeStorageAdapter",
+         "SafeStorageObfuscation",
+         "SafeStoragePolicy",
+@@ -47,7 +53,14 @@
+         "StorageAdapter",
+         "StorageCodec",
+         "StorageScope",
+-        "SyncStorageCodec"
++        "SyncStorageCodec",
++        "SystemPreferenceEnvelope",
++        "SystemPreferenceLayoutState",
++        "SystemPreferencePayload",
++        "SystemPreferences",
++        "SystemPreferenceSizeState",
++        "SystemPreferenceSyncType",
++        "SystemPreferenceThemeState"
+       ]
+     },
+     {
+@@ -225,12 +238,17 @@
+         "AdminLayoutMode",
+         "applyThemeVars",
+         "ApplyThemeVarsOptions",
++        "checkRouteAccess",
++        "checkRouteAuths",
++        "checkRouteRoles",
+         "DeviceType",
+         "enforceLayoutModeVisibilityConstraints",
+         "enforceLayoutVisibilityParentRequirements",
+         "fadeOutNativePreloader",
+         "FadeOutNativePreloaderOptions",
++        "filterMenuByAccess",
+         "isNarrowLayoutBreakpoint",
++        "isWhiteListed",
+         "LAYOUT_DRAWER_ROOT_STYLE",
+         "LAYOUT_DRAWER_SAFE_AREA_STYLE",
+         "LAYOUT_MODE_HIDDEN_MODULES",
+@@ -253,12 +271,16 @@
+         "LayoutVisibilitySetting",
+         "markAppBootstrapping",
+         "markAppReady",
++        "MenuAccessNode",
+         "Orientation",
++        "parseSafeRedirect",
+         "resolveLayoutDeviceFlags",
+         "resolveLayoutEffectiveMode",
+         "resolveLayoutModuleVisibilityChange",
+         "resolveLayoutRuntime",
+         "resolveLayoutUseDrawer",
++        "RouteAccessRequirement",
++        "SafeRedirectParseResult",
+         "setupVitePreloadErrorRecovery",
+         "SidebarAnimationPhase",
+         "SidebarState",
+diff --git a/docs/generated/api-surface-report.md b/docs/generated/api-surface-report.md
+index 7fdea762..97678cf7 100644
+--- a/docs/generated/api-surface-report.md
++++ b/docs/generated/api-surface-report.md
+@@ -4,7 +4,7 @@
+
+ - Path: `packages/contracts`
+ - Export subpaths: `.`
+-- Root symbols: `CryptoProvider`, `EnvironmentProvider`, `FileSystemAdapter`, `HttpAuthCredentialPlacement`, `HttpAuthPolicy`, `HttpAuthRefreshMode`, `HttpAuthScheme`, `HttpErrorKind`, `HttpHeaders`, `HttpHeaderValue`, `HttpQuery`, `HttpQueryPrimitive`, `HttpQueryValue`, `HttpRequestBody`, `HttpRequestConfig`, `HttpRequestErrorShape`, `HttpRequestMethod`, `HttpResponseEnvelope`, `HttpResponseMetadata`, `HttpRetryBackoffStrategy`, `HttpRetryJitterStrategy`, `HttpRetryPolicy`, `HttpRetryTrigger`, `HttpTimeoutPhase`, `HttpTimeoutPolicy`, `HttpTransportClient`, `HttpTransportRequest`, `HttpTransportResponse`, `Logger`, `NetworkClient`, `NetworkRequest`, `NetworkResponse`, `SafeStorageAdapter`, `SafeStorageObfuscation`, `SafeStoragePolicy`, `ScheduledTask`, `Scheduler`, `StorageAdapter`, `StorageCodec`, `StorageScope`, `SyncStorageCodec`
++- Root symbols: `BackendApiResponseEnvelope`, `BackendRouteContract`, `CryptoProvider`, `EnvironmentProvider`, `FileSystemAdapter`, `HttpAuthCredentialPlacement`, `HttpAuthPolicy`, `HttpAuthRefreshMode`, `HttpAuthScheme`, `HttpErrorKind`, `HttpHeaders`, `HttpHeaderValue`, `HttpQuery`, `HttpQueryPrimitive`, `HttpQueryValue`, `HttpRequestBody`, `HttpRequestConfig`, `HttpRequestErrorShape`, `HttpRequestMethod`, `HttpResponseEnvelope`, `HttpResponseMetadata`, `HttpRetryBackoffStrategy`, `HttpRetryJitterStrategy`, `HttpRetryPolicy`, `HttpRetryTrigger`, `HttpTimeoutPhase`, `HttpTimeoutPolicy`, `HttpTransportClient`, `HttpTransportRequest`, `HttpTransportResponse`, `Logger`, `MenuAccessItem`, `NetworkClient`, `NetworkRequest`, `NetworkResponse`, `RouteAccessMeta`, `RouteMenuNode`, `SafeRedirectResult`, `SafeStorageAdapter`, `SafeStorageObfuscation`, `SafeStoragePolicy`, `ScheduledTask`, `Scheduler`, `StorageAdapter`, `StorageCodec`, `StorageScope`, `SyncStorageCodec`, `SystemPreferenceEnvelope`, `SystemPreferenceLayoutState`, `SystemPreferencePayload`, `SystemPreferences`, `SystemPreferenceSizeState`, `SystemPreferenceSyncType`, `SystemPreferenceThemeState`
+
+ ## @ccd/core
+
+@@ -40,7 +40,7 @@
+
+ - Path: `packages/vue-app-platform`
+ - Export subpaths: `.`
+-- Root symbols: `AdminLayoutMode`, `applyThemeVars`, `ApplyThemeVarsOptions`, `DeviceType`, `enforceLayoutModeVisibilityConstraints`, `enforceLayoutVisibilityParentRequirements`, `fadeOutNativePreloader`, `FadeOutNativePreloaderOptions`, `isNarrowLayoutBreakpoint`, `LAYOUT_DRAWER_ROOT_STYLE`, `LAYOUT_DRAWER_SAFE_AREA_STYLE`, `LAYOUT_MODE_HIDDEN_MODULES`, `LAYOUT_MODULE_DEPENDENCIES`, `LAYOUT_MODULE_PARENT_REQUIREMENTS`, `LAYOUT_MODULE_VISIBILITY_KEYS`, `LAYOUT_SAFE_AREA_INSETS`, `LAYOUT_SHELL_SAFE_AREA_STYLE`, `LayoutModuleRestoreCache`, `LayoutModuleVisibilityChangeInput`, `LayoutModuleVisibilityChangeResult`, `LayoutModuleVisibilityKey`, `LayoutRuntimeDeviceFlags`, `LayoutRuntimeDeviceInput`, `LayoutRuntimeEffectiveModeInput`, `LayoutRuntimeInput`, `LayoutRuntimeSafeAreaInsets`, `LayoutRuntimeState`, `LayoutSidebarMode`, `LayoutVisibilitySetting`, `markAppBootstrapping`, `markAppReady`, `Orientation`, `resolveLayoutDeviceFlags`, `resolveLayoutEffectiveMode`, `resolveLayoutModuleVisibilityChange`, `resolveLayoutRuntime`, `resolveLayoutUseDrawer`, `setupVitePreloadErrorRecovery`, `SidebarAnimationPhase`, `SidebarState`, `ThemeRuntimeStorage`, `ThemeRuntimeStorageKeys`, `ThemeRuntimeTarget`, `VitePreloadErrorRecoveryOptions`, `waitForStablePaint`
++- Root symbols: `AdminLayoutMode`, `applyThemeVars`, `ApplyThemeVarsOptions`, `checkRouteAccess`, `checkRouteAuths`, `checkRouteRoles`, `DeviceType`, `enforceLayoutModeVisibilityConstraints`, `enforceLayoutVisibilityParentRequirements`, `fadeOutNativePreloader`, `FadeOutNativePreloaderOptions`, `filterMenuByAccess`, `isNarrowLayoutBreakpoint`, `isWhiteListed`, `LAYOUT_DRAWER_ROOT_STYLE`, `LAYOUT_DRAWER_SAFE_AREA_STYLE`, `LAYOUT_MODE_HIDDEN_MODULES`, `LAYOUT_MODULE_DEPENDENCIES`, `LAYOUT_MODULE_PARENT_REQUIREMENTS`, `LAYOUT_MODULE_VISIBILITY_KEYS`, `LAYOUT_SAFE_AREA_INSETS`, `LAYOUT_SHELL_SAFE_AREA_STYLE`, `LayoutModuleRestoreCache`, `LayoutModuleVisibilityChangeInput`, `LayoutModuleVisibilityChangeResult`, `LayoutModuleVisibilityKey`, `LayoutRuntimeDeviceFlags`, `LayoutRuntimeDeviceInput`, `LayoutRuntimeEffectiveModeInput`, `LayoutRuntimeInput`, `LayoutRuntimeSafeAreaInsets`, `LayoutRuntimeState`, `LayoutSidebarMode`, `LayoutVisibilitySetting`, `markAppBootstrapping`, `markAppReady`, `MenuAccessNode`, `Orientation`, `parseSafeRedirect`, `resolveLayoutDeviceFlags`, `resolveLayoutEffectiveMode`, `resolveLayoutModuleVisibilityChange`, `resolveLayoutRuntime`, `resolveLayoutUseDrawer`, `RouteAccessRequirement`, `SafeRedirectParseResult`, `setupVitePreloadErrorRecovery`, `SidebarAnimationPhase`, `SidebarState`, `ThemeRuntimeStorage`, `ThemeRuntimeStorageKeys`, `ThemeRuntimeTarget`, `VitePreloadErrorRecoveryOptions`, `waitForStablePaint`
+
+ ## @ccd/vue-ui

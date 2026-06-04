@@ -4,7 +4,7 @@ import ExampleDocPage from '../shared/ExampleDocPage.vue'
 defineOptions({ name: 'CommonTypes' })
 
 type TypePanelId =
-  | 'ApiResponse'
+  | 'BackendApiResponseEnvelope'
   | 'UIDesignState'
   | 'SystemAsyncRoutes'
   | 'UserAuthDTO'
@@ -19,14 +19,14 @@ interface TypePanel {
 
 const typePanels: TypePanel[] = [
   {
-    id: 'ApiResponse',
-    title: 'ApiResponse<T> (global)',
+    id: 'BackendApiResponseEnvelope',
+    title: 'BackendApiResponseEnvelope<T> (contracts)',
     boundaryMessage:
       '这是"业务成功结构"的最小统一响应形态：业务层只取 `data`，错误与 401/重试交由拦截器与 hooks 处理。类型仅在编译期生效。',
-    snippet: `export interface ApiResponse<T = unknown> {
+    snippet: `export interface BackendApiResponseEnvelope<TData = unknown> {
   code: number
   message: string
-  data: T
+  data: TData
 }`,
   },
   {
@@ -97,7 +97,7 @@ export interface LoginResult {
     id: 'HttpRequestTypes',
     title: 'Http Request Types (request layer)',
     boundaryMessage:
-      '这是请求层的配置与响应"变体"：src/types/api.ts 的 ApiResponse<T> 是后端通用包装，src/utils/http/types.ts 的 ApiResponse<T> 是 HTTP 拦截器可识别的 success/data/message 包装。RequestConfig 决定缓存、重试、去重、静默错误与 schema 校验边界。',
+      '这是请求层的配置与响应形态：@ccd/contracts 的 BackendApiResponseEnvelope<T> 是后端通用包装，src/utils/http/types.ts 的 HttpClientResponseEnvelope<T> 是 HTTP 客户端可识别的 success/data/message 包装。RequestConfig 决定缓存、重试、去重、静默错误与 schema 校验边界。',
     snippet: `import type { ZodType } from 'zod'
 
 export interface RequestConfig<TResponse = unknown> {
@@ -115,7 +115,7 @@ export interface RequestConfig<TResponse = unknown> {
   [key: string]: unknown
 }
 
-export interface ApiResponse<T = unknown> {
+export interface HttpClientResponseEnvelope<T = unknown> {
   success: boolean
   data?: T
   message?: string
@@ -135,7 +135,10 @@ export interface SecurityConfig {
   },
 ]
 
-const activeTypes = ref<string | string[] | null | undefined>(['ApiResponse', 'UIDesignState'])
+const activeTypes = ref<string | string[] | null | undefined>([
+  'BackendApiResponseEnvelope',
+  'UIDesignState',
+])
 </script>
 
 <template>
