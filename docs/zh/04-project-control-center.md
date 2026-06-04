@@ -76,6 +76,10 @@ pnpm project:sync
 - `.release-please-manifest.json`
 - `.ai/governance/policies/version.json`
 
+`apps/desktop/index.html` 是 Vite 构建期 HTML 模板，不由 `project:sync`
+重写；桌面标题、描述、作者等展示元信息由 `apps/desktop/build/html.ts`
+在 dev/build 时从 `project.config.json` 注入，模板内应保留占位符。
+
 不要手工修改这些由 `project.config.json` 派生的字段。
 
 ## project:doctor

@@ -27,10 +27,17 @@ Metadata governance does not override architecture ownership:
 - root `package.json`
 - workspace manifests under `apps/*` and `packages/*`
 - `apps/web-demo/src/constants/brand.ts`
+- desktop release metadata under `apps/desktop/src-tauri/**`
 - `apps/desktop/src-tauri/tauri.conf.json`
 - `apps/desktop/src-tauri/Cargo.toml`
 - `.release-please-manifest.json`
 - `.ai/governance/policies/version.json`
+
+`apps/desktop/index.html` is not rewritten by `project:sync`. It is a build-time
+HTML template: `apps/desktop/build/html.ts` reads `project.config.json` during
+Vite dev/build and injects the desktop title, description, author, and package
+metadata. Keep `%DESKTOP_PRODUCT_NAME%`, `%PRODUCT_DESCRIPTION%`, and
+`%PRODUCT_AUTHOR%` in the template instead of hardcoding display metadata.
 
 ## project:sync
 
@@ -41,6 +48,8 @@ pnpm project:sync
 ```
 
 Do not manually edit derived metadata files when the same field is governed by `project.config.json`.
+Do not hardcode product name, description, or author into `apps/desktop/index.html`;
+those values are injected from `project.config.json` by the desktop Vite plugin.
 
 ## project:doctor
 

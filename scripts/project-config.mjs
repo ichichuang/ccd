@@ -11,6 +11,7 @@ const ROOT = join(__dirname, '..')
 const CONFIG_PATH = join(ROOT, 'project.config.json')
 const ROOT_PACKAGE_PATH = join(ROOT, 'package.json')
 const BRAND_PATH = join(ROOT, 'apps/web-demo/src/constants/brand.ts')
+const DESKTOP_INDEX_PATH = join(ROOT, 'apps/desktop/index.html')
 const TAURI_CONF_PATH = join(ROOT, 'apps/desktop/src-tauri/tauri.conf.json')
 const CARGO_TOML_PATH = join(ROOT, 'apps/desktop/src-tauri/Cargo.toml')
 const RELEASE_MANIFEST_PATH = join(ROOT, '.release-please-manifest.json')
@@ -274,6 +275,12 @@ function readBrandValue(name) {
   return match?.[2]
 }
 
+function desktopHtmlPlaceholderStatus(pattern) {
+  if (!existsSync(DESKTOP_INDEX_PATH)) return 'missing file'
+  const raw = readFileSync(DESKTOP_INDEX_PATH, 'utf-8')
+  return pattern.test(raw) ? 'template placeholder' : 'missing placeholder'
+}
+
 function doctorRows(config) {
   const rows = []
   const rootPackage = readJson(ROOT_PACKAGE_PATH)
@@ -333,6 +340,34 @@ function doctorRows(config) {
       'author',
       config.product.author,
       readBrandValue('author')
+    )
+  )
+  rows.push(
+    row(
+      'apps/desktop/index.html',
+      'title',
+      'template placeholder',
+      desktopHtmlPlaceholderStatus(/<title>\s*%DESKTOP_PRODUCT_NAME%\s*<\/title>/)
+    )
+  )
+  rows.push(
+    row(
+      'apps/desktop/index.html',
+      'meta.description',
+      'template placeholder',
+      desktopHtmlPlaceholderStatus(
+        /<meta\b(?=[^>]*\bname="description")(?=[^>]*\bcontent="%PRODUCT_DESCRIPTION%")[^>]*\/>/
+      )
+    )
+  )
+  rows.push(
+    row(
+      'apps/desktop/index.html',
+      'meta.author',
+      'template placeholder',
+      desktopHtmlPlaceholderStatus(
+        /<meta\b(?=[^>]*\bname="author")(?=[^>]*\bcontent="%PRODUCT_AUTHOR%")[^>]*\/>/
+      )
     )
   )
 
