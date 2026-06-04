@@ -28,6 +28,9 @@ Dependency direction is fixed:
 
 - `packages/contracts` must stay implementation-free.
 - `packages/core` must stay runtime-neutral.
+- `apps/*` are runtime shells, app adapters, route/view/plugin/store owners, and compatibility-facade owners, not public shared-capability export surfaces.
+- Reusable or public monorepo capability must live in governed `packages/*` and be exposed through package exports.
+- Do not create public shared capability exports from `apps/*` unless a future explicit owner decision changes the target architecture.
 - Runtime APIs are only allowed in app adapter layers.
 - Root must not host active runtime source code.
 

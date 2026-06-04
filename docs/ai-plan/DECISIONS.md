@@ -198,6 +198,16 @@ Proposed HTTP boundary:
 - `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M5-T1-http-boundary-inventory.md`
 - `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M5-T1-20260529-075115-http-boundary-inventory.log`
 
+### Current-state clarification
+
+Historical note only: D-004 preserves the 2026-05-29 proposal chronology. Current source state is later than this proposal.
+
+- Type-only HTTP contracts now exist in `@ccd/contracts` under `packages/contracts/src/http/**`.
+- App HTTP runtime remains app-owned under `apps/web-demo/src/utils/http/**`, including the Alova instance, request methods, interceptors, retry/cache/deduplication/timeout policies, auth refresh/token wiring, error mapping, raw transport exceptions, and UI notification behavior.
+- App Zod schema and route payload validation remain app-owned in `apps/web-demo/src/adapters/http.adapter.ts` and the surrounding app API boundaries.
+- `packages/core/src/http/**` remains blocked.
+- App-local `ApiResponse` naming ambiguity is a deferred future naming cleanup only; this lane does not approve a source rename.
+
 ---
 
 ## D-014 — HTTP-001 contract shape owner decision
@@ -211,18 +221,18 @@ HTTP-001 was blocked because `packages/contracts/src/http/**` needed an owner-ap
 
 - `packages/contracts/src/network.ts` already provides a low-level runtime-neutral `NetworkClient`, `NetworkRequest`, and `NetworkResponse`.
 - `packages/core/src/index.ts` only proxies the injected network adapter and has no proven need for HTTP orchestration.
-- `apps/web-demo/src/utils/http/**` owns the current alova implementation, retry/cache/deduplication/timeout behavior, raw transport exceptions, and auth bridge wiring.
-- `apps/web-demo/src/adapters/http.adapter.ts` owns Zod payload parsing and backend route payload validation.
+- `apps/web-demo/src/utils/http/**` owns the current Alova instance, request methods, interceptors, retry/cache/deduplication/timeout behavior, raw transport exceptions, auth refresh/token wiring, error mapping, and UI notification behavior.
+- `apps/web-demo/src/adapters/http.adapter.ts` owns Zod schema parsing and backend route payload validation.
 
 ### Decision
 
-HTTP-001 is approved for a future implementation lane with strict type-only scope:
+HTTP-001 is approved with strict type-only scope. The later contracts-only implementation lane is now complete, while runtime ownership remains unchanged:
 
 - `packages/contracts/src/http/**` may be created only for runtime-neutral TypeScript types and interfaces.
 - Allowed shapes: request method/headers/query/body contracts, request config, response envelope, error shape, retry policy, timeout policy, auth policy, and transport client/request/response interfaces.
 - `packages/contracts/src/network.ts` remains the low-level network contract; future HTTP contracts may reference it through type-only imports if that keeps the public surface smaller.
 - `packages/core/src/http/**` remains blocked. Core must not gain HTTP orchestration until multiple runtimes need shared retry/timeout/auth behavior and the behavior can be expressed without runtime APIs.
-- `apps/web-demo/src/utils/http/**` remains the canonical app HTTP infrastructure path for now. No move to `apps/web-demo/src/adapters/http/**` is approved in this decision.
+- `apps/web-demo/src/utils/http/**` remains the canonical app HTTP infrastructure path for now. No move to `apps/web-demo/src/adapters/http/**` is approved in this decision, and the app-owned Alova/runtime/interceptor/policy surfaces remain there.
 - This decision does not approve HTTP runtime migration, alova replacement/upgrade, auth-flow changes, request behavior changes, dependency changes, or generated governance edits.
 
 ### Forbidden
@@ -1046,6 +1056,65 @@ Run the P3 final validation matrix and preserve the active run evidence director
 
 - `docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/M0-20260530-114939-pnpm-ai-doctor-open.log`
 - `docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/M0-20260530-114939-p3-actionable-scan.log`
+
+---
+
+## D-025 — Architecture target definition for apps and packages
+
+- Status: `APPROVED`
+- Date: 2026-06-03
+
+### Context
+
+Current docs already enforce `@ccd/contracts -> @ccd/core -> apps/*`, but some phrases such as `app-local shared candidates`, `public migration`, or `common platform layer` can still be misread as permission to expose shared/public capability directly from `apps/*`.
+
+### Options considered
+
+1. Keep the existing wording and rely on historical context.
+2. Clarify that `apps/*` may temporarily host classified app-local surfaces, but reusable/public monorepo capability must live in governed `packages/*` via package exports.
+3. Allow `apps/*` to become public shared-capability export surfaces by convention.
+
+### Decision
+
+Approved option 2.
+
+- `apps/*` are runtime shells, app adapters, route/view/plugin/store owners, and compatibility-facade owners.
+- Reusable or public monorepo capability must live in governed `packages/*` and be exposed through package exports.
+- `packages/core` remains the minimal runtime-neutral orchestration/facade package and must not become a frontend shared bucket.
+- Do not create public shared-capability exports from `apps/*` unless a future explicit owner decision changes the target architecture.
+- Historical evidence wording remains valid as history, but current-state docs must interpret it through this target definition.
+
+### Rationale
+
+This preserves the existing runtime topology while removing the most likely ambiguity: classified app-local residue is not the same thing as an approved public export surface. It also keeps `packages/core` narrow and prevents it from becoming a catch-all frontend layer.
+
+### Trade-offs
+
+- Some future extraction work may need an extra package-first step instead of re-exporting from an app path.
+- Docs now need to distinguish more explicitly between app-owned compatibility facades and package-owned public APIs.
+
+### Rejected alternatives
+
+- Option 1 keeps avoidable ambiguity in active architecture docs.
+- Option 3 conflicts with the governed package/export model and would blur runtime-shell ownership with public platform ownership.
+
+### Follow-up validation
+
+- `pnpm docs:commands`
+- `pnpm ai:doctor`
+- `pnpm validate:governance`
+- `git diff --check`
+
+### Evidence
+
+- `README.md`
+- `README.en.md`
+- `docs/en/architecture-contract.md`
+- `docs/zh/02-architecture.md`
+- `docs/architecture/ownership-boundaries.md`
+- `docs/ai-plan/STATUS.md`
+- `docs/ai-plan/NEXT_ACTIONS.md`
+- `docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md`
 
 ---
 

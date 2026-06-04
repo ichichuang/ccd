@@ -14,7 +14,13 @@ Current state:
 - D-020 through D-024: `DONE`.
 - `C-06`, `M12`, and `G-02`: `DONE`.
 - `pnpm ai:doctor --open`: 0 open tasks.
-- Local commits are not pushed.
+- The P25-P31 local remediation commit stack is not pushed.
+
+Accepted target guardrail:
+
+- `apps/*` remain runtime-shell and adapter ownership surfaces, including routes/views/plugins/stores and compatibility facades.
+- New reusable or public monorepo capability must be introduced in governed `packages/*` through package exports.
+- Do not create public shared-capability exports from `apps/*` unless a future explicit owner decision changes the architecture.
 
 ## Blocked or Deferred P3 Items
 

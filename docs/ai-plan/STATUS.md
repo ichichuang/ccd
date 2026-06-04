@@ -52,7 +52,7 @@
 - Runtime source changed in P4: comment-only in `apps/web-demo/src/utils/safeStorage/index.ts`.
 - Package manifests or lockfile changed in P0–P20: no.
 - P12–P24 commits are present on `origin/main` through current commit `6132c9c9`; P25 and later full-remediation lane commits are local execution only until separately authorized for push; no clean/reset/rebase was performed.
-- Current local HEAD before P21a commit: `95e352f5` (`docs(architecture): 记录 C-06 启动与生成边界残余白名单评估`); verify current HEAD via git history after any new local commit.
+- Historical P21a evidence only: local HEAD before the P21a commit was `95e352f5` (`docs(architecture): 记录 C-06 启动与生成边界残余白名单评估`); do not treat this as current HEAD, and verify current HEAD via git history after any new local commit.
 - P10 local commits (2026-06-01): **6 commits created** (G5→G2→G3→G6→G1→G4); pre-commit passed without `--no-verify` after P10a quarantine; see `docs/ai-runs/20260601-121000-ccd-p10-local-commits/reports/summary.md` and `docs/ai-runs/20260601-130000-ccd-p10a-cursor-retired-path-quarantine/`.
 - P10g push (2026-06-01): **manual push to `origin/main` completed**; current HEAD must be verified via git history, not hardcoded status docs.
 
@@ -84,6 +84,13 @@
 - Full GO is authorized locally by evidence. Push remains unauthorized until separately requested.
 - `pnpm ai:doctor --open` reports **0 open tasks** after P30.
 - Remote state: last reconciled in P11 to P10g push state; use git history for current HEAD; P12 removed self-staling remote-commit claims from status surfaces.
+
+## Accepted Target Definition
+
+- `apps/*` are runtime shells, app adapters, route/view/plugin/store owners, and compatibility-facade owners.
+- Reusable or public monorepo capability must live in governed `packages/*` and be consumed through package exports.
+- `packages/core` remains the minimal runtime-neutral orchestration/facade package and must not become a frontend shared bucket.
+- Historical references to app-local migration candidates record lane evidence only; they do not authorize public shared-capability exports from `apps/*`.
 
 ## Post-M16 Program Results (P0–P16a)
 

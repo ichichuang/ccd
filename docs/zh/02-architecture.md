@@ -36,10 +36,10 @@
 
 ### 应用层
 
-| 目录            | 角色                                                                         |
-| --------------- | ---------------------------------------------------------------------------- |
-| `apps/web-demo` | 应用外壳、路由、页面、stores、应用适配层，以及暂时仍留在应用内的共享候选模块 |
-| `apps/desktop`  | Tauri 桌面外壳与桌面适配层                                                   |
+| 目录            | 角色                                                                              |
+| --------------- | --------------------------------------------------------------------------------- |
+| `apps/web-demo` | 运行时外壳、路由 / 页面 / 插件 / stores、应用适配层与兼容门面；不是公共能力导出面 |
+| `apps/desktop`  | Tauri 运行时外壳、桌面适配层与兼容门面；不是公共能力导出面                        |
 
 ### 根
 
@@ -51,26 +51,33 @@
 
 `packages/core` 不是前端共享能力的大桶；它只承担最小运行时无关适配门面职责。
 
+当前接受的目标定义：
+
+- `apps/*` 拥有运行时外壳、应用适配层、路由 / 页面 / 插件 / store 表面与兼容门面。
+- 可复用或需要对 monorepo 公开的能力，必须进入受治理的 `packages/*`，并通过包导出暴露。
+- `apps/*` 可以临时承载已分类的 app-local 候选模块，但这不授权把 app 路径变成公共共享能力导出面。
+- `packages/core` 必须保持最小、运行时无关，不得演变为前端共享杂物桶。
+
 ## 工作区职责矩阵
 
-| 工作区                          | 当前职责                                                                     |
-| ------------------------------- | ---------------------------------------------------------------------------- |
-| `packages/contracts`            | 跨运行时接口与 DTO 契约，仅承担契约边界职责                                  |
-| `packages/core`                 | 最小运行时无关适配门面，不承担前端共享平台收纳职责                           |
-| `packages/design-tokens`        | 设计 token、主题、尺寸、断点原语与纯尺寸 / device resolver                   |
-| `packages/shared-utils`         | 纯共享工具函数                                                               |
-| `packages/unocss-preset`        | 共享 UnoCSS 预设、safelist 与构建期样式辅助                                  |
-| `packages/vue-hooks`            | 共享 Vue / 浏览器组合式函数                                                  |
-| `packages/vue-app-platform`     | 共享前端应用启动、生命周期与平台编排原语                                     |
-| `packages/vue-ui`               | 共享 Vue UI 基础组件                                                         |
-| `packages/vue-primevue-adapter` | PrimeVue 专用主题与适配层                                                    |
-| `packages/vue-charts`           | 共享图表运行时与辅助函数                                                     |
-| `apps/web-demo`                 | 应用外壳、路由、页面、stores、应用适配层，以及暂时仍留在应用内的共享候选模块 |
-| `apps/desktop`                  | Tauri 桌面外壳与桌面适配层                                                   |
+| 工作区                          | 当前职责                                                                          |
+| ------------------------------- | --------------------------------------------------------------------------------- |
+| `packages/contracts`            | 跨运行时接口与 DTO 契约，仅承担契约边界职责                                       |
+| `packages/core`                 | 最小运行时无关适配门面，不承担前端共享平台收纳职责                                |
+| `packages/design-tokens`        | 设计 token 与纯 theme / size / breakpoint / device derivation                     |
+| `packages/shared-utils`         | 纯共享工具函数                                                                    |
+| `packages/unocss-preset`        | 共享 UnoCSS 预设、safelist 与构建期样式辅助                                       |
+| `packages/vue-hooks`            | 共享 Vue / 浏览器组合式函数                                                       |
+| `packages/vue-app-platform`     | 适用时仅拥有纯 app-platform / layout helpers                                      |
+| `packages/vue-ui`               | 共享 Vue UI 基础组件                                                              |
+| `packages/vue-primevue-adapter` | PrimeVue 专用主题与适配层                                                         |
+| `packages/vue-charts`           | 共享图表运行时与辅助函数                                                          |
+| `apps/web-demo`                 | 运行时外壳、路由 / 页面 / 插件 / stores、应用适配层与兼容门面；不是公共能力导出面 |
+| `apps/desktop`                  | Tauri 运行时外壳、桌面适配层与兼容门面；不是公共能力导出面                        |
 
 ## App-local shared candidates
 
-以下路径目前仍归 `apps/web-demo` 所有，但应被视为已分类的 app-local surfaces，不是立即迁移目标。分类只记录当前角色和未来 owner lane，不表示批准永久留在 app 内。
+以下路径目前仍归 `apps/web-demo` 所有，但应被视为已分类的 app-local surfaces，不是立即迁移目标。分类只记录当前角色和未来 owner lane，不表示批准永久留在 app 内，也不表示允许从这些 app 路径直接形成公共共享能力导出面。
 
 - `apps/web-demo/src/hooks/modules/useAutoMitt.ts`
 - `apps/web-demo/src/hooks/modules/useDialog.tsx`
@@ -85,21 +92,22 @@
 - `apps/web-demo/src/utils/theme/mode.ts` 与 `apps/web-demo/src/utils/theme/transitions.ts`（M5 migration candidates）
 - `apps/web-demo/src/utils/theme/**` 下的纯 helper residue（目标为 `packages/design-tokens` 或 stale-doc cleanup）
 - `apps/web-demo/src/utils/deviceSync.ts`（M5 migration candidate）
-- `apps/web-demo/src/utils/safeStorage`（browser adapter 与兼容 helpers；可复用纯 codec/compression helpers 应进入 `packages/shared-utils`）
+- `apps/web-demo/src/utils/safeStorage`（app-owned safeStorage runtime facade、browser storage、security/crypto、compression、serializer、storage maintenance 与 migration behavior；JSON codec helpers 由 `@ccd/shared-utils` package-owned，type-only storage contracts 由 `@ccd/contracts` package-owned）
 - `apps/web-demo/src/stores/modules/system/**`（app stores；未来只抽取纯逻辑或 runtime primitives）
 
 M3 已将现有非适配层浏览器运行时访问登记为 `.ai/governance/policies/runtime.json` 中的精确 file/surface 例外。它们只表示现有债务已分类，不表示允许新增同类路径或扩散运行时访问。
 
 M5 extraction planning 进一步细化这些候选，但不迁移 source code：
 
-- safeStorage 的 storage contract 只能作为 type-only 契约进入 `packages/contracts`；纯 codec/pack/compression helpers 目标为 `packages/shared-utils`；browser storage、key resolution、env defaults 与 logging 仍归 app 所有。
-- safeStorage crypto 仍被 B-07 owner decision 阻塞。Web Crypto/fallback runtime 不能进入 `packages/core` 或 `packages/contracts`。
-- theme、size、device 应拆分为：纯 token/size/breakpoint resolver 进入 `packages/design-tokens`；注入式 DOM/storage/runtime primitives 进入 `packages/vue-app-platform`；具体 browser collectors、persistence、preload 与 Pinia store wiring 留在 `apps/web-demo`。
+- safeStorage 的 storage contracts 是 `@ccd/contracts` package-owned 的 type-only contracts。JSON codec helpers 由 `@ccd/shared-utils` package-owned；app pack/unpack orchestration 仍归 app，因为它组合 app crypto、`lz-string`、env、browser storage、logging 与 migration behavior。
+- D-016 已批准 safeStorage crypto/security behavior 归 app 所有：Crypto/HMAC/Web Crypto、frontend obfuscation-key resolution、app env access 与 logger coupling 都是 `apps/web-demo` 下的 terminal runtime boundaries。前端 encryption/obfuscation 是 client-visible，不能描述为 server-grade 或 secret-grade security。
+- D-019 已批准 `lz-string` compression 归 app 所有。`lz-string` compression、Pinia serializer、storage maintenance helpers、migration/fallback behavior、browser storage access 与 app safeStorage facade exports 都是 `apps/web-demo` 下的 app-owned terminal/runtime boundaries；它们不再以 `@ccd/shared-utils` 为迁移目标。
+- theme、size、device 拆分为：纯 theme/size/breakpoint/device derivation 进入 `packages/design-tokens`；`packages/vue-app-platform` 适用时仅拥有纯 app-platform/layout helpers。浏览器 DOM 写入、`style.cssText` mutation、storage persistence、preload reads、device listeners、transitions、desktop root-var setup 与 Pinia store wiring 都归 app 所有。
 - `useAutoMitt`、`useDialog`、`useProTableUrlSync` 保持为基于 `packages/vue-hooks` / `packages/vue-ui` primitives 与 adapter keys 的 thin app facades。
 
-M6 只记录 proposed decision packet，不代表 owner approval。`B-07` 在 owner 明确批准 crypto 归属前保持 `BLOCKED`，建议先推进非 crypto 的 safeStorage codec foundation。
+M6 只记录更早的 proposed decision packet。当前 active safeStorage ownership 已由 D-016 与 D-019 取代：crypto/security 与 `lz-string` compression 是已批准的 app-owned terminal boundaries，JSON codec helpers 与 type-only storage contracts 分别保持在 `@ccd/shared-utils` 和 `@ccd/contracts`。
 
-M8 已将纯尺寸变量生成、根字号决策、布局尺寸决策、预设回退和局部内容尺寸变量 resolver 建立在 `packages/design-tokens`。浏览器 DOM 写入、preload storage 读取、device collector 与 Pinia store 行为仍归 `apps/web-demo`。
+M8 已将纯尺寸变量生成、根字号决策、布局尺寸决策、预设回退和局部内容尺寸变量 resolver 建立在 `packages/design-tokens`。D-025 theme-runtime repair 将纯 theme/size/device derivation 保持在 `packages/design-tokens`，并从 `@ccd/vue-app-platform` public API 移除 browser-coupled theme DOM/storage writer。浏览器 DOM 写入、`style.cssText` mutation、storage persistence、preload reads、device collectors/listeners、transitions、desktop root-var setup 与 Pinia store 行为仍归 app 所有。
 
 M9 已将纯 device、OS、breakpoint、orientation、viewport metrics resolver 建立在 `packages/design-tokens`。浏览器采集、listener lifecycle、`visualViewport`、rAF/timer 与 Pinia state 仍归 `apps/web-demo`。
 
@@ -109,15 +117,15 @@ M11 已验证 hook/facade 收敛，但不迁移生产行为。`useAutoMitt`、`u
 
 ## PrimeVue 边界
 
-`packages/vue-primevue-adapter` 拥有 PrimeVue theme、PT、locale、services 和 integration adapters。`packages/vue-ui` 可以在内部组合 PrimeVue，但公开 API 必须是 CCD-owned props/types，不能把 raw PrimeVue components 作为松散 public bucket 导出。
+`packages/vue-primevue-adapter` 拥有 PrimeVue theme、PT、locale、runtime install、services 和 integration adapters。`packages/vue-ui` 可以在内部组合 PrimeVue，但公开 API 必须是 CCD-owned props/types，不能把 raw PrimeVue components 作为松散 public bucket 导出。
 
-App bootstrap/plugin 文件可以通过 `createPrimeVueAdapterConfig()` 与 `installPrimeVueServices()` 安装 PrimeVue。App global shell 文件只允许为全局 Toast、ConfirmPopup、DynamicDialog、`useToast`、`usePrimeVue` 行为持有直接 PrimeVue imports。
+App bootstrap/plugin 文件通过 adapter-owned `installPrimeVueRuntime()` 安装 PrimeVue；该入口组合 `createPrimeVueAdapterConfig()` 与 `installPrimeVueServices()`。App global shell 文件通过 `PrimeVueGlobalToast`、`PrimeVueGlobalConfirmPopup`、`PrimeVueGlobalDynamicDialog`、`usePrimeVueToastService`、`usePrimeVueRuntimeConfig`、locale helpers 和 global message helpers 等 adapter facades 消费 PrimeVue 行为，不再持有 raw PrimeVue imports。
 
-`apps/web-demo/src/views/example/components/primevue-collection/**` 是唯一 path-scoped showcase exception。其他 app 直接 PrimeVue imports 必须是 exact allowlist entry，或迁移到 `@ccd/vue-ui` / `@ccd/vue-primevue-adapter` 之后使用。新增 app feature-code direct imports 必须先分类并获得批准。
+P29/P31 后的当前状态：app-side PrimeVue exact allowlist 为 0 行，`apps/web-demo/src/views/example/components/primevue-collection/**` showcase exception 已移除，`C-06` 已关闭。Generated/build references 由各自 command-owned boundaries 另行治理，不属于 app exact allowlist rows。
 
-M5 未发现可在不迁移 source 的情况下安全删除的 PrimeVue allowlist rows。C-06 保持 OPEN，直到 wrapper/source migration 能收缩 exact legacy/demo entries、generated registry use、global shell/plugin exceptions 与 showcase exception。
+新增 app 侧 raw `primevue/*` 或 `@primevue/*` imports 仍被禁止，除非未来 explicit owner decision 授权并分类 exact exception。
 
-M6 继续保持 C-06 为 `OPEN`，并建议未来按单个 feature area 迁移后再缩减 PrimeVue allowlist。该 proposed decision 不批准直接编辑 imports 或 allowlists。
+历史说明：M5/M6 记录的是 source migration 之前无安全未授权缩减的状态。P26 到 P31 已通过受治理 adapter/UI 边界迁移 bootstrap、generated registry、global shell 与 showcase usage，并取代该 active status。
 
 ## Do not move yet
 

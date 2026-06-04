@@ -13,14 +13,21 @@ packages/vue-app-platform   -> frontend app bootstrap and platform orchestration
 packages/vue-ui             -> shared Vue UI primitives
 packages/vue-primevue-adapter -> PrimeVue-specific theme/adaptation layer
 packages/vue-charts         -> shared chart runtime and helpers
-apps/web-demo               -> app shell, routes, pages, stores, app adapters, and temporary app-local shared candidates
-apps/desktop                -> Tauri shell and desktop adapter
+apps/web-demo               -> runtime shell, routes/views/plugins/stores, app adapters, and app-owned compatibility facades
+apps/desktop                -> Tauri runtime shell, app adapters, and compatibility facades
 root                        -> orchestration-only shell
 ```
 
 The core architecture invariant remains `@ccd/contracts -> @ccd/core -> apps/*`.
 
 Frontend shared packages are protected workspace packages. They must still obey their governance role, package exports, and runtime boundary rules. Runtime capabilities belong only in app adapter layers. Root must remain orchestration-only.
+
+Current accepted target definition:
+
+- `apps/*` own runtime shells, app adapters, route/view/plugin/store surfaces, and compatibility facades.
+- Reusable or public monorepo capability must land in governed `packages/*` and be consumed through package exports.
+- `apps/*` may temporarily host classified app-local candidates, but those classifications do not authorize public shared-capability exports from app paths.
+- `packages/core` stays minimal and runtime-neutral; it must not become a shared frontend bucket.
 
 ## Common Platform Layer Terminology
 
@@ -43,20 +50,20 @@ Current platform package set:
 
 ## Responsibility Matrix
 
-| Workspace                       | Current responsibility                                                                                 |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `packages/contracts`            | Cross-runtime interfaces and DTO contracts only.                                                       |
-| `packages/core`                 | Minimal runtime-neutral adapter facade, not a shared frontend bucket.                                  |
-| `packages/design-tokens`        | Shared design token source and theme/size/breakpoint primitives, including pure size/device resolvers. |
-| `packages/shared-utils`         | Pure shared utilities.                                                                                 |
-| `packages/unocss-preset`        | Shared UnoCSS preset, safelist, and build-time styling helpers.                                        |
-| `packages/vue-hooks`            | Shared Vue/browser composables.                                                                        |
-| `packages/vue-app-platform`     | Shared frontend app bootstrap lifecycle and platform orchestration primitives.                         |
-| `packages/vue-ui`               | Shared Vue UI primitives.                                                                              |
-| `packages/vue-primevue-adapter` | PrimeVue-specific theme and adaptation layer.                                                          |
-| `packages/vue-charts`           | Shared chart runtime and helpers.                                                                      |
-| `apps/web-demo`                 | App shell, routes, pages, stores, app adapters, and temporary app-local shared candidates.             |
-| `apps/desktop`                  | Tauri shell and desktop adapter.                                                                       |
+| Workspace                       | Current responsibility                                                                                                                        |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/contracts`            | Cross-runtime interfaces and DTO contracts only.                                                                                              |
+| `packages/core`                 | Minimal runtime-neutral adapter facade, not a shared frontend bucket.                                                                         |
+| `packages/design-tokens`        | Shared design token source and pure theme/size/breakpoint/device derivation.                                                                  |
+| `packages/shared-utils`         | Pure shared utilities.                                                                                                                        |
+| `packages/unocss-preset`        | Shared UnoCSS preset, safelist, and build-time styling helpers.                                                                               |
+| `packages/vue-hooks`            | Shared Vue/browser composables.                                                                                                               |
+| `packages/vue-app-platform`     | Pure app-platform/layout helpers where applicable.                                                                                            |
+| `packages/vue-ui`               | Shared Vue UI primitives.                                                                                                                     |
+| `packages/vue-primevue-adapter` | PrimeVue-specific theme and adaptation layer.                                                                                                 |
+| `packages/vue-charts`           | Shared chart runtime and helpers.                                                                                                             |
+| `apps/web-demo`                 | Runtime shell, routes/views/plugins/stores, app adapters, and app-owned compatibility facades. Not a public shared-capability export surface. |
+| `apps/desktop`                  | Tauri runtime shell, desktop adapters, and compatibility facades. Not a public shared-capability export surface.                              |
 
 ## Extraction Decision Matrix
 
@@ -66,11 +73,12 @@ Current platform package set:
 | Runtime-neutral orchestration over injected adapters                        | `packages/core`                                         | Depends only on `@ccd/contracts`; no UI, browser, Node, Tauri, fetch, storage, timers, console, or framework imports.                    |
 | Pure synchronous utility or generic helper                                  | `packages/shared-utils`                                 | No app imports, no runtime globals, no Vue lifecycle, no implicit storage/network side effects.                                          |
 | Vue/browser composable                                                      | `packages/vue-hooks`                                    | Vue-owned API; browser capability must be injected or guarded; no app store/router coupling.                                             |
-| App bootstrap, preloader, route-loading, or shell lifecycle primitive       | `packages/vue-app-platform`                             | Framework-level Vue runtime only; app-specific router/store/DOM decisions stay in app integration code.                                  |
+| Pure app-platform or layout helper                                          | `packages/vue-app-platform`                             | App-specific router/store/DOM/storage/device/transition/desktop setup decisions stay in app integration code.                            |
 | CCD-owned UI primitive or component style surface                           | `packages/vue-ui`                                       | Public API must be CCD-owned props/types; may internally compose PrimeVue; must not raw re-export PrimeVue components as a loose bucket. |
 | PrimeVue theme/config/service adaptation                                    | `packages/vue-primevue-adapter`                         | Owns PrimeVue configuration and service helpers; app bootstrap installs it.                                                              |
 | Chart runtime/helper surface                                                | `packages/vue-charts`                                   | Chart-specific Vue runtime only; app data/query behavior stays outside.                                                                  |
 | App-specific runtime capability, auth, router, store, Tauri, or browser API | `apps/*/src/adapters/**` or approved app infrastructure | Must not move into `contracts`/`core`; inject contracts into shared packages when cross-runtime reuse is required.                       |
+| Reusable/public monorepo capability surface                                 | owning package under `packages/*` via package exports   | Do not publish shared capability from `apps/*` unless a future explicit owner decision changes the architecture.                         |
 
 Storage policy follows the same split: cross-runtime storage interfaces live in `packages/contracts`, pure serialization helpers live in `packages/shared-utils`, and browser `localStorage` / `sessionStorage` access stays in app-owned adapters or approved app infrastructure.
 
@@ -78,7 +86,7 @@ M3 runtime boundary policy records approved app infrastructure as exact file/sur
 
 ## App-local Shared Candidates
 
-The following paths still belong to `apps/web-demo`, but should be understood as classified app-local surfaces rather than immediate migration targets. Classification does not approve indefinite app ownership; it records the current role and future owner lane.
+The following paths still belong to `apps/web-demo`, but should be understood as classified app-local surfaces rather than immediate migration targets. Classification does not approve indefinite app ownership, and it does not authorize turning app paths into public shared-capability exports; it records the current role and future owner lane.
 
 - `apps/web-demo/src/hooks/modules/useAutoMitt.ts`
 - `apps/web-demo/src/hooks/modules/useDialog.tsx`
@@ -93,21 +101,22 @@ The following paths still belong to `apps/web-demo`, but should be understood as
 - `apps/web-demo/src/utils/theme/mode.ts` and `apps/web-demo/src/utils/theme/transitions.ts` (M5 migration candidates)
 - pure/helper residue under `apps/web-demo/src/utils/theme/**` (target `packages/design-tokens` or stale-doc cleanup)
 - `apps/web-demo/src/utils/deviceSync.ts` (M5 migration candidate)
-- `apps/web-demo/src/utils/safeStorage` (browser adapter and compatibility helpers only; pure codec/compression helpers belong in `packages/shared-utils` if reused)
+- `apps/web-demo/src/utils/safeStorage` (app-owned safeStorage runtime facade, browser storage, security/crypto, compression, serializer, storage maintenance, and migration behavior; JSON codec helpers are package-owned by `@ccd/shared-utils`, and type-only storage contracts are package-owned by `@ccd/contracts`)
 - `apps/web-demo/src/stores/modules/system/**` (app stores; extract only pure/runtime primitives in future lanes)
 
 `createCapabilityBridge` is already a pure shared utility owned by `packages/shared-utils`; app auth/router capability providers remain app-local adapter/infrastructure code.
 
 M5 extraction planning refines this list without moving source code:
 
-- safeStorage storage contracts are type-only `packages/contracts` candidates; pure codec/pack/compression helpers target `packages/shared-utils`; browser storage, key resolution, env defaults, and logging remain app-owned.
-- safeStorage crypto remains blocked on owner decision. Web Crypto/fallback runtime must not move to `packages/core` or `packages/contracts`.
-- theme, size, and device should split pure token/size/breakpoint resolvers into `packages/design-tokens`, injected DOM/storage/runtime primitives into `packages/vue-app-platform`, and concrete browser collectors, persistence, preload, and Pinia store wiring into `apps/web-demo`.
+- safeStorage storage contracts are type-only package-owned contracts in `@ccd/contracts`. JSON codec helpers are package-owned in `@ccd/shared-utils`; app pack/unpack orchestration remains app-owned because it composes app crypto, `lz-string`, env, browser storage, logging, and migration behavior.
+- D-016 approved app-owned safeStorage crypto/security behavior: Crypto/HMAC/Web Crypto, frontend obfuscation-key resolution, app env access, and logger coupling remain terminal runtime boundaries under `apps/web-demo`. Frontend encryption/obfuscation is client-visible and must not be described as server-grade or secret-grade security.
+- D-019 approved app-owned `lz-string` compression. `lz-string` compression, the Pinia serializer, storage maintenance helpers, migration/fallback behavior, browser storage access, and app safeStorage facade exports remain app-owned terminal/runtime boundaries under `apps/web-demo`; they stay out of `@ccd/shared-utils`.
+- theme, size, and device split pure theme/size/breakpoint/device derivation into `packages/design-tokens`; `packages/vue-app-platform` owns only pure app-platform/layout helpers where applicable. Browser DOM writes, `style.cssText` mutation, storage persistence, preload reads, device listeners, transitions, desktop root-var setup, and Pinia store wiring remain app-owned.
 - `useAutoMitt`, `useDialog`, and `useProTableUrlSync` stay thin app facades over `packages/vue-hooks` / `packages/vue-ui` primitives and adapter keys.
 
-M6 records proposed decision packets only. `B-07` remains blocked until owner approval, and the proposed safeStorage sequence extracts non-crypto codec helpers before any crypto ownership change.
+M6 records the earlier proposed decision packets only. Current active safeStorage ownership is superseded by D-016 and D-019: crypto/security and `lz-string` compression are approved app-owned terminal boundaries, while JSON codec helpers and type-only storage contracts stay package-owned in `@ccd/shared-utils` and `@ccd/contracts`.
 
-M8 establishes pure size variable, root-font, layout-dimension, preset fallback, and scoped-content resolver helpers in `packages/design-tokens`. Browser DOM writes, preload storage reads, device collectors, and Pinia store behavior remain app-owned.
+M8 establishes pure size variable, root-font, layout-dimension, preset fallback, and scoped-content resolver helpers in `packages/design-tokens`. D-025 theme-runtime repair keeps pure theme/size/device derivation in `packages/design-tokens` and removes the browser-coupled theme DOM/storage writer from the `@ccd/vue-app-platform` public API. Browser DOM writes, `style.cssText` mutation, storage persistence, preload reads, device collectors/listeners, transitions, desktop root-var setup, and Pinia store behavior remain app-owned.
 
 M9 establishes pure device, OS, breakpoint, orientation, and viewport metric resolver helpers in `packages/design-tokens`. Browser collectors, listener lifecycle, `visualViewport`, rAF/timers, and Pinia state remain app-owned.
 
@@ -131,15 +140,15 @@ These areas should remain untouched by the Phase 1 clarity pass:
 
 ## PrimeVue Boundary
 
-`packages/vue-primevue-adapter` owns PrimeVue theme, PT, locale, and service helpers. `packages/vue-ui` may internally compose PrimeVue through CCD-owned primitives, but must not expose raw PrimeVue components as a loose public bucket.
+`packages/vue-primevue-adapter` owns PrimeVue theme, PT, locale, runtime installation, services, and integration adapters. `packages/vue-ui` may internally compose PrimeVue through CCD-owned primitives, but must not expose raw PrimeVue components as a loose public bucket.
 
-App bootstrap/plugin files may install PrimeVue through `createPrimeVueAdapterConfig()` and `installPrimeVueServices()`. App global shell files may host Toast, ConfirmPopup, DynamicDialog, `useToast`, and `usePrimeVue` only for app-wide global UI behavior.
+App bootstrap/plugin files install PrimeVue through adapter-owned `installPrimeVueRuntime()`, which composes `createPrimeVueAdapterConfig()` and `installPrimeVueServices()`. App global shell files consume adapter facades such as `PrimeVueGlobalToast`, `PrimeVueGlobalConfirmPopup`, `PrimeVueGlobalDynamicDialog`, `usePrimeVueToastService`, `usePrimeVueRuntimeConfig`, locale helpers, and global message helpers instead of raw PrimeVue imports.
 
-`apps/web-demo/src/views/example/components/primevue-collection/**` is the only path-scoped showcase exception for direct PrimeVue imports. Other app direct PrimeVue imports must remain exact allowlist entries or migrate behind `@ccd/vue-ui` / `@ccd/vue-primevue-adapter`. New app feature-code direct imports are forbidden unless explicitly classified and approved.
+Post-P29/P31 current state: the app-side PrimeVue exact allowlist has 0 rows, the `apps/web-demo/src/views/example/components/primevue-collection/**` showcase exception is removed, and `C-06` is closed. Generated/build references are governed separately by their command-owned boundaries, not by app exact allowlist rows.
 
-M5 found 0 PrimeVue allowlist rows removable without source migration. C-06 remains open until wrapper/source migrations can shrink exact legacy/demo entries, generated registry use, global shell/plugin exceptions, and the showcase exception.
+New app-side raw `primevue/*` or `@primevue/*` imports remain forbidden unless a future explicit owner decision authorizes and classifies an exact exception.
 
-M6 keeps C-06 open and proposes a future one-feature-area-at-a-time PrimeVue reduction lane. Proposed decision entries are not approval to edit allowlists or imports.
+Historical note: M5/M6 recorded that no safe unapproved reduction was available before source migration. P26 through P31 superseded that active status by moving bootstrap, generated registry, global shell, and showcase usage behind governed adapter/UI boundaries.
 
 ## Dependency Direction
 
