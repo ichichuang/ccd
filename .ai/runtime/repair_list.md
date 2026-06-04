@@ -346,6 +346,14 @@ Rationale: a new GitHub organization is deferred. The current repository should 
 - [x] [P2-GitHub-Release] Verified release governance alignment through `pnpm governance:gate` release checks and existing release docs; no release automation rewrite was needed.
 - [x] [P2-GitHub-Dependencies] Recorded dependency modernization policy in D-006 and M7 report; no dependency automation or upgrades were added without approval.
 
+## 18.5. P3 — Example Documentation System Polish
+
+Rationale: `apps/web-demo/src/views/example/**` documentation-style pages repeat the same shell/header markup and need a small shared view shell before broader documentation UI polish.
+
+### Tasks
+
+- [x] [P3-DocsShell] Added `ExampleDocPage` shared shell and applied it to representative type, empty-state, and system-state documentation pages without changing route, data, network, storage, or app runtime boundaries. Validation passed through targeted lint, web-demo type-check/build, `pnpm codex:preflight`, `pnpm ai:guard -- --format=json`, and Playwright desktop/mobile route checks.
+
 ## 19. P3 — Login Diorama Refactor Plan
 
 Rationale: the legacy repair template contains a detailed login diorama plan. Keep it, but execute only after P0/P1 stabilization.
