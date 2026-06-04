@@ -39,10 +39,3 @@ export {
   setupVitePreloadErrorRecovery,
   type VitePreloadErrorRecoveryOptions,
 } from './preloadError.js'
-export {
-  applyThemeVars,
-  type ApplyThemeVarsOptions,
-  type ThemeRuntimeStorage,
-  type ThemeRuntimeStorageKeys,
-  type ThemeRuntimeTarget,
-} from './themeRuntime.js'

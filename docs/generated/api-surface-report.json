@@ -223,8 +223,6 @@
       "exports": ["."],
       "rootSymbols": [
         "AdminLayoutMode",
-        "applyThemeVars",
-        "ApplyThemeVarsOptions",
         "DeviceType",
         "enforceLayoutModeVisibilityConstraints",
         "enforceLayoutVisibilityParentRequirements",
@@ -262,9 +260,6 @@
         "setupVitePreloadErrorRecovery",
         "SidebarAnimationPhase",
         "SidebarState",
-        "ThemeRuntimeStorage",
-        "ThemeRuntimeStorageKeys",
-        "ThemeRuntimeTarget",
         "VitePreloadErrorRecoveryOptions",
         "waitForStablePaint"
       ]
