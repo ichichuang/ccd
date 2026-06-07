@@ -1,5 +1,14 @@
 // HTTP 公共配置变量（客户端超时由环境变量配置；vite.config 代理超时单独从 env 读取，解耦 src 与构建配置）
+import type { HttpBaseUrlPolicy } from '@ccd/contracts'
+
 const timeout = Number(import.meta.env.VITE_API_TIMEOUT) || 10000
+export const HTTP_BASE_URL_POLICY = {
+  mode: import.meta.env.VITE_APP_ENV === 'development' ? 'relative' : 'environment',
+  value:
+    import.meta.env.VITE_APP_ENV === 'development' ? '/api' : import.meta.env.VITE_API_BASE_URL,
+  developmentProxyPath: '/api',
+} satisfies HttpBaseUrlPolicy
+
 export const HTTP_CONFIG = {
   // 基础配置
   timeout,

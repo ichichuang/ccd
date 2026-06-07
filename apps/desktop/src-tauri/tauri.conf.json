@@ -13,16 +13,54 @@
     "windows": [
       {
         "title": "CCD Desktop",
+        "label": "main",
         "width": 1200,
-        "height": 800
+        "height": 800,
+        "minWidth": 960,
+        "minHeight": 640,
+        "center": true,
+        "resizable": true,
+        "fullscreen": false,
+        "maximized": false,
+        "decorations": true,
+        "visible": true,
+        "devtools": false
       }
     ],
     "security": {
-      "csp": null
+      "assetProtocol": {
+        "enable": false,
+        "scope": []
+      },
+      "csp": {
+        "default-src": ["'self'", "ipc:", "http://ipc.localhost"],
+        "base-uri": ["'none'"],
+        "connect-src": ["'self'", "ipc:", "http://ipc.localhost"],
+        "font-src": ["'self'", "data:"],
+        "form-action": ["'none'"],
+        "frame-ancestors": ["'none'"],
+        "frame-src": ["'none'"],
+        "img-src": ["'self'", "data:", "blob:"],
+        "object-src": ["'none'"],
+        "script-src": ["'self'"],
+        "style-src": ["'self'"]
+      }
     }
   },
   "bundle": {
-    "active": false,
+    "active": true,
+    "category": "DeveloperTool",
+    "copyright": "Copyright © 2026 Chi Chuang",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "longDescription": "Self-protecting deterministic multi-runtime platform architecture.",
+    "publisher": "Chi Chuang",
+    "shortDescription": "CCD deterministic multi-runtime platform.",
     "targets": "all"
   }
 }

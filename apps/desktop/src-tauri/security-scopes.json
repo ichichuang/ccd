@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "description": "Desktop runtime scope policy. Every listed Tauri plugin or external navigation surface is denied until a concrete use case adds scoped permissions and validation.",
+  "defaultDecision": "deny",
+  "preEnableRequirements": [
+    "Document the concrete desktop use case.",
+    "Add the required Tauri plugin dependency only for that use case.",
+    "Add explicit allow and deny scopes before adding a permission to capabilities/default.json.",
+    "Validate the policy with desktop security checks and a Tauri build."
+  ],
+  "surfaces": [
+    {
+      "surface": "filesystem",
+      "tauriPlugin": "fs",
+      "enabled": false,
+      "allow": [],
+      "deny": ["*"],
+      "requiredScopeBeforeEnable": ["allowed base directories", "denied sensitive paths"]
+    },
+    {
+      "surface": "shell",
+      "tauriPlugin": "shell",
+      "enabled": false,
+      "allow": [],
+      "deny": ["*"],
+      "requiredScopeBeforeEnable": ["allowed commands", "allowed arguments", "denied commands"]
+    },
+    {
+      "surface": "dialog",
+      "tauriPlugin": "dialog",
+      "enabled": false,
+      "allow": [],
+      "deny": ["*"],
+      "requiredScopeBeforeEnable": [
+        "allowed dialog commands",
+        "file type or path constraints when applicable"
+      ]
+    },
+    {
+      "surface": "clipboard",
+      "tauriPlugin": "clipboard-manager",
+      "enabled": false,
+      "allow": [],
+      "deny": ["*"],
+      "requiredScopeBeforeEnable": ["allowed clipboard directions", "sensitive data handling rule"]
+    },
+    {
+      "surface": "updater",
+      "tauriPlugin": "updater",
+      "enabled": false,
+      "allow": [],
+      "deny": ["*"],
+      "requiredScopeBeforeEnable": ["signed update endpoint", "public key", "rollback policy"]
+    },
+    {
+      "surface": "opener",
+      "tauriPlugin": "opener",
+      "enabled": false,
+      "allow": [],
+      "deny": ["*"],
+      "requiredScopeBeforeEnable": [
+        "allowed URL schemes",
+        "allowed host patterns",
+        "denied URL schemes"
+      ]
+    },
+    {
+      "surface": "notification",
+      "tauriPlugin": "notification",
+      "enabled": false,
+      "allow": [],
+      "deny": ["*"],
+      "requiredScopeBeforeEnable": ["allowed notification triggers", "user-consent rule"]
+    },
+    {
+      "surface": "http",
+      "tauriPlugin": "http",
+      "enabled": false,
+      "allow": [],
+      "deny": ["*"],
+      "requiredScopeBeforeEnable": [
+        "allowed methods",
+        "allowed URL patterns",
+        "denied URL patterns"
+      ]
+    },
+    {
+      "surface": "external-navigation",
+      "tauriPlugin": null,
+      "enabled": false,
+      "allow": [],
+      "deny": ["*"],
+      "requiredScopeBeforeEnable": [
+        "allowed URL schemes",
+        "allowed host patterns",
+        "denied URL patterns"
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 // src/utils/http/instance.ts
 import { appLogger } from '@/adapters/logger.adapter'
-import { HTTP_CONFIG } from '@/constants/http'
+import { HTTP_BASE_URL_POLICY, HTTP_CONFIG } from '@/constants/http'
 import { t } from '@/locales'
 import { createAlova } from 'alova'
 import type { AlovaDefaultCacheAdapter } from 'alova'
@@ -52,8 +52,7 @@ export const alovaInstance = createAlova<
    * development：`/api` 由 Vite 代理至 `VITE_API_BASE_URL`（见 vite.config.ts `server.proxy`），
    * 避免直连外域 CORS；生产环境使用完整 `VITE_API_BASE_URL`。
    */
-  baseURL:
-    import.meta.env.VITE_APP_ENV === 'development' ? '/api' : import.meta.env.VITE_API_BASE_URL,
+  baseURL: HTTP_BASE_URL_POLICY.value,
 
   // 使用 fetch 作为请求适配器
   requestAdapter: adapterFetch(),

@@ -5,8 +5,8 @@
  * @see {@link BackendRouteConfig} 全局类型定义位于 src/types/modules/router.d.ts:96
  */
 import type { ZodIssue, ZodType } from 'zod'
+import { isRecord } from '@ccd/shared-utils'
 import { ErrorType, HttpRequestError } from '@/utils/http/errors'
-import { isRecord } from '@/utils/guards'
 
 interface AdapterValidationIssue {
   path?: string

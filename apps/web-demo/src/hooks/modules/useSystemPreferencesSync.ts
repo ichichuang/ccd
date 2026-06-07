@@ -2,8 +2,6 @@ import {
   buildSystemPreferencesGetMethod,
   buildSystemPreferencesSaveMethod,
   type SystemPreferencesSaveReq,
-  systemPreferencesResponseSchema,
-  systemPreferencesSaveResponseSchema,
 } from '@/api/system/preferences.api'
 import { DEMO_MOCK_ENABLED } from '@/constants/mock'
 import { useHttpRequest } from '@/hooks/modules/useHttpRequest'
@@ -31,7 +29,6 @@ export function useSystemPreferencesSync(): UseSystemPreferencesSyncReturn {
       immediate: false,
       globalLoading: false,
       globalError: 'silent',
-      responseSchema: systemPreferencesResponseSchema,
     }
   )
 
@@ -42,7 +39,6 @@ export function useSystemPreferencesSync(): UseSystemPreferencesSyncReturn {
       immediate: false,
       globalLoading: false,
       globalError: 'silent',
-      responseSchema: systemPreferencesSaveResponseSchema,
     }
   )
 

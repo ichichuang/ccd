@@ -5,6 +5,7 @@ import { appLogger } from '@/adapters/logger.adapter'
 import { readAuthToken } from '@/infra/auth/tokenProvider'
 import { compressAndEncryptSync, decryptAndDecompressSync } from '@/utils/safeStorage'
 import { castValue } from '@ccd/shared-utils'
+import type { HttpInterceptorLifecycleContract } from '@ccd/contracts'
 import type { Method } from 'alova'
 import { ErrorType, HttpRequestError } from './errors'
 import {
@@ -26,6 +27,12 @@ import { validateResponsePayload } from './policies/schemaValidationPolicy'
 import { isWithSafeStorage } from './types'
 
 export { setRefreshTokenExecutor } from './policies/authRefreshPolicy'
+
+export const HTTP_INTERCEPTOR_LIFECYCLE = {
+  name: 'web-demo-alova-http',
+  stages: ['before-request', 'response', 'request-error'],
+  failureMode: 'notify-and-propagate',
+} satisfies HttpInterceptorLifecycleContract
 
 async function handle401WithRefresh(method: Method): Promise<unknown> {
   if (isRefreshEndpoint(method.url)) {

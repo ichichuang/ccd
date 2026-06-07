@@ -1,7 +1,8 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Default desktop permissions for CCD Desktop.",
+  "description": "Local main-window capability with no Tauri core or plugin permissions enabled by default.",
+  "local": true,
   "windows": ["main"],
-  "permissions": ["core:default"]
+  "permissions": []
 }

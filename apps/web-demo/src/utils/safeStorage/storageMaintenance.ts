@@ -1,10 +1,14 @@
-import type { SafeStorageAdapter, SafeStoragePolicy, StorageScope } from '@ccd/contracts'
-
-export type StorageKeyPredicate = (key: string) => boolean
+import type {
+  SafeStorageAdapter,
+  SafeStorageMaintenanceAdapter,
+  SafeStoragePolicy,
+  StorageKeyPredicate,
+  StorageScope,
+} from '@ccd/contracts'
 
 const localSafeStoragePolicy: SafeStoragePolicy = {
   scope: 'local',
-  compression: true,
+  compression: 'lz-string',
   obfuscation: 'client-visible',
   integrity: 'hmac',
   keyVersion: 'v2',
@@ -67,3 +71,10 @@ export function readLocalStorageValue(key: string): string | null {
   if (typeof localStorage === 'undefined') return null
   return localStorage.getItem(key)
 }
+
+export const browserLocalSafeStorageMaintenance = {
+  scope: localSafeStoragePolicy.scope,
+  read: readLocalStorageValue,
+  write: writeLocalStorageValue,
+  removeWhere: removeLocalStorageKeysWhere,
+} satisfies SafeStorageMaintenanceAdapter

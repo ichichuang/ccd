@@ -9,8 +9,8 @@ import {
 import { useEventListener } from '@vueuse/core'
 import { debounceFn } from '@ccd/shared-utils'
 import { useMitt } from '@/utils/mitt'
+import { getDeviceTypeSync, getOsTypeSync } from '@/adapters/device.adapter'
 import type { DeviceState } from '@/types/systems/device'
-import { getDeviceTypeSync, getOsTypeSync } from '@/utils/deviceSync'
 import { resolveLayoutDeviceFlags } from '@ccd/vue-app-platform'
 
 // 防抖间隔，300ms 比较温和，适合 resize

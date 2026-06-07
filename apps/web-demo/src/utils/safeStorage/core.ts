@@ -1,6 +1,6 @@
 import { appLogger } from '@/adapters/logger.adapter'
 import { parseJsonStorageValue, stringifyJsonStorageValue } from '@ccd/shared-utils'
-import type { SyncStorageCodec, StorageCodec } from '@ccd/contracts'
+import type { SafeStorageCodecSuite, SyncStorageCodec, StorageCodec } from '@ccd/contracts'
 import * as Crypto from './crypto'
 import { ENCRYPTION_FAILED } from './crypto'
 import * as LZ from './lzstring'
@@ -34,7 +34,7 @@ function resolveObfuscationKey(): string {
       '[SafeStorage] Using hardcoded fallback key. Set VITE_PUBLIC_STORAGE_OBFUSCATION_KEY in your .env for client-visible storage obfuscation.'
     )
   }
-  return 'app-template-fallback-key'
+  return 'ccd-fallback-key'
 }
 
 function normalizeSecret(secret?: string): string | undefined {
@@ -205,3 +205,8 @@ export const safeStorageCodec: StorageCodec<unknown> = {
   encode: packData,
   decode: unpackData,
 }
+
+export const safeStorageCodecs = {
+  sync: safeStorageSyncCodec,
+  async: safeStorageCodec,
+} satisfies SafeStorageCodecSuite<unknown>

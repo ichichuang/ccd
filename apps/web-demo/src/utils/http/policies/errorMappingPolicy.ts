@@ -1,10 +1,23 @@
 import { t } from '@/locales'
 import { appLogger } from '@/adapters/logger.adapter'
-import { getErrorTypeByStatus } from '../errors'
+import type { HttpErrorKind } from '@ccd/contracts'
+import { ErrorType, getErrorTypeByStatus } from '../errors'
+
+const ERROR_TYPE_TO_HTTP_ERROR_KIND: Record<ErrorType, HttpErrorKind> = {
+  [ErrorType.NETWORK]: 'network',
+  [ErrorType.TIMEOUT]: 'timeout',
+  [ErrorType.AUTH]: 'auth',
+  [ErrorType.SERVER]: 'server',
+  [ErrorType.CLIENT]: 'client',
+  [ErrorType.VALIDATION]: 'validation',
+  [ErrorType.SECURITY]: 'security',
+  [ErrorType.UNKNOWN]: 'unknown',
+}
 
 export interface HttpErrorPolicy {
   errorMessage: string
   errorType: ReturnType<typeof getErrorTypeByStatus>
+  normalizedKind: HttpErrorKind
   retryable: boolean
   statusMessage: string
 }
@@ -14,6 +27,7 @@ export function resolveHttpErrorPolicy(
   data: { message?: string } | undefined
 ): HttpErrorPolicy {
   const errorMessage = data?.message || t('http.error.httpError', { status })
+  const errorType = getErrorTypeByStatus(status)
   let statusMessage = `HTTP ${status}`
 
   switch (status) {
@@ -43,7 +57,8 @@ export function resolveHttpErrorPolicy(
 
   return {
     errorMessage,
-    errorType: getErrorTypeByStatus(status),
+    errorType,
+    normalizedKind: ERROR_TYPE_TO_HTTP_ERROR_KIND[errorType],
     retryable: status >= 500,
     statusMessage,
   }

@@ -1,4 +1,5 @@
 import type { alovaInstance } from '@/utils/http/instance'
+import type { RequestConfig } from '@/utils/http/types'
 import type { SystemPreferences } from '@ccd/contracts'
 import { systemPreferencesSchema } from '@/types/systems/preferences'
 import { z } from 'zod'
@@ -33,10 +34,19 @@ export const systemPreferencesSaveResponseSchema = z.union([
   systemPreferencesEnvelopeSchema,
 ])
 
-export const buildSystemPreferencesGetMethod = (client: typeof alovaInstance) =>
-  client.Get<SystemPreferencesGetRes>(USER_PREFERENCES_URL)
+export const buildSystemPreferencesGetMethod = (client: typeof alovaInstance) => {
+  const requestConfig: RequestConfig<SystemPreferencesGetRes> = {
+    responseSchema: systemPreferencesResponseSchema,
+  }
+  return client.Get<SystemPreferencesGetRes>(USER_PREFERENCES_URL, requestConfig)
+}
 
 export const buildSystemPreferencesSaveMethod = (
   client: typeof alovaInstance,
   data: SystemPreferencesSaveReq
-) => client.Post<SystemPreferencesSaveRes>(USER_PREFERENCES_URL, data)
+) => {
+  const requestConfig: RequestConfig<SystemPreferencesSaveRes> = {
+    responseSchema: systemPreferencesSaveResponseSchema,
+  }
+  return client.Post<SystemPreferencesSaveRes>(USER_PREFERENCES_URL, data, requestConfig)
+}

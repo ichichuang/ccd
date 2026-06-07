@@ -39,11 +39,13 @@ describe('HTTP policy modules', () => {
   it('maps HTTP status to structured retry and error policy', () => {
     const unavailable = resolveHttpErrorPolicy(503, { message: 'Service unavailable' })
     expect(unavailable.errorType).toBe(ErrorType.SERVER)
+    expect(unavailable.normalizedKind).toBe('server')
     expect(unavailable.errorMessage).toBe('Service unavailable')
     expect(unavailable.retryable).toBe(true)
 
     const notFound = resolveHttpErrorPolicy(404, undefined)
     expect(notFound.errorType).toBe(ErrorType.CLIENT)
+    expect(notFound.normalizedKind).toBe('client')
     expect(notFound.retryable).toBe(false)
   })
 
