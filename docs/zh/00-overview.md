@@ -40,8 +40,8 @@ pnpm governance:gate
 ```text
 packages/contracts  -> 公共 ABI：仅接口与共享类型
 packages/core       -> 运行时无关平台逻辑
-apps/web-demo       -> 浏览器运行时真相源
-apps/desktop        -> Tauri 运行时外壳与桌面适配层
+apps/web-demo       -> 浏览器 web-demo 应用外壳、路由、stores、views 与应用适配层
+apps/desktop        -> 专用 Tauri 桌面运行时外壳、自有前端入口与 src-tauri 后端边界
 root                -> 仅编排外壳
 ```
 
@@ -50,6 +50,8 @@ root                -> 仅编排外壳
 ```text
 @ccd/contracts -> @ccd/core -> apps/*
 ```
+
+`apps/web-demo` 与 `apps/desktop` 共享受治理的 `packages/*` 包，而不是互相复制公共能力。共享 components、tokens、hooks、UI primitives、adapter packages、contracts 与 runtime-neutral logic 属于 `packages/*`；app-specific routes、stores、pages / views 与 plugin wiring 保持在对应 app 内。
 
 ## 目标用户
 

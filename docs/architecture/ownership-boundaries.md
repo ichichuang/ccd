@@ -10,21 +10,21 @@ CCD uses workspace ownership rather than archive ownership.
 
 ## Active owners
 
-| Area                                                                                    | Owner boundary                                               |
-| --------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| Contracts and public ABI                                                                | `packages/contracts`                                         |
-| Minimal runtime-neutral adapter facade                                                  | `packages/core`                                              |
-| Pure theme, size, color, breakpoint, and device derivation                              | `packages/design-tokens`                                     |
-| Pure shared utilities                                                                   | `packages/shared-utils`                                      |
-| UnoCSS preset and build-time styling helpers                                            | `packages/unocss-preset`                                     |
-| Shared Vue/browser composables                                                          | `packages/vue-hooks`                                         |
-| Pure app-platform/layout helpers where applicable                                       | `packages/vue-app-platform`                                  |
-| Shared Vue UI primitives                                                                | `packages/vue-ui`                                            |
-| PrimeVue-specific theme/adaptation layer                                                | `packages/vue-primevue-adapter`                              |
-| Shared chart runtime and helpers                                                        | `packages/vue-charts`                                        |
-| Browser runtime shell, routes/views/plugins/stores, app adapters, compatibility facades | `apps/web-demo`                                              |
-| Desktop/Tauri runtime shell, adapters, compatibility facades                            | `apps/desktop`                                               |
-| Governance                                                                              | `.ai/**`, `scripts/governance/**`, `scripts/architecture/**` |
+| Area                                                                                                      | Owner boundary                                               |
+| --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Contracts and public ABI                                                                                  | `packages/contracts`                                         |
+| Minimal runtime-neutral adapter facade                                                                    | `packages/core`                                              |
+| Pure theme, size, color, breakpoint, and device derivation                                                | `packages/design-tokens`                                     |
+| Pure shared utilities                                                                                     | `packages/shared-utils`                                      |
+| UnoCSS preset and build-time styling helpers                                                              | `packages/unocss-preset`                                     |
+| Shared Vue/browser composables                                                                            | `packages/vue-hooks`                                         |
+| Pure app-platform/layout helpers where applicable                                                         | `packages/vue-app-platform`                                  |
+| Shared Vue UI primitives                                                                                  | `packages/vue-ui`                                            |
+| PrimeVue-specific theme/adaptation layer                                                                  | `packages/vue-primevue-adapter`                              |
+| Shared chart runtime and helpers                                                                          | `packages/vue-charts`                                        |
+| Browser `web-demo` application shell, routes/views/plugins/stores, app adapters, compatibility facades    | `apps/web-demo`                                              |
+| Dedicated Tauri desktop runtime shell, own frontend entry, desktop adapters, `src-tauri` backend boundary | `apps/desktop`                                               |
+| Governance                                                                                                | `.ai/**`, `scripts/governance/**`, `scripts/architecture/**` |
 
 ## Extraction authority matrix
 
@@ -43,6 +43,10 @@ CCD uses workspace ownership rather than archive ownership.
 ## App-local shared candidates
 
 M4 classifies app-local shared-looking paths before any source migration. This classification does not approve indefinite app ownership, and it does not authorize app paths to become public shared-capability export surfaces; it only separates app shell, app adapters, compatibility facades, stores, views, and future migration candidates.
+
+`apps/web-demo` is the browser `web-demo` application shell. `apps/desktop` is a dedicated Tauri desktop runtime shell with its own frontend entry and `apps/desktop/src-tauri/**` backend boundary; it is not a full duplicate of the browser app. Shared components, tokens, hooks, UI primitives, package-level integration adapters, contracts, and runtime-neutral logic belong in governed `packages/*`. App-specific routes, stores, pages/views, plugin wiring, runtime access, and compatibility facades stay app-local.
+
+The app-owned example route/page surface is inventoried in `docs/architecture/example-route-inventory.md`. That inventory maps each `/example/**` route group to its route module, page owner path, and package/runtime boundary.
 
 Current app-local compatibility facades:
 

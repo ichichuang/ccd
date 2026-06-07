@@ -1,12 +1,12 @@
 # Removed Browser Runtime Archive Cleanup
 
-The former duplicate browser runtime archive has been removed from the working tree. `apps/web-demo` is the browser runtime source of truth, and shared behavior is promoted through explicit workspace packages.
+The former duplicate browser runtime archive has been removed from the working tree. `apps/web-demo` is the browser `web-demo` application shell, and shared behavior is promoted through explicit workspace packages.
 
 ## Current state
 
 - Root is orchestration/configuration only.
-- Browser runtime code lives in `apps/web-demo`.
-- Desktop runtime code lives in `apps/desktop` adapters.
+- Browser `web-demo` application code lives in `apps/web-demo`.
+- Desktop runtime shell code lives in `apps/desktop`, with Tauri APIs contained by `apps/desktop/src/adapters/**` and backend behavior under `apps/desktop/src-tauri/**`.
 - Shared contracts and runtime-neutral logic live in `packages/contracts` and `packages/core`.
 - Historical audit uses Git history, generated reports, and release artifacts.
 

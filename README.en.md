@@ -13,8 +13,8 @@ Canonical package topology:
 ```text
 packages/contracts  -> interfaces and shared types only
 packages/core       -> runtime-neutral platform logic
-apps/web-demo       -> single browser runtime source of truth
-apps/desktop        -> Tauri runtime shell and adapters
+apps/web-demo       -> browser web-demo application shell, routes, stores, views, and app adapters
+apps/desktop        -> dedicated Tauri desktop runtime shell with its own frontend entry and src-tauri backend boundary
 root                -> orchestration-only shell
 ```
 
@@ -28,7 +28,10 @@ Dependency direction is fixed:
 
 - `packages/contracts` must stay implementation-free.
 - `packages/core` must stay runtime-neutral.
-- `apps/*` are runtime shells, app adapters, route/view/plugin/store owners, and compatibility-facade owners, not public shared-capability export surfaces.
+- `apps/web-demo` is the browser `web-demo` application shell for browser entry, routes, stores, views, app adapters, and app-level plugin wiring.
+- `apps/desktop` is the dedicated Tauri desktop runtime shell with its own frontend entry, desktop adapters, and `apps/desktop/src-tauri/**` backend boundary. It is not a full duplicate of `apps/web-demo`.
+- App-specific routes, stores, pages/views, plugin wiring, runtime access, and compatibility facades stay app-local.
+- Shared components, tokens, hooks, UI primitives, integration adapters such as the PrimeVue adapter, contracts, and runtime-neutral logic belong in governed `packages/*`.
 - Reusable or public monorepo capability must live in governed `packages/*` and be exposed through package exports.
 - Do not create public shared capability exports from `apps/*` unless a future explicit owner decision changes the target architecture.
 - Runtime APIs are only allowed in app adapter layers.
@@ -38,18 +41,27 @@ Dependency direction is fixed:
 
 Before documenting or invoking any command, confirm it exists in `package.json`.
 
-Preferred commands:
-
-- `pnpm project:doctor`
-- `pnpm ccd:fix`
-- `pnpm ccd:ship -- "type: message"`
-- `pnpm governance:refresh`
-- `pnpm governance:gate`
-- `pnpm build:ci`
-- `pnpm vercel:build`
-- `pnpm e2e:qa`
-- `pnpm ci:prepare-internal`
-- `pnpm ci:smoke:packages`
+| Command                            | Purpose                                                        | When to run                                                       |
+| ---------------------------------- | -------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `pnpm project:doctor`              | Validate project metadata and governed config                  | Before commits and after project metadata changes                 |
+| `pnpm ccd:doctor`                  | Run the daily project health check                             | Before local development or release prep                          |
+| `pnpm ccd:fix`                     | Sync metadata, refresh generated outputs, format, and validate | Before preparing a local change                                   |
+| `pnpm ccd:ship -- "type: message"` | Fix, validate, stage, and commit through Husky and commitlint  | For a normal local commit                                         |
+| `pnpm ci:prepare-internal`         | Build internal workspace packages                              | Before app builds, Vercel builds, or package-resolution debugging |
+| `pnpm ci:smoke:packages`           | Verify workspace package resolution and built `dist` outputs   | After internal package builds or before deployment builds         |
+| `pnpm governance:refresh`          | Refresh generated governance outputs                           | After API, topology, policy, or report-source changes             |
+| `pnpm governance:gate`             | Run the unified architecture and governance gate               | Before commits, in CI, or after governance refreshes              |
+| `pnpm type-check`                  | Run workspace TypeScript checks                                | After TypeScript, Vue, contract, or package export changes        |
+| `pnpm lint:check`                  | Run workspace ESLint checks                                    | After code, script, or Vue SFC changes                            |
+| `pnpm check`                       | Run type-check and lint checks                                 | For quick local quality validation                                |
+| `pnpm build:ci`                    | Run the CI validation build                                    | Before pushing or reproducing CI                                  |
+| `pnpm vercel:build`                | Run the Vercel deployment build                                | Only for Vercel deployment validation                             |
+| `pnpm dev:web-demo`                | Start the browser `web-demo` development server                | Browser app development                                           |
+| `pnpm dev:desktop`                 | Start the Tauri desktop runtime shell development server       | Desktop shell development                                         |
+| `pnpm build:web-demo`              | Build the web-demo static app                                  | GitHub Pages and local static build validation                    |
+| `pnpm build:desktop`               | Build the Tauri desktop runtime shell frontend                 | Desktop shell build validation                                    |
+| `pnpm validate`                    | Run governance, runtime, type, and build validation            | Before merge or when full local validation is needed              |
+| `pnpm e2e:qa`                      | Run QA regression tests                                        | After UI, route, layout, or runtime changes                       |
 
 ## GitHub Actions / Vercel / GitHub Pages Separation
 

@@ -84,3 +84,10 @@ Governance-sensitive changes require the owners in `.github/CODEOWNERS`. Cross-b
 - [ADR-004 Runtime Environment Policy](../adr/ADR-004-runtime-environment-policy.md)
 - [ADR-005 Common Platform Layer Terminology](../adr/ADR-005-common-platform-layer-terminology.md)
 - [ADR-006 Approval-Gated Architecture Lanes](../adr/ADR-006-approval-gated-architecture-lanes.md)
+- [ADR-007 Runtime Stack and Tooling Choices](../adr/ADR-007-runtime-stack-and-tooling-choices.md)
+- [ADR-008 Desktop Backend IPC and Updater Policy](../adr/ADR-008-desktop-backend-ipc-and-updater-policy.md)
+
+## Policy Records
+
+- [GitHub Governance Policy](github-governance.md)
+- [Dependency Governance Policy](dependency-policy.md)

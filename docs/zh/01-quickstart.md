@@ -18,7 +18,13 @@ pnpm install --frozen-lockfile
 ## 启动 web-demo
 
 ```bash
-pnpm dev:web
+pnpm dev:web-demo
+```
+
+## 启动 desktop
+
+```bash
+pnpm dev:desktop
 ```
 
 ## 构建
@@ -33,6 +39,18 @@ pnpm build:ci
 
 ```bash
 pnpm vercel:build
+```
+
+### web-demo 静态构建
+
+```bash
+pnpm build:web-demo
+```
+
+### desktop 外壳构建
+
+```bash
+pnpm build:desktop
 ```
 
 ### 仅构建内部依赖
@@ -85,7 +103,10 @@ pnpm governance:gate
 | `pnpm governance:gate`             | 运行统一架构与治理门禁                           | 提交前、CI 中、刷新治理后             |
 | `pnpm build:ci`                    | CI 验证构建                                      | 推送前或复现 CI 时                    |
 | `pnpm vercel:build`                | Vercel 部署构建                                  | 仅用于 Vercel 部署校验                |
+| `pnpm dev:web-demo`                | 启动浏览器 `web-demo` 应用开发服务               | 本地浏览器应用开发                    |
+| `pnpm dev:desktop`                 | 启动 Tauri 桌面运行时外壳开发服务                | 本地桌面外壳开发                      |
 | `pnpm build:web-demo`              | web-demo 静态构建                                | GitHub Pages 与本地静态构建校验       |
+| `pnpm build:desktop`               | Tauri 桌面运行时外壳前端构建                     | 桌面外壳构建校验                      |
 | `pnpm e2e:qa`                      | QA 回归测试                                      | UI、路由、布局或运行时变更后          |
 | `pnpm ai:sync`                     | 同步 AI 协议适配器                               | AI 协议或适配器源变更后               |
 | `pnpm ai:sync:codex`               | 同步 Codex 相关 AI 产物                          | Skill 或 Codex 适配器变更后           |

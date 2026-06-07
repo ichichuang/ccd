@@ -13,8 +13,8 @@ packages/vue-app-platform   -> frontend app bootstrap and platform orchestration
 packages/vue-ui             -> shared Vue UI primitives
 packages/vue-primevue-adapter -> PrimeVue-specific theme/adaptation layer
 packages/vue-charts         -> shared chart runtime and helpers
-apps/web-demo               -> runtime shell, routes/views/plugins/stores, app adapters, and app-owned compatibility facades
-apps/desktop                -> Tauri runtime shell, app adapters, and compatibility facades
+apps/web-demo               -> browser web-demo application shell, routes/views/plugins/stores, app adapters, and app-owned compatibility facades
+apps/desktop                -> dedicated Tauri desktop runtime shell with its own frontend entry, app adapters, and src-tauri backend boundary
 root                        -> orchestration-only shell
 ```
 
@@ -24,8 +24,10 @@ Frontend shared packages are protected workspace packages. They must still obey 
 
 Current accepted target definition:
 
-- `apps/*` own runtime shells, app adapters, route/view/plugin/store surfaces, and compatibility facades.
-- Reusable or public monorepo capability must land in governed `packages/*` and be consumed through package exports.
+- `apps/web-demo` owns the browser `web-demo` application shell, browser entry, routes, stores, views, app adapters, and app-level plugin wiring.
+- `apps/desktop` owns a dedicated Tauri desktop runtime shell with its own frontend entry, desktop adapters, and `apps/desktop/src-tauri/**` backend boundary. It is not a full duplicate of `apps/web-demo`.
+- App-specific routes, stores, pages/views, plugin wiring, runtime access, and compatibility facades stay app-local.
+- Reusable or public monorepo capability must land in governed `packages/*` and be consumed through package exports. This includes shared components, tokens, hooks, UI primitives, package-level integration adapters, contracts, and runtime-neutral logic.
 - `apps/*` may temporarily host classified app-local candidates, but those classifications do not authorize public shared-capability exports from app paths.
 - `packages/core` stays minimal and runtime-neutral; it must not become a shared frontend bucket.
 
@@ -50,20 +52,20 @@ Current platform package set:
 
 ## Responsibility Matrix
 
-| Workspace                       | Current responsibility                                                                                                                        |
-| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `packages/contracts`            | Cross-runtime interfaces and DTO contracts only.                                                                                              |
-| `packages/core`                 | Minimal runtime-neutral adapter facade, not a shared frontend bucket.                                                                         |
-| `packages/design-tokens`        | Shared design token source and pure theme/size/breakpoint/device derivation.                                                                  |
-| `packages/shared-utils`         | Pure shared utilities.                                                                                                                        |
-| `packages/unocss-preset`        | Shared UnoCSS preset, safelist, and build-time styling helpers.                                                                               |
-| `packages/vue-hooks`            | Shared Vue/browser composables.                                                                                                               |
-| `packages/vue-app-platform`     | Pure app-platform/layout helpers where applicable.                                                                                            |
-| `packages/vue-ui`               | Shared Vue UI primitives.                                                                                                                     |
-| `packages/vue-primevue-adapter` | PrimeVue-specific theme and adaptation layer.                                                                                                 |
-| `packages/vue-charts`           | Shared chart runtime and helpers.                                                                                                             |
-| `apps/web-demo`                 | Runtime shell, routes/views/plugins/stores, app adapters, and app-owned compatibility facades. Not a public shared-capability export surface. |
-| `apps/desktop`                  | Tauri runtime shell, desktop adapters, and compatibility facades. Not a public shared-capability export surface.                              |
+| Workspace                       | Current responsibility                                                                                                                                                                     |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `packages/contracts`            | Cross-runtime interfaces and DTO contracts only.                                                                                                                                           |
+| `packages/core`                 | Minimal runtime-neutral adapter facade, not a shared frontend bucket.                                                                                                                      |
+| `packages/design-tokens`        | Shared design token source and pure theme/size/breakpoint/device derivation.                                                                                                               |
+| `packages/shared-utils`         | Pure shared utilities.                                                                                                                                                                     |
+| `packages/unocss-preset`        | Shared UnoCSS preset, safelist, and build-time styling helpers.                                                                                                                            |
+| `packages/vue-hooks`            | Shared Vue/browser composables.                                                                                                                                                            |
+| `packages/vue-app-platform`     | Pure app-platform/layout helpers where applicable.                                                                                                                                         |
+| `packages/vue-ui`               | Shared Vue UI primitives.                                                                                                                                                                  |
+| `packages/vue-primevue-adapter` | PrimeVue-specific theme and adaptation layer.                                                                                                                                              |
+| `packages/vue-charts`           | Shared chart runtime and helpers.                                                                                                                                                          |
+| `apps/web-demo`                 | Browser `web-demo` application shell, routes/views/plugins/stores, app adapters, and app-owned compatibility facades. Not a public shared-capability export surface.                       |
+| `apps/desktop`                  | Dedicated Tauri desktop runtime shell with its own frontend entry, desktop adapters, and `src-tauri` backend boundary. Not a duplicate web app or public shared-capability export surface. |
 
 ## Extraction Decision Matrix
 

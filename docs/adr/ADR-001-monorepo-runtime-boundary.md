@@ -6,7 +6,7 @@ CCD converged from root-owned runtime code to a pnpm + Turbo workspace topology.
 
 ## Decision
 
-`apps/web-demo` is the only active browser runtime entry. `packages/contracts` contains interfaces and shared types only. `packages/core` remains runtime-neutral and depends only on `@ccd/contracts`. Runtime APIs are adapter-injected from application adapter directories.
+`apps/web-demo` is the active browser `web-demo` application shell. `apps/desktop` is the dedicated Tauri desktop runtime shell with its own frontend entry and `src-tauri` backend boundary. `packages/contracts` contains interfaces and shared types only. `packages/core` remains runtime-neutral and depends only on `@ccd/contracts`. Runtime APIs are adapter-injected from application adapter directories.
 
 ## Consequences
 

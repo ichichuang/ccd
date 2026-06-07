@@ -36,10 +36,10 @@
 
 ### 应用层
 
-| 目录            | 角色                                                                              |
-| --------------- | --------------------------------------------------------------------------------- |
-| `apps/web-demo` | 运行时外壳、路由 / 页面 / 插件 / stores、应用适配层与兼容门面；不是公共能力导出面 |
-| `apps/desktop`  | Tauri 运行时外壳、桌面适配层与兼容门面；不是公共能力导出面                        |
+| 目录            | 角色                                                                                                         |
+| --------------- | ------------------------------------------------------------------------------------------------------------ |
+| `apps/web-demo` | 浏览器 `web-demo` 应用外壳、路由、页面 / views、插件、stores、应用适配层与兼容门面；不是公共能力导出面       |
+| `apps/desktop`  | 专用 Tauri 桌面运行时外壳，拥有自己的前端入口、桌面适配层与 `src-tauri` 后端边界；不是 `web-demo` 的完整复制 |
 
 ### 根
 
@@ -58,22 +58,29 @@
 - `apps/*` 可以临时承载已分类的 app-local 候选模块，但这不授权把 app 路径变成公共共享能力导出面。
 - `packages/core` 必须保持最小、运行时无关，不得演变为前端共享杂物桶。
 
+应用角色边界：
+
+- `apps/web-demo` 是浏览器 `web-demo` 应用外壳，拥有浏览器入口、路由、页面 / views、stores、应用适配层与应用级 plugin wiring。
+- `apps/desktop` 是专用 Tauri 桌面运行时外壳，拥有自己的前端入口、桌面适配层与 `apps/desktop/src-tauri/**` 后端边界；它不复制 `apps/web-demo` 的完整应用。
+- 共享 components、tokens、hooks、UI primitives、PrimeVue adapter、contracts、runtime-neutral logic 和其他可公开复用能力归 `packages/*`。
+- App-specific routes、stores、pages / views、plugin wiring、运行时能力接入与兼容门面保持 app-local。
+
 ## 工作区职责矩阵
 
-| 工作区                          | 当前职责                                                                          |
-| ------------------------------- | --------------------------------------------------------------------------------- |
-| `packages/contracts`            | 跨运行时接口与 DTO 契约，仅承担契约边界职责                                       |
-| `packages/core`                 | 最小运行时无关适配门面，不承担前端共享平台收纳职责                                |
-| `packages/design-tokens`        | 设计 token 与纯 theme / size / breakpoint / device derivation                     |
-| `packages/shared-utils`         | 纯共享工具函数                                                                    |
-| `packages/unocss-preset`        | 共享 UnoCSS 预设、safelist 与构建期样式辅助                                       |
-| `packages/vue-hooks`            | 共享 Vue / 浏览器组合式函数                                                       |
-| `packages/vue-app-platform`     | 适用时仅拥有纯 app-platform / layout helpers                                      |
-| `packages/vue-ui`               | 共享 Vue UI 基础组件                                                              |
-| `packages/vue-primevue-adapter` | PrimeVue 专用主题与适配层                                                         |
-| `packages/vue-charts`           | 共享图表运行时与辅助函数                                                          |
-| `apps/web-demo`                 | 运行时外壳、路由 / 页面 / 插件 / stores、应用适配层与兼容门面；不是公共能力导出面 |
-| `apps/desktop`                  | Tauri 运行时外壳、桌面适配层与兼容门面；不是公共能力导出面                        |
+| 工作区                          | 当前职责                                                                                                  |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `packages/contracts`            | 跨运行时接口与 DTO 契约，仅承担契约边界职责                                                               |
+| `packages/core`                 | 最小运行时无关适配门面，不承担前端共享平台收纳职责                                                        |
+| `packages/design-tokens`        | 设计 token 与纯 theme / size / breakpoint / device derivation                                             |
+| `packages/shared-utils`         | 纯共享工具函数                                                                                            |
+| `packages/unocss-preset`        | 共享 UnoCSS 预设、safelist 与构建期样式辅助                                                               |
+| `packages/vue-hooks`            | 共享 Vue / 浏览器组合式函数                                                                               |
+| `packages/vue-app-platform`     | 适用时仅拥有纯 app-platform / layout helpers                                                              |
+| `packages/vue-ui`               | 共享 Vue UI 基础组件                                                                                      |
+| `packages/vue-primevue-adapter` | PrimeVue 专用主题与适配层                                                                                 |
+| `packages/vue-charts`           | 共享图表运行时与辅助函数                                                                                  |
+| `apps/web-demo`                 | 浏览器 `web-demo` 应用外壳、路由 / 页面 / views / 插件 / stores、应用适配层与兼容门面；不是公共能力导出面 |
+| `apps/desktop`                  | 专用 Tauri 桌面运行时外壳、自有前端入口、桌面适配层与 `src-tauri` 后端边界；不是公共能力导出面            |
 
 ## App-local shared candidates
 

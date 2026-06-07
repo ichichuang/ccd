@@ -16,7 +16,7 @@ Do not replace this with `pnpm build:ci`.
 
 ## GitHub Pages Deployment
 
-GitHub Pages deploys the `web-demo` static build.
+GitHub Pages deploys the browser `web-demo` application static build.
 
 The deployment build uses:
 

@@ -16,7 +16,7 @@ Removed archive directories must not be recreated, added to `pnpm-workspace.yaml
 
 ## Consequences
 
-- `apps/web-demo` remains the browser runtime source of truth.
+- `apps/web-demo` remains the browser `web-demo` application shell.
 - `packages/contracts` and `packages/core` remain runtime-neutral.
 - Governance validates that removed archive directories are not present or required by active commands.
 - Historical explanations may reference the migration, but active policy must not require the removed archive to exist.

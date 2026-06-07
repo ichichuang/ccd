@@ -10,8 +10,8 @@ packages/contracts -> packages/core -> apps/*
 
 - `packages/contracts`: public interfaces and shared types.
 - `packages/core`: runtime-neutral platform logic.
-- `apps/web-demo`: single browser runtime source of truth and browser adapters.
-- `apps/desktop`: Tauri runtime adapters.
+- `apps/web-demo`: browser `web-demo` application shell, routes, stores, views, and browser adapters.
+- `apps/desktop`: dedicated Tauri desktop runtime shell with its own frontend entry, desktop adapters, and `src-tauri` backend boundary.
 - `root`: orchestration-only shell.
 - Historical browser runtime snapshots are retained in Git history only; active branches must not recreate archive runtime directories.
 

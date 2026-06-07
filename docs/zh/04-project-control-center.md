@@ -25,8 +25,10 @@ project.config.json
 
 - `packages/contracts`：跨运行时接口与 DTO 契约
 - `packages/core`：最小运行时无关适配门面，不是前端共享能力收纳桶
-- `apps/web-demo`：应用外壳、路由、页面、stores、应用适配层，以及暂时仍留在应用内的共享候选模块
-- `apps/desktop`：Tauri 桌面外壳与桌面适配层
+- `apps/web-demo`：浏览器 `web-demo` 应用外壳、路由、页面 / views、stores、应用适配层、应用级插件装配，以及暂时仍留在应用内的共享候选模块
+- `apps/desktop`：专用 Tauri 桌面运行时外壳，拥有自己的前端入口、桌面适配层与 `src-tauri` 后端边界
+
+共享 components、tokens、hooks、UI primitives、PrimeVue adapter、contracts 与 runtime-neutral logic 归 `packages/*`；app-specific routes、stores、pages / views 与 plugin wiring 保持 app-local。
 
 `PrimeDialog`、`ProForm`、`ProTable` 的公共 UI 原语当前归 `packages/vue-ui` 所有；`apps/web-demo` 仅保留插件与 compatibility facade 集成层。
 
@@ -75,6 +77,10 @@ pnpm project:sync
 - `apps/desktop/src-tauri/Cargo.toml`
 - `.release-please-manifest.json`
 - `.ai/governance/policies/version.json`
+
+`apps/web-demo/index.html` 也是元数据模板，应保留 `%BRAND_NAME%`、
+`%BRAND_SLOGAN%` 与 `%BRAND_AUTHOR%` 占位符，不要在模板里硬编码应用标题、
+描述或作者元信息。
 
 `apps/desktop/index.html` 是 Vite 构建期 HTML 模板，不由 `project:sync`
 重写；桌面标题、描述、作者等展示元信息由 `apps/desktop/build/html.ts`

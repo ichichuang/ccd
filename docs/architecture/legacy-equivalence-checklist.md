@@ -4,9 +4,9 @@ The historical browser runtime archive has been removed from the working tree. T
 
 ## Current invariants
 
-- `apps/web-demo` owns browser runtime behavior.
-- `apps/desktop` owns Tauri runtime adapters.
-- Shared platform logic lives in workspace packages.
+- `apps/web-demo` owns browser `web-demo` application behavior.
+- `apps/desktop` owns the dedicated Tauri desktop runtime shell, desktop adapters, and `src-tauri` backend boundary.
+- Shared platform logic lives in workspace packages, not duplicated inside either app.
 - Root remains orchestration-only.
 - Historical comparison uses Git history and generated governance artifacts, not a working-tree archive.
 - No route, package, workspace, CI workflow, or script depends on a removed archive path.

@@ -18,7 +18,8 @@ Metadata governance does not override architecture ownership:
 
 - `packages/contracts` contains cross-runtime interfaces and DTO contracts only.
 - `packages/core` is a minimal runtime-neutral adapter facade, not a shared frontend bucket.
-- `apps/web-demo` owns the browser app shell, routes, pages, stores, app adapters, and some temporary app-local shared candidates until later staged extraction work is approved.
+- `apps/web-demo` owns the browser `web-demo` application shell, routes, pages/views, stores, app adapters, app-level plugin wiring, and some temporary app-local shared candidates until later staged extraction work is approved.
+- `apps/desktop` owns the dedicated Tauri desktop runtime shell with its own frontend entry, desktop adapters, and `apps/desktop/src-tauri/**` backend boundary.
 
 ## Derived Metadata Targets
 
@@ -32,6 +33,10 @@ Metadata governance does not override architecture ownership:
 - `apps/desktop/src-tauri/Cargo.toml`
 - `.release-please-manifest.json`
 - `.ai/governance/policies/version.json`
+
+`apps/web-demo/index.html` is also a metadata template. Keep
+`%BRAND_NAME%`, `%BRAND_SLOGAN%`, and `%BRAND_AUTHOR%` in the template instead
+of hardcoding app title, description, or author metadata.
 
 `apps/desktop/index.html` is not rewritten by `project:sync`. It is a build-time
 HTML template: `apps/desktop/build/html.ts` reads `project.config.json` during
@@ -48,6 +53,8 @@ pnpm project:sync
 ```
 
 Do not manually edit derived metadata files when the same field is governed by `project.config.json`.
+Do not hardcode product title, description, or author into `apps/web-demo/index.html`;
+those values flow through the web metadata placeholders and brand constants.
 Do not hardcode product name, description, or author into `apps/desktop/index.html`;
 those values are injected from `project.config.json` by the desktop Vite plugin.
 

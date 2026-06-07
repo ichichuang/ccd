@@ -6,7 +6,7 @@
 - [ ] `pnpm arch:graphs` regenerates deterministic graph outputs.
 - [ ] `pnpm api:report` confirms public API compatibility.
 - [ ] `pnpm supply:check` passes.
-- [ ] Release artifact originates only from `apps/web-demo/dist`.
+- [ ] Browser `web-demo` release artifact originates only from `apps/web-demo/dist`.
 - [ ] Root remains orchestration-only.
 - [ ] No workspace, CI, package, or generated report references a removed runtime archive directory.
 - [ ] Rollback target and artifact checksum are recorded in `docs/generated/release/release-audit-report.json`.

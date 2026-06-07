@@ -1,15 +1,16 @@
 # Web Runtime
 
-`apps/web-demo` is the browser runtime surface for CCD and the single browser runtime source of truth.
+`apps/web-demo` is the browser `web-demo` application shell for CCD. It owns the browser entry, routes, stores, views, app adapters, app-level plugin wiring, and browser compatibility facades.
 
 ## Runtime Contract
 
-- Vue 3 + Vite browser application.
+- Vue 3 + Vite browser `web-demo` application.
 - Depends on governed workspace packages through public exports only.
 - Current workspace dependencies include `@ccd/contracts`, `@ccd/core`, `@ccd/design-tokens`, `@ccd/shared-utils`, `@ccd/unocss-preset`, `@ccd/vue-hooks`, `@ccd/vue-app-platform`, `@ccd/vue-ui`, `@ccd/vue-primevue-adapter`, and `@ccd/vue-charts`.
 - TypeScript consumes workspace packages through package exports and prepared `dist` declarations; `apps/web-demo/tsconfig.json` must not include `../../packages/*/src/**`.
 - Injects browser runtime capabilities through `apps/web-demo/src/adapters/**`.
 - Does not import desktop/Tauri runtime code.
+- Shares components, tokens, hooks, UI primitives, package-level adapters, contracts, and runtime-neutral logic through `packages/*`; it must not duplicate those as public app-local capabilities.
 
 ## Current Ownership Scope
 
@@ -19,6 +20,7 @@
 - routes and views
 - stores
 - browser adapters
+- app-level plugin wiring
 - temporary app-local shared candidates that are not yet extracted into workspace packages
 - explicitly classified app-local runtime exceptions
 
