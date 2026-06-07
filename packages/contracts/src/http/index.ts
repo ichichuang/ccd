@@ -4,7 +4,21 @@ export type {
   HttpAuthRefreshMode,
   HttpAuthScheme,
 } from './auth'
+export type { HttpBaseUrlMode, HttpBaseUrlPolicy, HttpCredentialPolicy } from './baseUrl'
+export type { HttpCancellationMode, HttpCancellationPolicy } from './cancellation'
 export type { HttpErrorKind, HttpRequestErrorShape } from './error'
+export type {
+  HttpErrorMappingPolicy,
+  HttpErrorNotificationPolicy,
+  HttpNormalizedErrorMapping,
+  HttpStatusErrorMapping,
+  HttpStatusRange,
+} from './errorMapping'
+export type {
+  HttpInterceptorFailureMode,
+  HttpInterceptorLifecycleContract,
+  HttpInterceptorLifecycleStage,
+} from './interceptor'
 export type {
   HttpHeaderValue,
   HttpHeaders,

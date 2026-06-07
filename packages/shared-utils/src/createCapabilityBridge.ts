@@ -1,3 +1,11 @@
+export type ExplicitCapabilityShape<T extends object> = string extends keyof T
+  ? never
+  : number extends keyof T
+    ? never
+    : symbol extends keyof T
+      ? never
+      : T
+
 export interface CapabilityBridgeOptions<T extends object> {
   readonly label: string
   readonly assert: (candidate: T) => void
@@ -13,9 +21,11 @@ export interface CapabilityBridge<T extends object> {
 }
 
 export function createCapabilityBridge<T extends object>(
-  options: CapabilityBridgeOptions<T>
+  options: CapabilityBridgeOptions<T>,
+  ...indexSignatureGuard: [ExplicitCapabilityShape<T>] extends [never] ? [never] : []
 ): CapabilityBridge<T> {
   const { label, assert, onMissing } = options
+  void indexSignatureGuard
 
   let instance: Readonly<T> | null = null
 

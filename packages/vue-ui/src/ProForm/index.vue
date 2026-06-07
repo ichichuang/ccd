@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="TValues extends Record<string, unknown> = Record<string, unknown>">
+<script setup lang="ts" generic="TValues extends FormValuesRecord = FormValuesRecord">
 import { computed, provide, shallowRef, useSlots, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type {
@@ -7,6 +7,7 @@ import type {
   FormSchema,
   FormSchemaNode,
   FormState,
+  FormValuesRecord,
   ProFormExpose,
   ProFormProps,
 } from './engine/types'
@@ -27,6 +28,7 @@ import {
   PRO_FORM_SLOTS_KEY,
 } from './engine/constants'
 import Icons from '../Icons/Icons.vue'
+import { castValue } from '@ccd/shared-utils'
 
 const props = defineProps<ProFormProps<TValues>>()
 const slots = useSlots()
@@ -78,8 +80,8 @@ provide(PRO_FORM_LAYOUT_KEY, {
 provide(PRO_FORM_SLOTS_KEY, slots)
 
 type KeyableNode = { name?: unknown; label?: unknown; type?: unknown }
-const getNodeKey = (node: FormSchemaNode, index: number): string => {
-  const n: KeyableNode = node as KeyableNode
+const getNodeKey = (node: FormSchemaNode<TValues>, index: number): string => {
+  const n = node as KeyableNode
   if (typeof n.name === 'string' && n.name.length > 0) return n.name
   if (typeof n.label === 'string' && n.label.length > 0) {
     return `${String(n.type ?? 'node')}:${n.label}:${index}`
@@ -90,7 +92,7 @@ const getNodeKey = (node: FormSchemaNode, index: number): string => {
 /** 根级栅格：与 ProFormNode 内子字段一致，按 span / layout.span + 断点解析列宽 */
 type RootLayoutNode = { span?: ResponsiveSpan; layout?: { span?: ResponsiveSpan } }
 
-const getRootGridWrapperStyle = (node: FormSchemaNode): Record<string, string> => {
+const getRootGridWrapperStyle = (node: FormSchemaNode<TValues>): Record<string, string> => {
   if (!isRootGrid.value) return {}
   const n = node as RootLayoutNode
   const spanConfig = n.span ?? n.layout?.span
@@ -99,7 +101,7 @@ const getRootGridWrapperStyle = (node: FormSchemaNode): Record<string, string> =
   return { gridColumn: `span ${span} / span ${span}` }
 }
 
-const internalSchema = shallowRef<FormSchema>(props.schema)
+const internalSchema = shallowRef<FormSchema<TValues>>(castValue<FormSchema<TValues>>(props.schema))
 const isDev = Boolean((import.meta as ImportMeta & { env?: { DEV?: boolean } }).env?.DEV)
 
 if (isDev) {
@@ -112,7 +114,7 @@ watch(
   () => props.schema,
   nextSchema => {
     if (internalSchema.value !== nextSchema) {
-      internalSchema.value = nextSchema
+      internalSchema.value = castValue<FormSchema<TValues>>(nextSchema)
     }
   }
 )

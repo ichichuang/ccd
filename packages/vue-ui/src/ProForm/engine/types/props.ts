@@ -1,9 +1,9 @@
-import type { FieldSchema, FormSchemaNode } from './index'
+import type { FieldSchema, FormSchemaNode, FormValuesRecord } from './index'
 
-export interface ProFormNodeProps {
-  node: FormSchemaNode
+export interface ProFormNodeProps<TValues extends FormValuesRecord = FormValuesRecord> {
+  node: FormSchemaNode<TValues>
 }
 
-export interface ProFormPrimeVueRendererProps {
-  field: FieldSchema<unknown>
+export interface ProFormPrimeVueRendererProps<TValues extends FormValuesRecord = FormValuesRecord> {
+  field: FieldSchema<unknown, TValues>
 }

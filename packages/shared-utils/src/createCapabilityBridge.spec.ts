@@ -1,5 +1,19 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createCapabilityBridge } from './createCapabilityBridge'
+import type { ExplicitCapabilityShape } from './createCapabilityBridge'
+
+type ExpectTrue<T extends true> = T
+type IsNever<T> = [T] extends [never] ? true : false
+
+type ExplicitCapabilitiesAcceptNamedKeys = ExpectTrue<
+  ExplicitCapabilityShape<TestCapabilities> extends TestCapabilities ? true : false
+>
+type ExplicitCapabilitiesRejectStringIndexSignature = ExpectTrue<
+  IsNever<ExplicitCapabilityShape<Record<string, unknown>>>
+>
+
+const explicitCapabilitiesAcceptNamedKeys: ExplicitCapabilitiesAcceptNamedKeys = true
+const explicitCapabilitiesRejectStringIndexSignature: ExplicitCapabilitiesRejectStringIndexSignature = true
 
 interface TestCapabilities {
   getValue: () => string
@@ -23,6 +37,11 @@ function createTestBridge(onMissing: 'throw' | 'null' = 'null') {
 
 describe('createCapabilityBridge', () => {
   let bridge: ReturnType<typeof createTestBridge>
+
+  it('keeps capability typing explicit at compile time', () => {
+    expect(explicitCapabilitiesAcceptNamedKeys).toBe(true)
+    expect(explicitCapabilitiesRejectStringIndexSignature).toBe(true)
+  })
 
   beforeEach(() => {
     bridge = createTestBridge()

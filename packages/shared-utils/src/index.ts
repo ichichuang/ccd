@@ -16,3 +16,8 @@ export {
   type CapabilityBridge,
   type CapabilityBridgeOptions,
 } from './createCapabilityBridge.js'
+export {
+  createConsoleLogger,
+  type ConsoleLogger,
+  type ConsoleLoggerTarget,
+} from './consoleLogger.js'

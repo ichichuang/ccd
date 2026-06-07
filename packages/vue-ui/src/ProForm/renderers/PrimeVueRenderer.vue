@@ -1,12 +1,12 @@
-<script setup lang="ts">
-defineOptions({ name: 'PrimeVueRenderer' })
-
+<script setup lang="ts" generic="TValues extends FormValuesRecord = FormValuesRecord">
 import { computed, inject } from 'vue'
 import type {
   FieldComponentProps,
+  FieldProps,
   FieldRegistryItem,
   FieldState,
   FieldSchema,
+  FormValuesRecord,
 } from '../engine/types'
 import type { ProFormPrimeVueRendererProps } from '../engine/types/props'
 import { useField } from '../engine/hooks/useField'
@@ -19,16 +19,17 @@ import {
 } from '../engine/constants'
 import { castValue } from '@ccd/shared-utils'
 
-const props = defineProps<ProFormPrimeVueRendererProps>()
+defineOptions({ name: 'PrimeVueRenderer' })
 
-const { value, state, setValue } = useField<unknown>(props.field.name)
+const props = defineProps<ProFormPrimeVueRendererProps<TValues>>()
 
-type ExtendedFieldSchema = FieldSchema<unknown> & {
+const { value, state, setValue } = useField<unknown, TValues>(props.field.name)
+
+type ExtendedFieldSchema = FieldSchema<unknown, TValues> & {
   layout?: {
     labelWidth?: string
     labelAlign?: 'left' | 'center' | 'right'
   }
-  options?: unknown
 }
 
 type FieldStateWithOptions = FieldState<unknown> & {
@@ -68,8 +69,8 @@ const hasCustomSlot = computed<boolean>(() => {
 })
 
 // 通过 Registry 解析具体渲染组件与元数据
-const registryItem = computed<FieldRegistryItem | null>(() => {
-  const item = fieldRegistry.get(props.field.component)
+const registryItem = computed<FieldRegistryItem<unknown, FieldProps, TValues> | null>(() => {
+  const item = fieldRegistry.get<unknown, FieldProps, TValues>(props.field.component)
   return item ?? null
 })
 
@@ -103,15 +104,15 @@ const componentProps = computed<FieldComponentProps<unknown>>(() => ({
   },
 }))
 
-const mergedProps = computed<FieldComponentProps<unknown> & Record<string, unknown>>(() => {
+const mergedProps = computed<FieldComponentProps<unknown> & FieldProps>(() => {
   const baseComponentProps = componentProps.value
   const item = registryItem.value
 
-  const defaultProps = (item?.defaultProps ?? {}) as Record<string, unknown>
-  const fieldProps = (props.field.props ?? {}) as Record<string, unknown>
-  const dynamicProps = (stateExt.value.dynamicProps ?? {}) as Record<string, unknown>
+  const defaultProps: FieldProps = item?.defaultProps ?? {}
+  const fieldProps: FieldProps = props.field.props ?? {}
+  const dynamicProps: FieldProps = stateExt.value.dynamicProps ?? {}
 
-  const merged: FieldComponentProps<unknown> & Record<string, unknown> = {
+  const merged: FieldComponentProps<unknown> & FieldProps = {
     ...defaultProps,
     ...fieldProps,
     ...dynamicProps,
@@ -129,11 +130,9 @@ const mergedProps = computed<FieldComponentProps<unknown> & Record<string, unkno
   // Async options MUST come from store state (no Schema mutation).
   // Priority: state.loadedOptions -> dynamicProps.options -> field.props.options -> field.options (static array only)
   const stateLoadedOptions = stateExt.value.loadedOptions
-  const dynamicOptions = (dynamicProps as { options?: unknown }).options
-  const propsOptions = (fieldProps as { options?: unknown }).options
-  const schemaOptions = Array.isArray(fieldExt.value.options)
-    ? (fieldExt.value.options as unknown[] | undefined)
-    : undefined
+  const dynamicOptions = dynamicProps.options
+  const propsOptions = fieldProps.options
+  const schemaOptions = Array.isArray(fieldExt.value.options) ? fieldExt.value.options : undefined
 
   const finalOptions = stateLoadedOptions ?? dynamicOptions ?? propsOptions ?? schemaOptions
   if (Array.isArray(finalOptions)) {
@@ -148,22 +147,20 @@ const mergedProps = computed<FieldComponentProps<unknown> & Record<string, unkno
   return merged
 })
 
-const slotBindProps = computed<Record<string, unknown>>(() => ({
+const slotBindProps = computed<FieldProps>(() => ({
   field: props.field,
   state,
   onUpdate: (v: unknown) => setValue(v),
 }))
 
-const componentBindProps = computed<Record<string, unknown>>(
-  () => mergedProps.value as Record<string, unknown>
-)
+const componentBindProps = computed<FieldProps>(() => mergedProps.value)
 
 const resolvedIs = computed<unknown>(() => {
   if (hasCustomSlot.value && formSlots) return formSlots[customSlotName.value]
   return resolvedComponent.value
 })
 
-const resolvedBindProps = computed<Record<string, unknown>>(() => {
+const resolvedBindProps = computed<FieldProps>(() => {
   if (hasCustomSlot.value && formSlots) return slotBindProps.value
   return componentBindProps.value
 })

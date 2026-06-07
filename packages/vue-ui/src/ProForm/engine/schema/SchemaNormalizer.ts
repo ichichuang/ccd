@@ -1,7 +1,20 @@
-import type { FieldSchema, FormSchema, FormSchemaNode, GroupSchema, ResponsiveSpan } from '../types'
+import type {
+  FieldSchema,
+  FormSchema,
+  FormSchemaNode,
+  FormValuesRecord,
+  GroupSchema,
+  NormalizedFieldSchema,
+  NormalizedFormSchema,
+  NormalizedFormSchemaNode,
+  NormalizedGroupSchema,
+  ResponsiveSpan,
+} from '../types'
 import { PRO_FORM_DEFAULTS } from '../config'
 
-function normalizeField(field: FieldSchema<unknown>): FieldSchema<unknown> {
+function normalizeField<TValues extends FormValuesRecord>(
+  field: FieldSchema<unknown, TValues>
+): NormalizedFieldSchema<unknown, TValues> {
   const span: ResponsiveSpan | undefined = field.span ?? field.layout?.span
 
   return {
@@ -14,11 +27,11 @@ function normalizeField(field: FieldSchema<unknown>): FieldSchema<unknown> {
   }
 }
 
-function normalizeGroup(
-  group: GroupSchema,
+function normalizeGroup<TValues extends FormValuesRecord>(
+  group: GroupSchema<TValues>,
   path: number[],
   counter: { seed: number }
-): GroupSchema {
+): NormalizedGroupSchema<TValues> {
   const name = group.name ?? `__group_${path.join('_')}_${counter.seed++}`
   return {
     ...group,
@@ -27,15 +40,17 @@ function normalizeGroup(
   }
 }
 
-function isGroupNode(node: FormSchemaNode): node is GroupSchema {
+function isGroupNode<TValues extends FormValuesRecord>(
+  node: FormSchemaNode<TValues>
+): node is GroupSchema<TValues> {
   return 'children' in node && node.children !== undefined
 }
 
-function normalizeNodes(
-  nodes: FormSchemaNode[],
+function normalizeNodes<TValues extends FormValuesRecord>(
+  nodes: FormSchemaNode<TValues>[],
   parentPath: number[],
   counter: { seed: number }
-): FormSchemaNode[] {
+): NormalizedFormSchemaNode<TValues>[] {
   return nodes.map((node, index) => {
     const currentPath = [...parentPath, index]
     if (isGroupNode(node)) {
@@ -46,7 +61,9 @@ function normalizeNodes(
 }
 
 export class SchemaNormalizer {
-  static normalize(schema: FormSchema): FormSchema {
+  static normalize<TValues extends FormValuesRecord>(
+    schema: FormSchema<TValues>
+  ): NormalizedFormSchema<TValues> {
     const counter: { seed: number } = { seed: 0 }
     const normalizedFields = normalizeNodes(schema.fields, [], counter)
     return {

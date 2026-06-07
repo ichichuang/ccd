@@ -34,6 +34,12 @@ export {
   CcdTieredMenu,
   CcdToggleSwitch,
 } from './CcdPrimeControls'
+export type {
+  CcdPrimeAnchoredOverlayControlExpose,
+  CcdPrimeControl,
+  CcdPrimeControlWithExpose,
+  CcdPrimeOverlayControlExpose,
+} from './CcdPrimeControls'
 
 export { ProForm } from './ProForm'
 export {
@@ -81,6 +87,7 @@ export {
   ProTableCrudFormModalBody,
   ProTableCrudViewModalBody,
   useProTable,
+  useProTableInfiniteScroll,
 } from './ProTable'
 export type {
   ColumnRenderParams,
@@ -113,6 +120,8 @@ export type {
   SortState,
   StandardTableParams,
   TableState,
+  UseProTableInfiniteScrollOptions,
+  UseProTableInfiniteScrollReturn,
   UseProTableUrlSyncOptions,
   UseProTableUrlSyncReturn,
 } from './ProTable'

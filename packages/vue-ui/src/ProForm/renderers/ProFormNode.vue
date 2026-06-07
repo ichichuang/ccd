@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="TValues extends Record<string, unknown> = Record<string, unknown>">
+<script setup lang="ts" generic="TValues extends FormValuesRecord = FormValuesRecord">
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import Panel from 'primevue/panel'
@@ -16,6 +16,7 @@ import { inject, onUnmounted, reactive, ref } from 'vue'
 import type { ComputedRef } from 'vue'
 import type {
   FieldSchema,
+  FormValuesRecord,
   FormSchemaNode,
   GroupSchema,
   NodeLayoutSchema,
@@ -32,18 +33,20 @@ import Icons from '../../Icons/Icons.vue'
 
 defineOptions({ name: 'ProFormNode' })
 
-const props = defineProps<ProFormNodeProps>()
+const props = defineProps<ProFormNodeProps<TValues>>()
 
 const injectedLayout = inject<{
   gap: ComputedRef<string>
   activeBreakpoint?: ComputedRef<BreakpointKey>
 } | null>(PRO_FORM_LAYOUT_KEY, null)
 
-const isGroup = (n: FormSchemaNode): n is Extract<FormSchemaNode, { children: FormSchemaNode[] }> =>
-  (n as { children?: FormSchemaNode[] }).children !== undefined
+const isGroup = (
+  n: FormSchemaNode<TValues>
+): n is Extract<FormSchemaNode<TValues>, { children: FormSchemaNode<TValues>[] }> =>
+  (n as { children?: FormSchemaNode<TValues>[] }).children !== undefined
 
-const isField = (n: FormSchemaNode): n is FieldSchema<unknown> =>
-  (n as FieldSchema<unknown>).component !== undefined
+const isField = (n: FormSchemaNode<TValues>): n is FieldSchema<unknown, TValues> =>
+  (n as FieldSchema<unknown, TValues>).component !== undefined
 
 const controller = useFormContext<TValues>()
 
@@ -72,7 +75,7 @@ onUnmounted(() => {
   visibilityCleanups.forEach(fn => fn())
 })
 
-const handleFieldFocusOut = (field: FieldSchema<unknown>): void => {
+const handleFieldFocusOut = (field: FieldSchema<unknown, TValues>): void => {
   const name = field.name
   const existing = controller.store.getFieldState(name)
   if (existing) {
@@ -87,12 +90,12 @@ const handleFieldFocusOut = (field: FieldSchema<unknown>): void => {
   }
 }
 
-interface LayoutFieldSchema extends FieldSchema<unknown> {
+interface LayoutFieldSchema extends FieldSchema<unknown, TValues> {
   span?: ResponsiveSpan
   layout?: { span?: ResponsiveSpan } & Partial<NodeLayoutSchema>
 }
 
-const getColSpanStyle = (field: FormSchemaNode): { gridColumn: string } => {
+const getColSpanStyle = (field: FormSchemaNode<TValues>): { gridColumn: string } => {
   const f = field as LayoutFieldSchema
   const spanConfig = f.span ?? f.layout?.span
   const currentBp: BreakpointKey = injectedLayout?.activeBreakpoint?.value ?? 'md'
@@ -116,7 +119,7 @@ type KeyableNode = {
   type?: unknown
 }
 
-const getNodeKey = (node: FormSchemaNode, index?: number): string => {
+const getNodeKey = (node: FormSchemaNode<TValues>, index?: number): string => {
   const n = node as KeyableNode
   if (typeof n.name === 'string' && n.name.length > 0) return n.name
   if (typeof n.label === 'string' && n.label.length > 0) {
@@ -126,34 +129,34 @@ const getNodeKey = (node: FormSchemaNode, index?: number): string => {
   return typeof index === 'number' ? `node:${index}` : `node:${String(n.type ?? 'unknown')}`
 }
 
-const getChildren = (node: FormSchemaNode): FormSchemaNode[] => {
+const getChildren = (node: FormSchemaNode<TValues>): FormSchemaNode<TValues>[] => {
   if (!isGroup(node)) return []
   return node.children
 }
 
-const isFieldVisible = (node: FormSchemaNode): boolean => {
+const isFieldVisible = (node: FormSchemaNode<TValues>): boolean => {
   if (!isField(node)) return true
   return fieldVisibleMap[node.name] !== false
 }
 
-const getGroupLabel = (node: FormSchemaNode, index: number): string => {
-  const group = node as Partial<GroupSchema>
+const getGroupLabel = (node: FormSchemaNode<TValues>, index: number): string => {
+  const group = node as Partial<GroupSchema<TValues>>
   if (typeof group.label === 'string' && group.label.length > 0) {
     return group.label
   }
   return String(index + 1)
 }
 
-const getStepLabel = (node: FormSchemaNode, index: number): string => {
-  const group = node as Partial<GroupSchema>
+const getStepLabel = (node: FormSchemaNode<TValues>, index: number): string => {
+  const group = node as Partial<GroupSchema<TValues>>
   if (typeof group.label === 'string' && group.label.length > 0) {
     return group.label
   }
   return String(index + 1)
 }
 
-const getGroupLabelText = (node: FormSchemaNode): string => {
-  const group = node as Partial<GroupSchema>
+const getGroupLabelText = (node: FormSchemaNode<TValues>): string => {
+  const group = node as Partial<GroupSchema<TValues>>
   return typeof group.label === 'string' ? group.label : ''
 }
 </script>

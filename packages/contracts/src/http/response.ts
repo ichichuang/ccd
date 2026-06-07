@@ -4,6 +4,10 @@ export interface BackendApiResponseEnvelope<TData = unknown> {
   readonly code: number
   readonly message: string
   readonly data: TData
+  readonly success?: boolean
+  readonly total?: number
+  readonly page?: number
+  readonly pageSize?: number
 }
 
 export interface HttpResponseMetadata {

@@ -3,6 +3,24 @@ import type { BreakpointKey } from '@ccd/design-tokens'
 
 export type FormLayoutMode = 'vertical' | 'horizontal'
 
+export type FormValuesRecord = Record<string, unknown>
+
+export type FieldName<TValues extends FormValuesRecord = FormValuesRecord> = keyof TValues & string
+
+export type FieldValueFor<
+  TValues extends FormValuesRecord,
+  TName extends FieldName<TValues> = FieldName<TValues>,
+> = TValues[TName] | undefined
+
+export type FormFieldValue<TValues extends FormValuesRecord = FormValuesRecord> =
+  FieldValueFor<TValues>
+
+export type FieldProps = Record<string, unknown>
+
+export type FormSubmitValues<TValues extends FormValuesRecord = FormValuesRecord> = {
+  [K in keyof TValues]?: unknown
+} & Record<string, unknown>
+
 export interface GridLayoutSchema {
   type: 'grid'
   /**
@@ -14,26 +32,21 @@ export interface GridLayoutSchema {
 
 export type NodeLayoutSchema = GridLayoutSchema
 
-export type FormFieldValue<TValues extends Record<string, unknown> = Record<string, unknown>> =
-  | TValues[keyof TValues]
-  | undefined
-
 /**
  * 逻辑与计算相关的上下文类型
  */
-export interface LogicContext<TValues extends Record<string, unknown> = Record<string, unknown>> {
+export interface LogicContext<TValues extends FormValuesRecord = FormValuesRecord> {
   form: TValues
-  field: string
+  field: FieldName<TValues>
 }
 
-export type LogicFunction<TValues extends Record<string, unknown> = Record<string, unknown>> = (
+export type LogicFunction<TValues extends FormValuesRecord = FormValuesRecord> = (
   ctx: LogicContext<TValues>
 ) => boolean
 
-export type ComputedFunction<
-  T,
-  TValues extends Record<string, unknown> = Record<string, unknown>,
-> = (ctx: LogicContext<TValues>) => T
+export type ComputedFunction<T, TValues extends FormValuesRecord = FormValuesRecord> = (
+  ctx: LogicContext<TValues>
+) => T
 
 /**
  * 下拉选项与异步加载
@@ -43,7 +56,7 @@ export interface SelectOption {
   value: unknown
 }
 
-export type OptionsLoader<TValues extends Record<string, unknown> = Record<string, unknown>> = (
+export type OptionsLoader<TValues extends FormValuesRecord = FormValuesRecord> = (
   ctx: LogicContext<TValues>
 ) => Promise<SelectOption[]>
 
@@ -52,35 +65,40 @@ export type OptionsLoader<TValues extends Record<string, unknown> = Record<strin
  */
 
 /** Reaction 回调可访问的富上下文 */
-export interface ReactionContext<
-  TValues extends Record<string, unknown> = Record<string, unknown>,
-> {
+export interface ReactionContext<TValues extends FormValuesRecord = FormValuesRecord> {
   /** 当前表单所有字段值的快照 */
   form: TValues
   /** 当前拥有 reactions 的字段名 */
-  field: keyof TValues & string
+  field: FieldName<TValues>
   /** 读取任意字段的 FieldState */
-  getFieldState: (name: string) => FieldState<FormFieldValue<TValues>> | undefined
+  getFieldState: <TName extends FieldName<TValues>>(
+    name: TName
+  ) => FieldState<FieldValueFor<TValues, TName>> | undefined
   /** 设置任意字段的值（在同一事务内，不会触发额外调度） */
-  setFieldValue: (name: string, value: unknown) => void
+  setFieldValue: <TName extends FieldName<TValues>>(
+    name: TName,
+    value: FieldValueFor<TValues, TName>
+  ) => void
   /** 设置任意字段的 props（浅层合并） */
-  setFieldProps: (name: string, props: Record<string, unknown>) => void
+  setFieldProps: <TName extends FieldName<TValues>>(name: TName, props: FieldProps) => void
 }
 
 /** 内置原子动作枚举 */
 export type ReactionAction = 'clearValue' | 'hide' | 'show' | 'disable' | 'enable' | 'custom'
 
 /** 声明式联动规则 */
-export interface FieldReaction<TValues extends Record<string, unknown> = Record<string, unknown>> {
+export type ReactionEffectResult = void | Promise<void>
+
+export interface FieldReaction<TValues extends FormValuesRecord = FormValuesRecord> {
   /** 监听的上游字段名（必须已声明在 deps 中） */
-  watch: (keyof TValues & string) | (keyof TValues & string)[]
+  watch: FieldName<TValues> | FieldName<TValues>[]
   /** 内置动作或 'custom' */
   action: ReactionAction
   /**
    * 当 action 为 'custom' 时执行的自定义副作用。
    * 也可与内置 action 组合：先执行内置动作，再执行 effect。
    */
-  effect?: (ctx: ReactionContext<TValues>) => void | Promise<void>
+  effect?: (ctx: ReactionContext<TValues>) => ReactionEffectResult
 }
 
 /**
@@ -91,7 +109,11 @@ export interface ValidationRule {
   validator: (value: unknown) => boolean | Promise<boolean>
 }
 
-export interface FieldSchema<TValue = unknown> {
+export interface FieldSchema<
+  TValue = unknown,
+  TValues extends FormValuesRecord = FormValuesRecord,
+  TSubmitValue = unknown,
+> {
   name: string
   component: string
   label?: string
@@ -101,21 +123,21 @@ export interface FieldSchema<TValue = unknown> {
   description?: string
   defaultValue?: TValue
   /** Transform the value before it gets submitted (Serialize) */
-  transform?: (value: TValue, formValues: Record<string, unknown>) => unknown
-  props?: Record<string, unknown>
+  transform?: (value: TValue, formValues: TValues) => TSubmitValue
+  props?: FieldProps
   rules?: ValidationRule[]
   deps?: string[]
-  visibleIf?: LogicFunction
-  disabledIf?: LogicFunction
-  requiredIf?: LogicFunction
-  computed?: ComputedFunction<TValue>
-  options?: SelectOption[] | OptionsLoader
+  visibleIf?: LogicFunction<TValues>
+  disabledIf?: LogicFunction<TValues>
+  requiredIf?: LogicFunction<TValues>
+  computed?: ComputedFunction<TValue, TValues>
+  options?: SelectOption[] | OptionsLoader<TValues>
   /**
    * 声明式跨字段联动规则。当 deps 中声明的上游字段值变化时，
    * 引擎按数组顺序执行匹配的 reaction（在 recomputeFields 管线中，
    * 于 visibleIf/disabledIf/requiredIf 之后、OptionsLoader 之前执行）。
    */
-  reactions?: FieldReaction[]
+  reactions?: FieldReaction<TValues>[]
   /**
    * 网格布局中占用的列数（12 栅格制），仅用于渲染层布局，不参与业务逻辑
    * @default 参考 PRO_FORM_DEFAULTS.gridSpan
@@ -129,7 +151,7 @@ export interface FieldSchema<TValue = unknown> {
   }
 }
 
-export interface GroupSchema {
+export interface GroupSchema<TValues extends FormValuesRecord = FormValuesRecord> {
   type: 'group' | 'section' | 'card' | 'collapse' | 'tabs' | 'step'
   /** 规范化阶段可为分组生成内部 name，便于作为稳定 key 使用 */
   name?: string
@@ -140,15 +162,47 @@ export interface GroupSchema {
      */
     span?: ResponsiveSpan
   }
-  children: FormSchemaNode[]
+  children: FormSchemaNode<TValues>[]
 }
 
-export type FormSchemaNode = FieldSchema | GroupSchema
+export type FormSchemaNode<TValues extends FormValuesRecord = FormValuesRecord> =
+  | FieldSchema<unknown, TValues>
+  | GroupSchema<TValues>
 
-export interface FormSchema {
-  fields: FormSchemaNode[]
+export interface FormSchema<TValues extends FormValuesRecord = FormValuesRecord> {
+  fields: FormSchemaNode<TValues>[]
   layout?: NodeLayoutSchema
 }
+
+export interface NormalizedFieldSchema<
+  TValue = unknown,
+  TValues extends FormValuesRecord = FormValuesRecord,
+> extends FieldSchema<TValue, TValues> {
+  component: string
+  props: FieldProps
+  span: ResponsiveSpan
+}
+
+export interface NormalizedGroupSchema<
+  TValues extends FormValuesRecord = FormValuesRecord,
+> extends Omit<GroupSchema<TValues>, 'children' | 'name'> {
+  name: string
+  children: NormalizedFormSchemaNode<TValues>[]
+}
+
+export type NormalizedFormSchemaNode<TValues extends FormValuesRecord = FormValuesRecord> =
+  | NormalizedFieldSchema<unknown, TValues>
+  | NormalizedGroupSchema<TValues>
+
+export interface NormalizedFormSchema<
+  TValues extends FormValuesRecord = FormValuesRecord,
+> extends Omit<FormSchema<TValues>, 'fields'> {
+  fields: NormalizedFormSchemaNode<TValues>[]
+}
+
+export type CompatibleFormSchema<TValues extends FormValuesRecord = FormValuesRecord> =
+  | FormSchema<TValues>
+  | FormSchema<FormValuesRecord>
 /**
  * 字段与表单状态类型
  */
@@ -167,11 +221,11 @@ export interface FieldState<T = unknown> {
    * 异步加载完成后的选项数据（避免写入 Schema 产生 Ghost State）
    * Select/MultiSelect 等组件可优先消费该值。
    */
-  loadedOptions?: unknown[]
+  loadedOptions?: SelectOption[]
   /** 异步选项加载失败时的错误信息 */
   optionsError?: string
   /** 运行时动态 props 覆盖（由 setFieldProps/reaction engine 写入） */
-  dynamicProps?: Record<string, unknown>
+  dynamicProps?: FieldProps
   touched: boolean
   dirty: boolean
   valid: boolean
@@ -179,7 +233,7 @@ export interface FieldState<T = unknown> {
   errors: string[]
 }
 
-export interface FormState<TValues extends Record<string, unknown> = Record<string, unknown>> {
+export interface FormState<TValues extends FormValuesRecord = FormValuesRecord> {
   values: TValues
   errors: Partial<Record<keyof TValues, string[]>>
   touched: Partial<Record<keyof TValues, boolean>>
@@ -201,13 +255,13 @@ export interface FieldContext<T = unknown> {
   reset: () => void
 }
 
-export interface FormContext<TValues extends Record<string, unknown> = Record<string, unknown>> {
+export interface FormContext<TValues extends FormValuesRecord = FormValuesRecord> {
   state: FormState<TValues>
-  setValue<K extends keyof TValues>(field: K, value: TValues[K]): void
+  setValue<K extends FieldName<TValues>>(field: K, value: TValues[K]): void
   setFieldsValue(values: Partial<TValues>): void
-  resetFields(names?: (keyof TValues)[]): void
-  clearValidate(names?: (keyof TValues)[]): void
-  setFieldProps(name: string, props: Record<string, unknown>): void
+  resetFields(names?: FieldName<TValues>[]): void
+  clearValidate(names?: FieldName<TValues>[]): void
+  setFieldProps<K extends FieldName<TValues>>(name: K, props: FieldProps): void
   setValidateOn(validateOn?: 'change' | 'blur' | 'submit'): void
   validate(): Promise<boolean>
   submit(): Promise<void>
@@ -222,14 +276,15 @@ export interface ValidationResult {
   errors: Record<string, string[]>
 }
 
-export type ValidationResolver<TValues extends Record<string, unknown> = Record<string, unknown>> =
-  (values: TValues) => Promise<ValidationResult>
+export type ValidationResolver<TValues extends FormValuesRecord = FormValuesRecord> = (
+  values: TValues
+) => Promise<ValidationResult>
 
 /**
  * Hook 层类型定义（仅类型约束，具体实现位于 engine/hooks）
  */
-export interface UseFormOptions<TValues extends Record<string, unknown> = Record<string, unknown>> {
-  schema: FormSchema
+export interface UseFormOptions<TValues extends FormValuesRecord = FormValuesRecord> {
+  schema: CompatibleFormSchema<TValues>
   initialValues?: Partial<TValues>
   resolver?: ValidationResolver<TValues>
   validateOn?: 'change' | 'blur' | 'submit'
@@ -237,20 +292,20 @@ export interface UseFormOptions<TValues extends Record<string, unknown> = Record
   autoSave?: boolean
 }
 
-export interface UseFormReturn<TValues extends Record<string, unknown> = Record<string, unknown>> {
+export interface UseFormReturn<TValues extends FormValuesRecord = FormValuesRecord> {
   form: FormContext<TValues>
   handleSubmit: (fn: (values: TValues) => void | Promise<void>) => (e?: Event) => Promise<void>
   getValues: () => TValues
   getFormState: () => FormState<TValues>
-  updateSchema: (schema: FormSchema) => void
+  updateSchema: (schema: CompatibleFormSchema<TValues>) => void
   /**
    * 释放当前表单实例持有的资源（定时器等），通常在组件卸载时调用
    */
   teardown: () => void
 }
 
-export interface ProFormProps<TValues extends Record<string, unknown> = Record<string, unknown>> {
-  schema: FormSchema
+export interface ProFormProps<TValues extends FormValuesRecord = FormValuesRecord> {
+  schema: CompatibleFormSchema<TValues>
   initialValues?: Partial<TValues>
   validateOn?: 'change' | 'blur' | 'submit'
   resolver?: ValidationResolver<TValues>
@@ -311,7 +366,7 @@ export interface FieldArrayReturn<TValue = unknown> {
  * ProForm 组件 expose 类型
  * 通过 ref 访问 ProForm 实例时使用
  */
-export interface ProFormExpose<TValues extends Record<string, unknown> = Record<string, unknown>> {
+export interface ProFormExpose<TValues extends FormValuesRecord = FormValuesRecord> {
   form: FormContext<TValues>
   submit: () => Promise<void>
   validate: () => Promise<boolean>
@@ -324,6 +379,7 @@ export interface ProFormExpose<TValues extends Record<string, unknown> = Record<
  */
 export interface FieldComponentProps<T = unknown> {
   modelValue: T
+  inputId?: string
   disabled?: boolean
   readonly?: boolean
   error?: string[]
@@ -341,13 +397,17 @@ export type FieldComponent<T = unknown> = Component<FieldComponentProps<T>>
  * - defaultProps: 该字段类型的默认 UI 配置
  * - propsMapper: 将标准 FieldComponentProps + FieldSchema 映射为组件特定 props
  */
-export interface FieldRegistryItem<TValue = unknown> {
+export interface FieldRegistryItem<
+  TValue = unknown,
+  TFieldProps extends FieldProps = FieldProps,
+  TValues extends FormValuesRecord = FormValuesRecord,
+> {
   component: FieldComponent<TValue>
-  defaultProps?: Record<string, unknown>
+  defaultProps?: TFieldProps
   propsMapper?: (params: {
-    field: FieldSchema<TValue>
+    field: FieldSchema<TValue, TValues>
     componentProps: FieldComponentProps<TValue>
-  }) => Record<string, unknown>
+  }) => TFieldProps
 }
 
 export interface ProFormPluginContext {
@@ -363,10 +423,10 @@ export interface ProFormPlugin {
 }
 
 export type TypedFieldSchema<
-  TValues extends Record<string, unknown>,
+  TValues extends FormValuesRecord,
   K extends keyof TValues & string,
 > = Omit<
-  FieldSchema<TValues[K]>,
+  FieldSchema<TValues[K], TValues>,
   'name' | 'computed' | 'visibleIf' | 'disabledIf' | 'requiredIf' | 'reactions'
 > & {
   name: K
@@ -377,13 +437,13 @@ export type TypedFieldSchema<
   reactions?: FieldReaction<TValues>[]
 }
 
-export type TypedFormSchemaNode<TValues extends Record<string, unknown>> =
+export type TypedFormSchemaNode<TValues extends FormValuesRecord> =
   | {
       [K in keyof TValues & string]: TypedFieldSchema<TValues, K>
     }[keyof TValues & string]
   | (Omit<GroupSchema, 'children'> & { children: TypedFormSchemaNode<TValues>[] })
 
-export interface TypedFormSchema<TValues extends Record<string, unknown>> extends Omit<
+export interface TypedFormSchema<TValues extends FormValuesRecord> extends Omit<
   FormSchema,
   'fields'
 > {
@@ -393,7 +453,7 @@ export interface TypedFormSchema<TValues extends Record<string, unknown>> extend
 /**
  * 编译期 schema 收敛辅助函数（运行时零开销）
  */
-export function defineFormSchema<TValues extends Record<string, unknown>>(
+export function defineFormSchema<TValues extends FormValuesRecord>(
   schema: TypedFormSchema<TValues>
 ): TypedFormSchema<TValues> {
   return schema

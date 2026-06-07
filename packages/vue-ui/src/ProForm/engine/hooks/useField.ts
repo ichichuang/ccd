@@ -1,6 +1,12 @@
 import { inject, onMounted, onUnmounted, reactive, ref } from 'vue'
 import type { Ref } from 'vue'
-import type { FieldState, FormState, UseFieldReturn } from '../types'
+import type {
+  FieldState,
+  FormFieldValue,
+  FormState,
+  FormValuesRecord,
+  UseFieldReturn,
+} from '../types'
 import { PRO_FORM_STATE_KEY } from '../constants'
 import { useFormContext } from './useFormContext'
 import { castValue } from '@ccd/shared-utils'
@@ -12,25 +18,25 @@ import { syncFormState } from './syncFormState'
  * - 不依赖全局 reactive(formValues)
  * - 每个字段仅订阅自身状态更新，保证微渲染
  */
-export function useField<
-  T = unknown,
-  TValues extends Record<string, unknown> = Record<string, unknown>,
->(name: string): UseFieldReturn<T> {
+export function useField<T = unknown, TValues extends FormValuesRecord = FormValuesRecord>(
+  name: string
+): UseFieldReturn<T> {
   const controller = useFormContext<TValues>()
   const store = controller.store
-  const globalState = inject(PRO_FORM_STATE_KEY, null) as FormState<TValues> | null
+  const globalState = castValue<FormState<TValues> | null>(inject(PRO_FORM_STATE_KEY, null))
 
   const initialStateFromStore = store.getFieldState(name)
 
   const value = ref(
     initialStateFromStore ? castValue<T>(initialStateFromStore.value) : castValue<T>(undefined)
-  ) as Ref<T>
+  )
+  const fieldValue = castValue<Ref<T>>(value)
 
   const state = castValue<FieldState<T>>(
     reactive(
       initialStateFromStore ?? {
-        value: value.value,
-        initialValue: value.value,
+        value: fieldValue.value,
+        initialValue: fieldValue.value,
         visible: true,
         disabled: false,
         required: false,
@@ -49,7 +55,7 @@ export function useField<
     const latest = store.getFieldState(name)
     if (!latest) return
 
-    value.value = castValue<T>(latest.value)
+    fieldValue.value = castValue<T>(latest.value)
     state.value = castValue<T>(latest.value)
     state.initialValue = castValue<T>(latest.initialValue)
     state.visible = latest.visible
@@ -80,7 +86,7 @@ export function useField<
 
   const setValue = (newValue: T): void => {
     controller.transactionManager.begin()
-    store.setFieldValue(name, castValue<TValues[keyof TValues] | undefined>(newValue))
+    store.setFieldValue(name, castValue<FormFieldValue<TValues>>(newValue))
     controller.transactionManager.updateField(name)
     controller.transactionManager.commit(() => {
       // 对字段级 Hook 而言，在 flush 时同步最新的字段状态即可
@@ -103,7 +109,7 @@ export function useField<
   }
 
   return {
-    value,
+    value: fieldValue,
     state,
     setValue,
     validate,

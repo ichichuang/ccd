@@ -13,23 +13,28 @@ import { LifecycleManager } from './LifecycleManager'
 import { DraftStorage } from '../persistence/DraftStorage'
 import { PRO_FORM_TIMING_DEFAULTS } from '../config'
 import { deepClone } from '@ccd/shared-utils'
-import { castValue, castRecord } from '@ccd/shared-utils'
+import { castValue } from '@ccd/shared-utils'
 import { PRO_FORM_LOGGER } from '../utils/logger'
 import type {
+  FieldName,
+  FieldProps,
+  CompatibleFormSchema,
   FieldSchema,
   FormFieldValue,
   FormSchema,
   FormSchemaNode,
+  FormSubmitValues,
+  FormValuesRecord,
   FormState,
   FieldState,
+  NormalizedFormSchema,
   ValidationResolver,
   UseFormOptions,
-  OptionsLoader,
   SelectOption,
 } from '../types'
 import type { LifecycleController } from './LifecycleManager'
 
-type ValuesRecord = Record<string, unknown>
+type ValuesRecord = FormValuesRecord
 type FieldValue<TValues extends ValuesRecord> = FormFieldValue<TValues>
 type TimerHandle = ReturnType<typeof globalThis.setTimeout>
 
@@ -41,13 +46,13 @@ type TimerHandle = ReturnType<typeof globalThis.setTimeout>
  * - TransactionManager：批量更新事务
  */
 export class FormController<TValues extends ValuesRecord = ValuesRecord> {
-  schema: FormSchema
+  schema: NormalizedFormSchema<TValues>
   readonly store: SubscriptionStore<TValues>
   readonly graph: DependencyGraph
   readonly scheduler: Scheduler
   readonly transactionManager: TransactionManager
   readonly validationEngine: ValidationEngine<TValues>
-  readonly fieldNames: (keyof TValues & string)[]
+  readonly fieldNames: FieldName<TValues>[]
   public validateOn?: 'change' | 'blur' | 'submit'
   private readonly options: UseFormOptions<TValues>
   private effectiveInitials: Partial<TValues>
@@ -63,11 +68,11 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
   private saveDraftTimer: TimerHandle | null = null
   private isRecomputing = false
   private pendingRecompute: string[] = []
-  public submitCallback?: (values: Record<string, unknown>) => Promise<void> | void
+  public submitCallback?: (values: FormSubmitValues<TValues>) => Promise<void> | void
 
   constructor(options: UseFormOptions<TValues>) {
     this.options = options
-    this.schema = SchemaNormalizer.normalize(options.schema)
+    this.schema = SchemaNormalizer.normalize(castValue<FormSchema<TValues>>(options.schema))
 
     // 持久化草稿恢复：draft 覆盖 initialValues（必须在 SubscriptionStore 初始化之前完成）
     const baseInitialValues: Partial<TValues> = deepClone(options.initialValues ?? {})
@@ -99,9 +104,9 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
     )
     this.lifecycle = new LifecycleManager<TValues>(castValue<LifecycleController<TValues>>(this))
 
-    const flatFields: FieldSchema[] = []
+    const flatFields: FieldSchema<unknown, TValues>[] = []
     this.collectFields(this.schema.fields, flatFields)
-    this.fieldNames = flatFields.map(field => field.name as keyof TValues & string)
+    this.fieldNames = flatFields.map(field => castValue<FieldName<TValues>>(field.name))
 
     // 构建依赖图
     flatFields.forEach(field => {
@@ -115,16 +120,15 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
 
     // 初始化字段状态（initialValues 优先，其次 schema.defaultValue）
     const initialValues = effectiveInitialValues ?? {}
-    const initialsRecord = castRecord(initialValues as Record<string, unknown>)
 
     flatFields.forEach(field => {
-      const fieldName = field.name as keyof TValues & string
+      const fieldName = castValue<FieldName<TValues>>(field.name)
       const hasInitial =
         Object.prototype.hasOwnProperty.call(initialValues, fieldName) &&
-        initialsRecord[fieldName] !== undefined
+        initialValues[fieldName] !== undefined
       const sourceValue: FieldValue<TValues> = hasInitial
-        ? (initialsRecord[fieldName] as TValues[keyof TValues] | undefined)
-        : (field.defaultValue as TValues[keyof TValues] | undefined)
+        ? castValue<FieldValue<TValues>>(initialValues[fieldName])
+        : castValue<FieldValue<TValues>>(field.defaultValue)
       const value: FieldValue<TValues> = deepClone(sourceValue)
 
       const initialState: FieldState<FieldValue<TValues>> = {
@@ -149,13 +153,13 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
     )
   }
 
-  updateSchema(nextSchema: FormSchema): void {
-    const normalizedSchema = SchemaNormalizer.normalize(nextSchema)
-    const flatFields: FieldSchema[] = []
+  updateSchema(nextSchema: CompatibleFormSchema<TValues>): void {
+    const normalizedSchema = SchemaNormalizer.normalize(castValue<FormSchema<TValues>>(nextSchema))
+    const flatFields: FieldSchema<unknown, TValues>[] = []
     this.collectFields(normalizedSchema.fields, flatFields)
 
     const previousFieldNames = [...this.fieldNames]
-    const nextFieldNames = flatFields.map(field => field.name as keyof TValues & string)
+    const nextFieldNames = flatFields.map(field => castValue<FieldName<TValues>>(field.name))
     const nextFieldNameSet = new Set(nextFieldNames)
 
     this.transactionManager.reset()
@@ -191,18 +195,16 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
       }
     })
 
-    const initialsRecord = castRecord(this.effectiveInitials as Record<string, unknown>)
-
     flatFields.forEach(field => {
-      const fieldName = field.name as keyof TValues & string
+      const fieldName = castValue<FieldName<TValues>>(field.name)
       const existingState = this.store.getFieldState(fieldName)
 
       const hasInitial =
         Object.prototype.hasOwnProperty.call(this.effectiveInitials, fieldName) &&
-        initialsRecord[fieldName] !== undefined
+        this.effectiveInitials[fieldName] !== undefined
       const sourceValue: FieldValue<TValues> = hasInitial
-        ? (initialsRecord[fieldName] as TValues[keyof TValues] | undefined)
-        : (field.defaultValue as TValues[keyof TValues] | undefined)
+        ? castValue<FieldValue<TValues>>(this.effectiveInitials[fieldName])
+        : castValue<FieldValue<TValues>>(field.defaultValue)
 
       const nextValue: FieldValue<TValues> = castValue<FieldValue<TValues>>(
         deepClone(existingState ? existingState.value : sourceValue)
@@ -301,12 +303,13 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
       this.options.persistKey &&
       this.options.persistKey.length > 0
     ) {
+      const persistKey = this.options.persistKey
       if (this.saveDraftTimer !== null) {
         globalThis.clearTimeout(this.saveDraftTimer)
       }
 
       this.saveDraftTimer = globalThis.setTimeout(() => {
-        DraftStorage.save(this.options.persistKey as string, castRecord(this.getValues()))
+        DraftStorage.save(persistKey, this.getValues())
         this.saveDraftTimer = null
       }, PRO_FORM_TIMING_DEFAULTS.autoSaveDebounceMs)
     }
@@ -372,12 +375,7 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
       // 3) 声明式联动引擎：在 visibleIf/disabledIf/requiredIf 之后、OptionsLoader 之前执行
       if (schema.reactions && schema.reactions.length > 0) {
         const reactionValues = this.getValues()
-        this.reactionEngine.evaluate(
-          schema,
-          reactionValues,
-          fieldName as keyof TValues & string,
-          changedFieldsSet
-        )
+        this.reactionEngine.evaluate(schema, reactionValues, fieldName, changedFieldsSet)
       }
 
       // 有 deps 的 OptionsLoader：依赖链重算后按最新 form 上下文重新拉取（无 deps 的首次加载见 LifecycleManager）
@@ -404,7 +402,10 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
   /**
    * 收集 Schema 树中的所有 FieldSchema
    */
-  private collectFields(nodes: FormSchemaNode[], result: FieldSchema[]): void {
+  private collectFields(
+    nodes: FormSchemaNode<TValues>[],
+    result: FieldSchema<unknown, TValues>[]
+  ): void {
     nodes.forEach(node => {
       if (this.isFieldSchema(node)) {
         result.push(node)
@@ -414,13 +415,13 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
     })
   }
 
-  private isFieldSchema(node: FormSchemaNode): node is FieldSchema {
+  private isFieldSchema(node: FormSchemaNode<TValues>): node is FieldSchema<unknown, TValues> {
     return 'component' in node && node.component !== undefined
   }
 
   private isGroupSchema(
-    node: FormSchemaNode
-  ): node is Extract<FormSchemaNode, { children: FormSchemaNode[] }> {
+    node: FormSchemaNode<TValues>
+  ): node is Extract<FormSchemaNode<TValues>, { children: FormSchemaNode<TValues>[] }> {
     return 'children' in node && node.children !== undefined
   }
 
@@ -428,16 +429,16 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
    * 从 SubscriptionStore 快照当前表单值
    */
   getValues(): TValues {
-    const values: Record<string, unknown> = {}
+    const values: Partial<TValues> = {}
 
     this.fieldNames.forEach(name => {
       const value = this.store.getFieldValue(name)
       if (value !== undefined) {
-        values[name] = value
+        values[name] = castValue<TValues[typeof name]>(value)
       }
     })
 
-    return values as TValues
+    return castValue<TValues>(values)
   }
 
   /**
@@ -455,12 +456,12 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
       if (!fieldState) continue
 
       if (fieldState.errors.length > 0) {
-        errors[fieldName as keyof TValues] = [...fieldState.errors]
+        errors[fieldName] = [...fieldState.errors]
         valid = false
       }
 
       if (fieldState.touched) {
-        touched[fieldName as keyof TValues] = true
+        touched[fieldName] = true
       }
 
       if (fieldState.dirty) {
@@ -495,7 +496,6 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
     }
 
     const source: Partial<TValues> = this.effectiveInitials
-    const sourceRecord = castRecord(source as Record<string, unknown>)
 
     this.transactionManager.begin()
 
@@ -503,12 +503,11 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
       const schema = this.findFieldSchema(fieldName)
 
       const hasInitial =
-        Object.prototype.hasOwnProperty.call(source, fieldName) &&
-        sourceRecord[fieldName] !== undefined
+        Object.prototype.hasOwnProperty.call(source, fieldName) && source[fieldName] !== undefined
 
       const sourceValue: FieldValue<TValues> = hasInitial
-        ? (sourceRecord[fieldName] as TValues[keyof TValues] | undefined)
-        : (schema?.defaultValue as TValues[keyof TValues] | undefined)
+        ? castValue<FieldValue<TValues>>(source[fieldName])
+        : castValue<FieldValue<TValues>>(schema?.defaultValue)
       const nextValue: FieldValue<TValues> = deepClone(sourceValue)
 
       const existingState = this.store.getFieldState(fieldName) ?? {
@@ -546,9 +545,9 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
   /**
    * 生成提交值快照：对每个字段应用 FieldSchema.transform（Serialize）
    */
-  getSubmitValues(): Record<string, unknown> {
-    const rawValues = castRecord(this.getValues())
-    const submitValues: Record<string, unknown> = {}
+  getSubmitValues(): FormSubmitValues<TValues> {
+    const rawValues = this.getValues()
+    const submitValues: FieldProps = {}
 
     for (const [key, value] of Object.entries(rawValues)) {
       const field = this.findFieldSchema(key)
@@ -564,7 +563,7 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
       }
     }
 
-    return submitValues
+    return castValue<FormSubmitValues<TValues>>(submitValues)
   }
 
   async submit(): Promise<void> {
@@ -583,7 +582,7 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
    * - 显式传入 undefined 允许调用方“清空”字段值
    */
   setFieldsValue(values: Partial<TValues>): void {
-    const keys = Object.keys(values) as (keyof TValues & string)[]
+    const keys = castValue<FieldName<TValues>[]>(Object.keys(values))
     if (keys.length === 0) return
 
     this.transactionManager.begin()
@@ -688,7 +687,7 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
     const field = this.findFieldSchema(fieldName)
     if (!field) return
 
-    const loader = field.options as OptionsLoader<TValues> | undefined
+    const loader = typeof field.options === 'function' ? field.options : undefined
     if (typeof loader !== 'function') return
 
     const existingTimer = this.optionsDebounceTimers.get(fieldName)
@@ -776,12 +775,12 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
    * - 直接修改 schema 中的 FieldSchema
    * - 通过 SubscriptionStore 通知对应字段，配合 Vue 响应式驱动渲染器刷新
    */
-  setFieldProps(name: string, props: Record<string, unknown>): void {
+  setFieldProps(name: FieldName<TValues>, props: FieldProps): void {
     const field = this.findFieldSchema(name)
     if (!field) return
 
     const existingState = this.store.getFieldState(name)
-    const nextProps: Record<string, unknown> = {
+    const nextProps: FieldProps = {
       ...(existingState?.dynamicProps ?? {}),
       ...props,
     }
@@ -798,8 +797,8 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
    */
   private findFieldSchema(
     fieldName: string,
-    nodes: FormSchemaNode[] = this.schema.fields
-  ): FieldSchema | undefined {
+    nodes: FormSchemaNode<TValues>[] = this.schema.fields
+  ): FieldSchema<unknown, TValues> | undefined {
     for (const node of nodes) {
       if (this.isFieldSchema(node) && node.name === fieldName) {
         return node

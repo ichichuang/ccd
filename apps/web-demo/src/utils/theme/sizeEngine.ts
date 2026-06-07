@@ -20,8 +20,8 @@ import type {
   SizePreset,
 } from '@ccd/design-tokens'
 import { SIZE_PERSIST_KEY } from '@/constants/size'
+import { getBreakpointSync, getDeviceTypeSync } from '@/adapters/device.adapter'
 import { unpackDataSync } from '@/utils/safeStorage/core'
-import { getDeviceTypeSync, getBreakpointSync } from '@/utils/deviceSync'
 
 export {
   decideDesignLayoutDimensions as decideLayoutDimensions,

@@ -4,8 +4,8 @@
  * 含主题过渡锁（打破 theme store ↔ useThemeSwitch 循环依赖）
  */
 
+import { getDeviceTypeSync } from '@/adapters/device.adapter'
 import { rgbToHex } from './colors'
-import { getDeviceTypeSync } from '@/utils/deviceSync'
 
 // 主题过渡锁：防止 store.refreshTheme 在动画期间被外部触发（从 useThemeSwitch 抽离，避免循环依赖）
 // ⚠️ 模块级全局状态，按 05-state-boundaries.mdc 应迁入 Pinia，但此处刻意放在模块作用域以打破

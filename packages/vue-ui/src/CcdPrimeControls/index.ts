@@ -8,18 +8,33 @@ import PrimeSelectButton from 'primevue/selectbutton'
 import PrimeTag from 'primevue/tag'
 import PrimeTieredMenu from 'primevue/tieredmenu'
 import PrimeToggleSwitch from 'primevue/toggleswitch'
-import { defineComponent, h, ref, type Component } from 'vue'
+import { defineComponent, h, ref, type Component, type DefineComponent } from 'vue'
+
+export type CcdPrimeControl = DefineComponent<Record<string, unknown>>
+export type CcdPrimeControlWithExpose<TExpose extends object> = CcdPrimeControl &
+  (abstract new (...args: never[]) => TExpose)
+
+export interface CcdPrimeOverlayControlExpose {
+  toggle(event: Event, target?: HTMLElement | null): void
+  show(event: Event, target?: HTMLElement | null): void
+  hide(): void
+}
+
+export interface CcdPrimeAnchoredOverlayControlExpose extends CcdPrimeOverlayControlExpose {
+  container?: unknown
+  target?: unknown
+}
 
 interface PrimeControlForwarding {
   methods?: readonly string[]
   properties?: readonly string[]
 }
 
-function createCcdPrimeControl<TComponent extends Component>(
+function createCcdPrimeControl(
   name: string,
-  component: TComponent,
+  component: Component,
   forwarding: PrimeControlForwarding = {}
-): TComponent {
+): CcdPrimeControl {
   const wrapped = defineComponent({
     name,
     inheritAttrs: false,
@@ -56,7 +71,7 @@ function createCcdPrimeControl<TComponent extends Component>(
     },
   })
 
-  return wrapped as unknown as TComponent
+  return wrapped as CcdPrimeControl
 }
 
 const ccdButton = createCcdPrimeControl('CcdButton', PrimeButton)
@@ -65,14 +80,14 @@ const ccdInputText = createCcdPrimeControl('CcdInputText', PrimeInputText)
 const ccdPanelMenu = createCcdPrimeControl('CcdPanelMenu', PrimePanelMenu)
 const ccdPopover = createCcdPrimeControl('CcdPopover', PrimePopover, {
   methods: ['toggle', 'show', 'hide'],
-})
+}) as CcdPrimeControlWithExpose<CcdPrimeOverlayControlExpose>
 const ccdSelect = createCcdPrimeControl('CcdSelect', PrimeSelect)
 const ccdSelectButton = createCcdPrimeControl('CcdSelectButton', PrimeSelectButton)
 const ccdTag = createCcdPrimeControl('CcdTag', PrimeTag)
 const ccdTieredMenu = createCcdPrimeControl('CcdTieredMenu', PrimeTieredMenu, {
   methods: ['toggle', 'show', 'hide'],
   properties: ['container', 'target'],
-})
+}) as CcdPrimeControlWithExpose<CcdPrimeAnchoredOverlayControlExpose>
 const ccdToggleSwitch = createCcdPrimeControl('CcdToggleSwitch', PrimeToggleSwitch)
 
 export {

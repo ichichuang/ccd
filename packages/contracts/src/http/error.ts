@@ -6,6 +6,7 @@ export type HttpErrorKind =
   | 'client'
   | 'server'
   | 'validation'
+  | 'security'
   | 'unknown'
 
 export interface HttpRequestErrorShape<TDetails = unknown, TCause = unknown> {

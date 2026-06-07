@@ -1,19 +1,22 @@
 import type { DependencyGraph } from '../dependency/DependencyGraph'
 import type { SubscriptionStore } from '../state/SubscriptionStore'
 import type {
+  FieldName,
   FieldSchema,
   FormFieldValue,
   FieldState,
   FormSchema,
   FormSchemaNode,
+  FormValuesRecord,
   ValidationResolver,
 } from '../types'
 import { PRO_FORM_TIMING_DEFAULTS } from '../config'
 import { PRO_FORM_LOGGER } from '../utils/logger'
+import { castValue } from '@ccd/shared-utils'
 
-export class ValidationEngine<TValues extends Record<string, unknown> = Record<string, unknown>> {
-  private readonly fieldMap = new Map<string, FieldSchema<unknown>>()
-  private readonly fieldNames: string[] = []
+export class ValidationEngine<TValues extends FormValuesRecord = FormValuesRecord> {
+  private readonly fieldMap = new Map<string, FieldSchema<unknown, TValues>>()
+  private readonly fieldNames: FieldName<TValues>[] = []
   private readonly validationTimers = new Map<string, ReturnType<typeof globalThis.setTimeout>>()
   private readonly validationTokens = new Map<string, number>()
   private nextValidationToken = 0
@@ -21,18 +24,21 @@ export class ValidationEngine<TValues extends Record<string, unknown> = Record<s
   constructor(
     private readonly store: SubscriptionStore<TValues>,
     private readonly graph: DependencyGraph,
-    schema: FormSchema,
+    schema: FormSchema<TValues>,
     private readonly getValues: () => TValues
   ) {
-    const flatFields: FieldSchema<unknown>[] = []
+    const flatFields: FieldSchema<unknown, TValues>[] = []
     this.collectFields(schema.fields, flatFields)
     flatFields.forEach(field => {
       this.fieldMap.set(field.name, field)
-      this.fieldNames.push(field.name)
+      this.fieldNames.push(castValue<FieldName<TValues>>(field.name))
     })
   }
 
-  private collectFields(nodes: FormSchemaNode[], result: FieldSchema<unknown>[]): void {
+  private collectFields(
+    nodes: FormSchemaNode<TValues>[],
+    result: FieldSchema<unknown, TValues>[]
+  ): void {
     nodes.forEach(node => {
       if (this.isFieldSchema(node)) {
         result.push(node)
@@ -42,26 +48,26 @@ export class ValidationEngine<TValues extends Record<string, unknown> = Record<s
     })
   }
 
-  private isFieldSchema(node: FormSchemaNode): node is FieldSchema<unknown> {
+  private isFieldSchema(node: FormSchemaNode<TValues>): node is FieldSchema<unknown, TValues> {
     return 'component' in node && node.component !== undefined
   }
 
   private isGroupSchema(
-    node: FormSchemaNode
-  ): node is Extract<FormSchemaNode, { children: FormSchemaNode[] }> {
+    node: FormSchemaNode<TValues>
+  ): node is Extract<FormSchemaNode<TValues>, { children: FormSchemaNode<TValues>[] }> {
     return 'children' in node && node.children !== undefined
   }
 
-  replaceSchema(schema: FormSchema): void {
+  replaceSchema(schema: FormSchema<TValues>): void {
     this.teardown()
     this.fieldMap.clear()
     this.fieldNames.length = 0
 
-    const flatFields: FieldSchema<unknown>[] = []
+    const flatFields: FieldSchema<unknown, TValues>[] = []
     this.collectFields(schema.fields, flatFields)
     flatFields.forEach(field => {
       this.fieldMap.set(field.name, field)
-      this.fieldNames.push(field.name)
+      this.fieldNames.push(castValue<FieldName<TValues>>(field.name))
     })
   }
 
@@ -99,7 +105,7 @@ export class ValidationEngine<TValues extends Record<string, unknown> = Record<s
 
   private async runFieldValidation(
     name: string,
-    schema: FieldSchema<unknown>,
+    schema: FieldSchema<unknown, TValues>,
     requestId: number
   ): Promise<boolean> {
     const resetValidatingBeforeAbort = (): void => {

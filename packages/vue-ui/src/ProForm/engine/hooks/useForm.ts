@@ -1,5 +1,12 @@
 import { onBeforeUnmount, provide, reactive } from 'vue'
-import type { FormContext, FormState, UseFormOptions, UseFormReturn } from '../types'
+import type {
+  FormFieldValue,
+  FormContext,
+  FormState,
+  FormValuesRecord,
+  UseFormOptions,
+  UseFormReturn,
+} from '../types'
 import { FormController } from '../core/FormController'
 import { DraftStorage } from '../persistence/DraftStorage'
 import { FORM_CONTROLLER_KEY, PRO_FORM_STATE_KEY } from '../constants'
@@ -14,27 +21,27 @@ import { syncFormState } from './syncFormState'
  * - 通过 provide 暴露给子组件与 useField
  * - 返回类型安全的 FormContext 与 handleSubmit
  */
-export function useForm<TValues extends Record<string, unknown> = Record<string, unknown>>(
+export function useForm<TValues extends FormValuesRecord = FormValuesRecord>(
   options: UseFormOptions<TValues>
 ): UseFormReturn<TValues> {
   const controller = new FormController<TValues>(options)
 
   // 提供 Controller 上下文，供 useField 使用
-  provide(FORM_CONTROLLER_KEY, controller)
+  provide(FORM_CONTROLLER_KEY, castValue<FormController<FormValuesRecord>>(controller))
 
   // 基础表单状态（后续可接入验证与提交中的状态）
   const baseState: FormState<TValues> = controller.getFormState()
   const state = castValue<FormState<TValues>>(reactive(baseState))
 
   // 向渲染层暴露实时表单状态，支持 visibleIf 等逻辑读取
-  provide(PRO_FORM_STATE_KEY, state)
+  provide(PRO_FORM_STATE_KEY, castValue<FormState<FormValuesRecord>>(state))
 
   const formContext: FormContext<TValues> = {
     state,
     setValue(field, value) {
       controller.transactionManager.begin()
-      controller.store.setFieldValue(field as string, value)
-      controller.transactionManager.updateField(field as string)
+      controller.store.setFieldValue(field, castValue<FormFieldValue<TValues>>(value))
+      controller.transactionManager.updateField(field)
       controller.transactionManager.commit(() => {
         syncFormState(controller, state)
       }, controller)
@@ -59,11 +66,11 @@ export function useForm<TValues extends Record<string, unknown> = Record<string,
       syncFormState(controller, state)
     },
     resetFields(names) {
-      controller.resetFields(names?.map(name => name as keyof TValues & string))
+      controller.resetFields(names)
       syncFormState(controller, state)
     },
     clearValidate(names) {
-      controller.clearValidate(names?.map(name => name as keyof TValues & string))
+      controller.clearValidate(names)
       syncFormState(controller, state)
     },
     setFieldProps(name, props) {

@@ -50,3 +50,17 @@ export {
   type RouteAccessRequirement,
   type SafeRedirectParseResult,
 } from './routeAccess.js'
+export {
+  applyLocaleDocumentAttributes,
+  createI18nRuntime,
+  getI18nRuntimeLocale,
+  installI18nRuntime,
+  resolveLocaleDescriptor,
+  resolveSupportedLocale,
+  setI18nRuntimeLocale,
+  type AppI18nRuntime,
+  type ApplyLocaleDocumentAttributesOptions,
+  type CreateI18nRuntimeOptions,
+  type LocaleDescriptor,
+  type LocaleDirection,
+} from './i18nRuntime.js'

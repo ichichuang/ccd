@@ -1,14 +1,4 @@
-import type {
-  CryptoProvider,
-  EnvironmentProvider,
-  FileSystemAdapter,
-  Logger,
-  NetworkClient,
-  NetworkRequest,
-  NetworkResponse,
-  Scheduler,
-  StorageAdapter,
-} from '@ccd/contracts'
+import type { NetworkRequest, NetworkResponse, RuntimeCapabilities } from '@ccd/contracts'
 
 export type {
   CryptoProvider,
@@ -18,20 +8,21 @@ export type {
   NetworkClient,
   NetworkRequest,
   NetworkResponse,
+  RuntimeCapabilities,
+  RuntimeDescriptor,
+  RuntimeKind,
+  RuntimePlatform,
+  ClipboardAdapter,
+  ExternalNavigationAdapter,
+  NotificationAdapter,
+  RuntimeNotification,
+  ShellAdapter,
   ScheduledTask,
   Scheduler,
   StorageAdapter,
 } from '@ccd/contracts'
 
-export interface CoreAdapters {
-  storage: StorageAdapter
-  network: NetworkClient
-  logger: Logger
-  filesystem?: FileSystemAdapter
-  scheduler?: Scheduler
-  crypto?: CryptoProvider
-  environment?: EnvironmentProvider
-}
+export type CoreAdapters = RuntimeCapabilities
 
 export interface CoreRuntime {
   readonly adapters: CoreAdapters

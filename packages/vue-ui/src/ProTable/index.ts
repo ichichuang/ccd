@@ -2,8 +2,13 @@ export { default as ProTable } from './ProTable.vue'
 export { default as ProTableCrudFormModalBody } from './components/ProTableCrudFormModalBody'
 export { default as ProTableCrudViewModalBody } from './components/ProTableCrudViewModalBody'
 export { useProTable } from './engine/hooks/useProTable'
+export { useProTableInfiniteScroll } from './engine/hooks/useProTableInfiniteScroll'
 export { PRO_TABLE_URL_SYNC_ADAPTER_KEY } from './engine/hooks/useProTableUrlSync'
 
+export type {
+  UseProTableInfiniteScrollOptions,
+  UseProTableInfiniteScrollReturn,
+} from './engine/hooks/useProTableInfiniteScroll'
 export type {
   ProTableUrlSyncAdapter,
   UseProTableUrlSyncOptions,

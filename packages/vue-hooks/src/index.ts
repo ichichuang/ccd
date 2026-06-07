@@ -1,6 +1,22 @@
 export { useAppElementSize } from './useAppElementSize.js'
 export type { UseAppElementSizeReturn, UseElementSizeOptions } from './useAppElementSize.js'
+export {
+  resolveBrowserBreakpoint,
+  resolveBrowserDeviceState,
+  resolveBrowserDeviceType,
+  resolveBrowserOsType,
+} from './browserDevice.js'
+export type { BrowserDeviceResolution, BrowserDeviceSnapshot } from './browserDevice.js'
 export { createAutoMittHook } from './createAutoMittHook.js'
+export { useTableUrlSync } from './useTableUrlSync.js'
+export type {
+  TableUrlQuery,
+  TableUrlSyncController,
+  TableUrlSyncControllerState,
+  TableUrlSyncOptions,
+  UseTableUrlSyncOptions,
+  UseTableUrlSyncReturn,
+} from './useTableUrlSync.js'
 export {
   useDragAction,
   useInteraction,
