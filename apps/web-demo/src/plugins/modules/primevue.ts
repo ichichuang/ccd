@@ -10,7 +10,7 @@ import { PRIME_DIALOG_RUNTIME_CONFIG_KEY } from '@ccd/vue-ui'
 
 /**
  * Register PrimeVue v4 (Styled Mode)
- * Uses @primeuix/themes with a custom preset adapted to this template's design system.
+ * Uses @primeuix/themes with a custom preset adapted to the CCD design system.
  * Locale 按当前系统语言设置，运行时切换由 AppPrimeVueGlobals.vue 的 watch 同步。
  */
 export function setupPrimeVue(app: App) {

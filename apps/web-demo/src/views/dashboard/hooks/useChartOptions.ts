@@ -1,8 +1,8 @@
 import type { Ref } from 'vue'
 import type { EChartsOption } from 'echarts'
+import { isRecord } from '@ccd/shared-utils'
 import { useThemeStore, useSizeStore } from '@/stores/modules/system'
 import { getChartSystemVariables, parseEChartsOption } from '@ccd/vue-charts'
-import { isRecord } from '@/utils/guards'
 import type { SystemMetricsDTO } from '../page.state'
 
 const DASHBOARD_CHART_EASING = 'cubicOut'

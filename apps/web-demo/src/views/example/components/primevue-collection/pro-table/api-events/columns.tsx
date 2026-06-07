@@ -1,6 +1,5 @@
 import type { ColumnRenderParams, ProTableColumn } from '@ccd/vue-ui'
-import { DateFormatEnum } from '@/utils/date/types'
-import { DateUtils } from '@/utils/date/dateUtils'
+import { DateFormatEnum, DateUtils } from '@/utils/date'
 
 export interface ApiEventsRow extends Record<string, unknown> {
   id: number

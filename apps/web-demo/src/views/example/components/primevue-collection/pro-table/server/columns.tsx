@@ -1,8 +1,7 @@
 import type { V1UserListItemDTO } from '@/api/example/users'
 import { CcdTag as Tag, type ColumnRenderParams, type ProTableColumn } from '@ccd/vue-ui'
-import { DateFormatEnum } from '@/utils/date/types'
+import { DateFormatEnum, DateUtils } from '@/utils/date'
 import { GENDER, USER_ACCOUNT_STATUS } from '@/constants/enums'
-import { DateUtils } from '@/utils/date/dateUtils'
 
 const GENDER_PILL = 'rounded-sm px-sm py-xs text-xs font-semibold shrink-0'
 

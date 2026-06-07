@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { buildExampleTodoDetailMethod, todoSchema, type TodoDTO } from '@/api/example/todos'
+import AsyncStatePreview from '../shared/AsyncStatePreview.vue'
 
 defineOptions({ name: 'UseHttpRequest' })
 
@@ -161,9 +162,11 @@ const runError = async (): Promise<void> => {
             </div>
             <div class="col-stretch gap-xs min-w-0">
               <div class="text-sm text-muted-foreground">data</div>
-              <div class="material-elevated col-stretch p-md gap-sm bg-muted/30 rounded-md min-w-0">
-                <pre class="text-xs text-foreground text-no-wrap m-0">{{ successJson }}</pre>
-              </div>
+              <AsyncStatePreview
+                :content="successJson"
+                :loading="successLoading"
+                :error-text="successErrorText"
+              />
             </div>
           </div>
         </section>
@@ -194,9 +197,11 @@ const runError = async (): Promise<void> => {
             </div>
             <div class="col-stretch gap-xs min-w-0">
               <div class="text-sm text-muted-foreground">data</div>
-              <div class="material-elevated col-stretch p-md gap-sm bg-muted/30 rounded-md min-w-0">
-                <pre class="text-xs text-foreground text-no-wrap m-0">{{ errorJson }}</pre>
-              </div>
+              <AsyncStatePreview
+                :content="errorJson"
+                :loading="errorLoading"
+                :error-text="errorErrorText"
+              />
             </div>
           </div>
         </section>
@@ -225,9 +230,11 @@ const runError = async (): Promise<void> => {
             </div>
             <div class="col-stretch gap-xs min-w-0">
               <div class="text-sm text-muted-foreground">data</div>
-              <div class="material-elevated col-stretch p-md gap-sm bg-muted/30 rounded-md min-w-0">
-                <pre class="text-xs text-foreground text-no-wrap m-0">{{ immediateJson }}</pre>
-              </div>
+              <AsyncStatePreview
+                :content="immediateJson"
+                :loading="immediateLoading"
+                :error-text="immediateErrorText"
+              />
             </div>
           </div>
         </section>

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-defineOptions({ name: 'UtilsDeviceSync' })
-
-import { getBreakpointSync, getDeviceTypeSync } from '@/utils/deviceSync'
+import { getBreakpointSync, getDeviceTypeSync } from '@/adapters/device.adapter'
 import type { DeviceType } from '@/types/systems/device'
+import ExampleSection from '../shared/ExampleSection.vue'
+
+defineOptions({ name: 'UtilsDeviceSync' })
 
 const deviceType = ref<DeviceType>(getDeviceTypeSync())
 
@@ -47,7 +48,7 @@ watchEffect(() => {
           </div>
         </header>
 
-        <section class="material-elevated col-stretch gap-md min-w-0">
+        <ExampleSection>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-md min-w-0">
             <div class="col-stretch gap-md min-w-0">
               <div class="col-stretch gap-xs min-w-0">
@@ -87,7 +88,7 @@ watchEffect(() => {
               </Message>
             </div>
           </div>
-        </section>
+        </ExampleSection>
       </div>
     </div>
   </div>

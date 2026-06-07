@@ -1,37 +1,12 @@
 // @vitest-environment jsdom
 
-import type { App, Plugin } from 'vue'
+import type { App } from 'vue'
 import { createApp } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-
-interface UseCall {
-  plugin: Plugin
-  options?: unknown
-}
+import { PRIME_DIALOG_RUNTIME_CONFIG_KEY } from '@ccd/vue-ui'
 
 const primevueState = vi.hoisted(() => ({
-  useCalls: [] as UseCall[],
-  directives: [] as string[],
-}))
-
-vi.mock('primevue/config', () => ({
-  default: { install: vi.fn() },
-}))
-
-vi.mock('primevue/toastservice', () => ({
-  default: { install: vi.fn() },
-}))
-
-vi.mock('primevue/confirmationservice', () => ({
-  default: { install: vi.fn() },
-}))
-
-vi.mock('primevue/dialogservice', () => ({
-  default: { install: vi.fn() },
-}))
-
-vi.mock('primevue/tooltip', () => ({
-  default: { mounted: vi.fn() },
+  installPrimeVueRuntime: vi.fn(),
 }))
 
 vi.mock('@/stores', () => ({
@@ -45,78 +20,53 @@ vi.mock('@/stores/modules/system', () => ({
 }))
 
 vi.mock('@ccd/vue-primevue-adapter', () => ({
-  installPrimeVueRuntime: (app: App, { locale }: { locale: unknown }) => {
-    app.use(
-      { install: vi.fn() },
-      {
-        theme: {
-          preset: { semantic: { primary: { 500: '{primary.500}' } } },
-          options: { prefix: 'p', darkModeSelector: '.dark' },
-        },
-        pt: {
-          drawer: { root: { class: 'glass-panel' } },
-          inputtext: { root: { class: 'text-foreground' } },
-          menu: { root: { class: 'text-foreground' } },
-        },
-        ptOptions: { mergeSections: true, mergeProps: true },
-        ripple: true,
-        locale,
-      }
-    )
-    app.use({ install: vi.fn() })
-    app.use({ install: vi.fn() })
-    app.use({ install: vi.fn() })
-    app.directive('tooltip', { mounted: vi.fn() })
-  },
+  installPrimeVueRuntime: primevueState.installPrimeVueRuntime,
 }))
+
+interface ProvideCall {
+  key: unknown
+  value: unknown
+}
 
 function createInstrumentedApp(): App {
   const app = createApp({ render: () => null })
-  const originalUse = app.use.bind(app)
-  const originalDirective = app.directive.bind(app)
+  const provideCalls: ProvideCall[] = []
+  const originalProvide = app.provide.bind(app)
 
-  vi.spyOn(app, 'use').mockImplementation((plugin: Plugin, ...options: unknown[]) => {
-    primevueState.useCalls.push({ plugin, options: options[0] })
-    return originalUse(plugin, ...options)
+  vi.spyOn(app, 'provide').mockImplementation((key, value) => {
+    provideCalls.push({ key, value })
+    return originalProvide(key, value)
   })
-  vi.spyOn(app, 'directive').mockImplementation((name, directive) => {
-    primevueState.directives.push(name)
-    return originalDirective(name, directive)
-  })
+  Reflect.set(app, '__ccdProvideCalls', provideCalls)
 
   return app
 }
 
 describe('setupPrimeVue', () => {
   beforeEach(() => {
-    primevueState.useCalls = []
-    primevueState.directives = []
+    primevueState.installPrimeVueRuntime.mockClear()
   })
 
-  it('installs PrimeVue v4 with design-system pt and services', async () => {
+  it('routes PrimeVue runtime setup through the adapter boundary', async () => {
     const { setupPrimeVue } = await import('./primevue')
     const app = createInstrumentedApp()
 
     setupPrimeVue(app)
 
-    expect(primevueState.useCalls).toHaveLength(4)
-    expect(primevueState.directives).toEqual(['tooltip'])
-
-    const [primevueCall] = primevueState.useCalls
-    expect(primevueCall.options).toMatchObject({
-      theme: {
-        options: {
-          prefix: 'p',
-          darkModeSelector: '.dark',
-        },
-      },
-      ptOptions: {
-        mergeSections: true,
-        mergeProps: true,
-      },
-      ripple: true,
+    expect(primevueState.installPrimeVueRuntime).toHaveBeenCalledOnce()
+    const [targetApp, options] = primevueState.installPrimeVueRuntime.mock.calls[0]
+    expect(targetApp).toBe(app)
+    expect(options).toMatchObject({
+      sizeSource: { mode: 'comfortable' },
     })
-    expect(primevueCall.options).toHaveProperty('pt.drawer.root.class', 'glass-panel')
-    expect(primevueCall.options).toHaveProperty('locale')
+    expect(options.locale).toBeDefined()
+
+    const provideCalls = Reflect.get(app, '__ccdProvideCalls') as ProvideCall[]
+    expect(provideCalls).toHaveLength(1)
+    expect(provideCalls[0].key).toBe(PRIME_DIALOG_RUNTIME_CONFIG_KEY)
+    expect(provideCalls[0].value).toMatchObject({
+      translate: expect.any(Function),
+      isDialogDraggable: expect.any(Function),
+    })
   })
 })

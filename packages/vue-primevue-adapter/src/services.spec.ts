@@ -132,6 +132,45 @@ describe('installPrimeVueRuntime', () => {
     serviceState.directives = []
   })
 
+  it('creates the PrimeVue theme, PassThrough, and runtime config inside the adapter', async () => {
+    const { createPrimeVueAdapterConfig } = await import('./index.js')
+    const locale = {
+      accept: 'OK',
+      dayNames: ['Sunday'],
+      dayNamesShort: ['Sun'],
+      dayNamesMin: ['S'],
+      fileSizeTypes: ['B'],
+      monthNames: ['January'],
+      monthNamesShort: ['Jan'],
+    }
+
+    const config = createPrimeVueAdapterConfig({
+      sizeSource: {
+        sizeName: 'comfortable',
+      },
+      locale,
+    })
+
+    expect(config).toMatchObject({
+      theme: {
+        options: {
+          prefix: 'p',
+          darkModeSelector: '.dark',
+        },
+      },
+      ptOptions: {
+        mergeSections: true,
+        mergeProps: true,
+      },
+      ripple: true,
+      locale,
+    })
+    expect(config.pt).toHaveProperty('button')
+    expect(config.pt).toHaveProperty('drawer')
+    expect(config.pt).toHaveProperty('inputtext')
+    expect(config.pt).toHaveProperty('menu')
+  })
+
   it('installs PrimeVue config before services', async () => {
     const { installPrimeVueRuntime } = await import('./index.js')
     const app = createInstrumentedApp()

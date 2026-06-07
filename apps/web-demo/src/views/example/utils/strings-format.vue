@@ -1,7 +1,8 @@
 <script setup lang="ts">
-defineOptions({ name: 'UtilsStringsFormat' })
-
 import { toKebabCase } from '@ccd/shared-utils'
+import ExampleSection from '../shared/ExampleSection.vue'
+
+defineOptions({ name: 'UtilsStringsFormat' })
 
 const strInput = ref<string | undefined>('HelloWorld')
 const startInput = ref<string | undefined>('')
@@ -52,7 +53,7 @@ watchEffect(() => {
           </div>
         </header>
 
-        <section class="material-elevated col-stretch gap-md min-w-0">
+        <ExampleSection>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-md min-w-0">
             <div class="col-stretch gap-md min-w-0">
               <div class="col-stretch gap-xs min-w-0">
@@ -96,7 +97,7 @@ watchEffect(() => {
               </Message>
             </div>
           </div>
-        </section>
+        </ExampleSection>
       </div>
     </div>
   </div>

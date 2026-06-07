@@ -1,7 +1,8 @@
 <script setup lang="ts">
-defineOptions({ name: 'UtilsTypeCasters' })
-
 import { castValue } from '@ccd/shared-utils'
+import ExampleSection from '../shared/ExampleSection.vue'
+
+defineOptions({ name: 'UtilsTypeCasters' })
 
 const casterInput = ref<string | undefined>('type-narrowing-demo')
 const casterOutput = ref<string>('—')
@@ -43,7 +44,7 @@ watchEffect(() => {
           </div>
         </header>
 
-        <section class="material-elevated col-stretch gap-md min-w-0">
+        <ExampleSection>
           <Message severity="info">
             These utilities act as identity functions at runtime. They are designed exclusively for
             TypeScript boundary type-narrowing and do not mutate the payload.
@@ -67,7 +68,7 @@ watchEffect(() => {
           <div class="text-xs text-muted-foreground">
             你在输入框里输入什么，输出框就会显示什么。任何"类型"效果仅发生在 TypeScript 编译期。
           </div>
-        </section>
+        </ExampleSection>
       </div>
     </div>
   </div>

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-defineOptions({ name: 'UtilsIds' })
-
 import { generateIdFromKey, generateUniqueId } from '@ccd/shared-utils'
+import ExampleSection from '../shared/ExampleSection.vue'
+
+defineOptions({ name: 'UtilsIds' })
 
 const stableKey = ref<string | undefined>('demo-key')
 const stableIdOutput = ref<string>('')
@@ -54,7 +55,7 @@ function regenerateUniqueId(): void {
           </div>
         </header>
 
-        <section class="material-elevated col-stretch gap-md min-w-0">
+        <ExampleSection>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-md min-w-0">
             <div class="col-stretch gap-md min-w-0">
               <div class="col-stretch gap-xs min-w-0">
@@ -94,7 +95,7 @@ function regenerateUniqueId(): void {
               <div class="text-xs text-muted-foreground">点击右上角按钮可重新生成随机 UUID。</div>
             </div>
           </div>
-        </section>
+        </ExampleSection>
       </div>
     </div>
   </div>

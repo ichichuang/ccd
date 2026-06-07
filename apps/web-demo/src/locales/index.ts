@@ -6,20 +6,22 @@ import enUS from '@/locales/lang/en-US'
 import zhCN from '@/locales/lang/zh-CN'
 import { DEFAULT_LOCALE, FALLBACK_LOCALE } from '@/constants/locale'
 import type { LocaleRecord } from '@/locales/lang/utils/mergeLocale'
+import type { LocaleMessageRegistry, LocaleRegistration } from '@ccd/contracts'
+import {
+  createI18nRuntime,
+  getI18nRuntimeLocale,
+  installI18nRuntime,
+  setI18nRuntimeLocale,
+} from '@ccd/vue-app-platform'
+import { applyAppLocaleDocumentAttributes } from '@/adapters/i18n.adapter'
 import type { App } from 'vue'
-import { createI18n } from 'vue-i18n'
 
 // 类型定义
 /** 支持的语言类型 */
 export type SupportedLocale = 'zh-CN' | 'en-US'
 
 /** 语言配置信息 */
-export interface LocaleInfo {
-  key: SupportedLocale
-  name: string
-  flag: string
-  direction: 'ltr' | 'rtl'
-}
+export type LocaleInfo = LocaleRegistration<SupportedLocale>
 /** 语言包类型 */
 export type LocaleMessages = LocaleRecord
 
@@ -40,10 +42,10 @@ export const supportedLocales: LocaleInfo[] = [
 ]
 
 // 语言包映射
-const messages: Record<SupportedLocale, LocaleMessages> = {
+const messages = {
   ['zh-CN']: zhCN,
   ['en-US']: enUS,
-}
+} satisfies LocaleMessageRegistry<SupportedLocale, LocaleMessages>
 
 // 获取默认语言（框架默认中文），从 constants 统一读取
 function getDefaultLocale(): SupportedLocale {
@@ -131,43 +133,32 @@ const datetimeFormats = {
 } as const
 
 // 创建 i18n 实例
-export const i18n = createI18n({
-  legacy: false,
+export const i18n = createI18nRuntime({
   // 默认语言与回退语言均从 constants 中读取，确保单一事实来源
   locale: getDefaultLocale(),
   fallbackLocale: FALLBACK_LOCALE,
   messages,
   datetimeFormats,
   globalInjection: true,
-  silentTranslationWarn: true,
-  silentFallbackWarn: true,
   // 开发环境下启用警告
-  missingWarn: import.meta.env.VITE_APP_ENV === 'development',
-  fallbackWarn: import.meta.env.VITE_APP_ENV === 'development',
+  development: import.meta.env.VITE_APP_ENV === 'development',
 })
 
 // 安装插件
 export function setupI18n(app: App) {
-  app.use(i18n)
+  installI18nRuntime(app, i18n)
 }
 
 // 获取当前语言
 export function getCurrentLocale(): SupportedLocale {
-  const locale = i18n.global.locale.value
-  return supportedLocales.some(item => item.key === locale) ? locale : DEFAULT_LOCALE
+  return getI18nRuntimeLocale(i18n, supportedLocales, DEFAULT_LOCALE)
 }
 
 // 设置语言
 export function setLocale(locale: SupportedLocale) {
   if (messages[locale]) {
-    i18n.global.locale.value = locale
-
-    // 更新HTML lang属性
-    document.documentElement.lang = locale
-
-    // 更新HTML dir属性
-    const localeInfo = supportedLocales.find(item => item.key === locale)
-    document.documentElement.dir = localeInfo?.direction || 'ltr'
+    setI18nRuntimeLocale(i18n, locale)
+    applyAppLocaleDocumentAttributes(locale, supportedLocales)
     // locale-changed 由 store.switchLocale / initLocale 统一派发，此处不再重复派发
   }
 }

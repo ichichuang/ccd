@@ -12,7 +12,7 @@
     }
   },
   "scripts": {
-    "build": "rm -f ../../node_modules/.tmp/packages-vue-primevue-adapter.tsbuildinfo && tsc -p tsconfig.json",
+    "build": "node ../../scripts/clean-artifacts.mjs paths ../../node_modules/.tmp/packages-vue-primevue-adapter.tsbuildinfo && tsc -p tsconfig.json",
     "type-check": "tsc -p tsconfig.json --noEmit",
     "typecheck": "pnpm type-check",
     "test": "pnpm --workspace-root vitest run packages/vue-primevue-adapter/src/services.spec.ts --passWithNoTests"

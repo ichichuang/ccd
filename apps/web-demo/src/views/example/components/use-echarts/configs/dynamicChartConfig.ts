@@ -1,38 +1,35 @@
 import type { EChartsOption } from 'echarts'
 import type { Ref } from 'vue'
-import { useIntervalFn, useTimeoutFn } from '@vueuse/core'
-
-type SeriesWithData = {
-  data?: unknown
-}
+import {
+  useAutoHighlightChartOptionRuntime,
+  useDynamicChartOptionRuntime,
+  usePollingChartOptionRuntime,
+} from '@ccd/vue-charts'
 
 const POLLING_WINDOW_SIZE = 12
 const POLLING_SERIES_ID = 'polling-smooth-line'
 const INITIAL_POLLING_DATA = [18, 19, 21, 22, 24, 23, 25, 27, 28, 30, 29, 31]
 
-function createPollingLabels(step: number): string[] {
-  return Array.from({ length: POLLING_WINDOW_SIZE }, (_, index) => {
-    const offset = step - (POLLING_WINDOW_SIZE - 1) + index
-    if (offset < 0) return `T${offset}`
-    if (offset === 0) return 'T'
-    return `T+${offset}`
-  })
+function createPollingLabel(offset: number): string {
+  if (offset < 0) return `T${offset}`
+  if (offset === 0) return 'T'
+  return `T+${offset}`
 }
 
-function createPollingOption(labels: string[], data: number[]): EChartsOption {
+function createPollingOption(labels: readonly string[], data: readonly number[]): EChartsOption {
   return {
     animation: true,
     animationDurationUpdate: 900,
     animationEasingUpdate: 'linear',
     tooltip: { trigger: 'axis' },
-    xAxis: { type: 'category', boundaryGap: false, data: labels },
+    xAxis: { type: 'category', boundaryGap: false, data: [...labels] },
     yAxis: { type: 'value', min: 0, max: 50 },
     series: [
       {
         id: POLLING_SERIES_ID,
         name: '实时数值',
         type: 'line',
-        data,
+        data: [...data],
         smooth: true,
         showSymbol: false,
         areaStyle: {},
@@ -53,43 +50,33 @@ function createNextPollingValue(previousValue: number, step: number): number {
   return Math.round(clampPollingValue(previousValue + waveDelta + trendDelta))
 }
 
+function createDynamicBarOption(data: readonly number[]): EChartsOption {
+  return {
+    xAxis: { type: 'category', data: ['A', 'B', 'C', 'D', 'E'] },
+    yAxis: { type: 'value' },
+    series: [{ name: '数值', type: 'bar', data: [...data] }],
+  }
+}
+
+function createAutoHighlightOption(): EChartsOption {
+  return {
+    xAxis: { type: 'category', data: ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5'] },
+    yAxis: { type: 'value' },
+    series: [{ name: '数值', type: 'bar', data: [10, 22, 18, 9, 30] }],
+  }
+}
+
 export function useDynamicChartOption(): {
   option: Ref<EChartsOption>
   loading: Ref<boolean>
   refreshData: () => void
 } {
-  const option = ref<EChartsOption>({
-    xAxis: { type: 'category', data: ['A', 'B', 'C', 'D', 'E'] },
-    yAxis: { type: 'value' },
-    series: [{ name: '数值', type: 'bar', data: [10, 22, 18, 9, 30] }],
-  } as EChartsOption)
-  const loading = ref(false)
-
-  function refreshData() {
-    loading.value = true
-    const { start, stop } = useTimeoutFn(
-      () => {
-        option.value = {
-          xAxis: { type: 'category', data: ['A', 'B', 'C', 'D', 'E'] },
-          yAxis: { type: 'value' },
-          series: [
-            {
-              name: '数值',
-              type: 'bar',
-              data: Array.from({ length: 5 }, () => Math.round(Math.random() * 30)),
-            },
-          ],
-        } as EChartsOption
-        loading.value = false
-        stop()
-      },
-      500,
-      { immediate: false }
-    )
-    start()
-  }
-
-  return { option: option as Ref<EChartsOption>, loading, refreshData }
+  return useDynamicChartOptionRuntime({
+    initialOption: createDynamicBarOption([10, 22, 18, 9, 30]),
+    createNextOption: () =>
+      createDynamicBarOption(Array.from({ length: 5 }, () => Math.round(Math.random() * 30))),
+    delayMs: 500,
+  })
 }
 
 /**
@@ -106,59 +93,14 @@ export function usePollingChartOption(): {
   start: () => void
   stop: () => void
 } {
-  const option = ref<EChartsOption>(
-    createPollingOption(createPollingLabels(0), INITIAL_POLLING_DATA)
-  )
-
-  const isRunning = ref(false)
-  const pollingStep = ref(0)
-  const { pause, resume } = useIntervalFn(tick, 5000, { immediate: false })
-
-  function tick() {
-    const seriesSource = option.value.series
-    const seriesArr = Array.isArray(seriesSource)
-      ? seriesSource
-      : seriesSource
-        ? [seriesSource]
-        : []
-    const firstSeries = seriesArr[0] as SeriesWithData | undefined
-    if (!firstSeries || !Array.isArray(firstSeries.data)) {
-      return
-    }
-
-    const currentData = firstSeries.data.filter((item): item is number => typeof item === 'number')
-    const previousValue = currentData.at(-1) ?? INITIAL_POLLING_DATA.at(-1) ?? 30
-    const nextStep = pollingStep.value + 1
-    const nextData = [
-      ...currentData.slice(-(POLLING_WINDOW_SIZE - 1)),
-      createNextPollingValue(previousValue, nextStep),
-    ]
-
-    pollingStep.value = nextStep
-    option.value = createPollingOption(createPollingLabels(nextStep), nextData)
-  }
-
-  const start = () => {
-    if (isRunning.value) return
-    isRunning.value = true
-    tick()
-    resume()
-  }
-
-  const stop = () => {
-    if (!isRunning.value) return
-    isRunning.value = false
-    pause()
-  }
-
-  onUnmounted(stop)
-
-  return {
-    option: option as Ref<EChartsOption>,
-    isRunning,
-    start,
-    stop,
-  }
+  return usePollingChartOptionRuntime({
+    initialData: INITIAL_POLLING_DATA,
+    windowSize: POLLING_WINDOW_SIZE,
+    createLabel: createPollingLabel,
+    createNextValue: createNextPollingValue,
+    createOption: createPollingOption,
+    intervalMs: 5000,
+  })
 }
 
 /**
@@ -175,105 +117,9 @@ export function useAutoHighlightChartOption(): {
   start: (getInstance: () => unknown) => void
   stop: () => void
 } {
-  const option = ref<EChartsOption>({
-    xAxis: { type: 'category', data: ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5'] },
-    yAxis: { type: 'value' },
-    series: [{ name: '数值', type: 'bar', data: [10, 22, 18, 9, 30] }],
-  } as EChartsOption)
-
-  const isRunning = ref(false)
-  const currentIndex = ref(0)
-  let getInstanceFn: (() => unknown) | null = null
-
-  const highlightNext = () => {
-    if (!getInstanceFn) return
-    const instance = getInstanceFn()
-    if (!instance || typeof instance !== 'object') return
-
-    // 类型断言为 ECharts 实例（包含 dispatchAction 方法）
-    const echartsInst = instance as {
-      dispatchAction?: (action: { type: string; seriesIndex?: number; dataIndex?: number }) => void
-    }
-
-    if (!echartsInst.dispatchAction) return
-
-    const xAxis = Array.isArray(option.value.xAxis) ? option.value.xAxis[0] : option.value.xAxis
-    if (!xAxis || xAxis.type !== 'category' || !Array.isArray(xAxis.data)) return
-
-    const dataLength = xAxis.data.length
-    if (dataLength === 0) return
-
-    // 先清除所有高亮
-    echartsInst.dispatchAction({ type: 'downplay', seriesIndex: 0 })
-    echartsInst.dispatchAction({ type: 'hideTip' })
-
-    // 高亮当前索引的数据项
-    echartsInst.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: currentIndex.value })
-    echartsInst.dispatchAction({
-      type: 'updateAxisPointer',
-      seriesIndex: 0,
-      dataIndex: currentIndex.value,
-    })
-    echartsInst.dispatchAction({ type: 'showTip', seriesIndex: 0, dataIndex: currentIndex.value })
-
-    // 切换到下一个索引（循环）
-    currentIndex.value = (currentIndex.value + 1) % dataLength
-  }
-  const { pause, resume } = useIntervalFn(highlightNext, 5000, { immediate: false })
-
-  const start = (getInstance: () => unknown) => {
-    if (isRunning.value) return
-    const instance = getInstance()
-    if (!instance || typeof instance !== 'object') {
-      console.warn('[useAutoHighlightChartOption] start aborted: chart instance is unavailable')
-      return
-    }
-
-    const echartsInst = instance as {
-      dispatchAction?: (action: { type: string; seriesIndex?: number; dataIndex?: number }) => void
-    }
-    if (!echartsInst.dispatchAction) {
-      console.warn('[useAutoHighlightChartOption] start aborted: dispatchAction is unavailable')
-      return
-    }
-
-    getInstanceFn = getInstance
-    isRunning.value = true
-    currentIndex.value = 0
-    // 立即执行一次，然后每 5 秒执行一次
-    nextTick(() => {
-      highlightNext()
-      resume()
-    })
-  }
-
-  const stop = () => {
-    if (!isRunning.value) return
-    isRunning.value = false
-    pause()
-    // 清除高亮
-    if (getInstanceFn) {
-      const instance = getInstanceFn()
-      if (instance && typeof instance === 'object') {
-        const echartsInst = instance as {
-          dispatchAction?: (action: { type: string; seriesIndex?: number }) => void
-        }
-        if (echartsInst.dispatchAction) {
-          echartsInst.dispatchAction({ type: 'downplay', seriesIndex: 0 })
-          echartsInst.dispatchAction({ type: 'hideTip' })
-        }
-      }
-    }
-    currentIndex.value = 0
-    getInstanceFn = null
-  }
-
-  onUnmounted(stop)
-
-  return {
-    option: option as Ref<EChartsOption>,
-    isRunning,
-    start,
-    stop,
-  }
+  return useAutoHighlightChartOptionRuntime({
+    option: createAutoHighlightOption(),
+    intervalMs: 5000,
+    warn: message => console.warn(message),
+  })
 }

@@ -15,6 +15,7 @@ import {
   getDefaultMarkLineConfig,
   getDefaultVisualMapConfig,
   getDefaultBrushConfig,
+  unwrapChartRef,
 } from '@ccd/vue-charts'
 import {
   lineOption as basicLineOption,
@@ -44,14 +45,6 @@ import { customThemeOption } from './configs/customThemeConfig'
 import { eventsRefOption } from './configs/eventsRefConfig'
 import GlobalControls from './components/GlobalControls.vue'
 import ChartDemoCard from './components/ChartDemoCard.vue'
-
-/** Vue 3：模板 ref 处于 v-for 祖先内时，.value 可能为组件实例数组 */
-function unwrapChartRef(
-  refVal: ChartInstance | ChartInstance[] | null | undefined
-): ChartInstance | null {
-  if (!refVal) return null
-  return Array.isArray(refVal) ? (refVal[0] ?? null) : refVal
-}
 
 type TabKey = 'basic' | 'dynamic' | 'advanced' | 'connect' | 'customTheme' | 'eventsRef'
 const TAB_KEYS = ['basic', 'dynamic', 'advanced', 'connect', 'customTheme', 'eventsRef'] as const

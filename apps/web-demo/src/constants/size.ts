@@ -16,7 +16,7 @@ function resolveSizePersistKey(): string {
     return 'ccd-test-storage-size'
   }
 
-  return import.meta.env?.DEV ? 'app-template-storage-dev-size' : 'ccd-storage-size'
+  return import.meta.env?.DEV ? 'ccd-storage-dev-size' : 'ccd-storage-size'
 }
 
 /** Size Store 持久化 key（app-owned persisted state adapter） */
