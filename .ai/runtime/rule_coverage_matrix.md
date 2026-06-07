@@ -26,12 +26,12 @@
 
 ## Contradictions and stale seams
 
-1. `.ai/rules/integrations/04-safe-storage.mdc` bans native browser storage for business code but shows wrapper internals using `localStorage`; clarify that only approved infrastructure may touch native storage.
-2. `.ai/rules/core/00-root-gatekeeper.mdc` prioritizes VueUse for browser APIs, while VueUse `useFetch` and storage composables are restricted for business HTTP/storage; add explicit exclusions to the priority chain.
-3. `.ai/rules/core/08-vue-template-strictness.mdc` demonstrates `props.item as UserInfo`, while `.ai/rules/core/04-type-safety-mutations.mdc` bans business `as Type`; replace the example with a type-caster pattern.
+1. RESOLVED: `.ai/rules/integrations/04-safe-storage.mdc` now clarifies that only approved infrastructure may touch native storage, and its usage example routes through safeStorage facade helpers instead of direct `localStorage` calls.
+2. RESOLVED: `.ai/rules/core/00-root-gatekeeper.mdc` now explicitly excludes VueUse `useFetch` and storage composables from the generic VueUse priority when business HTTP/storage laws apply.
+3. RESOLVED: `.ai/rules/core/08-vue-template-strictness.mdc` now demonstrates `castValue<T>()` inside `<script setup>` instead of direct `props.item as UserInfo` or `value.value as string` assertions.
 4. RESOLVED: `.ai/rules/design-system/02-size-density-system.mdc` now marks `sidebarCollapsedWidth` as geometry-derived and documents the shared collapsed sidebar icon-anchor contract.
-5. `.ai/rules/components/02-pro-components.mdc` presents A1 as the default admin business-view archetype, while scaffold detail output uses an A2 inspector archetype; bless the scaffold archetype or narrow the A1 mandate.
-6. Design-token, color, border, z-index, and semantic-family laws are repeated across several design-system rule files; keep one canonical table and make companion files reference it to reduce drift.
+5. RESOLVED: `.ai/rules/components/02-pro-components.mdc` now narrows A1 to table/form/settings/CRUD views and explicitly approves scaffolded `--kind detail` pages as A2-sidebar-inspector detail/inspection variants.
+6. RESOLVED: `.ai/rules/design-system/01-design-tokens.mdc` is now the canonical rule file for token family names, semantic tiers, border composition, and sizing fallback; companion design-system rules explicitly defer duplicated token references to it.
 
 ## Owner-decision backlog
 

@@ -1,5 +1,5 @@
 ---
-description: Bans all native browser storage APIs for business data. Mandates AES+LZ-String encrypted wrappers from @/utils/safeStorage and createPiniaEncryptedSerializer for Pinia persistence.
+description: Bans native browser storage APIs in business code. Mandates AES+LZ-String encrypted wrappers from @/utils/safeStorage and createPiniaEncryptedSerializer for Pinia persistence.
 globs: ["src/**/*.ts", "src/**/*.vue", "src/**/*.tsx"]
 ---
 
@@ -19,19 +19,31 @@ The following native browser APIs are **STRICTLY FORBIDDEN** anywhere business d
 
 **Why:** All persisted data is AES-encrypted + LZ-String compressed. Bypassing these wrappers exposes tokens, route configs, and user preferences in plaintext localStorage — a direct security violation.
 
+Native `localStorage` / `sessionStorage` calls are allowed only in approved infrastructure boundaries:
+- `src/utils/safeStorage/**` owns the concrete browser storage access and storage maintenance helpers.
+- Documented first-paint/runtime exceptions in this file may use native storage only for the exact keys and payload classes listed below.
+- Pinia persisted-state configuration may pass a native storage object only when paired with `createPiniaEncryptedSerializer()`.
+
+Business code MUST call the safeStorage facade or an approved store/sync abstraction. Do not copy native storage calls from wrapper internals into API, view, hook, or component code.
+
 ## CORRECT USAGE
 
 ```typescript
-import { packDataSync, unpackDataSync } from '@/utils/safeStorage'
+import {
+  packDataSync,
+  readLocalStorageValue,
+  unpackDataSync,
+  writeLocalStorageValue,
+} from '@/utils/safeStorage'
 
 const secret = import.meta.env.VITE_APP_SECRET
 
 // Writing
 const encrypted = packDataSync(userData, secret)
-localStorage.setItem('my-key', encrypted)
+writeLocalStorageValue('my-key', encrypted)
 
 // Reading
-const raw = localStorage.getItem('my-key') ?? ''
+const raw = readLocalStorageValue('my-key') ?? ''
 const data = unpackDataSync<UserData>(raw, secret)  // Returns T | null
 ```
 

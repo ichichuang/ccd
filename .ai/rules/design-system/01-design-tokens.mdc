@@ -4,6 +4,18 @@ globs: ["src/**/*.{vue,tsx,ts,css,scss}"]
 ---
 # Design Tokens: Color & Size System
 
+## Canonical Rule File
+
+This file is the canonical human-readable rule for design-token family names, semantic color tiers, border composition, and source-authored sizing fallback.
+
+Companion rule files may repeat short operational checklists for local context:
+- `00-unocss-guardrails.mdc` owns UnoCSS shortcut and anti-hallucination enforcement.
+- `02-size-density-system.mdc` owns density runtime and size-engine details.
+- `03-material-system.mdc` owns material, glass, elevation, z-index, and motion constraints.
+- `05-semantic-color-usage-contract.mdc` owns semantic color naming and component severity mapping details.
+
+If a companion rule's duplicated token table or example drifts from this file, this file wins unless the runtime source files are intentionally updated first.
+
 ## Core Philosophy (CRITICAL)
 - Our system uses a centralized Design Token architecture driven by CSS Variables.
 - UnoCSS and PrimeVue are strictly mapped to these variables.

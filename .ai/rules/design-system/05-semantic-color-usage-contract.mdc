@@ -7,6 +7,7 @@ alwaysApply: false
 
 ## Scope & SSOT
 - This rule constrains AI color decisions across Theme tokens, UnoCSS classes, and component severity usage.
+- Rule-file canonicality: `.ai/rules/design-system/01-design-tokens.mdc` is the human-readable SSOT for token family names, semantic tiers, border composition, and source-authored sizing fallback. This file owns semantic color naming and severity mapping details.
 - Source of truth:
   - `src/types/systems/theme.d.ts`
   - `src/utils/theme/metadata.ts`

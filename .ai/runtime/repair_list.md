@@ -1,44 +1,39 @@
 # CCD Runtime Repair Ledger
 
-> 中文注释：这是给 AI / Codex 使用的新版 `.ai/runtime/repair_list.md` 草案。建议先手动替换到 `.ai/runtime/repair_list.md`，再让 Codex 按本文底部的执行顺序升级 `.txt` 到 `.md` 的架构配置。
-
 - Target path: `.ai/runtime/repair_list.md`
-- Replacement target: legacy `.ai/runtime/repair_list.txt`
-- Template target: `.ai/runtime/repair_list.template.md`
+- Template source: `.ai/runtime/repair_list.template.md`
+- Owner decisions: `.ai/runtime/owner_decisions.md`
+- Rule coverage: `.ai/runtime/rule_coverage_matrix.md`
 - Generated JSON target: `.ai/runtime/repair-ledger.json`
-- Generated date: 2026-05-27
+- Runtime state policy: `.ai/runtime/repair_list.md` is local runtime state; `pnpm ai:sync` may create it from `.ai/runtime/repair_list.template.md` when missing, but must not overwrite it once it exists.
+- Last reorganized: 2026-06-05
 - Owner decision: keep the current CCD architecture and perform staged modernization, not a full rebuild.
 
 ## 0. Purpose
 
 This ledger is the canonical AI-readable repair and modernization plan for CCD. It consolidates:
 
-1. Existing local runtime repair tasks from the legacy repair ledger template.
-2. Current architecture defects found during repository analysis.
-3. Modernization work needed for Vite, Vue, UnoCSS, PrimeVue, HTTP, package exports, and GitHub governance.
-4. A safe execution order that preserves CCD's deterministic multi-runtime platform architecture.
+1. Repository audit findings from the legacy flat repair list.
+2. Architecture defects and modernization work tracked by the template.
+3. Owner decision constraints from `.ai/runtime/owner_decisions.md`.
+4. Guard and rule-coverage backlog from `.ai/runtime/rule_coverage_matrix.md`.
 
 Do not treat this document as a normal issue list. It is an execution ledger for large AI-assisted refactors. Every item must be either open, completed, or explicitly deferred.
 
 ## 1. Ledger Format Contract
 
-The new Markdown ledger format uses standard GitHub-style tasks:
-
 - `[ ]` means open.
 - `[x]` means completed and validated.
 - Each actionable task must start with `- [ ] [Module]` or `- [x] [Module]`.
-- The `Module` label should include priority when possible, for example `[P0-Ledger]`, `[P1-UIBoundary]`, `[P2-Vite8]`.
-- Do not mark a task complete until the implementation and relevant validation commands pass.
+- The `Module` label must include priority, for example `[P0-Ledger]`, `[P1-RouteModule]`, `[P2-Vite8]`.
+- Do not mark a task complete until implementation and relevant validation commands pass.
 
-Parser compatibility requirement:
+Parser compatibility:
 
-- `scripts/migrate-ledger.mjs` must parse both the new Markdown format and the legacy icon format during the migration window.
-- New preferred line format: `- [ ] [P0-Module] Task description`.
-- Legacy accepted line format during migration: `[⬜️] [P0-Module] Task description` and `[✅] [P0-Module] Task description`.
+- `scripts/migrate-ledger.mjs` must parse `- [ ] [Module] Task` and `- [x] [Module] Task`.
+- Legacy icon lines `[⬜️]` / `[✅]` remain accepted during migration only.
 
 ## 2. Architectural Non-Negotiables
-
-CCD must preserve these invariants:
 
 - `packages/contracts` contains interfaces, DTOs, and cross-runtime contracts only.
 - `packages/core` remains runtime-neutral and must not become a frontend utility bucket.
@@ -52,313 +47,380 @@ CCD must preserve these invariants:
 
 ## 3. Repository Directory Map
 
-Use this map before editing.
-
-| Area | Current responsibility | Main paths |
-|---|---|---|
-| AI protocol and rules | AI execution contract, preflight, rules, adapters | `.ai/protocol/**`, `.ai/rules/**`, `.ai/skills/**`, `AGENTS.md`, `CLAUDE.md` |
-| Runtime ledger | Local repair tracking and generated ledger JSON | `.ai/runtime/repair_list.md`, `.ai/runtime/repair_list.template.md`, `.ai/runtime/repair-ledger.json` |
-| AI scripts | Sync, doctor, preflight, migration, architecture guard | `scripts/ai-sync.mjs`, `scripts/ai-doctor.mjs`, `scripts/codex-preflight.mjs`, `scripts/migrate-ledger.mjs`, `scripts/ai-architecture-guard.mjs` |
-| Architecture contracts | Human and AI architecture contracts | `docs/en/architecture-contract.md`, `docs/en/governance-contract.md`, `docs/governance/**` |
-| Contracts | Runtime-neutral interfaces and DTOs | `packages/contracts/**` |
-| Core | Runtime-neutral platform facade | `packages/core/**` |
-| Frontend platform | Tokens, UnoCSS preset, hooks, UI primitives, chart platform | `packages/design-tokens/**`, `packages/unocss-preset/**`, `packages/vue-hooks/**`, `packages/vue-ui/**`, `packages/vue-charts/**` |
-| PrimeVue adapter | PrimeVue-specific theme and integration layer | `packages/vue-primevue-adapter/**` |
-| Web app | Browser app shell, routes, stores, views, app adapters | `apps/web-demo/**` |
-| Desktop app | Tauri shell and desktop adapter | `apps/desktop/**`, `apps/desktop/src-tauri/**` |
-| CI / deployment | GitHub Actions, Vercel, Pages | `.github/workflows/**`, `vercel.json` if present |
+| Area                   | Current responsibility                                      | Main paths                                                                                                                                       |
+| ---------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| AI protocol and rules  | AI execution contract, preflight, rules, adapters           | `.ai/protocol/**`, `.ai/rules/**`, `.ai/skills/**`, `AGENTS.md`, `CLAUDE.md`                                                                     |
+| Runtime ledger         | Local repair tracking and generated ledger JSON             | `.ai/runtime/repair_list.md`, `.ai/runtime/repair_list.template.md`, `.ai/runtime/repair-ledger.json`                                            |
+| AI scripts             | Sync, doctor, preflight, migration, architecture guard      | `scripts/ai-sync.mjs`, `scripts/ai-doctor.mjs`, `scripts/codex-preflight.mjs`, `scripts/migrate-ledger.mjs`, `scripts/ai-architecture-guard.mjs` |
+| Architecture contracts | Human and AI architecture contracts                         | `docs/en/architecture-contract.md`, `docs/en/governance-contract.md`, `docs/governance/**`                                                       |
+| Contracts              | Runtime-neutral interfaces and DTOs                         | `packages/contracts/**`                                                                                                                          |
+| Core                   | Runtime-neutral platform facade                             | `packages/core/**`                                                                                                                               |
+| Frontend platform      | Tokens, UnoCSS preset, hooks, UI primitives, chart platform | `packages/design-tokens/**`, `packages/unocss-preset/**`, `packages/vue-hooks/**`, `packages/vue-ui/**`, `packages/vue-charts/**`                |
+| PrimeVue adapter       | PrimeVue-specific theme and integration layer               | `packages/vue-primevue-adapter/**`                                                                                                               |
+| Web-demo app           | browser `web-demo` application shell, routes, stores, views, app adapters, and app-level plugin wiring | `apps/web-demo/**`                                                                                                                               |
+| Desktop app            | dedicated Tauri desktop runtime shell with its own frontend entry, desktop adapters, and `src-tauri` backend boundary | `apps/desktop/**`, `apps/desktop/src-tauri/**`                                                                                                   |
+| CI / deployment        | GitHub Actions, Vercel, Pages                               | `.github/workflows/**`, `vercel.json` if present                                                                                                 |
 
 ## 4. Priority Overview
 
-| Priority | Meaning | Action policy |
-|---|---|---|
-| P0 | Blocking governance, parser, package boundary, or type-check repair | Fix before broad modernization |
-| P1 | Architecture boundary and platform consistency | Fix before dependency or UI expansion |
-| P2 | Modernization and dependency lanes | Execute in isolated branches |
-| P3 | UI flow refactors and feature surface polish | Execute after P0/P1 stabilize |
-| P4 | Deferred strategic work | Do not implement unless prerequisites are met |
+| Priority | Meaning                                                             | Action policy                                 |
+| -------- | ------------------------------------------------------------------- | --------------------------------------------- |
+| P0       | Blocking governance, parser, package boundary, or type-check repair | Fix before broad modernization                |
+| P1       | Architecture boundary, route integrity, and platform consistency    | Fix before dependency or UI expansion         |
+| P2       | Modernization, build orchestration, and dependency lanes            | Execute in isolated branches                  |
+| P3       | UI flow refactors, documentation polish, and secondary test debt    | Execute after P0/P1 stabilize                 |
+| P4       | Deferred strategic work                                             | Do not implement unless prerequisites are met |
 
-## 5. P0 — Ledger Markdown Migration
+## 5. P0 — Ledger and Governance Surface
 
-Rationale: the current repo uses a versioned `.txt` repair ledger template and generates a local `.txt` ledger. The requested target is Markdown. This is a governance migration, not a content-only rename.
-
-### Current defect
-
-- The local runtime ledger is currently referenced as `.ai/runtime/repair_list.txt` in AI protocol, core rules, doctor, sync, preflight, migration script, docs, and owner decision log.
-- `scripts/ai-sync.mjs` currently creates `.ai/runtime/repair_list.txt` from `.ai/runtime/repair_list.template.txt`.
-- `scripts/migrate-ledger.mjs` currently reads `.ai/runtime/repair_list.txt` and writes `.ai/runtime/repair-ledger.json`.
-- `scripts/ai-doctor.mjs` and `scripts/codex-preflight.mjs` currently require the `.txt` template and `.txt` runtime file.
-
-### Required target state
-
-- `.ai/runtime/repair_list.md` is the local runtime ledger.
-- `.ai/runtime/repair_list.template.md` is the versioned template.
-- `.ai/runtime/repair_list.template.txt` is retired after migration.
-- `.ai/runtime/repair_list.txt` is no longer required by doctor or preflight.
-- `repair-ledger.json` is generated from the Markdown ledger.
-- During the transition, parsers may accept legacy icon-style task lines to avoid losing existing content.
+Rationale: the runtime ledger must remain machine-parseable and aligned with AI protocol references.
 
 ### Tasks
 
-- [x] [P0-Ledger-Template] Rename or replace `.ai/runtime/repair_list.template.txt` with `.ai/runtime/repair_list.template.md` and use this document as the new template content.
+- [x] [P0-Ledger-Template] Ensure `.ai/runtime/repair_list.template.md` remains the versioned template and matches this ledger contract.
 - [x] [P0-Ledger-Local] Ensure `pnpm ai:sync` creates `.ai/runtime/repair_list.md` from `.ai/runtime/repair_list.template.md` only when the local file does not already exist.
 - [x] [P0-Ledger-NoOverwrite] Preserve the local runtime ledger during `ai:sync`; never overwrite `.ai/runtime/repair_list.md` once it exists.
-- [x] [P0-Ledger-MigrateScript] Update `scripts/migrate-ledger.mjs` input from `.ai/runtime/repair_list.txt` to `.ai/runtime/repair_list.md`.
-- [x] [P0-Ledger-Parser] Update `scripts/migrate-ledger.mjs` to parse Markdown task lines: `- [ ] [Module] Task` and `- [x] [Module] Task`.
+- [x] [P0-Ledger-MigrateScript] Ensure `scripts/migrate-ledger.mjs` reads `.ai/runtime/repair_list.md` and writes `.ai/runtime/repair-ledger.json`.
+- [x] [P0-Ledger-Parser] Ensure `scripts/migrate-ledger.mjs` parses Markdown task lines: `- [ ] [Module] Task` and `- [x] [Module] Task`.
 - [x] [P0-Ledger-LegacyParser] Keep temporary parser support for legacy `[⬜️]` and `[✅]` lines until no legacy content remains.
-- [x] [P0-Ledger-JsonSource] Ensure `repair-ledger.json.source` records `.ai/runtime/repair_list.md`.
-- [x] [P0-Ledger-AiDoctor] Update `scripts/ai-doctor.mjs` canonical and local runtime checks from `.txt` to `.md`.
-- [x] [P0-Ledger-AiDoctorOpen] Update `pnpm ai:doctor --open` to read `.ai/runtime/repair_list.md` and group open Markdown tasks.
-- [x] [P0-Ledger-CodexPreflight] Update `scripts/codex-preflight.mjs` required paths from `.txt` to `.md`.
-- [x] [P0-Ledger-Protocol] Update `.ai/protocol/AGENTS.core.md` from `.ai/runtime/*.template.txt` and `repair_list.txt` to `.ai/runtime/*.template.md` and `repair_list.md`.
-- [x] [P0-Ledger-Rule] Update `.ai/rules/core/00-global-architect.mdc` ledger mandate to `.ai/runtime/repair_list.md`.
-- [x] [P0-Ledger-Docs] Update all docs, rules, workflow comments, VS Code settings, and owner decision references that mention `repair_list.txt`.
-- [x] [P0-Ledger-Search] Run a full repository search for `repair_list.txt`, `repair_list.template.txt`, and `.template.txt` references before completing the migration.
-- [x] [P0-Ledger-Validation] Run `pnpm ai:sync`, `pnpm ai:doctor`, `pnpm codex:preflight`, and `pnpm governance:gate` after the migration.
+- [x] [P0-Ledger-Validation] Run `pnpm ai:sync`, `pnpm ai:doctor`, `pnpm codex:preflight`, and `pnpm governance:gate` after ledger edits.
 
-## 6. P0 — Existing Type and SFC Repair Surface
+## 6. P0 — Type, SFC, and Package Export Blockers
 
-Rationale: current legacy repair template already records blocking type and SFC issues. These should stay ahead of broad library modernization.
+Rationale: blocking type and package-boundary defects must stay ahead of broad modernization.
+
+Residual type status after P0-SFC and P0-Verify: `pnpm --filter @ccd/web-demo type-check` and `pnpm type-check` both pass with zero reported errors, so no residual type errors remain to record.
 
 ### Tasks
 
 - [x] [P0-SFC] Move `defineOptions()` below top-level imports in `apps/web-demo/src/components/ProForm/renderers/ProFormNode.vue`, `apps/web-demo/src/components/ProTable/ProTable.vue`, and `apps/web-demo/src/components/ProTable/VirtualGridRenderer.vue` so the SFC parser restores module scope and downstream imports resolve.
 - [x] [P0-Verify] Re-run `pnpm type-check` after the SFC fixes to confirm the error count collapses before touching secondary typing debt.
-- [x] [P0-RepairLedger] Record residual type errors in `.ai/runtime/repair_list.md` after the focused SFC fix; residual TypeScript errors are currently none after the P0-SFC fix and full workspace `pnpm type-check`.
-- [x] [P2-TurboOutputs] Verified Turbo build outputs for `@ccd/vue-charts#build` and `@ccd/vue-ui#build`: root `turbo.json` declares `build.outputs: ["dist/**"]`, both packages export `./dist/index.js` and `./dist/index.d.ts`, `pnpm ci:prepare-internal` and `pnpm build:shared-config` passed, and the M1-T3 warning scan found no no-output/cache-warning noise.
+- [x] [P0-RepairLedger] Record residual type errors in this ledger after the focused SFC fix.
+- [x] [P0-PackageExports-VueUI] Update `packages/vue-ui/package.json` exports to `./dist/index.js` and `./dist/index.d.ts` if the package build can emit these outputs.
+- [x] [P0-PackageExports-Build] Add or adjust the `packages/vue-ui` build command so the package emits deterministic `dist` output instead of type-check-only source exports.
+- [x] [P0-PackageExports-Audit] Audit all `packages/*/package.json` manifests for direct `src` exports and align them with the build-output rule.
+- [x] [P0-PackageExports-Policy] Add explicit exports, types, and build artifact policies for every shared package to prevent accidental internal imports (`packages/*/package.json`).
+- [x] [P0-PackageExports-Validation] Run `pnpm ci:prepare-internal`, `pnpm --filter @ccd/vue-ui build`, `pnpm type-check`, and `pnpm build:web-demo`.
 
-## 7. P0 — Internal Package Export Consistency
+## 7. P0 — Build Self-Sufficiency
 
-Rationale: architecture contract says internal workspace packages are consumed through build outputs. Some package manifests still expose source files directly.
+Rationale: each app must build from a clean checkout without fragile manual prebuild chains.
+
+Validation proof after orchestration repair: `pnpm ci:clean-artifacts && pnpm --filter @ccd/web-demo build`, `pnpm ci:clean-artifacts && pnpm --filter @ccd/desktop build`, `pnpm ci:clean-artifacts && pnpm build:web-demo`, `pnpm ci:clean-artifacts && pnpm build:desktop`, `pnpm ci:prepare-internal`, `pnpm ci:smoke:packages`, `pnpm type-check`, `pnpm build:ci`, and `pnpm governance:gate` passed.
+
+### Tasks
+
+- [x] [P0-Build-SelfSufficient] Fix build self-sufficiency so `apps/web-demo` and `apps/desktop` can build from a clean checkout without manually prebuilding internal packages (`apps/web-demo/package.json`, `apps/desktop/package.json`, root `package.json`).
+- [x] [P0-Build-DependencyDirection] Enforce dependency direction so runtime-agnostic packages cannot access browser, Node, Tauri, storage, network, timers, crypto, or console APIs (`packages/contracts`, `packages/core`, `scripts/architecture/**`).
+
+## 8. P1 — Naming, Documentation, and App Identity
+
+Rationale: historical alternate naming and ambiguous browser-app wording created broken filters, docs, and operator confusion; current canonical browser app identity is `web-demo`.
+
+Folder/package identity validation: no physical rename is required because the active workspace folder is `apps/web-demo`, the active package name is `@ccd/web-demo`, owner decisions contain no approved alternate app identity, and the active stale-reference scan returned 0 matches for retired pre-canonical browser-app spellings.
+
+### Tasks
+
+- [x] [P1-Naming-Canonical] Align active documentation, scripts, package filters, generated command documentation, AI/runtime docs, and app metadata on the canonical `web-demo` browser app name without renaming `apps/web-demo` or `@ccd/web-demo` (`README.md`, `README.en.md`, `docs/`, root `package.json`, `apps/web-demo/package.json`).
+- [x] [P1-Naming-Folder] Validate that no folder/package rename is needed because the active folder/package identity already matches the canonical browser app identity (`apps/web-demo`, `@ccd/web-demo`).
+- [x] [P1-Docs-AppRoles] Update documentation to clearly identify `apps/web-demo` as the `web-demo` browser application and `apps/desktop` as the Tauri desktop runtime shell (`README.md`, `README.en.md`, `docs/`).
+- [x] [P1-DemoMode-Prod] Disable production demo/mock mode unless the deployment is explicitly a public demo environment (`apps/web-demo/.env.production` or equivalent).
+
+## 9. P1 — Route Module Integrity
+
+Rationale: `apps/web-demo/src/router/modules/example.ts` is a 4158-line severe maintainability blocker.
 
 ### Current defect
 
-- `packages/vue-ui/package.json` exports `./src/index.ts` and sets `main/module/types` to source paths.
-- This conflicts with the architecture rule that internal workspace packages are consumed through build outputs.
-- The mismatch can hide package boundary and build-output problems.
+- One mega route module owns components, hooks, utils, charts, forms, tables, auth, permissions, and architecture examples.
+- Missing route smoke coverage increases lazy-import and redirect breakage risk.
 
 ### Tasks
 
-- [x] [P0-PackageExports-VueUI] Update `packages/vue-ui/package.json` exports to `./dist/index.js` and `./dist/index.d.ts` if the package build can emit these outputs.
-- [x] [P0-PackageExports-Build] Add or adjust the `packages/vue-ui` build command so the package emits deterministic `dist` output instead of type-check-only source exports. Validated: satisfied by `@ccd/vue-ui` Vite library build plus `vue-tsc -p tsconfig.build.json` declaration emit.
-- [x] [P0-PackageExports-Audit] Audit all `packages/*/package.json` manifests for direct `src` exports and build-output compliance. Result: all non-app workspace packages except `packages/vue-charts` currently align with the contract; `apps/web-demo` and `apps/desktop` remain app-local source-entry exceptions, not shared package contract violations.
-- [x] [P0-PackageExports-VueCharts] `packages/vue-charts/package.json` now consumes `./dist/index.js` and `./dist/index.d.ts` through `exports`, `main`, `module`, and `types`; `ci:prepare-internal` was also updated to rebuild `@ccd/vue-charts` after `packages/*/dist` cleanup so internal prepare flows preserve the generated package outputs.
-- [x] [P0-PackageExports-VueCharts-Build] `packages/vue-charts` now uses a Vite library build plus `vue-tsc -p tsconfig.build.json` declaration emit, keeping Vue/ECharts runtimes externalized while verifying clean outputs for `dist/index.js`, `dist/index.d.ts`, and required package-local declaration files.
-- [x] [P0-PackageExports-Validation] Validated the `@ccd/vue-ui` and `@ccd/vue-charts` package export lane end-to-end through `pnpm ci:prepare-internal`, package smoke, dependent app type-checks, full `pnpm type-check`, `pnpm build:ci`, `pnpm governance:gate`, `pnpm ai:doctor --open`, and `pnpm codex:preflight` after restoring `@ccd/vue-ui` to the internal prepare build chain.
+- [x] [P1-RouteModule-Split] Split the oversized route module in `apps/web-demo/src/router/modules/example.ts`.
+- [x] [P1-RouteModule-Groups] Extract route groups for components, hooks, utils, charts, forms, tables, auth, permissions, and architecture examples into separate route files under `apps/web-demo/src/router/modules/`.
+- [x] [P1-RouteModule-Smoke] Add route-level smoke tests for every `web-demo` route to catch broken lazy imports, missing pages, and invalid redirects (`apps/web-demo/src/router/modules/example.spec.ts`, `e2e/`).
+- [x] [P1-RouteModule-Metadata] Add typed route metadata validation for `titleKey`, `icon`, `rank`, `roles`, `auths`, `redirects`, and route names (`apps/web-demo/src/router/**`).
+- [x] [P1-RouteModule-Registration] Replace the single mega route aggregation with typed feature route registration or route discovery (`apps/web-demo/src/router/**`).
+- [x] [P1-RouteModule-DeadCode] Remove unused imports, dead demo code, orphaned routes, and unreachable pages after splitting route modules (`apps/web-demo/src/router/modules/example.ts`, `apps/web-demo/src/views/example/**`).
 
-## 8. P1 — Core Type Tightening
+## 10. P1 — Core Typing and Capability Bridges
 
-Rationale: current repair template records type widening in core form/table logic. This should be fixed after the SFC parser repair.
-
-### Tasks
-
-- [x] [P1-CoreTypes] Tightened ProForm engine value precision by introducing `FormFieldValue<TValues>` and aligning `SubscriptionStore`, `FormController`, `ValidationEngine`, `useField`, `SchemaNormalizer`, and `ReactionEngine` boundaries to reduce `FieldState<unknown>` / `Record<string, unknown>` leakage while keeping runtime behavior unchanged.
-- [x] [P1-CoreTypes-NoAny] Audited ProForm implementation code for `any`, `@ts-ignore`, and assertion-heavy core surfaces; implementation scan found no business-code `any`, and remaining casts are typed boundary bridges around generic schema keys, injection, record guards, or field/component adapter boundaries.
-- [x] [P1-CoreTypes-Validation] Ran targeted ProForm validation: `pnpm --filter @ccd/web-demo type-check` passed, and focused Vitest for `FormController`, `DraftStorage`, `schemaResolver`, and `PrimeVueRenderer` passed with 4 files / 8 tests.
-
-## 9. P1 — Capability Bridge Generics
-
-Rationale: current repair template records `createCapabilityBridge` generic friction. Fake index signatures should not be required for valid capability contracts.
+Rationale: ProForm, ProTable, and bridge generics remain blocking typing debt after SFC repair.
 
 ### Tasks
 
-- [x] [P1-Bridge] Verified `packages/shared-utils/src/createCapabilityBridge.ts` already uses `T extends object`, so `AuthBridge`, `RouterCapabilities`, and `TestCapabilities` explicit interfaces satisfy the helper without fake index signatures; no implementation change was required.
-- [x] [P1-Bridge-Contracts] Verified bridge capabilities remain explicit: no `[key: string]` or `Record<string, unknown>` catch-all appears in the bridge helper, shared-utils bridge spec, AuthBridge, or RouterCapabilities surfaces.
-- [x] [P1-Bridge-Validation] Ran bridge validation covering creation and runtime adapter behavior: shared-utils and web-demo type-checks passed, and focused Vitest for `createCapabilityBridge`, `tokenProvider`, and `routeProvider` passed with 3 files / 19 tests.
+- [x] [P1-CoreTypes] Tighten `apps/web-demo/src/components/ProForm/**` types, especially `FormController.ts`, `useField.ts`, `FieldRegistry.ts`, `SchemaNormalizer.ts`, and `ReactionEngine.ts`, so deep-clone, registry, and async-reaction values stop widening to `unknown` or `Record<string, unknown>`.
+- [x] [P1-CoreTypes-NoAny] Do not introduce `any` or assertion-driven business logic while repairing these types.
+- [x] [P1-CoreTypes-Validation] Run targeted `vue-tsc` and `vitest` checks for ProForm after changes.
+- [x] [P1-Bridge] Relax `apps/web-demo/src/infra/shared/createCapabilityBridge.ts` generics so `AuthBridge`, `RouterCapabilities`, and test bridges satisfy the helper without fake index signatures.
+- [x] [P1-Bridge-Contracts] Ensure bridge capabilities remain explicit and do not become a permissive catch-all map.
+- [x] [P1-Bridge-Validation] Run tests covering bridge creation and runtime adapter behavior.
+- [x] [P1-ProTable] Restore missing ProTable typings and helper availability, including `useProTableInfiniteScroll`, `useProTableUrlSync`, props shape, and related imports after the SFC parse fix.
+- [x] [P1-ProTable-Exports] Ensure helpers are exported from the correct local or package boundary.
+- [x] [P1-ProTable-Validation] Run targeted type-check and smoke tests for ProTable views.
 
-## 10. P1 — ProTable Typing and Helper Restoration
+## 11. P1 — Runtime Capability Model and Boundary Enforcement
 
-Rationale: current repair template records missing ProTable typings and helper availability.
-
-### Tasks
-
-- [x] [P1-ProTable] Restored ProTable typing boundary: verified `useProTableInfiniteScroll` and `useProTableUrlSync` exist and are internal-only, introduced local `ProTableApiConfig`, and removed ProTable's type dependency on `@/utils/http/types` while preserving injected `apiExecutor` behavior.
-- [x] [P1-ProTable-Exports] Exported approved public API types (`ProTableApiConfig`, `ProTableApiExecutor`, `ProTableApiExecutorContext`, `ProTableUrlSyncOptions`) from `apps/web-demo/src/components/ProTable/index.ts`; kept internal scroll/URL hooks unexported because external inventory found no public consumers, and updated the example executor import to the public ProTable boundary.
-- [x] [P1-ProTable-Validation] Ran M3 validation: ProTable helper inventory, `pnpm --filter @ccd/web-demo type-check`, focused ProTable Vitest, and `pnpm api:report` all passed with evidence under `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/`.
-
-## 11. P1 — UI Library Boundary and PrimeVue Adapter
-
-Rationale: PrimeVue should remain the supported UI ecosystem, but CCD components and apps should not allow PrimeVue details to leak everywhere.
-
-### Current direction
-
-- Keep PrimeVue.
-- Keep `@ccd/vue-primevue-adapter` as the PrimeVue-specific theme and integration layer.
-- Keep `@ccd/vue-ui` as CCD-owned UI primitives and shared components.
-- Do not switch to Element Plus, Naive UI, Ant Design Vue, or Tailwind as a rebuild strategy.
-- Optional future headless primitives may use Reka UI only after `@ccd/vue-ui` boundaries are stable.
+Rationale: ad hoc runtime access must be replaced by explicit contracts and adapter injection.
 
 ### Tasks
 
-- [x] [P1-UIBoundary-Audit] Audited direct `primevue/*` and `@primevue/*` imports across `apps/web-demo/**`, `apps/desktop/**`, `packages/vue-ui/**`, and `packages/vue-primevue-adapter/**`; classified 37 direct source files in `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M4-T1-primevue-import-audit.md`.
-- [x] [P1-UIBoundary-Policy] Recorded approved PrimeVue boundary policy in `docs/ai-plan/DECISIONS.md` D-003: adapter owns global integration; app bootstrap may install PrimeVue through adapter config/services; `@ccd/vue-ui` may compose PrimeVue inside CCD primitives but must not re-export raw PrimeVue; existing app direct imports are exact-allowlisted debt inventory, not current guard violations.
-- [x] [P1-UIBoundary-Adapter] Verified `packages/vue-primevue-adapter/**` owns theme/PT/service adapter config and app bootstrap consumes `createPrimeVueAdapterConfig()` plus `installPrimeVueServices()`; no source move was required in this lane.
-- [x] [P1-UIBoundary-Primitives] Verified `packages/vue-ui/**` exports CCD-owned primitives (`AnimateWrapper`, `CScrollbar`, `EmptyState`, `Icons`) and does not expose a loose raw PrimeVue re-export bucket; two internal PrimeVue compositions are recorded in the audit.
-- [x] [P1-UIBoundary-Guard] Added `scripts/ai-architecture-guard.mjs` PrimeVue boundary enforcement: `@ccd/vue-ui` and `@ccd/vue-primevue-adapter` may import PrimeVue internally, tests may mock PrimeVue, existing app files are exact-allowlisted, new app direct PrimeVue imports fail, and raw `@ccd/vue-ui` PrimeVue re-exports fail.
-- [x] [P1-UIBoundary-Validation] Ran M4 validation plus the UI-001 exact-allowlist guard validation: `pnpm ai:guard -- --format=json`, `pnpm governance:gate`, `pnpm ai:doctor`, `pnpm api:report`, `pnpm --filter @ccd/vue-ui build`, and `pnpm --filter @ccd/vue-primevue-adapter build` passed.
-- [x] [P2-UIBoundary-GlobalServices] Extracted PrimeVue toast/message/locale helper logic from `apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue` into `packages/vue-primevue-adapter/src/services.ts`; focused adapter build and service tests passed in the active P2 run.
-- [x] [P2-UIBoundary-ShowcaseException] Scoped direct PrimeVue import allowance for showcase examples to `apps/web-demo/src/views/example/components/primevue-collection/**`; non-showcase app files remain exact-allowlisted by `scripts/ai-architecture-guard.mjs`.
+- [x] [P1-Capability-Model] Implement a formal runtime capability model for browser, desktop, storage, network, filesystem, shell, notifications, clipboard, and external navigation instead of ad hoc runtime access (`packages/contracts`, `packages/core`, `apps/*/adapters/**`).
+- [x] [P1-Boundary-Tests] Add architecture-boundary tests for shared placement of theme, tokens, UnoCSS preset, hooks, utils, i18n, request, and services (`dependency-cruiser` config, `scripts/architecture/**`).
+- [x] [P1-Package-Surfaces] Define explicit public export surfaces for shared packages and prevent imports from package internals across workspace boundaries (`packages/*/src/index.ts`, `packages/*/package.json`, `apps/*`).
 
-## 12. P1 — HTTP Contract and Request Boundary
+## 12. P1 — UI Library Boundary and PrimeVue Adapter
 
-Rationale: the stack currently uses alova. This should be preserved, but HTTP must be governed by explicit contracts and adapter boundaries.
-
-### Current direction
-
-- Keep alova as the high-level request toolkit.
-- Do not switch to Axios.
-- Ky may be used only as a low-level transport inside an approved adapter if there is a measurable reason.
-- TanStack Query should remain deferred until server-state complexity justifies it.
-- Zod should be used at API boundaries where runtime validation is needed.
+Rationale: PrimeVue stays the supported UI ecosystem, but details must not leak across app and package boundaries. Owner decision D-003 is `APPROVED`.
 
 ### Tasks
 
-- [x] [P1-HttpContract-Contracts] Added type-only HTTP contracts under `packages/contracts/src/http/**` (auth, error, request, response, retry, timeout, transport) per D-014 and `.ai/runtime/owner_decisions.md` HTTP contract scope `APPROVED`; `packages/core/src/http/**` remains blocked and app HTTP infrastructure stays canonical. Evidence: commit `892dad30`, `docs/ai-runs/20260530-205504-ccd-http-001-contracts-implementation/reports/http-001-contracts-implementation.md`, P18 closure `docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/reports/p18-selected-closure-batch.md`.
-- [x] [P1-HttpContract-Core] Verified no current need for `packages/core/src/http/**`; adding runtime-neutral HTTP orchestration now would be speculative, and `packages/core` remains free of browser APIs, fetch, timers, storage, router, Pinia, and alova.
-- [x] [P1-HttpContract-Adapter] Verified alova implementation remains in approved app infrastructure path `apps/web-demo/src/utils/http/**`, with `apps/web-demo/src/adapters/http.adapter.ts` owning Zod/route payload validation; no broad move to `apps/web-demo/src/adapters/http/**` was attempted.
-- [x] [P1-HttpContract-Zod] Verified Zod validation exists only at app HTTP/API boundaries through `parseZodHttpPayload()` and `responseSchema`; no blanket schema churn was justified.
-- [x] [P1-HttpContract-NoCoupling] Verified HTTP/API surfaces do not directly import Pinia stores, router, native storage, or session storage outside tests; auth/session behavior flows through `@/infra/auth/tokenProvider`.
-- [x] [P1-HttpContract-Validation] Ran M5 validation: `pnpm arch:runtime`, `pnpm api:report`, `pnpm type-check`, and focused request-layer Vitest all passed with evidence under `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/`.
-- [x] [P2-HttpMethodBuilders] Added example API Method builders and documented the request calling model: server-state/loading/cache/dedupe APIs prefer Method builders with `useHttpRequest`; one-shot compatibility wrappers remain explicitly imperative.
-- [x] [P2-HttpRawTransportAllowlist] Documented and enforced raw transport exceptions for HTTP infrastructure, timezone probe, and the app-local Lottie asset loader.
+- [x] [P1-UIBoundary-Audit] Audit direct `primevue/*` imports in `apps/web-demo/**`, `apps/desktop/**`, and `packages/vue-ui/**`.
+- [x] [P1-UIBoundary-Policy] Define which PrimeVue imports are allowed in app bootstrap/plugin files and which must be routed through `@ccd/vue-ui` or `@ccd/vue-primevue-adapter`.
+- [x] [P1-UIBoundary-Adapter] Keep theme, PassThrough, services, and global PrimeVue configuration inside `packages/vue-primevue-adapter/**`.
+- [x] [P1-UIBoundary-Primitives] Ensure `packages/vue-ui/**` exports CCD-owned primitives and does not become a loose PrimeVue re-export bucket.
+- [x] [P1-UIBoundary-Migrate] Move reusable PrimeVue integration into `packages/vue-primevue-adapter` and leave only app registration inside apps (`apps/web-demo/src/plugins/modules/primevue.ts`).
+- [x] [P1-UIBoundary-Guard] Add or extend architecture guard rules to detect forbidden direct PrimeVue imports per the approved allowlist.
+- [x] [P1-UIBoundary-Validation] Run `pnpm api:report`, `pnpm arch:boundaries`, `pnpm type-check`, and focused UI smoke tests.
 
-## 13. P1 — Architecture Guard Coverage and Owner Decisions
+## 13. P1 — HTTP Contract and Request Boundary
 
-Rationale: owner decision log records pending decisions about guard coverage, rule contradictions, design-token consolidation, and desktop drift CI.
-
-### Tasks
-
-- [x] [P1-Guard-SFCMacroOrder] D-023 FORMALLY_RESOLVED by owner/architect decision: current guard coverage is sufficient for Full GO; stricter guard work requires a future approved lane. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P1-Guard-TypeAssertions] D-023 FORMALLY_RESOLVED by owner/architect decision: current guard coverage is sufficient for Full GO; stricter guard work requires a future approved lane. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P1-Guard-AutoMitt] D-023 FORMALLY_RESOLVED by owner/architect decision: current guard coverage is sufficient for Full GO; stricter guard work requires a future approved lane. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P1-Guard-ComposableReturnTypes] D-023 FORMALLY_RESOLVED by owner/architect decision: current guard coverage is sufficient for Full GO; stricter guard work requires a future approved lane. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P1-Guard-DynamicUnoCSS] D-023 FORMALLY_RESOLVED by owner/architect decision: current guard coverage is sufficient for Full GO; stricter guard work requires a future approved lane. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P1-Guard-RuleContradictions] D-023 FORMALLY_RESOLVED by owner/architect decision: current guard coverage is sufficient for Full GO; stricter guard work requires a future approved lane. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P1-Guard-DesignTokenCanonical] D-023 FORMALLY_RESOLVED by owner/architect decision: current guard coverage is sufficient for Full GO; stricter guard work requires a future approved lane. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P1-Guard-OwnerSignoff] D-023 FORMALLY_RESOLVED by owner/architect decision: current guard coverage is sufficient for Full GO; stricter guard work requires a future approved lane. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-
-## 13.5. P2 — App Platform Storage Boundary
-
-Rationale: safeStorage has cross-app value, but browser storage access and obfuscation policy must not leak into `packages/core` or `packages/contracts`.
+Rationale: alova stays canonical. Owner decision D-014 is `APPROVED`: type-only HTTP contracts live in `packages/contracts/src/http/**`; app HTTP runtime stays app-owned under `apps/web-demo/src/utils/http/**`. Do not promote Alova runtime to `packages/core`.
 
 ### Tasks
 
-- [x] [P2-AppStorage-Contracts] Added runtime-neutral `SafeStoragePolicy`, `StorageCodec`, `SyncStorageCodec`, and `SafeStorageAdapter` contracts without browser imports.
-- [x] [P2-AppStorage-Codec] Moved pure JSON storage serialization/parsing helpers to `packages/shared-utils/src/storageCodec.ts` and covered them with focused Vitest.
-- [x] [P2-AppStorage-AppAdapter] Kept browser `localStorage` / `sessionStorage` policy and adapter implementation in `apps/web-demo/src/utils/safeStorage/**`; `packages/core` remains untouched.
+- [x] [P1-HttpContract-Contracts] Add or refine HTTP contracts under `packages/contracts/src/http/**`: request shape, response shape, error shape, transport client, retry policy, timeout policy, auth policy.
+- [x] [P1-HttpContract-ContractFacets] Extend HTTP contracts with base URL policy, interceptor lifecycle contracts, cancellation/abort semantics, and normalized error mapping (`packages/contracts/src/http/**`, `apps/web-demo/src/utils/http/**`).
+- [x] [P1-HttpContract-AppOwned] Keep alova instance, methods, interceptors, retry/cache/deduplication/timeout policies, auth refresh/token wiring, error mapping, UI notification behavior, and app Zod schema validation under `apps/web-demo/src/utils/http/**` or another approved app adapter path.
+- [x] [P1-HttpContract-Zod] Add Zod response validation only at boundary points where schemas are stable and validation cost is acceptable.
+- [x] [P1-HttpContract-NoCoupling] Ensure HTTP code does not directly couple router/store/session behavior except through approved bridges.
+- [x] [P1-HttpContract-Validation] Run `pnpm arch:runtime`, `pnpm api:report`, `pnpm type-check`, and request-layer tests.
 
-## 14. P2 — Vite 8 Compatibility Lane
+## 14. P1 — safeStorage Ownership
 
-Rationale: current CCD uses Vite 7. Vite 8 uses Rolldown and Oxc internally. CCD currently has Vite config that relies on esbuild and Rollup options, so migration must be isolated.
+Rationale: owner decisions D-016 and D-019 are `APPROVED`. Crypto, compression, and storage runtime stay app-owned.
+
+### Tasks
+
+- [x] [P1-SafeStorage-AppOwned] Keep crypto/HMAC/Web Crypto, `lz-string` compression, Pinia serializer, storage maintenance, migration behavior, and facade exports app-owned under `apps/web-demo/src/utils/safeStorage/**`.
+- [x] [P1-SafeStorage-Contracts] Define storage capability contracts for app-owned safeStorage behavior without moving crypto, compression, or storage runtime out of `apps/web-demo/src/utils/safeStorage/**` (`packages/contracts`, `apps/web-demo/src/utils/safeStorage/**`).
+- [x] [P1-SafeStorage-NoSharedMove] Do not move safeStorage runtime to `@ccd/shared-utils` or mutate package manifests/lockfile for it in this program.
+
+## 15. P1 — Architecture Guard Coverage and Rule Contradictions
+
+Rationale: `rule_coverage_matrix.md` records partial guard coverage and six documented contradictions. Owner decisions mark strict guard expansion and rule-contradiction resolution as `FULL_GO_DEFERRED` for current Full GO, but backlog items remain tracked here.
+
+### Rule contradiction backlog
+
+- [x] [P1-Guard-StorageContradiction] Clarify that only approved infrastructure may touch native storage; resolve the `04-safe-storage.mdc` wrapper example contradiction.
+- [x] [P1-Guard-VueUseContradiction] Add explicit VueUse exclusions to `00-root-gatekeeper.mdc` for restricted business HTTP/storage composables.
+- [x] [P1-Guard-TypeAssertionContradiction] Replace the `props.item as UserInfo` example in `08-vue-template-strictness.mdc` with an approved type-caster pattern.
+- [x] [P1-Guard-ScaffoldArchetype] Align scaffold output with the Pro Components archetype law or document scaffold archetypes as approved variants.
+- [x] [P1-Guard-DesignTokenCanonical] Choose a canonical design-token rule file and update duplicate references across design-system rules.
+
+### Guard expansion backlog
+
+- [ ] [P1-Guard-SFCMacroOrder] Add guard coverage for Vue SFC macro define order if the team accepts strict enforcement.
+  - Deferred/open note (2026-06-07): Not implemented because `.ai/runtime/owner_decisions.md` sets `Guard enforcement scope` to `FULL_GO_DEFERRED`; strict macro-order guard coverage requires future owner/team acceptance.
+- [ ] [P1-Guard-TypeAssertions] Add guard coverage for banned business-code `as Type` assertion patterns, with explicit approved exceptions.
+  - Deferred/open note (2026-06-07): Not implemented because `.ai/runtime/owner_decisions.md` sets `Guard enforcement scope` to `FULL_GO_DEFERRED`; stricter business-code assertion scanning requires future owner/team acceptance and exception-scope approval.
+- [ ] [P1-Guard-AutoMitt] Add guard coverage for `useAutoMitt` enforcement where event bus patterns are expected.
+  - Deferred/open note (2026-06-07): Not implemented because `.ai/runtime/owner_decisions.md` sets `Guard enforcement scope` to `FULL_GO_DEFERRED`; event-bus/useAutoMitt enforcement expansion requires future owner/team acceptance.
+- [ ] [P1-Guard-ComposableReturnTypes] Add guard coverage for composable return type annotations where architecture requires them.
+  - Deferred/open note (2026-06-07): Not implemented because `.ai/runtime/owner_decisions.md` sets `Guard enforcement scope` to `FULL_GO_DEFERRED`; composable return-type enforcement expansion requires future owner/team acceptance.
+- [ ] [P1-Guard-DynamicUnoCSS] Add guard coverage for dynamic UnoCSS class detection and approved safelist usage.
+  - Deferred/open note (2026-06-07): Not implemented because `.ai/runtime/owner_decisions.md` sets `Guard enforcement scope` to `FULL_GO_DEFERRED`; dynamic UnoCSS class/safelist enforcement expansion requires future owner/team acceptance.
+- [ ] [P1-Guard-DateUtils] Decide whether `ai:guard` should enforce DateUtils usage beyond the current raw-date-constructor rule.
+  - Deferred/open note (2026-06-07): Not decided or expanded because `.ai/runtime/owner_decisions.md` sets `Guard enforcement scope` to `FULL_GO_DEFERRED`; broader DateUtils enforcement requires future owner/team decision.
+- [ ] [P1-Guard-RouteModuleSize] Add max-file-length and max-route-module-size governance checks to prevent future 4000+ line route files (`eslint.config.ts`, `scripts/architecture/**`).
+  - Deferred/open note (2026-06-07): Not implemented because `.ai/runtime/owner_decisions.md` sets `Guard enforcement scope` to `FULL_GO_DEFERRED`; new max-file-length and route-module-size gates require future owner/team acceptance.
+- [ ] [P1-Guard-OwnerSignoff] Update `.ai/runtime/owner_decisions.md` after owner decisions are made.
+  - Deferred/open note (2026-06-07): Not updated because no new owner decisions were made in the repository; `.ai/runtime/owner_decisions.md` still records guard enforcement and related strict expansion as `FULL_GO_DEFERRED`.
+
+## 16. P1 — Desktop Security Baseline
+
+Rationale: desktop currently exposes null CSP and incomplete permission scoping.
+
+### Tasks
+
+- [x] [P1-Desktop-CSP] Replace null CSP with a restrictive production CSP (`apps/desktop/src-tauri/tauri.conf.json`).
+- [x] [P1-Desktop-CSP-Allowlist] Add CSP allowances only for local app assets and required API endpoints; avoid `unsafe-inline` or `unsafe-eval` unless explicitly justified.
+- [x] [P1-Desktop-Capabilities] Add Tauri v2 permissions and capabilities files with least-privilege scopes (`apps/desktop/src-tauri/capabilities/**`).
+- [x] [P1-Desktop-Scopes] Define explicit allow/deny scopes for filesystem, shell, dialog, clipboard, updater, opener, notification, HTTP, and external navigation before enabling any Tauri plugin.
+- [x] [P1-Desktop-NoPrematurePlugins] Avoid enabling shell or filesystem plugins until a concrete use case and scoped permission file exist.
+- [x] [P1-Desktop-SecurityChecks] Add automated security checks for CSP, permission scopes, plugin usage, and capabilities manifests (`scripts/architecture/**`).
+
+## 17. P2 — Build Orchestration and Turbo
+
+Rationale: Turborepo must own package build ordering instead of duplicated shell prebuild chains.
+
+### Tasks
+
+- [x] [P2-Turbo-Tasks] Replace fragile manual prebuild chains with Turborepo task dependencies and pnpm workspace dependency graph resolution (`turbo.json`, root `package.json`).
+- [x] [P2-Turbo-InputsOutputs] Expand Turborepo task definitions with accurate inputs, outputs, cache behavior, and dependencies for build, type-check, lint, test, e2e, and package artifacts (`turbo.json`).
+- [x] [P2-Turbo-RemoveDuplicatePrebuild] Remove duplicated prebuild scripts once Turbo dependency orchestration handles package builds reliably.
+- [x] [P2-Turbo-BuildFailureOutput] Add clear failure output when shared package builds fail before app builds (`package.json` scripts, `scripts/exec.sh`).
+- [x] [P2-Turbo-WorkspaceWrappers] Add workspace-level wrappers for building filtered apps together with their dependencies (root `package.json`).
+
+## 18. P2 — Shared Layer Consolidation
+
+Rationale: reusable platform code should live in workspace packages; app-specific routes, pages, stores, and plugin wiring stay in apps.
+
+### Tasks
+
+- [x] [P2-Shared-Dedupe] Remove duplicated shared capability implementations across `web-demo` and `desktop` and consume workspace packages instead.
+- [x] [P2-Shared-Utils] Move pure reusable utilities to `packages/shared-utils` and keep only app-domain utilities inside apps (`apps/web-demo/src/utils/**`).
+- [x] [P2-Shared-Hooks] Move reusable Vue composables to `packages/vue-hooks` and keep only app/runtime adapters in app-local hooks (`apps/web-demo/src/hooks/**`).
+- [x] [P2-Shared-Theme] Move generic theme engine primitives, size resolution, breakpoint helpers, and device helpers into shared packages (`apps/web-demo/src/utils/theme/**`, `packages/design-tokens`, `packages/vue-hooks`).
+- [x] [P2-Shared-I18n] Promote generic i18n setup into a shared app-platform package while keeping app-specific messages inside the app (`apps/web-demo/src/locales/**`).
+- [x] [P2-Shared-I18nContracts] Add shared i18n contracts for locale registration, fallback locale, message loading, and PrimeVue locale mapping (`apps/web-demo/src/locales/primevue-locales.ts`).
+- [x] [P2-Shared-Charts] Move chart runtime helpers into `packages/vue-charts` and keep page-specific chart configuration local (`apps/web-demo/src/views/example/components/use-echarts/**`).
+- [x] [P2-Shared-UnoCSS] Add shared extension points for theme and UnoCSS customization instead of app-level patches or overrides (`packages/design-tokens`, `packages/unocss-preset`).
+- [x] [P2-Shared-TokensSSOT] Make design tokens the single source of truth for colors, semantic colors, spacing, breakpoints, theme names, and responsive primitives (`packages/design-tokens`, `uno.config.ts`, `packages/unocss-preset`).
+- [x] [P2-Shared-Metadata] Centralize application metadata and version in one source and generate package manifests, Tauri config, and app constants from it (`project.config.json`, `apps/*/package.json`, `apps/desktop/src-tauri/tauri.conf.json`).
+- [x] [P2-Shared-MetadataDrift] Add drift checks that fail when package version, Tauri version, product name, desktop identifier, homepage, or app title diverge from the central config (`scripts/sync-version.mjs`, `scripts/sync-desktop-config.mjs`).
+- [x] [P2-Shared-AppLocalBoundaries] Keep app-specific routes, pages, stores, and plugin wiring inside `apps/web-demo` and prevent them from being exported as public shared package APIs (`apps/web-demo/src/router/**`, `apps/web-demo/src/views/**`, `apps/web-demo/src/stores/**`, `apps/web-demo/src/plugins/**`).
+
+## 19. P2 — View and Example Surface Cleanup
+
+Rationale: oversized example views and missing UX states create maintenance drag after route-module splitting.
+
+### Tasks
+
+- [x] [P2-Views-Split] Split oversized view/page components and colocate page-specific schemas, mock data, constants, and composables beside each page (`apps/web-demo/src/views/example/**`).
+- [x] [P2-Views-Patterns] Extract repeated table, form, chart, and demo-page patterns into reusable components or composables (`apps/web-demo/src/views/example/**`, `packages/vue-ui`, `packages/vue-hooks`).
+- [x] [P2-Views-AsyncStates] Add loading, empty, and error states around async route components and data-fetching report pages (`apps/web-demo/src/views/example/**`).
+- [x] [P2-Views-I18nCoverage] Add i18n key coverage tests for every route `titleKey` and page-level translation key (`apps/web-demo/src/router/modules/example.ts`, `apps/web-demo/src/locales/**`).
+- [x] [P2-Views-RouteConstants] Replace repeated hard-coded route strings with typed route constants or generated route names where navigation is reused (`apps/web-demo/src/router/**`).
+
+## 20. P2 — Environment, Dev Sync, and Vite Helpers
+
+Rationale: local dev and deployment configuration must stay synchronized across web and desktop surfaces.
+
+### Tasks
+
+- [x] [P2-Env-Schema] Add strict environment schema validation for API base URL, timeout, public path, compression mode, storage prefix, and desktop-specific variables (`build/utils`, `scripts/env-doctor.mjs`).
+- [x] [P2-Dev-PortSync] Synchronize Vite dev ports and Tauri `devUrl` through shared configuration (`apps/desktop/vite.config.ts`, `apps/desktop/src-tauri/tauri.conf.json`, `.env*`).
+- [x] [P2-Vite-SharedHelpers] Extract shared Vite configuration helpers where `web-demo` and `desktop` should stay aligned (`apps/web-demo/vite.config.ts`, `apps/desktop/vite.config.ts`).
+- [x] [P2-Vite-CORS] Restrict Vite dev and preview CORS unless open CORS is required for a specific local integration (`apps/web-demo/vite.config.ts`).
+- [x] [P2-Vite-BundleBudgets] Add bundle-budget checks to CI for both browser and desktop builds (`scripts/check-bundle-budgets.mjs`, `scripts/architecture/check-desktop-size.mjs`).
+
+## 21. P2 — Vite 8 Compatibility Lane
+
+Rationale: owner decision marks Vite major migration as `FULL_GO_DEFERRED` on `main`; execute only in an isolated branch.
 
 ### Current risk surface
 
-- `apps/web-demo/vite.config.ts` uses `optimizeDeps.esbuildOptions`.
-- `apps/web-demo/vite.config.ts` uses `esbuild.drop` and `esbuild.pure`.
-- `apps/web-demo/vite.config.ts` uses `build.minify: 'esbuild'`.
-- `apps/web-demo/vite.config.ts` uses Rollup `manualChunks` and `experimentalMinChunkSize`.
+- `apps/web-demo/vite.config.ts` uses `optimizeDeps.esbuildOptions`, `esbuild.drop`, `esbuild.pure`, `build.minify: 'esbuild'`, Rollup `manualChunks`, and `experimentalMinChunkSize`.
 - Build plugins include custom ECharts tree-shake logic, compression, progress, HTML injection, build info, icon generation, and performance analysis.
 
 ### Tasks
 
-- [x] [P2-Vite8-Branch] D-023 FORMALLY_RESOLVED by operator decision: Vite major migration is not a Full GO prerequisite; keep current Vite 7 on main and require a future isolated branch for any upgrade. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P2-Vite8-Inventory] Inventoried Vite/Rollup/esbuild-specific current surface in `apps/web-demo/vite.config.ts`, `apps/web-demo/build/**`, `apps/desktop/vite.config.ts`, `packages/vue-ui/vite.config.ts`, and `packages/vue-charts/vite.config.ts`; evidence: `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M9-T1-20260529-081820-vite-inventory.log` and `reports/M9-vite8-approval-gate.md`.
-- [x] [P2-Vite8-OptimizeDeps] D-023 FORMALLY_RESOLVED by operator decision: Vite major migration is not a Full GO prerequisite; keep current Vite 7 on main and require a future isolated branch for any upgrade. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P2-Vite8-Oxc] D-023 FORMALLY_RESOLVED by operator decision: Vite major migration is not a Full GO prerequisite; keep current Vite 7 on main and require a future isolated branch for any upgrade. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P2-Vite8-Minify] D-023 FORMALLY_RESOLVED by operator decision: Vite major migration is not a Full GO prerequisite; keep current Vite 7 on main and require a future isolated branch for any upgrade. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P2-Vite8-Chunks] D-023 FORMALLY_RESOLVED by operator decision: Vite major migration is not a Full GO prerequisite; keep current Vite 7 on main and require a future isolated branch for any upgrade. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P2-Vite8-ECharts] D-023 FORMALLY_RESOLVED by operator decision: Vite major migration is not a Full GO prerequisite; keep current Vite 7 on main and require a future isolated branch for any upgrade. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P2-Vite8-Compression] D-023 FORMALLY_RESOLVED by operator decision: Vite major migration is not a Full GO prerequisite; keep current Vite 7 on main and require a future isolated branch for any upgrade. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P2-Vite8-Progress] Removed active `vite-plugin-progress` usage and recorded compatibility notes (`keep: false`) in `apps/web-demo/build/plugins.ts` during P2 BUILD-003; cosmetic plugin no longer blocks future Vite 8 lane review. Evidence: `docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/reports/p2-governance-css-build-modernization.md` (BUILD-003), ledger `[x] [P2-CSS-BuildPluginCompatibility]`, P18 stale-entry closure `docs/ai-runs/20260601-180000-ccd-p18-g02-repair-ledger-debt-closure/reports/p18-selected-closure-batch.md`.
-- [x] [P2-Vite8-Validation] D-023 FORMALLY_RESOLVED by operator decision: Vite major migration is not a Full GO prerequisite; keep current Vite 7 on main and require a future isolated branch for any upgrade. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P2-Vite8-Branch] Create an isolated branch such as `modernize/vite8-compat`; do not mix this work with UI or HTTP refactors.
+- [ ] [P2-Vite8-Inventory] Inventory every Vite/Rollup/esbuild-specific option in `apps/web-demo/vite.config.ts`, `apps/web-demo/build/**`, root `vite.config.ts`, and package-level Vite config files if present.
+  - Deferred/open note (2026-06-08): Not inventoried in the current `main` worktree because `.ai/runtime/owner_decisions.md` sets `Vite major migration` to `FULL_GO_DEFERRED`; this inventory belongs on the isolated `modernize/vite8-compat` lane and must not mix with the active repair changes.
+- [ ] [P2-Vite8-OptimizeDeps] Replace or prepare migration from `optimizeDeps.esbuildOptions` to `optimizeDeps.rolldownOptions` where appropriate.
+  - Deferred/open note (2026-06-08): Not migrated or prepared in the current `main` worktree because `.ai/runtime/owner_decisions.md` sets `Vite major migration` to `FULL_GO_DEFERRED`; `optimizeDeps` migration must happen on the isolated Vite 8 lane after inventory.
+- [ ] [P2-Vite8-Oxc] Replace or prepare migration from top-level `esbuild` config to `oxc`/Rolldown minifier equivalents where appropriate.
+  - Deferred/open note (2026-06-08): Not migrated or prepared in the current `main` worktree because `.ai/runtime/owner_decisions.md` sets `Vite major migration` to `FULL_GO_DEFERRED`; Oxc/Rolldown minifier migration must wait for the isolated Vite 8 lane.
+- [ ] [P2-Vite8-Minify] Re-evaluate `build.minify: 'esbuild'` and console/drop behavior under Oxc minification.
+  - Deferred/open note (2026-06-08): Not re-evaluated in the current `main` worktree because `.ai/runtime/owner_decisions.md` sets `Vite major migration` to `FULL_GO_DEFERRED`; minifier behavior must be tested with the actual Vite 8/Oxc lane.
+- [ ] [P2-Vite8-Chunks] Re-test `manualChunks` and small chunk merging under Rolldown; avoid assuming Rollup behavior remains identical.
+  - Deferred/open note (2026-06-08): Not re-tested in the current `main` worktree because `.ai/runtime/owner_decisions.md` sets `Vite major migration` to `FULL_GO_DEFERRED`; chunk behavior must be measured on the isolated Vite 8/Rolldown lane.
+- [ ] [P2-Vite8-ECharts] Revalidate the custom `echarts-treeshake-enhance` plugin under Vite 8/Rolldown before keeping it.
+  - Deferred/open note (2026-06-08): Not revalidated in the current `main` worktree because `.ai/runtime/owner_decisions.md` sets `Vite major migration` to `FULL_GO_DEFERRED`; custom ECharts plugin compatibility must be tested on the isolated Vite 8/Rolldown lane.
+- [ ] [P2-Vite8-Compression] Decide whether `vite-plugin-compression` remains a build concern or should move to deployment/server/CDN configuration.
+  - Deferred/open note (2026-06-08): Not decided in the current `main` worktree because `.ai/runtime/owner_decisions.md` sets `Vite major migration` to `FULL_GO_DEFERRED`; compression ownership must be evaluated on the isolated Vite 8 lane with deployment/server/CDN constraints.
+- [ ] [P2-Vite8-Progress] Remove or replace `vite-plugin-progress` if it adds no measurable value or blocks Vite 8 compatibility.
+  - Deferred/open note (2026-06-08): Not removed or replaced in the current `main` worktree because `.ai/runtime/owner_decisions.md` sets `Vite major migration` to `FULL_GO_DEFERRED`; progress plugin value and compatibility must be evaluated on the isolated Vite 8 lane.
+- [ ] [P2-Vite8-Validation] Run `pnpm build:ci`, `pnpm vercel:build`, `pnpm e2e:qa`, and bundle budget checks on the isolated branch.
+  - Deferred/open note (2026-06-08): Not run in the current `main` worktree because `.ai/runtime/owner_decisions.md` sets `Vite major migration` to `FULL_GO_DEFERRED`; validation is only meaningful after migration work lands on the isolated Vite 8 branch.
 
-## 15. P2 — Dependency Modernization Lane
+## 22. P2 — Dependency Modernization Lane
 
-Rationale: CCD already uses a modern Vue 3 stack. It should be upgraded by lanes, not by global latest replacement.
-
-### Keep
-
-- Vue 3
-- TypeScript
-- pnpm + Turbo monorepo
-- Vite, but migrate cautiously
-- UnoCSS
-- PrimeVue
-- alova
-- Pinia
-- Vue Router
-- VueUse
-- Zod
-- Vitest
-- Playwright
-- Tauri 2
+Rationale: owner decision marks dependency modernization as `FULL_GO_DEFERRED` for current Full GO; upgrade by isolated lanes only.
 
 ### Tasks
 
-- [x] [P2-Deps-Outdated] Ran dependency inventory without package/lockfile mutation; evidence: `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M10-T1-20260529-081950-pnpm-deps-outdated.log`, `command-logs/M10-T1-20260529-082010-pnpm-outdated-json.log`, and `reports/M10-dependency-approval-gate.md`.
-- [x] [P2-Deps-Vueuse] D-023 FORMALLY_RESOLVED by operator decision: dependency modernization is not a Full GO prerequisite; no manifest or lockfile change is authorized in this program, and future upgrades require single-dependency lanes. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P2-Deps-VueTooling] D-023 FORMALLY_RESOLVED by operator decision: dependency modernization is not a Full GO prerequisite; no manifest or lockfile change is authorized in this program, and future upgrades require single-dependency lanes. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P2-Deps-ESLint] D-023 FORMALLY_RESOLVED by operator decision: dependency modernization is not a Full GO prerequisite; no manifest or lockfile change is authorized in this program, and future upgrades require single-dependency lanes. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P2-Deps-PrimeVue] D-023 FORMALLY_RESOLVED by operator decision: dependency modernization is not a Full GO prerequisite; no manifest or lockfile change is authorized in this program, and future upgrades require single-dependency lanes. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P2-Deps-Alova] D-023 FORMALLY_RESOLVED by operator decision: dependency modernization is not a Full GO prerequisite; no manifest or lockfile change is authorized in this program, and future upgrades require single-dependency lanes. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P2-Deps-Playwright] D-023 FORMALLY_RESOLVED by operator decision: dependency modernization is not a Full GO prerequisite; no manifest or lockfile change is authorized in this program, and future upgrades require single-dependency lanes. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P2-Deps-Validation] D-023 FORMALLY_RESOLVED by operator decision: dependency modernization is not a Full GO prerequisite; no manifest or lockfile change is authorized in this program, and future upgrades require single-dependency lanes. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [x] [P2-Deps-Outdated] Run `pnpm deps:outdated` and record results in a branch-local note before upgrading.
+- [ ] [P2-Deps-Catalogs] Replace scattered dependency version declarations with pnpm catalogs or a single dependency policy file (`pnpm-workspace.yaml`, root `package.json`, `apps/*/package.json`).
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; pnpm catalogs or dependency policy consolidation must happen in a future isolated dependency governance lane.
+- [ ] [P2-Deps-Syncpack] Add syncpack or an equivalent dependency alignment check to CI.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; adding syncpack or equivalent would introduce a new dependency governance tool and CI policy outside the current Full GO scope.
+- [ ] [P2-Deps-Dedupe] Deduplicate repeated Vue, Vite, TypeScript, PrimeVue, UnoCSS, and Tauri versions between root and app package manifests.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; deduping shared toolchain versions must happen in future isolated compatibility lanes without mixing with current repairs.
+- [ ] [P2-Deps-VersionRangePolicy] Pin or range-manage major-version dependencies consistently instead of mixing update policies across apps and packages (`package.json`, `apps/*/package.json`, `packages/*/package.json`).
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; version range policy changes must be handled in a future dependency governance lane with manifest and lockfile review.
+- [ ] [P2-Deps-RuntimeStack] Upgrade Vue runtime ecosystem dependencies in isolated compatibility lanes, including `vue`, `vue-router`, `vue-i18n`, `pinia`, `unocss`, and related runtime plugins (`package.json`, `apps/*/package.json`).
+  - Deferred/open note (2026-06-08): Not upgraded because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; Vue runtime ecosystem upgrades require isolated compatibility lanes and full app validation.
+- [ ] [P2-Deps-Vueuse] Upgrade `@vueuse/core` in an isolated lane after checking compatibility with existing hooks and auto-imports.
+  - Deferred/open note (2026-06-08): Not upgraded because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; `@vueuse/core` major upgrade requires an isolated lane and hook/auto-import compatibility checks.
+- [ ] [P2-Deps-VueTooling] Align Vue compiler, `vue-tsc`, `@vue/tsconfig`, TypeScript, `@vitejs/plugin-vue`, and `@vitejs/plugin-vue-jsx` as a tested compatibility set; do not mix with Vite 8.
+  - Deferred/open note (2026-06-08): Not aligned because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; Vue compiler/type tooling alignment requires an isolated compatibility lane and must not be mixed with Vite 8.
+- [ ] [P2-Deps-ESLint] Upgrade ESLint ecosystem only if `lint:check` remains deterministic.
+  - Deferred/open note (2026-06-08): Not upgraded because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; ESLint ecosystem upgrades require an isolated lint/tooling lane with deterministic `lint:check` validation.
+- [ ] [P2-Deps-PrimeVue] Upgrade PrimeVue only after checking v4 API changes for used components and adapter behavior.
+  - Deferred/open note (2026-06-08): Not upgraded because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; PrimeVue upgrades require an isolated UI adapter lane with API and adapter behavior checks.
+- [ ] [P2-Deps-Alova] Upgrade alova only after request tests and adapter contracts exist.
+  - Deferred/open note (2026-06-08): Not upgraded because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; alova upgrades require an isolated HTTP runtime lane with request tests and adapter contract validation.
+- [ ] [P2-Deps-Playwright] Upgrade Playwright only after confirming browser install/cache behavior in CI.
+  - Deferred/open note (2026-06-08): Not upgraded because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; Playwright upgrades require an isolated test tooling lane and CI browser install/cache validation.
+- [ ] [P2-Deps-Tauri] Synchronize Tauri JS API, Tauri CLI, Rust `tauri`, and `tauri-build` versions with explicit minor/patch policy.
+  - Deferred/open note (2026-06-08): Not synchronized because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; Tauri JS/Rust version policy requires an isolated desktop dependency lane with desktop build and security validation.
+- [ ] [P2-Deps-Scanning] Add automated outdated and vulnerability scanning for pnpm and Cargo dependencies.
+  - Deferred/open note (2026-06-08): Not added because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; automated pnpm/Cargo scanning policy requires a future dependency governance lane and CI scope approval.
+- [ ] [P2-Deps-UnusedAudit] Remove unused or demo-only dependencies after an import audit, especially heavy runtime packages not required by production pages.
+  - Deferred/open note (2026-06-08): Not audited or removed because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; unused dependency removal requires a future import-audit lane with manifest and lockfile review.
+- [ ] [P2-Deps-Validation] For each lane run targeted checks first, then `pnpm validate`.
+  - Deferred/open note (2026-06-08): Not run as dependency-lane validation because no dependency modernization lane was executed under the `FULL_GO_DEFERRED` owner decision; future lanes must run targeted checks first and then `pnpm validate` when practical.
 
-## 16. P2 — CSS, Tokens, and Responsive Engine
+## 23. P2 — CSS, Tokens, and Responsive Engine
 
-Rationale: the current PostCSS px-to-rem setup works by excluding UnoCSS classes through a selector blacklist. This is functional but fragile.
-
-### Tasks
-
-- [x] [P2-CSS-PxToRemAudit] Audited `postcss-pxtorem` usage in `apps/web-demo/vite.config.ts`; evidence: `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M8-T1-20260529-080113-css-pxtorem-audit.log` and `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M8-css-pxtorem.md`.
-- [x] [P2-CSS-TokenFirst] Preserved token/UnoCSS generated styles outside global px-to-rem conversion by adding file-level UnoCSS exclusions without authored CSS rewrites; validation: `M8-20260529-081500-final-web-demo-type-check.log` and `M8-20260529-081515-final-pnpm-build-web-demo.log`.
-- [x] [P2-CSS-BlacklistRisk] Reduced dependence on selector-only blacklists with `shouldExcludePxToRemFile()` while keeping the existing blacklist as a fallback.
-- [x] [P2-CSS-PrimeVue] Preserved `node_modules` exclusion for PrimeVue and third-party CSS; build validation passed in `M8-20260529-081515-final-pnpm-build-web-demo.log`.
-- [x] [P2-CSS-BuildPluginCompatibility] Added build plugin compatibility notes and removed active `vite-plugin-progress` usage without changing functional build plugins.
-- [x] [P2-CSS-SassTypedConfig] Replaced Vite Sass `preprocessorOptions.scss as any` with an explicit local typed helper while preserving `api: 'modern-compiler'` and `charset: false`.
-- [x] [P2-CSS-CiServerOpen] Made Vite dev/preview auto-open CI/e2e aware and set Playwright web server to `VITE_SERVER_OPEN=false`.
-- [x] [P2-CSS-Mobile] Captured production mobile screenshots for `/login` and dashboard after the CSS config change; evidence: `screenshots/M8-login-mobile.png`, `screenshots/M8-dashboard-mobile.png`, and `reports/M8-production-screenshot-metrics.json`.
-- [x] [P2-CSS-Validation] Resolved the prior table-heavy validation blocker with current P2 evidence: `pnpm e2e:layout`, `pnpm e2e:visual`, and `pnpm e2e:qa:prepared` passed in `docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/`, including the ProTable non-zero geometry regression.
-
-## 17. P2 — Generated Artifacts and Governance Discipline
-
-Rationale: generated files must be regenerated, not hand-edited.
-
-### Tasks
-
-- [x] [P2-Governance-Generated] Verified generated outputs were updated only by official commands; no manual edits were made to `docs/generated/**`, `.ai/generated/**`, or `.ai/governance/api-snapshots/**`, and post-gate status showed no remaining tracked drift in those generated paths.
-- [x] [P2-Governance-Refresh] Ran `pnpm governance:refresh` after generated report changes; evidence saved under the active run command logs.
-- [x] [P2-Governance-Gate] Ran `pnpm governance:gate`; first run generated governance artifacts and failed the sync check as expected, then the generated-sync rerun passed.
-- [x] [P2-Governance-DocsCommands] Ran `pnpm docs:commands` after documentation command references were touched in planning/evidence docs.
-- [x] [P2-Governance-ProjectDoctor] Verified project metadata through `pnpm governance:gate`, which runs `project:doctor`; no project metadata, package metadata, version, or branding files were changed in this lane.
-- [x] [P2-Governance-NextActions] Refreshed `docs/ai-plan/NEXT_ACTIONS.md`, `docs/ai-plan/STATUS.md`, `docs/ai-plan/PLAN.md`, `docs/en/architecture-contract.md`, the P2 plan, and ledgers to reflect current P2 implementable/blocker status.
-
-## 18. P2 — GitHub Repository Governance
-
-Rationale: a new GitHub organization is deferred. The current repository should first gain stronger governance.
+Rationale: `postcss-pxtorem` selector blacklists are functional but fragile in a token-first architecture.
 
 ### Tasks
 
-- [x] [P2-GitHub-BranchProtection] Documented recommended `main` branch protection in D-008 and the M7 report; no remote GitHub settings were changed.
-- [x] [P2-GitHub-RequiredChecks] Verified local CI includes governance via `validate:governance` (`pnpm governance:gate`), type-check, tests, lint, production build, desktop build/budget, generated AI artifact sync, and E2E QA; required-check recommendations are recorded in D-008.
-- [x] [P2-GitHub-Codeowners] D-023 FORMALLY_RESOLVED by operator decision: GitHub template/CODEOWNERS refinements are not Full GO prerequisites; current local governance remains sufficient, and no .github or remote change is authorized. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P2-GitHub-Templates] D-023 FORMALLY_RESOLVED by operator decision: GitHub template/CODEOWNERS refinements are not Full GO prerequisites; current local governance remains sufficient, and no .github or remote change is authorized. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P2-GitHub-Release] Verified release governance alignment through `pnpm governance:gate` release checks and existing release docs; no release automation rewrite was needed.
-- [x] [P2-GitHub-Dependencies] Recorded dependency modernization policy in D-006 and M7 report; no dependency automation or upgrades were added without approval.
+- [x] [P2-CSS-PxToRemAudit] Audit `postcss-pxtorem` usage in `apps/web-demo/vite.config.ts` and confirm which authored CSS still needs conversion.
+- [x] [P2-CSS-TokenFirst] Prefer design tokens, CSS variables, `%`, viewport units, container queries, and UnoCSS rules over global px-to-rem conversion.
+- [x] [P2-CSS-BlacklistRisk] Reduce dependence on long selector blacklists where possible.
+- [x] [P2-CSS-PrimeVue] Ensure PrimeVue and third-party CSS remain excluded from accidental rem conversion.
+- [x] [P2-CSS-Mobile] Validate mobile layout and safe-area behavior after CSS changes.
+- [x] [P2-CSS-Validation] Run visual regression or screenshot checks for `/login`, dashboard, table-heavy views, and chart-heavy views.
 
-## 18.5. P3 — Example Documentation System Polish
-
-Rationale: `apps/web-demo/src/views/example/**` documentation-style pages repeat the same shell/header markup and need a small shared view shell before broader documentation UI polish.
+## 24. P2 — Generated Artifacts and Governance Discipline
 
 ### Tasks
 
-- [x] [P3-DocsShell] Added `ExampleDocPage` shared shell and applied it to representative type, empty-state, and system-state documentation pages without changing route, data, network, storage, or app runtime boundaries. Validation passed through targeted lint, web-demo type-check/build, `pnpm codex:preflight`, `pnpm ai:guard -- --format=json`, and Playwright desktop/mobile route checks.
+- [x] [P2-Governance-Generated] Do not manually edit `docs/generated/**`, `.ai/generated/**`, or `.ai/governance/api-snapshots/**`.
+- [x] [P2-Governance-Refresh] Run `pnpm governance:refresh` after dependency graph, API surface, supply-chain, or generated report changes.
+- [x] [P2-Governance-Gate] Run `pnpm governance:gate` before merging architecture changes.
+- [x] [P2-Governance-DocsCommands] Run `pnpm docs:commands` if command documentation is touched.
+- [x] [P2-Governance-ProjectDoctor] Run `pnpm project:doctor` if `project.config.json`, package metadata, version, branding, or generated project metadata is touched.
 
-## 19. P3 — Login Diorama Refactor Plan
+## 25. P2 — GitHub Repository Governance
 
-Rationale: the legacy repair template contains a detailed login diorama plan. Keep it, but execute only after P0/P1 stabilization.
+Rationale: owner decision marks branch protection and remote repository mutation as `FULL_GO_DEFERRED` for current Full GO. Track locally; do not mutate `.github/**` or remote settings without operator approval.
 
-2026-05-30 P3 execution audit: no Login Diorama source lane was started because M11 operator approval and prerequisite stability are still missing. Evidence lives under `docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/`.
+### Tasks
+
+- [x] [P2-GitHub-BranchProtection] Configure or document main branch protection: required PR, required checks, conversation resolution, and linear history if appropriate.
+  - Completion note (2026-06-08): Documented the local main branch protection target in `docs/governance/github-governance.md`; remote repository settings mutation remains deferred by `.ai/runtime/owner_decisions.md`.
+- [x] [P2-GitHub-RequiredChecks] Ensure required checks include `governance:gate`, `type-check`, `lint:check`, `build:ci`, and UI/E2E checks when practical.
+  - Completion note (2026-06-08): Documented the required check set in `docs/governance/github-governance.md` and verified the current local CI workflow already contains governance, type-check, lint, test, build, desktop, and E2E QA command families; remote required-check enforcement remains operator-deferred.
+- [ ] [P2-GitHub-CIJobs] Add CI jobs for type-check, lint, unit tests, route smoke tests, e2e smoke, desktop build, and governance checks on clean artifacts (`.github/workflows/`, root `package.json`).
+  - Deferred/open note (2026-06-08): Not added because `.ai/runtime/owner_decisions.md` sets `GitHub branch protection / required checks` to `FULL_GO_DEFERRED` and says no `.github/**` mutation is authorized in this program; CI job expansion requires a future operator-approved GitHub governance lane.
+- [ ] [P2-GitHub-Codeowners] Add or update `CODEOWNERS` for architecture, AI rules, packages, apps, and workflows.
+  - Deferred/open note (2026-06-08): Not updated because `.ai/runtime/owner_decisions.md` sets `GitHub branch protection / required checks` to `FULL_GO_DEFERRED` and says no `.github/**` mutation is authorized in this program; CODEOWNERS expansion requires future operator approval.
+- [ ] [P2-GitHub-Templates] Add or refine PR and issue templates for architecture changes, UI changes, dependency upgrades, and bug reports.
+  - Deferred/open note (2026-06-08): Not refined because `.ai/runtime/owner_decisions.md` sets `GitHub branch protection / required checks` to `FULL_GO_DEFERRED` and says no `.github/**` mutation is authorized in this program; PR/issue template changes require future operator approval.
+- [x] [P2-GitHub-Release] Keep release automation aligned with `project.config.json` and release governance scripts.
+- [x] [P2-GitHub-Dependencies] Add or refine dependency update policy; avoid blind `pnpm up --latest` on `main`.
+  - Completion note (2026-06-08): Added `docs/governance/dependency-policy.md` with lane isolation, no blind global upgrades on `main`, placement rules, override policy, and scanning deferral; no dependency upgrade or manifest/lockfile mutation was performed.
+
+## 26. P3 — Login Diorama Refactor Plan
+
+Rationale: owner decision marks Login Diorama as `FULL_GO_DEFERRED` for current Full GO. Keep the plan; execute only after P0/P1 stabilization.
 
 ### Target state
 
@@ -367,132 +429,233 @@ Rationale: the legacy repair template contains a detailed login diorama plan. Ke
 - The login form occupies the left 55%–60% of the desktop panel and keeps `ProForm` as the only multi-field form boundary.
 - `AnimatedCharacters` occupies the right 40%–45% as a physical scene object, aligned to the panel floor and breaking above the panel top by 15%–20%.
 - Password field visual structure is repaired so prefix icon, input body, and mask toggle stay inside one aligned control shell.
-- Light/dark theme, size density, semantic tokens, responsive breakpoints, and design-engine UnoCSS laws remain authoritative.
 
 ### Preflight tasks
 
-- [x] [P3-Login-Rules] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no login files were edited.
-- [x] [P3-Login-Context] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; top-K login implementation context was not built because the lane is not approved.
-- [x] [P3-Login-PrimeVue] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; PrimeVue API verification is deferred until an approved login lane.
-- [x] [P3-Login-Constraints] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no login implementation changes were made.
+- [ ] [P3-Login-Rules] Re-read `.ai/protocol/AGENTS.core.md`, `.ai/rules/core/01-global-preflight.mdc`, `.ai/rules/core/02-ui-preflight.mdc`, `.ai/rules/components/00-primevue-ecosystem.mdc`, `.ai/rules/components/02-pro-components.mdc`, and `.ai/rules/design-system/00-unocss-guardrails.mdc` before editing login files.
+  - Deferred/open note (2026-06-08): Not executed because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`; no login-file editing lane is authorized.
+- [ ] [P3-Login-Context] Build top-K context from `apps/web-demo/src/views/login/index.vue`, login components, `apps/web-demo/src/views/login/composables/useLoginSubmit.ts`, `packages/unocss-preset/src/shortcuts/semanticShortcuts.ts`, and relevant ProForm renderer typings.
+  - Deferred/open note (2026-06-08): Not executed because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`; current login behavior remains canonical.
+- [ ] [P3-Login-PrimeVue] Verify PrimeVue v4 `Password`, `Button`, `Select`, `IconField`, and `InputText` APIs before changing props, slots, or PassThrough configuration.
+  - Deferred/open note (2026-06-08): Not executed because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`; no PrimeVue login prop/PT changes are authorized.
+- [ ] [P3-Login-Constraints] Confirm no native `<form>`, `<input>`, `<button>`, raw `overflow-auto`, raw hex colors, `rem`/`em`, raw z-index classes, invented shortcuts, or direct `glass-base` usage enter the login view.
+  - Deferred/open note (2026-06-08): Not executed because no Login Diorama implementation was authorized or performed; no new login view markup/classes entered the codebase.
 
 ### Layout and composition tasks
 
-- [x] [P3-Login-Layout] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; Login Diorama layout was not implemented.
-- [x] [P3-Login-Composition] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; brand/layout composition was not changed.
-- [x] [P3-Login-Password] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; password shell was not changed.
-- [x] [P3-Login-Depth] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; dark-mode elevation was not changed.
-- [x] [P3-Login-VisualNoise] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; visual hierarchy was not changed.
-- [x] [P3-Login-Shell] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; panel shell was not changed.
-- [x] [P3-Login-Grid] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; panel grid was not changed.
-- [x] [P3-Login-FormZone] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; form zone was not changed.
-- [x] [P3-Login-StageZone] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; character stage zone was not changed.
-- [x] [P3-Login-Breakout] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; character breakout positioning was not changed.
-- [x] [P3-Login-TopControls] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; top controls were not changed.
-- [x] [P3-Login-BottomLinks] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; bottom links were not changed.
+- [ ] [P3-Login-Layout] Replace the current independent `login-visual-panel` and `login-card` split with one `login-diorama-panel` that owns both form and character stage.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`; current login layout remains canonical.
+- [ ] [P3-Login-Composition] Remove duplicate brand placement inside the old visual panel and move brand/logo/title into a centered floating block above the diorama panel.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`.
+- [ ] [P3-Login-Password] Fix password icon misalignment caused by the separate absolute leading icon plus PrimeVue `Password` internal structure.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`; password-shell UI changes require a future product-approved lane.
+- [ ] [P3-Login-Depth] Improve dark-mode elevation using border plus inset-highlight semantics instead of relying on outer shadows alone.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`.
+- [ ] [P3-Login-VisualNoise] Reduce decorative copy and pills inside the main panel so the form and breakout character dominate the hierarchy.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`.
+- [ ] [P3-Login-Shell] Create a centered horizontal panel with `width: min(92vw, 960px)` baseline, max expansion capped near `1200px`, and height governed by viewport-safe min/max values.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`.
+- [ ] [P3-Login-Grid] Define panel internal grid as `minmax(0, 58%) minmax(0, 42%)` on desktop and keep it non-nested with existing layout shortcut laws.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`.
+- [ ] [P3-Login-FormZone] Place login heading, subtitle, presets, fields, submit button, register link, and version footer in the left zone with consistent token gaps.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`.
+- [ ] [P3-Login-StageZone] Place the character stage in the right zone with `overflow: visible`, floor alignment, and no extra textual content.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`.
+- [ ] [P3-Login-Breakout] Position `AnimatedCharacters` so the body baseline aligns to the panel lower visual floor and the top breaks out above the panel by 15%–20%.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`.
+- [ ] [P3-Login-TopControls] Keep theme switch and locale select in a compact top-right toolbar with safe-area offsets.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`.
+- [ ] [P3-Login-BottomLinks] Keep help/privacy links centered below the panel and visually separated from the panel bottom.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`.
 
 ### Form and interaction tasks
 
-- [x] [P3-Login-ProForm] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; ProForm integration was not changed.
-- [x] [P3-Login-Presets] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; demo account presets were not changed.
-- [x] [P3-Login-Username] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; username focus wiring was not changed.
-- [x] [P3-Login-PasswordState] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; password reaction state was not changed.
-- [x] [P3-Login-PasswordShell] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; password shell was not rebuilt.
-- [x] [P3-Login-Submit] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; submit flow was not changed.
-- [x] [P3-Login-Feedback] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; login failure feedback was not changed.
+- [ ] [P3-Login-ProForm] Preserve `ProForm` schema, validation, submit flow, demo account filling, locale re-keying, and `ProFormExpose` usage.
+  - Deferred/open note (2026-06-08): Not executed because no Login Diorama refactor was authorized; current ProForm login behavior remains canonical.
+- [ ] [P3-Login-Presets] Convert demo accounts to a segmented-control-like pair using PrimeVue `Button` or approved component structure, keeping clear active/quick-fill affordance.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`.
+- [ ] [P3-Login-Username] Keep username focus state wired to `AnimatedCharacters` through `isUsernameFocused`.
+  - Deferred/open note (2026-06-08): Not executed because no Login Diorama refactor was authorized; existing username focus behavior was not changed.
+- [ ] [P3-Login-PasswordState] Keep `passwordValue`, `passwordLength`, and `isPasswordVisible` synchronized so character password reactions remain deterministic.
+  - Deferred/open note (2026-06-08): Not executed because no Login Diorama refactor was authorized; existing password state behavior was not changed.
+- [ ] [P3-Login-PasswordShell] Rebuild the password field wrapper as one aligned control shell with prefix icon, input, and toggle inside the same visual boundary.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`.
+- [ ] [P3-Login-Submit] Keep one primary submit button, full-width within the form column, with loading state and existing redirect/global loading behavior unchanged.
+  - Deferred/open note (2026-06-08): Not executed because no Login Diorama refactor was authorized; submit behavior was not changed.
+- [ ] [P3-Login-Feedback] Keep failed login feedback routed through `window.$toast?.dangerIn` and clear only the password field after failure.
+  - Deferred/open note (2026-06-08): Not executed because no Login Diorama refactor was authorized; failure feedback behavior was not changed.
 
 ### Animated character stage tasks
 
-- [x] [P3-Login-Reuse] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; `AnimatedCharacters` was not changed.
-- [x] [P3-Login-Scaling] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; character stage scaling was not changed.
-- [x] [P3-Login-Floor] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; stage floor/shadow was not added.
-- [x] [P3-Login-Overflow] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; overflow behavior was not changed.
-- [x] [P3-Login-ReducedMotion] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; motion behavior was not changed.
+- [ ] [P3-Login-Reuse] Reuse `AnimatedCharacters` rather than replacing GSAP animation logic.
+  - Deferred/open note (2026-06-08): Not executed because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`; no character-stage code was changed.
+- [ ] [P3-Login-Scaling] Adjust only the parent stage sizing and position first; modify `TOTEM_REF_W`, `TOTEM_REF_H`, or internal CSS vars only if browser evidence proves parent scaling cannot satisfy the design.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`.
+- [ ] [P3-Login-Floor] Add a subtle tokenized stage floor or shadow under the characters if needed, without adding text or unrelated ornamentation.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`.
+- [ ] [P3-Login-Overflow] Ensure the parent diorama panel allows character breakout while preserving panel clipping for internal form/material effects where needed.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`.
+- [ ] [P3-Login-ReducedMotion] Preserve current interaction behavior and verify no new infinite motion is added beyond existing GSAP loops.
+  - Deferred/open note (2026-06-08): Not executed because no Login Diorama refactor was authorized; no new motion was added.
 
 ### Design-engine compliance tasks
 
-- [x] [P3-Login-Tokens] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no login token usage was changed.
-- [x] [P3-Login-Sizing] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no login sizing was changed.
-- [x] [P3-Login-Shortcuts] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no UnoCSS shortcuts were added.
-- [x] [P3-Login-Borders] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no border utilities were changed.
-- [x] [P3-Login-ZIndex] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no z-index strategy was changed.
-- [x] [P3-Login-RuleOf7] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no login template utilities were changed.
-- [x] [P3-Login-Deep] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no new `:deep(.p-*)` selectors were added.
+- [ ] [P3-Login-Tokens] Use semantic color tokens only: `background`, `card`, `foreground`, `muted`, `border`, `primary`, `info`, `success`, `warn`, and related foreground/light variants.
+  - Deferred/open note (2026-06-08): Not executed because no Login Diorama refactor was authorized; no new login tokens/classes were added.
+- [ ] [P3-Login-Sizing] Use CSS variables, `%`, `vw`, and `vh` for authored sizing; avoid `rem`/`em` and avoid unnecessary raw px outside existing animation geometry.
+  - Deferred/open note (2026-06-08): Not executed because no Login Diorama refactor was authorized; no login sizing changes were made.
+- [ ] [P3-Login-Shortcuts] Use only registered shortcuts from `semanticShortcuts.ts`; do not invent login-specific UnoCSS shortcuts unless the design engine registry is intentionally extended.
+  - Deferred/open note (2026-06-08): Not executed because no Login Diorama refactor was authorized; no new login shortcuts were added.
+- [ ] [P3-Login-Borders] Pair every border utility with explicit style and semantic color if authored in template classes.
+  - Deferred/open note (2026-06-08): Not executed because no Login Diorama refactor was authorized; no new login border utilities were added.
+- [ ] [P3-Login-ZIndex] Use `z-base`, `z-content`, `z-layout`, `z-overlay`, `z-popover`, or DOM stacking context restructuring only.
+  - Deferred/open note (2026-06-08): Not executed because no Login Diorama refactor was authorized; no new login z-index utilities were added.
+- [ ] [P3-Login-RuleOf7] Move complex layout and decorative geometry into scoped CSS classes when template utility count would exceed the Rule of 7.
+  - Deferred/open note (2026-06-08): Not executed because no Login Diorama refactor was authorized; no login template restructuring was performed.
+- [ ] [P3-Login-Deep] Avoid adding new `:deep(.p-*)` selectors beyond existing documented login exception unless a focused architectural justification is added.
+  - Deferred/open note (2026-06-08): Not executed because no Login Diorama refactor was authorized; no new `:deep(.p-*)` selectors were added.
 
 ### Responsive strategy tasks
 
-- [x] [P3-Login-Desktop] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; desktop diorama layout was not implemented.
-- [x] [P3-Login-Tablet] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; tablet layout was not changed.
-- [x] [P3-Login-Mobile] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; mobile layout was not changed.
-- [x] [P3-Login-MobileGrid] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; mobile grid behavior was not changed.
-- [x] [P3-Login-SafeArea] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; safe-area behavior was not changed.
+- [ ] [P3-Login-Desktop] For `>= 1024px`, render the full horizontal diorama panel and breakout character stage.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`.
+- [ ] [P3-Login-Tablet] For `768px–1023px`, reduce panel width to viewport-safe bounds, shift form/stage ratio toward `65%/35%`, and scale characters down while preserving breakout.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`.
+- [ ] [P3-Login-Mobile] For `< 768px`, switch to single-column composition with brand, compact character overlap, form, and footer links stacked vertically.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`.
+- [ ] [P3-Login-MobileGrid] Hide or further weaken background grid on mobile if it competes with form legibility.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Login Diorama product refactor` to `FULL_GO_DEFERRED`.
+- [ ] [P3-Login-SafeArea] Preserve top and bottom `env(safe-area-inset-*)` spacing for mobile and desktop shells.
+  - Deferred/open note (2026-06-08): Not executed because no Login Diorama refactor was authorized; existing safe-area behavior was not changed.
 
 ### Validation tasks
 
-- [x] [P3-Login-Static] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no login code changes were made, so focused eslint was not applicable.
-- [x] [P3-Login-Type] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no focused refactor was made, so login-specific type validation was not applicable.
-- [x] [P3-Login-Governance] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no imports, boundaries, or runtime adapters were touched.
-- [x] [P3-Login-Browser] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; no Login Diorama screenshots were captured for an unimplemented refactor.
-- [x] [P3-Login-Responsive] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; responsive Diorama validation was not applicable.
-- [x] [P3-Login-Interaction] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; interaction validation was not applicable.
-- [x] [P3-Login-Regression] D-023 FORMALLY_RESOLVED by product/operator decision: Login Diorama is not a Full GO prerequisite; current login behavior remains canonical; password-shell regression validation was not applicable.
+- [ ] [P3-Login-Static] Run `pnpm exec eslint apps/web-demo/src/views/login/index.vue apps/web-demo/src/views/login/components/*.vue apps/web-demo/src/views/login/composables/useLoginSubmit.ts` after code changes.
+  - Deferred/open note (2026-06-08): Not run as Login Diorama refactor validation because no login code changes were authorized or made.
+- [ ] [P3-Login-Type] Run `pnpm --filter @ccd/web-demo type-check` after the focused refactor.
+  - Deferred/open note (2026-06-08): Not run as focused Login Diorama validation because no login refactor was authorized or made; broader `pnpm type-check` passed at the P2 boundary.
+- [ ] [P3-Login-Governance] Run `pnpm arch:runtime`, `pnpm api:report`, and `pnpm supply:check` if imports, package boundaries, or runtime adapters are touched.
+  - Deferred/open note (2026-06-08): Not run as Login Diorama-specific governance because no imports, package boundaries, or runtime adapters were touched for Login Diorama; broader `pnpm governance:gate` passed at the P2 boundary.
+- [ ] [P3-Login-Browser] Use Browser plugin or Playwright fallback to capture `/login` in light and dark modes at desktop width.
+  - Deferred/open note (2026-06-08): Not run as Login Diorama desktop capture because no Login Diorama refactor was authorized or made; P2 CSS validation captured the current `/login` route screenshot.
+- [ ] [P3-Login-Responsive] Capture or inspect tablet and mobile breakpoints for panel wrapping, character breakout, safe-area spacing, and footer position.
+  - Deferred/open note (2026-06-08): Not run as Login Diorama responsive validation because no Login Diorama refactor was authorized or made; P2 CSS mobile validation covered existing mobile/safe-area shell behavior.
+- [ ] [P3-Login-Interaction] Verify username focus makes characters react, password typing triggers privacy behavior, password visibility toggle updates state, presets fill both fields, failed login clears password only, and successful login redirects.
+  - Deferred/open note (2026-06-08): Not run as Login Diorama interaction validation because no Login Diorama refactor was authorized or made; current login behavior remains canonical.
+- [ ] [P3-Login-Regression] Verify the password prefix icon and visibility toggle remain inside the input shell in both light and dark screenshots.
+  - Deferred/open note (2026-06-08): Not run as Login Diorama regression validation because no password-shell refactor was authorized or made.
 
-## 20. P3 — Directive Specs, Case Sensitivity, and Secondary Test Debt
+## 27. P3 — Documentation, Desktop Follow-Up, and Secondary Debt
 
-Rationale: current repair template records secondary test and import-casing issues.
+### Documentation tasks
 
-### Tasks
+- [x] [P3-Docs-ArchitectureMap] Add a concise monorepo architecture map showing permitted dependency direction and runtime boundaries (`docs/`, `README.md`).
+- [x] [P3-Docs-PackageResponsibilities] Document the responsibilities of every shared package and every app-local adapter boundary (`docs/`, `packages/*`, `apps/*`).
+- [x] [P3-Docs-RouteInventory] Add route/page inventory documentation for all report instance pages and their owners (`apps/web-demo/src/router/modules/example.ts`, `apps/web-demo/src/views/example/**`).
+- [x] [P3-Docs-DevCommands] Standardize local development command documentation for web, desktop, build, type-check, lint, and validation workflows (`README.md`, `README.en.md`, root `package.json`).
+- [x] [P3-Docs-RemoveDemoWording] Remove stale template, example, or demo-only wording from production-facing docs and metadata where the project is no longer only a demo (`README.md`, `.env.*`, `apps/web-demo/**`).
+- [x] [P3-Docs-DesktopBoundary] Document whether the desktop app intentionally reuses the web frontend or maintains a dedicated desktop frontend boundary (`apps/desktop/src/**`, `apps/web-demo/src/**`).
 
-- [x] [P3-Tests] Focused directive specs were inspected and already use Vue 3 four-argument hook calls; no `expect-error` noise remains, and focused Vitest passed. Evidence: `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M12-T1-20260529-082430-directive-dateutils-noise-scan.log` and `command-logs/M12-T1-20260529-082500-focused-directive-vitest.log`.
-- [x] [P3-CaseSensitivity] Normalized example `DateUtils` imports through the `@/utils/date` aggregate entry and added a named `DateUtils` export there; validation passed. Evidence: `reports/M12-secondary-test-casing.md`.
-- [x] [P3-Verify] Ran `pnpm check`; it passed with the known two `vue/one-component-per-file` warnings in `packages/vue-hooks/src/createAutoMittHook.spec.ts`. Evidence: `command-logs/M12-T3-20260529-082620-pnpm-check.log`.
+### Desktop follow-up tasks
 
-## 21. P4 — Deferred Strategic Work
+- [ ] [P3-Desktop-SmokeCI] Add desktop smoke validation for Tauri dev and release builds in CI (`apps/desktop/package.json`, `apps/desktop/src-tauri/Cargo.toml`, `.github/workflows/**`).
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Desktop drift CI integration` to `FULL_GO_DEFERRED` and `GitHub branch protection / required checks` says no `.github/**` mutation is authorized in this program; desktop smoke CI requires a future operator-approved CI lane.
+- [x] [P3-Desktop-Bundling] Enable production bundling or document why desktop bundling is intentionally disabled (`apps/desktop/src-tauri/tauri.conf.json`).
+- [x] [P3-Desktop-IPC] Add typed frontend IPC wrappers instead of scattering raw `invoke` calls through UI code (`apps/desktop/src/**`, `packages/contracts`).
+- [x] [P3-Desktop-IPCSchemas] Validate all frontend-to-backend payloads with shared schemas/contracts before executing Rust commands.
+- [x] [P3-Desktop-Icons] Add production icons and complete bundle metadata for desktop distribution (`apps/desktop/src-tauri/icons/**`).
+- [x] [P3-Desktop-WindowDefaults] Set explicit production window and navigation defaults such as resizable/fullscreen behavior, external navigation policy, and asset protocol scopes.
+- [x] [P3-Desktop-RustLogging] Add a Rust backend startup logging and error strategy instead of a generic startup expect message (`apps/desktop/src-tauri/src/main.rs`).
+
+### Secondary test and tooling tasks
+
+- [x] [P3-Tests] Update directive specs for Vue 3 four-argument directive hook signatures and clean up unused imports / `expect-error` noise in focused test files.
+- [x] [P3-CaseSensitivity] Normalize `DateUtils` / `dateUtils` import casing across example views and shared date utilities.
+- [x] [P3-Tooling-CrossPlatform] Replace shell-specific script syntax with Node wrappers or cross-platform tooling where Windows support matters.
+- [x] [P3-Tooling-Stylelint] Audit Stylelint and Prettier-related Stylelint config compatibility with the installed Stylelint major version (`stylelint.config.mjs`, root `package.json`).
+- [x] [P3-Tooling-I18nReview] Review `vue-i18n` usage and migration path against the current supported major version and composition API recommendations.
+- [x] [P3-Verify] Run `pnpm check` and capture the final residual error surface once targeted repairs land.
+
+## 28. P4 — Deferred Strategic Work
 
 Do not implement these until P0, P1, and the relevant P2 lanes are stable.
 
-### Tasks
+### Owner-deferred items
 
-- [x] [P4-NewOrganization-Deferred] D-023 FORMALLY_RESOLVED by owner decision: strategic expansion work is not a Full GO prerequisite and remains future-charter work outside this remediation program. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P4-Starter-Deferred] D-023 FORMALLY_RESOLVED by owner decision: strategic expansion work is not a Full GO prerequisite and remains future-charter work outside this remediation program. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P4-DesignSystem-Deferred] D-023 FORMALLY_RESOLVED by owner decision: strategic expansion work is not a Full GO prerequisite and remains future-charter work outside this remediation program. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P4-RekaUI-Deferred] D-023 FORMALLY_RESOLVED by owner decision: strategic expansion work is not a Full GO prerequisite and remains future-charter work outside this remediation program. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P4-TanStackQuery-Deferred] D-023 FORMALLY_RESOLVED by owner decision: strategic expansion work is not a Full GO prerequisite and remains future-charter work outside this remediation program. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
-- [x] [P4-DesktopDriftCI] D-023 FORMALLY_RESOLVED by owner/operator decision: desktop drift CI is not a Full GO prerequisite; manual desktop validation remains sufficient until a future CI lane is approved. Evidence: docs/ai-runs/20260601-221034-ccd-full-remediation-d023-g02-closure/reports/g02-closure-table.md.
+- [ ] [P4-NewOrganization-Deferred] Do not create a new GitHub organization or new repository now; first stabilize current repository governance and architecture.
+  - Deferred/open note (2026-06-08): No organization or repository was created. This remains open as a strategic deferral until current repository governance and architecture are stable and the operator explicitly approves remote creation.
+- [ ] [P4-Starter-Deferred] Create `ccd-vue-starter` only after `@ccd/contracts`, `@ccd/core`, `@ccd/vue-ui`, and `@ccd/vue-primevue-adapter` are stable.
+  - Deferred/open note (2026-06-08): No starter repository/package was created. This remains open until the listed packages are stable and a future owner/operator-approved starter lane exists.
+- [ ] [P4-DesignSystem-Deferred] Split a standalone design-system repository only after UI primitives and adapter boundaries are stable.
+  - Deferred/open note (2026-06-08): No standalone design-system repository was split. This remains open until UI primitives and PrimeVue adapter boundaries are stable and a future repository-split lane is approved.
+- [ ] [P4-RekaUI-Deferred] Evaluate Reka UI only for specific headless primitive gaps after PrimeVue adapter boundaries are stable.
+  - Deferred/open note (2026-06-08): No Reka UI evaluation or dependency change was performed. This remains open until a concrete headless primitive gap is documented after PrimeVue adapter boundaries are stable.
+- [ ] [P4-TanStackQuery-Deferred] Evaluate TanStack Query Vue only if server-state complexity exceeds what alova + explicit adapters can cleanly handle.
+  - Deferred/open note (2026-06-08): No TanStack Query evaluation or dependency change was performed. This remains open until server-state complexity exceeds the current alova plus explicit adapter model.
+- [ ] [P4-DesktopDriftCI] Add desktop drift CI only after owner sign-off on enforcement scope.
+  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Desktop drift CI integration` to `FULL_GO_DEFERRED` and GitHub required-check changes are not authorized; this needs a future operator-approved CI lane.
 
-## 22. Validation Matrix
+### Rejected or blocked by approved owner decisions
+
+- [ ] [P4-HttpCore-Blocked] Do not promote Alova HTTP runtime into `packages/core` or a new `packages/request` package; D-014 keeps app HTTP runtime app-owned.
+  - Blocked/open note (2026-06-08): No HTTP runtime promotion was performed. D-014 in `.ai/runtime/owner_decisions.md` approves type-only HTTP contracts while keeping Alova runtime, interceptors, auth refresh, policies, UI notification behavior, and app validation app-owned under `apps/web-demo/**`.
+- [ ] [P4-SafeStorageShared-Blocked] Do not promote safeStorage compression/runtime to `@ccd/shared-utils`; D-019 keeps it app-owned.
+  - Blocked/open note (2026-06-08): No safeStorage runtime or compression promotion was performed. D-019 in `.ai/runtime/owner_decisions.md` keeps `lz-string`, Pinia serializer, storage maintenance, migration behavior, and facade runtime app-owned.
+
+### Low-priority strategic documentation
+
+- [x] [P4-ADR-Stack] Add architecture decision records for Vue 3, Vite, UnoCSS, PrimeVue, Tauri v2, pnpm workspace, and Turborepo choices (`docs/adr/`).
+  - Completion note (2026-06-08): Added `docs/adr/ADR-007-runtime-stack-and-tooling-choices.md` and linked it from `docs/governance/README.md`.
+- [x] [P4-Desktop-RustCommands] Add Rust command handlers only through audited, typed boundaries when backend commands are introduced.
+  - Completion note (2026-06-08): Added the desktop backend command policy in `docs/adr/ADR-008-desktop-backend-ipc-and-updater-policy.md` and `docs/runtime/desktop-runtime.md`; no placeholder Rust commands were added.
+- [x] [P4-Desktop-RustErrors] Add Rust-side structured error types instead of string-only IPC errors when commands are added.
+  - Completion note (2026-06-08): Documented the structured Rust-side IPC error requirement in ADR-008 and desktop runtime docs; no new commands or error plumbing were introduced without a backend capability.
+- [x] [P4-Desktop-Updater] Add updater and deep-link configuration only when needed and only with a documented security model.
+  - Completion note (2026-06-08): Documented that updater and deep-link configuration remain disabled until a future security model covers trusted source, signature validation, URL schemes, downgrade behavior, and failure handling.
+- [x] [P4-Deps-WorkspacePlacement] Decide whether workspace packages belong in root dependencies or devDependencies and keep placement consistent.
+  - Completion note (2026-06-08): Added dependency placement rules in `docs/governance/dependency-policy.md`; root `@ccd/*` workspace references remain in `devDependencies` because the root is orchestration-only, while apps/packages declare runtime imports in their own `dependencies`.
+- [x] [P4-Deps-OverridesPolicy] Add a documented pnpm overrides and constraints policy for transitive dependency risk.
+  - Completion note (2026-06-08): Added pnpm overrides policy in `docs/governance/dependency-policy.md`, including rationale, affected chain, validation, and removal/review requirements.
+- [x] [P4-Release-Changesets] Keep Changesets or release automation aligned with the centralized project version strategy.
+  - Completion note (2026-06-08): Updated `docs/release/release-policy.md` to keep `project.config.json` as the manual version source of truth and Changesets as package-change annotation/release-automation input.
+
+## 29. Validation Matrix
 
 Use the smallest valid validation set first, then escalate.
 
-| Change type | Minimum validation | Full validation |
-|---|---|---|
-| Ledger Markdown migration | `pnpm ai:sync`, `pnpm ai:doctor`, `pnpm codex:preflight` | `pnpm governance:gate` |
-| AI rules / protocol | `pnpm ai:doctor`, `pnpm codex:preflight` | `pnpm governance:refresh`, `pnpm governance:gate` |
-| Package exports | `pnpm ci:prepare-internal`, package build, `pnpm type-check` | `pnpm build:ci` |
-| Vite config | `pnpm --filter @ccd/web-demo build` | `pnpm build:ci`, `pnpm vercel:build`, `pnpm e2e:qa` |
-| HTTP contracts | `pnpm arch:runtime`, `pnpm api:report`, targeted tests | `pnpm validate` |
-| UI boundary | `pnpm arch:boundaries`, `pnpm type-check` | browser screenshots + `pnpm e2e:qa` |
-| Login UI | targeted eslint + web-demo type-check | Playwright screenshots + interaction smoke |
-| Dependency lane | targeted package checks | `pnpm validate` |
+| Change type               | Minimum validation                                           | Full validation                                     |
+| ------------------------- | ------------------------------------------------------------ | --------------------------------------------------- |
+| Ledger Markdown migration | `pnpm ai:sync`, `pnpm ai:doctor`, `pnpm codex:preflight`     | `pnpm governance:gate`                              |
+| AI rules / protocol       | `pnpm ai:doctor`, `pnpm codex:preflight`                     | `pnpm governance:refresh`, `pnpm governance:gate`   |
+| Package exports           | `pnpm ci:prepare-internal`, package build, `pnpm type-check` | `pnpm build:ci`                                     |
+| Route module split        | route smoke tests, `pnpm type-check`                         | `pnpm e2e:qa`                                       |
+| Vite config               | `pnpm --filter @ccd/web-demo build`                          | `pnpm build:ci`, `pnpm vercel:build`, `pnpm e2e:qa` |
+| HTTP contracts            | `pnpm arch:runtime`, `pnpm api:report`, targeted tests       | `pnpm validate`                                     |
+| UI boundary               | `pnpm arch:boundaries`, `pnpm type-check`                    | browser screenshots + `pnpm e2e:qa`                 |
+| Desktop security          | capabilities/CSP audit scripts                               | desktop build + smoke validation                    |
+| Login UI                  | targeted eslint + web-demo type-check                        | Playwright screenshots + interaction smoke          |
+| Dependency lane           | targeted package checks                                      | `pnpm validate`                                     |
 
-## 23. Execution Order
+## 30. Execution Order
 
 Execute in this exact order unless the owner explicitly overrides it.
 
-1. Upgrade runtime ledger from `.txt` to `.md`.
+1. Keep the runtime ledger parseable and aligned with AI protocol references.
 2. Run AI sync, doctor, preflight, and governance checks.
-3. Fix P0 SFC parse/type-check blockers.
-4. Fix internal package export consistency.
-5. Tighten ProForm / ProTable / bridge typing.
-6. Stabilize UI and HTTP architecture boundaries.
-7. Resolve owner decisions and architecture guard coverage.
-8. Run isolated Vite 8 compatibility lane.
-9. Run isolated dependency modernization lanes.
-10. Execute login diorama refactor.
-11. Improve GitHub repository governance.
-12. Revisit deferred organization/starter/design-system decisions only after the current repository is stable.
+3. Fix P0 SFC parse/type-check blockers and package export consistency.
+4. Fix P0 build self-sufficiency and dependency-direction enforcement.
+5. Resolve P1 naming, route-module integrity, and documentation identity issues.
+6. Tighten ProForm / ProTable / bridge typing and runtime capability boundaries.
+7. Stabilize UI, HTTP, and safeStorage architecture boundaries per approved owner decisions.
+8. Resolve rule contradictions and architecture guard coverage backlog.
+9. Harden desktop CSP and capabilities baseline.
+10. Run isolated Turbo/build orchestration and shared-layer consolidation lanes.
+11. Run isolated Vite 8 and dependency modernization lanes.
+12. Execute login diorama refactor and secondary documentation debt.
+13. Improve GitHub repository governance only with operator approval.
+14. Revisit deferred organization/starter/design-system decisions only after the current repository is stable.
 
-## 24. Anti-Patterns
+## 31. Anti-Patterns
 
 Do not do the following:
 
@@ -500,6 +663,7 @@ Do not do the following:
 - Do not create a new organization or repository as a substitute for architecture repair.
 - Do not replace PrimeVue just because another UI library is newer or fashionable.
 - Do not switch from alova to Axios.
+- Do not promote Alova HTTP runtime or safeStorage compression into shared packages against approved owner decisions.
 - Do not introduce TanStack Query until server-state complexity proves the need.
 - Do not introduce raw `fetch`, raw storage, or router/store cross-coupling outside approved adapters.
 - Do not introduce global `@ccd/*` TypeScript aliases.
@@ -507,16 +671,19 @@ Do not do the following:
 - Do not mix Vite 8 migration, UI refactor, HTTP refactor, and dependency upgrades in one branch.
 - Do not weaken CI, governance gates, or AI preflight to make migration easier.
 
-## 25. Completion Criteria
+## 32. Completion Criteria
 
-This ledger migration and repair plan is considered stable only when:
+This ledger is considered stable only when:
 
 - `.ai/runtime/repair_list.md` exists locally and is used by AI workflows.
 - `.ai/runtime/repair_list.template.md` exists in the repository.
-- `.ai/runtime/repair_list.template.txt` is retired or no longer referenced by governance tooling.
 - `scripts/migrate-ledger.mjs` generates `repair-ledger.json` from Markdown.
 - `pnpm ai:sync` preserves existing local Markdown ledger content.
 - `pnpm ai:doctor --open` lists open tasks from Markdown.
 - `pnpm codex:preflight` checks Markdown paths.
 - Repository search finds no stale required references to `repair_list.txt`.
 - `pnpm ai:sync`, `pnpm ai:doctor`, `pnpm codex:preflight`, and `pnpm governance:gate` pass.
+
+## 33. How to use this checklist
+
+Place this Markdown file at `/.ai/runtime/repair_list.md`. Each actionable task can be checked off only after implementation and relevant validation commands pass.

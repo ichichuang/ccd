@@ -14,6 +14,13 @@ alwaysApply: true
 3. **Lodash-es Third:** For pure data manipulation (deep clone, merge, non-reactive debounce), use `lodash-es` (preferably via `@/utils/lodashes`).
 4. **Native Last:** Only permitted if the above three are unavailable. Native utilities MUST be extracted to `src/utils/**` and NEVER inlined in business files (`.vue` or `.ts`).
 
+### VueUse Priority Exclusions
+
+The VueUse preference is not a bypass for domain-specific infrastructure laws:
+- Business HTTP MUST use Alova API modules and `useHttpRequest`; do not use VueUse `useFetch`.
+- Business persistence MUST use `@/utils/safeStorage`, approved Pinia persistence, or documented safeStorage infrastructure; do not use VueUse `useLocalStorage`, `useSessionStorage`, `useStorage`, or `useStorageAsync`.
+- Domain hard blocks in integration rules always override the generic VueUse-before-native preference.
+
 ## 2. Hard Blocks (Instant Rejection)
 - **FORBIDDEN:** Inlining generic utility functions (debounce, throttle, deepClone, eventBus, storage wrappers) within business files.
 - **FORBIDDEN:** Raw `fetch`, `axios`, or `XMLHttpRequest`. You MUST use the project's network stack (e.g., `useHttpRequest`).

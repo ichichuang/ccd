@@ -225,7 +225,7 @@
     },
     {
       "path": ".ai/rules/integrations/04-safe-storage.mdc",
-      "description": "Bans all native browser storage APIs for business data. Mandates AES+LZ-String encrypted wrappers from @/utils/safeStorage and createPiniaEncryptedSerializer for Pinia persistence.",
+      "description": "Bans native browser storage APIs in business code. Mandates AES+LZ-String encrypted wrappers from @/utils/safeStorage and createPiniaEncryptedSerializer for Pinia persistence.",
       "globs": ["src/**/*.ts", "src/**/*.vue", "src/**/*.tsx"],
       "alwaysApply": false
     },

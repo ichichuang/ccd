@@ -6,6 +6,8 @@ alwaysApply: true
 
 # Size & Density System Law
 
+Token canonicality: `.ai/rules/design-system/01-design-tokens.mdc` is the rule-file SSOT for general design-token names, semantic color tiers, border composition, and source-authored sizing fallback. This file owns density presets, runtime size variables, layout dimensions, and size-engine details.
+
 ## Core Architecture
 
 The Size System provides three global UI density presets. ALL layout dimensions, font sizes, spacing, and border radii MUST be derived from these presets via CSS variables. **Hardcoded pixel values for layout dimensions are FORBIDDEN.**

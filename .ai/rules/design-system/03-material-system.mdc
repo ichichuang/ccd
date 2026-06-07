@@ -11,6 +11,8 @@ alwaysApply: true
 > - **ALWAYS** use semantic theme variables: `bg-background`, `bg-foreground/[0.05]`, `text-foreground`, `border-border`.
 > - If a specific translucent effect requires a white/black tint, it MUST be abstracted into `semanticShortcuts.ts` using `bg-background` (for light mode canvas) or `bg-foreground` (for text/tint).
 
+Token canonicality: `.ai/rules/design-system/01-design-tokens.mdc` is the rule-file SSOT for semantic token family names, contrast tiers, border composition, and source-authored sizing fallback. This file owns material shortcuts, glass/elevation behavior, z-index, and motion constraints.
+
 ## 1. Material Usage
 - **ABSOLUTE BAN:** NEVER use hardcoded colors like `bg-white`, `bg-black`, `bg-gray-100`, or `dark:bg-*` on fixed neutrals for glass effects. ALWAYS use semantic theme tokens plus opacity (for example `bg-sidebar/80 backdrop-blur-xl`, `bg-card/70`) so glassmorphism tracks the Dynamic Theme Engine (`--sidebar-bg`, `--background`, and related CSS variables).
 - **FORBIDDEN:** Raw opacity on non-semantic neutrals (`bg-white/50`) or ad-hoc `backdrop-blur` without a semantic surface token.

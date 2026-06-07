@@ -41,11 +41,12 @@ All of the above will either silently break, produce a compile error, or cause u
 
 ```vue
 <script setup lang="ts">
+import { castValue } from '@ccd/shared-utils'
 import type { UserInfo } from '@/types/UserTypes'
 
-// Cast once, safely, in script — template receives a clean typed value
-const typedUser = computed(() => props.item as UserInfo)
-const upperValue = computed(() => (value.value as string).toUpperCase())
+// Cast through an auditable type-caster in script — template receives clean typed values
+const typedUser = computed(() => castValue<UserInfo>(props.item))
+const upperValue = computed(() => castValue<string>(value.value).toUpperCase())
 const isNumber = computed(() => typeof count.value === 'number')
 const userName = computed(() => user.value?.name ?? '')
 </script>
@@ -64,7 +65,7 @@ const userName = computed(() => user.value?.name ?? '')
 
 | Expression type | Template allowed? | Correct location |
 |----------------|:-----------------:|-----------------|
-| `as Type` cast | ❌ Never | `computed()` in `<script setup>` |
+| `as Type` cast | ❌ Never | `computed()` in `<script setup>` using `castValue<T>()` |
 | `typeof x` | ❌ Never | `computed()` in `<script setup>` |
 | `x!` non-null assertion | ❌ Never | `computed()` or `x?.y ?? default` |
 | `<Type>x` angle-bracket cast | ❌ Never | `computed()` in `<script setup>` |

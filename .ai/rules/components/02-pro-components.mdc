@@ -71,9 +71,12 @@ When a Pro wrapper exists, direct raw component usage is rejected by default.
 
 ---
 
-## LAW 2 — Business View Shell (A1 Archetype)
+## LAW 2 — Business View Shell (A1 Default, A2 Detail Variant)
 
-Every admin business view **MUST** follow the A1-toolbar-content archetype.
+Admin table, form, settings, and CRUD business views **MUST** follow the A1-toolbar-content archetype.
+Read-heavy detail or inspection pages generated with `pnpm ai:scaffold:view-route -- --kind detail`
+are an approved A2-sidebar-inspector variant, matching the design-state contract.
+Do not use A2 for standard CRUD/table/form views.
 
 ### 2.1 — Root Wrapper
 
@@ -91,6 +94,7 @@ Every admin business view **MUST** follow the A1-toolbar-content archetype.
 - For standard flowing content (for example showcases, forms), the root wrapper MUST NOT constrain height. Use `col-stretch gap-md` or `layout-container` (for examples).
 - Do NOT wrap the entire view in `<CScrollbar>` if the parent `LayoutAdmin` already provides the main scrollable area.
 - Use `<CScrollbar>` only for local scrollable regions (for example inside a fixed-height sidebar, drawer panel, or a specific datatable wrapper).
+- For approved detail/inspection pages, `data-archetype="A2-sidebar-inspector"` is allowed only when the page's primary task is readonly inspection, profile detail, or document review.
 
 ### 2.2 — Scrollable Container
 

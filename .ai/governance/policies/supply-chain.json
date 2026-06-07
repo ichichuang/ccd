@@ -7,8 +7,8 @@
     "@ccd/design-tokens": [],
     "@ccd/unocss-preset": ["@ccd/design-tokens", "glob", "typescript", "unocss"],
     "@ccd/shared-utils": ["lodash-es", "uuid"],
-    "@ccd/vue-hooks": ["@ccd/shared-utils", "@vueuse/core", "vue"],
-    "@ccd/vue-app-platform": ["@ccd/design-tokens"],
+    "@ccd/vue-hooks": ["@ccd/design-tokens", "@ccd/shared-utils", "@vueuse/core", "vue"],
+    "@ccd/vue-app-platform": ["@ccd/contracts", "@ccd/design-tokens", "vue", "vue-i18n"],
     "@ccd/vue-ui": [
       "@ccd/design-tokens",
       "@ccd/shared-utils",

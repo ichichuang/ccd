@@ -71,7 +71,7 @@
       "layer": "frontend-platform",
       "criticality": "protected",
       "responsibility": "Shared Vue/browser composables.",
-      "allowedWorkspaceDependencies": ["@ccd/shared-utils"],
+      "allowedWorkspaceDependencies": ["@ccd/design-tokens", "@ccd/shared-utils"],
       "publicApi": true,
       "runtime": "web-library"
     },
@@ -81,7 +81,7 @@
       "layer": "frontend-platform",
       "criticality": "protected",
       "responsibility": "Shared frontend app bootstrap lifecycle and platform orchestration primitives.",
-      "allowedWorkspaceDependencies": ["@ccd/design-tokens"],
+      "allowedWorkspaceDependencies": ["@ccd/contracts", "@ccd/design-tokens"],
       "publicApi": true,
       "runtime": "web-library"
     },
@@ -120,7 +120,7 @@
       "path": "apps/web-demo",
       "layer": "apps",
       "criticality": "flexible",
-      "responsibility": "Browser app shell, routes, pages, stores, app adapters, and temporary app-local shared candidates.",
+      "responsibility": "Browser web-demo application shell, routes, pages, stores, app adapters, app-level plugin wiring, and temporary app-local shared candidates.",
       "allowedWorkspaceDependencies": [
         "@ccd/contracts",
         "@ccd/core",
@@ -141,7 +141,7 @@
       "path": "apps/desktop",
       "layer": "apps",
       "criticality": "protected",
-      "responsibility": "Tauri shell and desktop adapter.",
+      "responsibility": "Dedicated Tauri desktop runtime shell with its own frontend entry, desktop adapters, and src-tauri backend boundary; not a full duplicate of web-demo.",
       "allowedWorkspaceDependencies": [
         "@ccd/contracts",
         "@ccd/core",
