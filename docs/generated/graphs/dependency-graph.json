@@ -69,7 +69,7 @@
       "runtime": "web-library",
       "criticality": "protected",
       "responsibility": "Shared Vue/browser composables.",
-      "allowedWorkspaceDependencies": ["@ccd/shared-utils"]
+      "allowedWorkspaceDependencies": ["@ccd/design-tokens", "@ccd/shared-utils"]
     },
     {
       "name": "@ccd/vue-app-platform",
@@ -78,7 +78,7 @@
       "runtime": "web-library",
       "criticality": "protected",
       "responsibility": "Shared frontend app bootstrap lifecycle and platform orchestration primitives.",
-      "allowedWorkspaceDependencies": ["@ccd/design-tokens"]
+      "allowedWorkspaceDependencies": ["@ccd/contracts", "@ccd/design-tokens"]
     },
     {
       "name": "@ccd/vue-ui",
@@ -113,7 +113,7 @@
       "layer": "apps",
       "runtime": "web",
       "criticality": "flexible",
-      "responsibility": "Browser app shell, routes, pages, stores, app adapters, and temporary app-local shared candidates.",
+      "responsibility": "Browser web-demo application shell, routes, pages, stores, app adapters, app-level plugin wiring, and temporary app-local shared candidates.",
       "allowedWorkspaceDependencies": [
         "@ccd/contracts",
         "@ccd/core",
@@ -133,7 +133,7 @@
       "layer": "apps",
       "runtime": "desktop",
       "criticality": "protected",
-      "responsibility": "Tauri shell and desktop adapter.",
+      "responsibility": "Dedicated Tauri desktop runtime shell with its own frontend entry, desktop adapters, and src-tauri backend boundary; not a full duplicate of web-demo.",
       "allowedWorkspaceDependencies": [
         "@ccd/contracts",
         "@ccd/core",
@@ -150,22 +150,59 @@
   "turbo": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!coverage/**",
+        "!dist/**",
+        "!playwright-report/**",
+        "!test-results/**"
+      ],
+      "outputs": ["dist/**"],
+      "cache": true
     },
     "type-check": {
       "dependsOn": ["^build"],
-      "outputs": []
+      "inputs": ["$TURBO_DEFAULT$", "tsconfig*.json", "!dist/**"],
+      "outputs": [],
+      "cache": true
     },
     "typecheck": {
       "dependsOn": ["type-check"],
-      "outputs": []
+      "inputs": ["$TURBO_DEFAULT$", "tsconfig*.json", "!dist/**"],
+      "outputs": [],
+      "cache": true
     },
     "test": {
       "dependsOn": ["^build"],
-      "outputs": []
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "**/*.spec.*",
+        "**/*.test.*",
+        "vitest.config.*",
+        "!coverage/**",
+        "!dist/**"
+      ],
+      "outputs": [],
+      "cache": true
     },
-    "lint": {
-      "outputs": []
+    "//#lint": {
+      "inputs": ["$TURBO_DEFAULT$", "eslint.config.*", "tsconfig*.json", "!dist/**"],
+      "outputs": [],
+      "cache": true
+    },
+    "//#e2e": {
+      "dependsOn": ["@ccd/web-demo#build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "apps/**",
+        "e2e/**",
+        "packages/**",
+        "playwright.config.*",
+        "!**/dist/**",
+        "!**/node_modules/**"
+      ],
+      "outputs": ["playwright-report/**", "test-results/**"],
+      "cache": false
     }
   },
   "runtimeExecution": {
@@ -204,5 +241,5 @@
       "reason": "Applications must not import one another."
     }
   ],
-  "validationChecksum": "cefbe8c63f6deb66b02fa9715c3970573b9251bcee3e4f13776401fe089a4f50"
+  "validationChecksum": "b70bbfd345990be3baa909cacedd250f42ec8637160e9ee3688d9092603898f2"
 }

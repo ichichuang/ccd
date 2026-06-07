@@ -40,8 +40,8 @@
     "@ccd/design-tokens": [],
     "@ccd/unocss-preset": ["@ccd/design-tokens"],
     "@ccd/shared-utils": [],
-    "@ccd/vue-hooks": ["@ccd/shared-utils"],
-    "@ccd/vue-app-platform": ["@ccd/design-tokens"],
+    "@ccd/vue-hooks": ["@ccd/design-tokens", "@ccd/shared-utils"],
+    "@ccd/vue-app-platform": ["@ccd/contracts", "@ccd/design-tokens"],
     "@ccd/vue-ui": ["@ccd/design-tokens", "@ccd/shared-utils", "@ccd/vue-hooks"],
     "@ccd/vue-primevue-adapter": ["@ccd/design-tokens"],
     "@ccd/vue-charts": ["@ccd/design-tokens"],
@@ -80,8 +80,8 @@
     "@ccd/vue-ui": "Shared Vue UI primitives.",
     "@ccd/vue-primevue-adapter": "PrimeVue-specific theme and adaptation layer.",
     "@ccd/vue-charts": "Shared chart runtime and helpers.",
-    "@ccd/web-demo": "Browser app shell, routes, pages, stores, app adapters, and temporary app-local shared candidates.",
-    "@ccd/desktop": "Tauri shell and desktop adapter."
+    "@ccd/web-demo": "Browser web-demo application shell, routes, pages, stores, app adapters, app-level plugin wiring, and temporary app-local shared candidates.",
+    "@ccd/desktop": "Dedicated Tauri desktop runtime shell with its own frontend entry, desktop adapters, and src-tauri backend boundary; not a full duplicate of web-demo."
   },
   "packageCriticality": {
     "@ccd/contracts": "critical",

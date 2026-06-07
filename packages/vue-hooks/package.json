@@ -12,12 +12,13 @@
     }
   },
   "scripts": {
-    "build": "rm -f ../../node_modules/.tmp/packages-vue-hooks.tsbuildinfo && tsc -p tsconfig.json",
+    "build": "node ../../scripts/clean-artifacts.mjs paths ../../node_modules/.tmp/packages-vue-hooks.tsbuildinfo && tsc -p tsconfig.json",
     "type-check": "tsc -p tsconfig.json --noEmit",
     "typecheck": "pnpm type-check",
-    "test": "vitest --root ../.. run packages/vue-hooks/src/createAutoMittHook.spec.tsx packages/vue-hooks/src/directives/install.spec.ts packages/vue-hooks/src/directives/tap.spec.ts packages/vue-hooks/src/directives/swipe.spec.ts packages/vue-hooks/src/directives/longPress.spec.ts --passWithNoTests"
+    "test": "vitest --root ../.. run packages/vue-hooks/src/createAutoMittHook.spec.tsx packages/vue-hooks/src/browserDevice.spec.ts packages/vue-hooks/src/useTableUrlSync.spec.ts packages/vue-hooks/src/directives/install.spec.ts packages/vue-hooks/src/directives/tap.spec.ts packages/vue-hooks/src/directives/swipe.spec.ts packages/vue-hooks/src/directives/longPress.spec.ts --passWithNoTests"
   },
   "dependencies": {
+    "@ccd/design-tokens": "workspace:*",
     "@ccd/shared-utils": "workspace:*",
     "@vueuse/core": "^13.9.0",
     "vue": "^3.5.12"

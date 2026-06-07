@@ -3,6 +3,11 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative, sep } from 'node:path'
 import process from 'node:process'
 import ts from 'typescript'
+import {
+  classifyPackageInternalImport,
+  validatePackagePublicSurface,
+} from './package-surface-rules.mjs'
+import { classifyBoundaryImport } from './shared-placement-rules.mjs'
 import { patterns, readPolicies, workspacePackages } from '../governance/policy-utils.mjs'
 
 const root = process.cwd()
@@ -13,8 +18,6 @@ const forbiddenCoreImports = patterns(runtime.forbiddenImports)
 const forbiddenCoreBuiltinImports =
   /^(node:)?(fs|path|os|process|child_process|worker_threads|http|https|stream|crypto)$/
 const rootToolingDir = join(root, 'scripts')
-const forbiddenRootAppThemeImportPattern =
-  /(?:^|\/|\.\.\/)apps\/web-demo\/src\/utils\/theme(?:\/|$)|^@\/utils\/theme(?:\/|$)|(?:^|\/)src\/utils\/theme(?:\/|$)/
 const importPattern =
   /(?:import|export)\s+(?:[^'";]+?\s+from\s+)?['"]([^'"]+)['"]|import\(['"]([^'"]+)['"]\)/g
 const forbiddenCoreGlobalPatterns = patterns(runtime.forbiddenSourcePatterns)
@@ -26,13 +29,14 @@ const adapterBoundaries = runtime.adapterBoundaries.map(boundary => ({
   forbiddenCallPattern: new RegExp(boundary.forbiddenCallPattern),
 }))
 const findings = []
+const workspacePackageList = workspacePackages(topology)
 const packageExportSubpaths = new Map(
-  workspacePackages(topology).map(item => {
+  workspacePackageList.map(item => {
     const manifest = JSON.parse(readFileSync(join(root, item.path, 'package.json'), 'utf8'))
     return [item.name, new Set(Object.keys(manifest.exports ?? {}))]
   })
 )
-const workspacePackageNames = new Set(workspacePackages(topology).map(item => item.name))
+const workspacePackageNames = new Set(workspacePackageList.map(item => item.name))
 
 function walk(dir) {
   if (!existsSync(dir)) return []
@@ -57,6 +61,22 @@ function isInside(child, parent) {
 
 function report(file, message) {
   findings.push(`${relative(root, file)}: ${message}`)
+}
+
+function reportBoundaryImport(file, specifier) {
+  const relPath = relative(root, file).replaceAll('\\', '/')
+  const boundary = classifyBoundaryImport(relPath, specifier)
+  if (boundary && !boundary.allowed) {
+    report(file, boundary.message)
+  }
+  const packageInternalImport = classifyPackageInternalImport(
+    relPath,
+    specifier,
+    workspacePackageList
+  )
+  if (packageInternalImport && !packageInternalImport.allowed) {
+    report(file, packageInternalImport.message)
+  }
 }
 
 function workspaceDependencyNames(manifestSection = {}) {
@@ -123,6 +143,7 @@ for (const sourceRoot of sourceRoots) {
     for (const match of content.matchAll(importPattern)) {
       const specifier = match[1] ?? match[2]
       if (!specifier) continue
+      reportBoundaryImport(file, specifier)
 
       if (isCore && forbiddenCoreImports.some(pattern => pattern.test(specifier))) {
         report(file, `core must not import runtime API "${specifier}"`)
@@ -180,17 +201,11 @@ for (const file of walk(rootToolingDir)) {
   for (const match of content.matchAll(importPattern)) {
     const specifier = match[1] ?? match[2]
     if (!specifier) continue
-
-    if (forbiddenRootAppThemeImportPattern.test(specifier.replaceAll('\\', '/'))) {
-      report(
-        file,
-        `root tooling must not import app theme utilities; use @ccd/design-tokens public APIs instead: "${specifier}"`
-      )
-    }
+    reportBoundaryImport(file, specifier)
   }
 }
 
-for (const packageInfo of workspacePackages(topology)) {
+for (const packageInfo of workspacePackageList) {
   const packageDir = join(root, packageInfo.path)
   if (!statSync(packageDir).isDirectory()) continue
   const manifestPath = join(packageDir, 'package.json')
@@ -214,11 +229,11 @@ for (const packageInfo of workspacePackages(topology)) {
     )
   }
 
-  if (packageInfo.publicApi === false) continue
-  if (topology.exportPolicy.requireExplicitRootExport && !manifest.exports?.['.']) {
-    findings.push(
-      `${relative(root, manifestPath)}: package must expose only an explicit root export entry`
-    )
+  for (const surfaceFinding of validatePackagePublicSurface(packageInfo, manifest, {
+    hasSourceIndex: existsSync(join(packageDir, 'src/index.ts')),
+    requireExplicitRootExport: topology.exportPolicy.requireExplicitRootExport,
+  })) {
+    report(manifestPath, surfaceFinding)
   }
 }
 

@@ -60,6 +60,94 @@ export interface ViteEnv {
   [key: string]: any
 }
 
+const compressionModes = ['none', 'gzip', 'brotli', 'both'] as const
+const routerModes = ['history', 'hash'] as const
+const appEnvironments = ['development', 'production'] as const
+const storagePrefixPattern = /^[A-Za-z0-9:_-]{3,80}$/
+
+function isHttpUrl(value: string): boolean {
+  try {
+    const url = new URL(value)
+    return url.protocol === 'http:' || url.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
+function isPublicPath(value: string): boolean {
+  if (isHttpUrl(value)) return value.endsWith('/')
+  return value.startsWith('/') && value.endsWith('/')
+}
+
+function isPositiveInteger(value: number): boolean {
+  return Number.isInteger(value) && value > 0
+}
+
+export function getViteEnvSchemaIssues(env: ViteEnv): string[] {
+  const issues: string[] = []
+
+  if (!isPositiveInteger(env.VITE_PORT) || env.VITE_PORT > 65_535) {
+    issues.push('VITE_PORT must be an integer between 1 and 65535')
+  }
+
+  if (!isPublicPath(env.VITE_PUBLIC_PATH)) {
+    issues.push(
+      'VITE_PUBLIC_PATH must be /, a root-relative path ending in /, or an http(s) URL ending in /'
+    )
+  }
+
+  if (!routerModes.includes(env.VITE_ROUTER_MODE)) {
+    issues.push('VITE_ROUTER_MODE must be history or hash')
+  }
+
+  if (!compressionModes.includes(env.VITE_COMPRESSION)) {
+    issues.push('VITE_COMPRESSION must be one of none, gzip, brotli, both')
+  }
+
+  if (!isHttpUrl(env.VITE_API_BASE_URL)) {
+    issues.push('VITE_API_BASE_URL must be an absolute http(s) URL')
+  }
+
+  if (!appEnvironments.includes(env.VITE_APP_ENV)) {
+    issues.push('VITE_APP_ENV must be development or production')
+  }
+
+  if (!storagePrefixPattern.test(env.VITE_PINIA_PERSIST_KEY_PREFIX)) {
+    issues.push(
+      'VITE_PINIA_PERSIST_KEY_PREFIX must be 3-80 characters using letters, digits, colon, underscore, or hyphen'
+    )
+  }
+
+  if (!env.VITE_ROOT_REDIRECT.startsWith('/')) {
+    issues.push('VITE_ROOT_REDIRECT must be an absolute app path')
+  }
+
+  if (!isPositiveInteger(env.VITE_API_TIMEOUT)) {
+    issues.push('VITE_API_TIMEOUT must be a positive integer in milliseconds')
+  }
+
+  if (!isPositiveInteger(env.VITE_PROXY_TIMEOUT)) {
+    issues.push('VITE_PROXY_TIMEOUT must be a positive integer in milliseconds')
+  }
+
+  if (
+    isPositiveInteger(env.VITE_API_TIMEOUT) &&
+    isPositiveInteger(env.VITE_PROXY_TIMEOUT) &&
+    env.VITE_PROXY_TIMEOUT < env.VITE_API_TIMEOUT
+  ) {
+    issues.push('VITE_PROXY_TIMEOUT must be greater than or equal to VITE_API_TIMEOUT')
+  }
+
+  return issues
+}
+
+export function assertValidViteEnv(env: ViteEnv): void {
+  const issues = getViteEnvSchemaIssues(env)
+  if (issues.length === 0) return
+
+  throw new Error(`Invalid Vite environment:\n${issues.map(issue => `- ${issue}`).join('\n')}`)
+}
+
 /**
  * @description 自动识别并转换环境变量类型
  */
@@ -91,7 +179,7 @@ export const wrapperEnv = (envConf: Record<string, any>): ViteEnv => {
     process.env[key] = typeof value === 'object' ? JSON.stringify(value) : String(value)
   })
 
-  return {
+  const env = {
     VITE_PORT: ret.VITE_PORT ?? 8888,
     VITE_PUBLIC_PATH: ret.VITE_PUBLIC_PATH ?? '/',
     VITE_ROUTER_MODE: ret.VITE_ROUTER_MODE ?? 'history',
@@ -111,6 +199,10 @@ export const wrapperEnv = (envConf: Record<string, any>): ViteEnv => {
     VITE_PROXY_TIMEOUT: ret.VITE_PROXY_TIMEOUT ?? 15000,
     ...ret,
   }
+
+  assertValidViteEnv(env)
+
+  return env
 }
 
 /**

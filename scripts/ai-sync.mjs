@@ -20,6 +20,29 @@ const legacyPaths = ['.cursor']
 
 const ensureParentDir = relPath => fs.mkdirSync(path.dirname(path.join(cwd, relPath)), { recursive: true })
 
+const existingLocalRuntimeSnapshots = new Map()
+
+const snapshotExistingLocalRuntimeFiles = () => {
+  for (const { target } of localRuntimeFiles) {
+    const absTarget = path.join(cwd, target)
+    if (fs.existsSync(absTarget)) {
+      existingLocalRuntimeSnapshots.set(target, fs.readFileSync(absTarget))
+    }
+  }
+}
+
+const verifyExistingLocalRuntimeFilesPreserved = () => {
+  for (const [target, before] of existingLocalRuntimeSnapshots) {
+    const absTarget = path.join(cwd, target)
+    const after = fs.readFileSync(absTarget)
+    if (!before.equals(after)) {
+      console.error(`[FAIL] local runtime file was overwritten during sync: ${target}`)
+      process.exit(1)
+    }
+    console.log(`[OK] local runtime preserved: ${target}`)
+  }
+}
+
 const removePathIfExists = relPath => {
   const absPath = path.join(cwd, relPath)
   const stat = fs.lstatSync(absPath, { throwIfNoEntry: false })
@@ -82,6 +105,7 @@ const runNodeScript = script => {
 
 console.log('AI adapter sync')
 console.log('===============')
+snapshotExistingLocalRuntimeFiles()
 runNodeScript('scripts/generate-ai-protocol-adapters.mjs')
 runNodeScript('scripts/generate-rule-index.mjs')
 runNodeScript('scripts/generate-unocss-ide-data.mjs')
@@ -93,3 +117,4 @@ for (const legacyPath of legacyPaths) {
   removePathIfExists(legacyPath)
   console.log(`[CLEAN] removed legacy adapter: ${legacyPath}`)
 }
+verifyExistingLocalRuntimeFilesPreserved()

@@ -4,7 +4,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "prebuild": "pnpm --workspace-root build:shared-config",
     "dev": "vite --host 127.0.0.1",
     "build": "vue-tsc -p tsconfig.json --noEmit && vite build",
     "preview": "vite preview",

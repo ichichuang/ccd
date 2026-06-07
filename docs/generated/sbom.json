@@ -17,7 +17,7 @@
         }
       },
       "scripts": {
-        "build": "rm -rf dist && rm -f ../../node_modules/.tmp/packages-contracts.tsbuildinfo && tsc -b tsconfig.json --force",
+        "build": "node ../../scripts/clean-artifacts.mjs paths dist ../../node_modules/.tmp/packages-contracts.tsbuildinfo && tsc -b tsconfig.json --force",
         "type-check": "tsc -p tsconfig.json --noEmit",
         "typecheck": "pnpm type-check",
         "test": "vitest run --passWithNoTests"
@@ -37,7 +37,7 @@
         }
       },
       "scripts": {
-        "build": "rm -rf dist && rm -f ../../node_modules/.tmp/packages-core.tsbuildinfo && tsc -b tsconfig.json --force",
+        "build": "node ../../scripts/clean-artifacts.mjs paths dist ../../node_modules/.tmp/packages-core.tsbuildinfo && tsc -b tsconfig.json --force",
         "type-check": "tsc -p tsconfig.json --noEmit",
         "typecheck": "pnpm type-check",
         "test": "vitest run --passWithNoTests"
@@ -68,10 +68,10 @@
         }
       },
       "scripts": {
-        "build": "rm -f ../../node_modules/.tmp/packages-design-tokens.tsbuildinfo && tsc -p tsconfig.json",
+        "build": "node ../../scripts/clean-artifacts.mjs paths ../../node_modules/.tmp/packages-design-tokens.tsbuildinfo && tsc -p tsconfig.json",
         "type-check": "tsc -p tsconfig.json --noEmit",
         "typecheck": "pnpm type-check",
-        "test": "vitest run --passWithNoTests"
+        "test": "cd ../.. && vitest run packages/design-tokens/src"
       }
     },
     {
@@ -107,10 +107,10 @@
         }
       },
       "scripts": {
-        "build": "rm -rf dist && rm -f ../../node_modules/.tmp/packages-unocss-preset.tsbuildinfo && tsc -p tsconfig.json",
+        "build": "node ../../scripts/clean-artifacts.mjs paths dist ../../node_modules/.tmp/packages-unocss-preset.tsbuildinfo && tsc -p tsconfig.json",
         "type-check": "tsc -p tsconfig.json --noEmit",
         "typecheck": "pnpm type-check",
-        "test": "vitest run --passWithNoTests"
+        "test": "cd ../.. && vitest run packages/unocss-preset/src/index.spec.ts"
       },
       "dependencies": {
         "@ccd/design-tokens": "workspace:*",
@@ -136,7 +136,7 @@
         }
       },
       "scripts": {
-        "build": "rm -f ../../node_modules/.tmp/packages-shared-utils.tsbuildinfo && tsc -p tsconfig.json",
+        "build": "node ../../scripts/clean-artifacts.mjs paths ../../node_modules/.tmp/packages-shared-utils.tsbuildinfo && tsc -p tsconfig.json",
         "type-check": "tsc -p tsconfig.json --noEmit",
         "typecheck": "pnpm type-check",
         "test": "vitest run --passWithNoTests"
@@ -160,12 +160,13 @@
         }
       },
       "scripts": {
-        "build": "rm -f ../../node_modules/.tmp/packages-vue-hooks.tsbuildinfo && tsc -p tsconfig.json",
+        "build": "node ../../scripts/clean-artifacts.mjs paths ../../node_modules/.tmp/packages-vue-hooks.tsbuildinfo && tsc -p tsconfig.json",
         "type-check": "tsc -p tsconfig.json --noEmit",
         "typecheck": "pnpm type-check",
-        "test": "vitest --root ../.. run packages/vue-hooks/src/createAutoMittHook.spec.tsx packages/vue-hooks/src/directives/install.spec.ts packages/vue-hooks/src/directives/tap.spec.ts packages/vue-hooks/src/directives/swipe.spec.ts packages/vue-hooks/src/directives/longPress.spec.ts --passWithNoTests"
+        "test": "vitest --root ../.. run packages/vue-hooks/src/createAutoMittHook.spec.tsx packages/vue-hooks/src/browserDevice.spec.ts packages/vue-hooks/src/useTableUrlSync.spec.ts packages/vue-hooks/src/directives/install.spec.ts packages/vue-hooks/src/directives/tap.spec.ts packages/vue-hooks/src/directives/swipe.spec.ts packages/vue-hooks/src/directives/longPress.spec.ts --passWithNoTests"
       },
       "dependencies": {
+        "@ccd/design-tokens": "workspace:*",
         "@ccd/shared-utils": "workspace:*",
         "@vueuse/core": "^13.9.0",
         "vue": "^3.5.12"
@@ -185,13 +186,16 @@
         }
       },
       "scripts": {
-        "build": "rm -f ../../node_modules/.tmp/packages-vue-app-platform.tsbuildinfo && tsc -p tsconfig.json",
+        "build": "node ../../scripts/clean-artifacts.mjs paths ../../node_modules/.tmp/packages-vue-app-platform.tsbuildinfo && tsc -p tsconfig.json",
         "type-check": "tsc -p tsconfig.json --noEmit",
         "typecheck": "pnpm type-check",
-        "test": "vitest --root ../.. run packages/vue-app-platform/src/bootstrap.spec.ts packages/vue-app-platform/src/layoutRuntime.spec.ts packages/vue-app-platform/src/preloader.spec.ts packages/vue-app-platform/src/preloadError.spec.ts packages/vue-app-platform/src/themeRuntime.spec.ts --passWithNoTests"
+        "test": "vitest --root ../.. run packages/vue-app-platform/src/bootstrap.spec.ts packages/vue-app-platform/src/i18nRuntime.spec.ts packages/vue-app-platform/src/layoutRuntime.spec.ts packages/vue-app-platform/src/preloader.spec.ts packages/vue-app-platform/src/preloadError.spec.ts packages/vue-app-platform/src/themeRuntime.spec.ts --passWithNoTests"
       },
       "dependencies": {
-        "@ccd/design-tokens": "workspace:*"
+        "@ccd/contracts": "workspace:*",
+        "@ccd/design-tokens": "workspace:*",
+        "vue": "^3.5.12",
+        "vue-i18n": "^10.0.8"
       }
     },
     {
@@ -209,7 +213,7 @@
         "./style.css": "./dist/vue-ui.css"
       },
       "scripts": {
-        "build": "rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json",
+        "build": "node ../../scripts/clean-artifacts.mjs paths dist ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json",
         "type-check": "vue-tsc -p tsconfig.json --noEmit",
         "typecheck": "pnpm type-check",
         "test": "vitest run --passWithNoTests"
@@ -250,7 +254,7 @@
         }
       },
       "scripts": {
-        "build": "rm -f ../../node_modules/.tmp/packages-vue-primevue-adapter.tsbuildinfo && tsc -p tsconfig.json",
+        "build": "node ../../scripts/clean-artifacts.mjs paths ../../node_modules/.tmp/packages-vue-primevue-adapter.tsbuildinfo && tsc -p tsconfig.json",
         "type-check": "tsc -p tsconfig.json --noEmit",
         "typecheck": "pnpm type-check",
         "test": "pnpm --workspace-root vitest run packages/vue-primevue-adapter/src/services.spec.ts --passWithNoTests"
@@ -276,7 +280,7 @@
         }
       },
       "scripts": {
-        "build": "rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-charts.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json",
+        "build": "node ../../scripts/clean-artifacts.mjs paths dist ../../node_modules/.tmp/packages-vue-charts.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json",
         "type-check": "vue-tsc -p tsconfig.json --noEmit",
         "typecheck": "pnpm type-check",
         "test": "vitest run --passWithNoTests"
@@ -304,7 +308,6 @@
       "private": true,
       "type": "module",
       "scripts": {
-        "prebuild": "pnpm --workspace-root build:shared-config",
         "dev": "vite --host 127.0.0.1",
         "build": "vue-tsc -p tsconfig.json --noEmit && vite build",
         "preview": "vite preview",
@@ -374,7 +377,6 @@
       "private": true,
       "type": "module",
       "scripts": {
-        "prebuild": "pnpm --workspace-root build:shared-config",
         "dev": "vite --host 127.0.0.1",
         "build": "vue-tsc -p tsconfig.json --noEmit && vite build",
         "preview": "vite preview",

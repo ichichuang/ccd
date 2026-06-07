@@ -1,7 +1,7 @@
 graph TD
   Contracts[packages/contracts\ninterfaces only] --> Core[packages/core\nruntime-neutral logic]
-  Core --> Web[apps/web-demo\nbrowser adapters]
-  Core --> Desktop[apps/desktop\nTauri adapters]
+  Core --> Web[apps/web-demo\nweb-demo browser app shell]
+  Core --> Desktop[apps/desktop\nTauri desktop runtime shell]
   AI[.ai/**\nSSOT governance] --> Protocol[Protocol 1.0.0]
   Protocol --> Contracts
   Protocol --> Core

@@ -1,11 +1,11 @@
 import postcssPxToRem from 'postcss-pxtorem'
 import {
   defineConfig,
-  loadEnv,
   type ConfigEnv,
   type SassPreprocessorOptions,
   type UserConfigExport,
 } from 'vite'
+import { loadAppViteEnv, localViteCors, localViteHost } from '../vite.shared'
 import { exclude, include } from './build/optimize'
 import { getPluginsList } from './build/plugins'
 import { __APP_INFO__, alias, pathResolve, root, wrapperEnv } from './build/utils'
@@ -48,10 +48,7 @@ const scssPreprocessorOptions: ModernScssPreprocessorOptions = {
 
 export default ({ mode, command }: ConfigEnv): UserConfigExport => {
   // 1. 加载环境变量
-  const env = wrapperEnv({
-    ...loadEnv(mode, pathResolve('../../..')),
-    ...loadEnv(mode, root),
-  })
+  const env = wrapperEnv(loadAppViteEnv(mode, root))
   const {
     VITE_PORT,
     VITE_PUBLIC_PATH,
@@ -107,9 +104,9 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
 
     server: {
       port: VITE_PORT,
-      host: '127.0.0.1',
+      host: localViteHost,
       open: shouldOpenDevServer,
-      cors: true,
+      cors: localViteCors,
       strictPort: false,
       warmup: {
         clientFiles: ['./index.html', './src/{views,components}/*'],
@@ -149,7 +146,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
       port: 4173,
       host: 'localhost',
       open: shouldOpenPreview,
-      cors: true,
+      cors: localViteCors,
     },
 
     // 3. 插件配置 (传入 command 以正确判断构建阶段)

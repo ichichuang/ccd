@@ -2,8 +2,15 @@ import { describe, expect, it } from 'vitest'
 import { ESLint } from 'eslint'
 import vueEslintParser from 'vue-eslint-parser'
 import tseslint from 'typescript-eslint'
-// @ts-ignore local ESM rule module does not publish TS declarations
-import localArchitectureRules from './no-hardcoded-colors.mjs'
+
+type LocalArchitectureRulesModule = {
+  default: ESLint.Plugin
+}
+
+const localArchitectureRulesModule = (await import(
+  new URL('./no-hardcoded-colors.mjs', import.meta.url).href
+)) as LocalArchitectureRulesModule
+const localArchitectureRules = localArchitectureRulesModule.default
 
 function createTester(filePath: string): ESLint {
   return new ESLint({

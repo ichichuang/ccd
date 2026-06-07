@@ -84,7 +84,14 @@ export default tseslint.config(
   // 全局忽略
   {
     name: 'app/global-ignores',
-    ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**', 'public/**', '*.d.ts'],
+    ignores: [
+      '**/dist/**',
+      '**/dist-ssr/**',
+      '**/coverage/**',
+      'apps/desktop/src-tauri/target/**',
+      'public/**',
+      '*.d.ts',
+    ],
   },
   {
     // ... 其他配置
@@ -141,7 +148,14 @@ export default tseslint.config(
   // ----------------------------------------------------------------------
   {
     name: 'app/node-scripts',
-    files: ['apps/*/build/**', 'build/**', '*.config.ts', '*.config.js', 'apps/*/*.config.ts'],
+    files: [
+      'apps/*/build/**',
+      'build/**',
+      'scripts/**/*.{js,mjs,cjs,ts}',
+      '*.config.ts',
+      '*.config.js',
+      'apps/*/*.config.ts',
+    ],
     languageOptions: {
       globals: {
         ...globals.node,

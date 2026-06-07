@@ -20,9 +20,9 @@
     }
   },
   "scripts": {
-    "build": "rm -f ../../node_modules/.tmp/packages-design-tokens.tsbuildinfo && tsc -p tsconfig.json",
+    "build": "node ../../scripts/clean-artifacts.mjs paths ../../node_modules/.tmp/packages-design-tokens.tsbuildinfo && tsc -p tsconfig.json",
     "type-check": "tsc -p tsconfig.json --noEmit",
     "typecheck": "pnpm type-check",
-    "test": "vitest run --passWithNoTests"
+    "test": "cd ../.. && vitest run packages/design-tokens/src"
   }
 }

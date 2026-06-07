@@ -23,15 +23,33 @@ const defaultRuntimeSurfaces = [
   'sessionStorage',
   'fetch',
   'XMLHttpRequest',
+  'WebSocket',
+  'BroadcastChannel',
+  'Worker',
+  'SharedWorker',
+  'ServiceWorker',
+  'EventSource',
+  'MessageChannel',
+  'MessagePort',
   'crypto',
   'crypto.subtle',
   'setTimeout',
   'setInterval',
   'clearTimeout',
   'clearInterval',
+  'setImmediate',
+  'clearImmediate',
+  'queueMicrotask',
   'requestAnimationFrame',
   'cancelAnimationFrame',
   'console',
+  'process',
+  'global',
+  'globalThis',
+  'Buffer',
+  'require',
+  '__dirname',
+  '__filename',
   'import.meta.env',
   '@tauri-apps/*',
   'invoke',
@@ -59,6 +77,9 @@ const runtimePathAllowances = runtimePolicy.runtimePathAllowances ?? []
 const runtimeSurfaceExceptions = runtimePolicy.runtimeSurfaceExceptions ?? []
 const strictRuntimeNeutralPaths =
   runtimePolicy.strictRuntimeNeutralPaths ?? runtimePolicy.runtimeNeutralPackagePaths ?? []
+const strictRuntimeNeutralOnlySurfaces = new Set(
+  runtimePolicy.strictRuntimeNeutralOnlySurfaces ?? []
+)
 const findings = []
 const strictImportFindings = []
 
@@ -79,9 +100,41 @@ const callableSurfaces = new Set([
   'ResizeObserver',
   'MutationObserver',
   'IntersectionObserver',
+  'WebSocket',
+  'BroadcastChannel',
+  'Worker',
+  'SharedWorker',
+  'EventSource',
+  'MessageChannel',
+  'setImmediate',
+  'clearImmediate',
+  'queueMicrotask',
 ])
 const propertySurfaces = new Set([
+  'window',
+  'document',
+  'navigator',
+  'screen',
+  'localStorage',
+  'sessionStorage',
+  'fetch',
+  'XMLHttpRequest',
+  'WebSocket',
+  'BroadcastChannel',
+  'Worker',
+  'SharedWorker',
+  'ServiceWorker',
+  'EventSource',
+  'MessageChannel',
+  'MessagePort',
   'console',
+  'process',
+  'global',
+  'globalThis',
+  'Buffer',
+  'require',
+  '__dirname',
+  '__filename',
   'crypto',
   'subtle',
   'visualViewport',
@@ -96,6 +149,9 @@ const propertySurfaces = new Set([
   'setInterval',
   'clearTimeout',
   'clearInterval',
+  'setImmediate',
+  'clearImmediate',
+  'queueMicrotask',
   'indexedDB',
   'caches',
 ])
@@ -108,9 +164,13 @@ const runtimeRootIdentifiers = new Set([
   'sessionStorage',
   'crypto',
   'console',
+  'process',
+  'global',
+  'globalThis',
+  'Buffer',
+  'require',
   'history',
   'location',
-  'globalThis',
 ])
 
 function normalizePath(value) {
@@ -228,9 +288,20 @@ function rootIdentifierName(node) {
   return null
 }
 
-function addFinding(file, source, node, surface, accessKind, lineOffset) {
-  if (!runtimeSurfaces.has(surface)) return
+function isStrictRuntimeNeutralFile(relPath) {
+  return strictRuntimeNeutralPaths.some(path => isInside(relPath, path))
+}
+
+function addFinding(file, source, node, surface, accessKind, lineOffset, metadata = {}) {
   const relPath = relativePath(file)
+  if (!runtimeSurfaces.has(surface)) return
+  if (
+    !isStrictRuntimeNeutralFile(relPath) &&
+    (strictRuntimeNeutralOnlySurfaces.has(surface) ||
+      strictRuntimeNeutralOnlySurfaces.has(metadata.root_surface))
+  ) {
+    return
+  }
   const position = sourcePosition(source, node, lineOffset)
   findings.push({
     file: relPath,
@@ -245,6 +316,43 @@ function addFinding(file, source, node, surface, accessKind, lineOffset) {
           ? 'type_only'
           : accessKind,
     production_or_test: isTestFile(relPath) ? 'test' : 'production',
+    ...metadata,
+  })
+}
+
+function fileClassification(relPath) {
+  return matchByPath(relPath, runtimeClassifications) ?? {
+    path: relPath.split('/src/')[0] || relPath,
+    packageOrApp: 'unknown',
+    ownerLayer: 'unknown',
+    classification: 'unknown',
+  }
+}
+
+function runtimeNeutralRemediation() {
+  return [
+    'Move browser/Node/Tauri/storage/network/timer/crypto/console access into an app adapter',
+    'under apps/web-demo/src/adapters/** or apps/desktop/src/adapters/**.',
+    'Expose only a narrow @ccd/contracts type and pass the implementation into @ccd/core as an injected adapter.',
+  ].join(' ')
+}
+
+function addStrictImportFinding(file, source, node, specifier, lineOffset) {
+  const relPath = relativePath(file)
+  if (!isStrictRuntimeNeutralFile(relPath)) return
+  if (!forbiddenImports.some(pattern => pattern.test(specifier))) return
+
+  const position = sourcePosition(source, node, lineOffset)
+  const classification = fileClassification(relPath)
+  strictImportFindings.push({
+    file: relPath,
+    line: position.line,
+    column: position.column,
+    package_path: classification.path,
+    package_or_app: classification.packageOrApp,
+    owner_layer: classification.ownerLayer,
+    specifier,
+    remediation: runtimeNeutralRemediation(),
   })
 }
 
@@ -263,16 +371,18 @@ function scanSource(file, part) {
       if (ts.isStringLiteral(specifier) && specifier.text.startsWith('@tauri-apps/')) {
         addFinding(file, source, specifier, '@tauri-apps/*', 'import', part.lineOffset)
       }
-      if (
-        ts.isStringLiteral(specifier) &&
-        forbiddenImports.some(pattern => pattern.test(specifier.text)) &&
-        strictRuntimeNeutralPaths.some(path => isInside(relativePath(file), path))
-      ) {
-        strictImportFindings.push(
-          `${relativePath(file)}:${sourcePosition(source, specifier, part.lineOffset).line}:${
-            sourcePosition(source, specifier, part.lineOffset).column
-          } forbidden runtime import "${specifier.text}"`
-        )
+      if (ts.isStringLiteral(specifier)) {
+        addStrictImportFinding(file, source, specifier, specifier.text, part.lineOffset)
+      }
+    }
+
+    if (ts.isExportDeclaration(node)) {
+      const specifier = node.moduleSpecifier
+      if (specifier && ts.isStringLiteral(specifier)) {
+        if (specifier.text.startsWith('@tauri-apps/')) {
+          addFinding(file, source, specifier, '@tauri-apps/*', 'export', part.lineOffset)
+        }
+        addStrictImportFinding(file, source, specifier, specifier.text, part.lineOffset)
       }
     }
 
@@ -286,16 +396,33 @@ function scanSource(file, part) {
         addFinding(file, source, node, 'import.meta.env', 'property_access', part.lineOffset)
       }
 
-      if (propertySurfaces.has(name)) {
+      if (propertySurfaces.has(name) && isRuntimeRoot) {
         const surface = name === 'subtle' && rootName === 'crypto' ? 'crypto.subtle' : name
-        const accessKind = isRuntimeRoot ? 'property_access' : 'injected_target'
-        addFinding(file, source, node.name, surface, accessKind, part.lineOffset)
+        addFinding(file, source, node.name, surface, 'property_access', part.lineOffset, {
+          root_surface: rootName,
+        })
       }
     }
 
     if (ts.isCallExpression(node)) {
       const expression = node.expression
+      const [firstArg] = node.arguments
       let surface = null
+      if (
+        expression.kind === ts.SyntaxKind.ImportKeyword &&
+        firstArg &&
+        ts.isStringLiteral(firstArg)
+      ) {
+        addStrictImportFinding(file, source, firstArg, firstArg.text, part.lineOffset)
+      }
+      if (
+        ts.isIdentifier(expression) &&
+        expression.text === 'require' &&
+        firstArg &&
+        ts.isStringLiteral(firstArg)
+      ) {
+        addStrictImportFinding(file, source, firstArg, firstArg.text, part.lineOffset)
+      }
       if (ts.isIdentifier(expression) && callableSurfaces.has(expression.text)) {
         surface = expression.text
       }
@@ -366,17 +493,17 @@ const exceptionsByFileSurface = new Map(
 )
 
 function findingPolicy(finding) {
-  const baseClassification = matchByPath(finding.file, runtimeClassifications) ?? {
-    packageOrApp: 'unknown',
-    ownerLayer: 'unknown',
-    classification: 'unknown',
-  }
+  const baseClassification = fileClassification(finding.file)
   const pathAllowance = matchByPath(finding.file, runtimePathAllowances)
   const exception = exceptionsByFileSurface.get(`${finding.file}::${finding.runtime_surface}`)
-  const strictRuntimeNeutral = strictRuntimeNeutralPaths.some(path => isInside(finding.file, path))
+  const rootSurfaceException = finding.root_surface
+    ? exceptionsByFileSurface.get(`${finding.file}::${finding.root_surface}`)
+    : null
+  const strictRuntimeNeutral = isStrictRuntimeNeutralFile(finding.file)
 
   if (finding.access_kind === 'type_only' || finding.access_kind === 'generated_type') {
     return {
+      package_path: baseClassification.path,
       package_or_app: baseClassification.packageOrApp,
       owner_layer: baseClassification.ownerLayer,
       current_classification: baseClassification.classification,
@@ -391,6 +518,7 @@ function findingPolicy(finding) {
 
   if (finding.production_or_test === 'test' || finding.access_kind === 'test_mock') {
     return {
+      package_path: baseClassification.path,
       package_or_app: baseClassification.packageOrApp,
       owner_layer: baseClassification.ownerLayer,
       current_classification: baseClassification.classification,
@@ -403,8 +531,13 @@ function findingPolicy(finding) {
     }
   }
 
-  if (pathAllowance && surfaceMatches(pathAllowance.surfaces, finding.runtime_surface)) {
+  if (
+    pathAllowance &&
+    (surfaceMatches(pathAllowance.surfaces, finding.runtime_surface) ||
+      surfaceMatches(pathAllowance.surfaces, finding.root_surface))
+  ) {
     return {
+      package_path: pathAllowance.path ?? baseClassification.path,
       package_or_app: pathAllowance.packageOrApp ?? baseClassification.packageOrApp,
       owner_layer: pathAllowance.ownerLayer ?? baseClassification.ownerLayer,
       current_classification: baseClassification.classification,
@@ -417,23 +550,29 @@ function findingPolicy(finding) {
     }
   }
 
-  if (exception) {
+  if (exception || rootSurfaceException) {
+    const effectiveException = exception ?? rootSurfaceException
     return {
-      package_or_app: exception.packageOrApp ?? baseClassification.packageOrApp,
-      owner_layer: exception.ownerLayer ?? baseClassification.ownerLayer,
+      package_path: baseClassification.path,
+      package_or_app: effectiveException.packageOrApp ?? baseClassification.packageOrApp,
+      owner_layer: effectiveException.ownerLayer ?? baseClassification.ownerLayer,
       current_classification: baseClassification.classification,
       allowed_by_current_policy: true,
-      proposed_classification: exception.classification,
-      proposed_policy_action: exception.policyAction ?? 'allow-exact-classified-exception',
-      related_issue_ids: exception.relatedIssueIds ?? [],
+      proposed_classification: effectiveException.classification,
+      proposed_policy_action:
+        effectiveException.policyAction ?? 'allow-exact-classified-exception',
+      related_issue_ids: effectiveException.relatedIssueIds ?? [],
       target_owner_or_future_lane:
-        exception.targetOwnerOrFutureLane ??
-        [exception.migrationTarget, exception.revisitLane].filter(Boolean).join(' / '),
-      notes: exception.reason ?? exception.notes ?? '',
+        effectiveException.targetOwnerOrFutureLane ??
+        [effectiveException.migrationTarget, effectiveException.revisitLane]
+          .filter(Boolean)
+          .join(' / '),
+      notes: effectiveException.reason ?? effectiveException.notes ?? '',
     }
   }
 
   return {
+    package_path: baseClassification.path,
     package_or_app: baseClassification.packageOrApp,
     owner_layer: baseClassification.ownerLayer,
     current_classification: baseClassification.classification,
@@ -492,6 +631,7 @@ function escapeMarkdown(value) {
 function renderMarkdownTable(rows) {
   const headers = [
     'file',
+    'package_path',
     'package_or_app',
     'owner_layer',
     'runtime_surface',
@@ -525,6 +665,29 @@ function renderMarkdownTable(rows) {
     )
   }
   return `${lines.join('\n')}\n`
+}
+
+function formatRuntimeSurfaceFailure(row) {
+  return [
+    `package=${row.package_or_app}`,
+    `package_path=${row.package_path}`,
+    `file=${row.file}:${row.locations[0]}`,
+    `forbidden_surface="${row.runtime_surface}"`,
+    `access=${row.access_kind}`,
+    `action=${row.proposed_policy_action}`,
+    `remediation="${runtimeNeutralRemediation()}"`,
+  ].join(' ')
+}
+
+function formatStrictImportFailure(finding) {
+  return [
+    `package=${finding.package_or_app}`,
+    `package_path=${finding.package_path}`,
+    `file=${finding.file}:${finding.line}:${finding.column}`,
+    `forbidden_import="${finding.specifier}"`,
+    `owner_layer=${finding.owner_layer}`,
+    `remediation="${finding.remediation}"`,
+  ].join(' ')
 }
 
 function renderExceptionTable() {
@@ -582,16 +745,16 @@ if (inventoryMode) {
 if (unclassifiedRows.length > 0) {
   console.error('Runtime surface validation failed:')
   for (const row of unclassifiedRows) {
-    console.error(
-      `- ${row.file}:${row.locations[0]} ${row.runtime_surface} ${row.access_kind} is unclassified (${row.proposed_policy_action})`
-    )
+    console.error(`- ${formatRuntimeSurfaceFailure(row)}`)
   }
   process.exit(1)
 }
 
 if (strictImportFindings.length > 0) {
   console.error('Strict runtime-neutral import validation failed:')
-  strictImportFindings.forEach(finding => console.error(`- ${finding}`))
+  strictImportFindings.forEach(finding =>
+    console.error(`- ${formatStrictImportFailure(finding)}`)
+  )
   process.exit(1)
 }
 
@@ -605,7 +768,16 @@ for (const scanRoot of runtimePolicy.runtimeNeutralScanRoots ?? []) {
         row => row.file === relPath && row.allowed_by_current_policy
       )
       if (!hasClassifiedRuntimeRows) {
-        console.error(`Runtime source pattern validation failed: ${relPath}`)
+        const classification = fileClassification(relPath)
+        console.error(
+          [
+            'Runtime source pattern validation failed:',
+            `package=${classification.packageOrApp}`,
+            `package_path=${classification.path}`,
+            `file=${relPath}`,
+            `remediation="${runtimeNeutralRemediation()}"`,
+          ].join(' ')
+        )
         process.exit(1)
       }
     }

@@ -9,10 +9,20 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..')
 
 console.warn('[version-sync] Legacy wrapper: delegating to pnpm project:sync.')
-const result = spawnSync('pnpm', ['project:sync'], {
+const syncResult = spawnSync('pnpm', ['project:sync'], {
   cwd: root,
   stdio: 'inherit',
   shell: process.platform === 'win32',
 })
 
-process.exit(result.status ?? 1)
+if (syncResult.status !== 0) {
+  process.exit(syncResult.status ?? 1)
+}
+
+const doctorResult = spawnSync('pnpm', ['project:doctor'], {
+  cwd: root,
+  stdio: 'inherit',
+  shell: process.platform === 'win32',
+})
+
+process.exit(doctorResult.status ?? 1)

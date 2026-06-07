@@ -18,7 +18,7 @@
     "./style.css": "./dist/vue-ui.css"
   },
   "scripts": {
-    "build": "rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json",
+    "build": "node ../../scripts/clean-artifacts.mjs paths dist ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json",
     "type-check": "vue-tsc -p tsconfig.json --noEmit",
     "typecheck": "pnpm type-check",
     "test": "vitest run --passWithNoTests"

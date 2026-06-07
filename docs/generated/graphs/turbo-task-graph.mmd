@@ -7,4 +7,6 @@ graph TD
   Task_type_check["type-check"] --> Task_typecheck
   Task_test["test"]
   Parent_build["^build"] --> Task_test
-  Task_lint["lint"]
+  Task_lint["//#lint"]
+  Task_e2e["//#e2e"]
+  Task_ccd_web_demo_build["@ccd/web-demo#build"] --> Task_e2e

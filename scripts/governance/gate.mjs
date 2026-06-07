@@ -26,6 +26,10 @@ const checks = [
     command: ['bash', 'scripts/exec.sh', 'pnpm', 'arch:runtime'],
   },
   {
+    name: 'desktop security baseline',
+    command: ['bash', 'scripts/exec.sh', 'pnpm', 'desktop:security'],
+  },
+  {
     name: 'API snapshot compatibility',
     command: ['bash', 'scripts/exec.sh', 'pnpm', 'api:report'],
   },

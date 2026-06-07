@@ -8,7 +8,13 @@
     "jsxImportSource": "vue",
     "types": ["vite/client"]
   },
-  "include": ["src/**/*.ts", "src/**/*.vue", "build/**/*.ts", "vite.config.ts"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.vue",
+    "build/**/*.ts",
+    "vite.config.ts",
+    "../vite.shared.ts"
+  ],
   "references": [
     {
       "path": "../../packages/contracts"

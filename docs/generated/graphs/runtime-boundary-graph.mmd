@@ -1,7 +1,7 @@
 graph TD
   Contracts["packages/contracts<br/>interfaces only<br/>runtime forbidden"] --> Core["packages/core<br/>runtime-neutral logic<br/>runtime forbidden"]
-  Core --> Web["apps/web-demo<br/>only browser runtime entry"]
-  Core --> Desktop["apps/desktop<br/>Tauri shell"]
-  Web --> WebAdapters["apps/web-demo/src/adapters/**<br/>browser capabilities"]
-  Desktop --> DesktopAdapters["apps/desktop/src/adapters/**<br/>desktop capabilities"]
+  Core --> Web["apps/web-demo<br/>web-demo browser app shell"]
+  Core --> Desktop["apps/desktop<br/>Tauri desktop runtime shell"]
+  Web --> WebAdapters["apps/web-demo/src/adapters/**<br/>browser app adapters"]
+  Desktop --> DesktopAdapters["apps/desktop/src/adapters/** + src-tauri<br/>desktop adapters and backend boundary"]
   Root["root /src<br/>decommissioned"] -. blocked .-> Web

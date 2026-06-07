@@ -95,6 +95,9 @@ jobs:
       - name: Production Build Test
         run: bash scripts/exec.sh pnpm exec turbo run build
 
+      - name: Browser Bundle Guard
+        run: bash scripts/exec.sh pnpm budget:bundles
+
       - name: Desktop Bundle Guard
         run: |
           bash scripts/exec.sh pnpm build:desktop

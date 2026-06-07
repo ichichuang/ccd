@@ -8,4 +8,24 @@ if [[ "$#" -eq 0 ]]; then
   exit 64
 fi
 
-exec "$ROOT_DIR/scripts/env.sh" "$@"
+COMMAND_LABEL="${CCD_EXEC_LABEL:-$*}"
+COMMAND_PHASE="${CCD_EXEC_PHASE:-command}"
+COMMAND_HINT="${CCD_EXEC_HINT:-}"
+
+set +e
+"$ROOT_DIR/scripts/env.sh" "$@"
+STATUS="$?"
+set -e
+
+if [[ "$STATUS" -ne 0 ]]; then
+  {
+    echo
+    echo "[FAIL] ${COMMAND_PHASE}: ${COMMAND_LABEL}"
+    echo "[FAIL] exit code: ${STATUS}"
+    if [[ -n "$COMMAND_HINT" ]]; then
+      echo "[NEXT] ${COMMAND_HINT}"
+    fi
+  } >&2
+fi
+
+exit "$STATUS"

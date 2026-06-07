@@ -75,6 +75,7 @@ declare interface ImportMetaEnv {
   readonly VITE_APP_ENV: 'development' | 'production'
   readonly VITE_API_BASE_URL: string
   readonly VITE_PORT?: string
+  readonly VITE_DESKTOP_PORT?: string
   readonly VITE_ROUTER_MODE: 'history' | 'hash'
   readonly VITE_PUBLIC_PATH?: string
   readonly VITE_PINIA_PERSIST_KEY_PREFIX?: string
@@ -94,6 +95,7 @@ declare interface ImportMetaEnv {
   readonly VITE_LEGACY: 'true' | 'false'
   readonly VITE_CDN: 'true' | 'false'
   readonly VITE_AUTH_ENABLED?: 'true' | 'false'
+  readonly VITE_PUBLIC_DEMO_ENABLED?: 'true' | 'false'
   readonly VITE_DEMO_MOCK_ENABLED?: 'true' | 'false'
   readonly VITE_SYNC_WS_URL?: string
 

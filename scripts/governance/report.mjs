@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { spawnSync } from 'node:child_process'
 import { readJson, writeJson, writeText, exists } from './utils.mjs'
 
 const adapterManifest = readJson('.ai/protocol/adapter-manifest.json')
@@ -61,6 +62,30 @@ const report = {
   boundaryStatus,
 }
 
+function formatGeneratedReportOutputs() {
+  const result = spawnSync(
+    'pnpm',
+    [
+      'exec',
+      'prettier',
+      '--write',
+      '--no-error-on-unmatched-pattern',
+      '.ai/generated/governance-report.json',
+      'docs/generated/governance-report.md',
+    ],
+    {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+      stdio: 'pipe',
+    }
+  )
+
+  if (result.status === 0) return
+  if (result.stdout) process.stdout.write(result.stdout)
+  if (result.stderr) process.stderr.write(result.stderr)
+  process.exit(result.status ?? 1)
+}
+
 function describePackageDependencies(item) {
   return item.allowedWorkspaceDependencies.length > 0
     ? `${item.name} -> ${item.allowedWorkspaceDependencies.join(', ')}`
@@ -69,3 +94,4 @@ function describePackageDependencies(item) {
 
 writeJson('.ai/generated/governance-report.json', report)
 writeText('docs/generated/governance-report.md', `# Governance Report\n\n- Protocol version: ${protocolVersion.protocolVersion}\n- Policy version: ${policyVersion.policyVersion}\n- Manifest version: ${protocolVersion.manifestVersion}\n- Adapter version: ${protocolVersion.adapterVersion}\n- Governance version: ${protocolVersion.governanceVersion}\n- Adapters: ${Object.keys(adapterManifest.adapterGuides).join(', ')}\n- Orchestration roles: ${orchestration.roles.map(role => role.id).join(', ')}\n- Rule count: ${ruleIndex.rules.length}\n- Skill routes: ${skillRouting.routes.length}\n\n## Dependency Graph\n\n${topology.packages.map(item => `- ${describePackageDependencies(item)}`).join('\n')}\n\n## Package Responsibilities\n\n${topology.packages.map(item => `- ${item.name}: ${item.responsibility ?? 'governed workspace package'}`).join('\n')}\n\n## Package Criticality\n\n${topology.packages.map(item => `- ${item.name}: ${item.criticality}`).join('\n')}\n\n## Boundary Validation Status\n\n- Dependency direction: ${boundaryStatus.dependencyDirection}\n- Runtime neutrality: ${boundaryStatus.runtimeNeutralCore}\n- Deep imports: ${boundaryStatus.deepImports}\n- Cross-app imports: ${boundaryStatus.crossAppImports}\n- Removed runtime imports: ${boundaryStatus.removedRuntimeImports}\n\n## Public API Governance\n\n- API report command: pnpm api:report\n- API snapshot directory: ${api.snapshotDir}\n- Fail on export removal: ${api.breakingChangeRules.failOnExportRemoval}\n- Fail on subpath removal: ${api.breakingChangeRules.failOnSubpathRemoval}\n- Approved public package exports are explicit package.json exports only.\n\n## Release Governance\n\n- Version governance: ${release.versionGovernance}\n- Release order: ${release.releaseOrder.join(' -> ')}\n- Release gate: pnpm release:governance\n\n## Build Graph Topology\n\n- Orchestrator: Turbo\n- Topological order: ${release.releaseOrder.join(' -> ')}\n- Recommended validation commands: pnpm lint:check, pnpm test:run, pnpm type-check, pnpm build:ci, pnpm governance:gate, pnpm ci:prepare-internal, pnpm ci:smoke:packages, pnpm vercel:build\n\n## Supply Chain Governance\n\n- Frozen install: ${boundaryStatus.installDeterminism}\n- Lifecycle scripts: forbidden by pnpm supply:check\n- Supply check: ${boundaryStatus.supplyChain}\n- SBOM: docs/generated/sbom.json\n\n## Orphan Checks\n\n- docs/generated present: ${orphanChecks.docsGeneratedExists}\n- orchestration manifest present: ${orphanChecks.orchestrationManifestExists}\n- protocol version present: ${orphanChecks.protocolVersionExists}\n`)
+formatGeneratedReportOutputs()

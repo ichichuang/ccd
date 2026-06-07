@@ -3,22 +3,16 @@
  * 标准 SCSS 规则 + Prettier 兼容
  * 覆盖 src 下的 css/scss/vue 样式
  */
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import postcssHtml from 'postcss-html'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-
 export default {
-  extends: [
-    path.resolve(__dirname, 'node_modules/stylelint-config-standard-scss/index.js'),
-    path.resolve(__dirname, 'node_modules/stylelint-config-prettier-scss/src/index.js'),
-  ],
-  ignores: [
+  extends: ['stylelint-config-standard-scss', 'stylelint-config-prettier-scss'],
+  ignoreFiles: [
     '**/node_modules/**',
     '**/dist/**',
     '**/dist-ssr/**',
     '**/coverage/**',
+    '**/target/**',
     '**/*.min.css',
   ],
   overrides: [

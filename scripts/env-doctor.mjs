@@ -32,6 +32,84 @@ const ok = message => console.log(`[OK] ${message}`)
 
 const readText = relPath => fs.readFileSync(path.join(cwd, relPath), 'utf8')
 
+const stripEnvValue = value => {
+  const trimmed = value.trim()
+  if (
+    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    return trimmed.slice(1, -1)
+  }
+  return trimmed
+}
+
+const readEnvFile = relPath => {
+  const absolutePath = path.join(cwd, relPath)
+  if (!fs.existsSync(absolutePath)) return null
+
+  const values = new Map()
+  readText(relPath)
+    .split(/\r?\n/)
+    .forEach(line => {
+      const trimmed = line.trim()
+      if (!trimmed || trimmed.startsWith('#')) return
+
+      const match = trimmed.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/)
+      if (!match) return
+      values.set(match[1], stripEnvValue(match[2]))
+    })
+
+  return values
+}
+
+const readJson = relPath => JSON.parse(readText(relPath))
+
+const mergeEnvFiles = relPaths => {
+  const values = new Map()
+  const missing = []
+
+  relPaths.forEach(relPath => {
+    const envValues = readEnvFile(relPath)
+    if (!envValues) {
+      missing.push(relPath)
+      return
+    }
+
+    envValues.forEach((value, key) => values.set(key, value))
+  })
+
+  return { values, missing }
+}
+
+const getEnvValue = (values, key) => values.get(key)?.trim() ?? ''
+
+const isHttpUrl = value => {
+  try {
+    const url = new URL(value)
+    return url.protocol === 'http:' || url.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
+const isPublicPath = value => {
+  if (isHttpUrl(value)) return value.endsWith('/')
+  return value.startsWith('/') && value.endsWith('/')
+}
+
+const isPositiveIntegerString = value => /^\d+$/.test(value) && Number(value) > 0
+
+const isPortString = value => {
+  if (!isPositiveIntegerString(value)) return false
+  const port = Number(value)
+  return port >= 1 && port <= 65_535
+}
+
+const storagePrefixPattern = /^[A-Za-z0-9:_-]{3,80}$/
+const compressionModes = new Set(['none', 'gzip', 'brotli', 'both'])
+const routerModes = new Set(['history', 'hash'])
+const appEnvironments = new Set(['development', 'production'])
+
 const run = (command, args, options = {}) =>
   spawnSync(command, args, {
     cwd,
@@ -161,6 +239,222 @@ const checkRuntimeScript = relPath => {
   ok(`runtime script: ${relPath}`)
 }
 
+const checkDemoModeEnvDefaults = () => {
+  const envFiles = ['.env', '.env.development', '.env.production', '.env.analyze']
+  const booleanKeys = ['VITE_DEMO_MOCK_ENABLED', 'VITE_PUBLIC_DEMO_ENABLED']
+
+  envFiles.forEach(relPath => {
+    const values = readEnvFile(relPath)
+    if (!values) return
+
+    booleanKeys.forEach(key => {
+      const value = values.get(key)
+      if (value !== undefined && value !== 'true' && value !== 'false') {
+        fail(`${relPath} ${key} must be true or false`)
+      }
+    })
+  })
+
+  const productionEnv = readEnvFile('.env.production')
+  if (!productionEnv) {
+    warn('.env.production missing; production demo/mock default could not be checked')
+    return
+  }
+
+  const publicDemoEnabled = productionEnv.get('VITE_PUBLIC_DEMO_ENABLED') === 'true'
+  const legacyDemoMockEnabled = productionEnv.get('VITE_DEMO_MOCK_ENABLED') === 'true'
+
+  if (legacyDemoMockEnabled && !publicDemoEnabled) {
+    fail(
+      '.env.production enables VITE_DEMO_MOCK_ENABLED without VITE_PUBLIC_DEMO_ENABLED=true'
+    )
+    return
+  }
+
+  if (publicDemoEnabled) {
+    warn('.env.production explicitly enables public demo mode')
+    return
+  }
+
+  ok('production demo/mock defaults require explicit public demo opt-in')
+}
+
+const collectViteEnvProfileIssues = ({ name, files, expectedAppEnv }) => {
+  const { values, missing } = mergeEnvFiles(files)
+  const issues = []
+
+  missing.forEach(relPath => issues.push(`missing env file ${relPath}`))
+
+  const requiredKeys = [
+    'VITE_PORT',
+    'VITE_DESKTOP_PORT',
+    'VITE_PUBLIC_PATH',
+    'VITE_ROUTER_MODE',
+    'VITE_COMPRESSION',
+    'VITE_API_BASE_URL',
+    'VITE_APP_ENV',
+    'VITE_PINIA_PERSIST_KEY_PREFIX',
+    'VITE_ROOT_REDIRECT',
+    'VITE_API_TIMEOUT',
+    'VITE_PROXY_TIMEOUT',
+  ]
+
+  requiredKeys.forEach(key => {
+    if (!values.has(key) || getEnvValue(values, key) === '') {
+      issues.push(`${key} is required`)
+    }
+  })
+
+  const port = getEnvValue(values, 'VITE_PORT')
+  if (port && !isPortString(port)) {
+    issues.push('VITE_PORT must be an integer between 1 and 65535')
+  }
+
+  const desktopPort = getEnvValue(values, 'VITE_DESKTOP_PORT')
+  if (desktopPort && !isPortString(desktopPort)) {
+    issues.push('VITE_DESKTOP_PORT must be an integer between 1 and 65535')
+  }
+
+  const publicPath = getEnvValue(values, 'VITE_PUBLIC_PATH')
+  if (publicPath && !isPublicPath(publicPath)) {
+    issues.push('VITE_PUBLIC_PATH must be /, a root-relative path ending in /, or an http(s) URL ending in /')
+  }
+
+  const routerMode = getEnvValue(values, 'VITE_ROUTER_MODE')
+  if (routerMode && !routerModes.has(routerMode)) {
+    issues.push('VITE_ROUTER_MODE must be history or hash')
+  }
+
+  const compression = getEnvValue(values, 'VITE_COMPRESSION')
+  if (compression && !compressionModes.has(compression)) {
+    issues.push('VITE_COMPRESSION must be one of none, gzip, brotli, both')
+  }
+
+  const apiBaseUrl = getEnvValue(values, 'VITE_API_BASE_URL')
+  if (apiBaseUrl && !isHttpUrl(apiBaseUrl)) {
+    issues.push('VITE_API_BASE_URL must be an absolute http(s) URL')
+  }
+
+  const appEnv = getEnvValue(values, 'VITE_APP_ENV')
+  if (appEnv && !appEnvironments.has(appEnv)) {
+    issues.push('VITE_APP_ENV must be development or production')
+  }
+
+  if (expectedAppEnv && appEnv && appEnv !== expectedAppEnv) {
+    issues.push(`VITE_APP_ENV must be ${expectedAppEnv} for ${name}`)
+  }
+
+  const storagePrefix = getEnvValue(values, 'VITE_PINIA_PERSIST_KEY_PREFIX')
+  if (storagePrefix && !storagePrefixPattern.test(storagePrefix)) {
+    issues.push('VITE_PINIA_PERSIST_KEY_PREFIX must be 3-80 characters using letters, digits, colon, underscore, or hyphen')
+  }
+
+  const rootRedirect = getEnvValue(values, 'VITE_ROOT_REDIRECT')
+  if (rootRedirect && !rootRedirect.startsWith('/')) {
+    issues.push('VITE_ROOT_REDIRECT must be an absolute app path')
+  }
+
+  const apiTimeout = getEnvValue(values, 'VITE_API_TIMEOUT')
+  const proxyTimeout = getEnvValue(values, 'VITE_PROXY_TIMEOUT')
+  if (apiTimeout && !isPositiveIntegerString(apiTimeout)) {
+    issues.push('VITE_API_TIMEOUT must be a positive integer in milliseconds')
+  }
+  if (proxyTimeout && !isPositiveIntegerString(proxyTimeout)) {
+    issues.push('VITE_PROXY_TIMEOUT must be a positive integer in milliseconds')
+  }
+  if (
+    isPositiveIntegerString(apiTimeout) &&
+    isPositiveIntegerString(proxyTimeout) &&
+    Number(proxyTimeout) < Number(apiTimeout)
+  ) {
+    issues.push('VITE_PROXY_TIMEOUT must be greater than or equal to VITE_API_TIMEOUT')
+  }
+
+  return issues
+}
+
+const checkViteEnvSchemas = () => {
+  const profiles = [
+    { name: 'development', files: ['.env', '.env.development'], expectedAppEnv: 'development' },
+    { name: 'production', files: ['.env', '.env.production'], expectedAppEnv: 'production' },
+    { name: 'analyze', files: ['.env', '.env.analyze'], expectedAppEnv: 'development' },
+  ]
+
+  profiles.forEach(profile => {
+    const issues = collectViteEnvProfileIssues(profile)
+    if (issues.length > 0) {
+      issues.forEach(issue => fail(`${profile.name} env schema: ${issue}`))
+      return
+    }
+
+    ok(`${profile.name} env schema`)
+  })
+}
+
+const readDesktopEnvPort = () => {
+  const { values } = mergeEnvFiles(['.env', '.env.development'])
+  return Number(getEnvValue(values, 'VITE_DESKTOP_PORT'))
+}
+
+const checkDesktopEnvironmentConfig = () => {
+  const viteConfig = readText('apps/desktop/vite.config.ts')
+  if (!viteConfig.includes('VITE_DESKTOP_PORT') || !viteConfig.includes('loadAppViteEnv')) {
+    fail('apps/desktop/vite.config.ts must load VITE_DESKTOP_PORT from the shared env files')
+    return
+  }
+
+  const desktopPort = readDesktopEnvPort()
+  if (!Number.isInteger(desktopPort) || desktopPort < 1 || desktopPort > 65_535) {
+    fail('VITE_DESKTOP_PORT must be an integer between 1 and 65535')
+    return
+  }
+
+  const tauriConfig = readJson('apps/desktop/src-tauri/tauri.conf.json')
+  const buildConfig = tauriConfig?.build
+  const devUrl = buildConfig?.devUrl
+  const frontendDist = buildConfig?.frontendDist
+
+  if (typeof devUrl !== 'string' || !isHttpUrl(devUrl)) {
+    fail('apps/desktop/src-tauri/tauri.conf.json build.devUrl must be an absolute http(s) URL')
+    return
+  }
+
+  const parsedDevUrl = new URL(devUrl)
+  if (!['localhost', '127.0.0.1'].includes(parsedDevUrl.hostname)) {
+    fail('desktop build.devUrl host must be localhost or 127.0.0.1')
+    return
+  }
+
+  if (Number(parsedDevUrl.port) !== desktopPort) {
+    fail(`desktop build.devUrl port ${parsedDevUrl.port} must match VITE_DESKTOP_PORT ${desktopPort}`)
+    return
+  }
+
+  if (frontendDist !== '../dist') {
+    fail('desktop build.frontendDist must remain ../dist')
+    return
+  }
+
+  ok('desktop env/config schema')
+}
+
+const checkWebDemoViteCorsConfig = () => {
+  const viteConfig = readText('apps/web-demo/vite.config.ts')
+  const sharedConfig = readText('apps/vite.shared.ts')
+
+  if (viteConfig.includes('cors: true')) {
+    fail('apps/web-demo/vite.config.ts must not use open Vite CORS')
+    return
+  }
+
+  if (!viteConfig.includes('localViteCors') || !sharedConfig.includes('localViteCors')) {
+    fail('apps/web-demo/vite.config.ts must use the shared restricted local Vite CORS policy')
+    return
+  }
+
+  ok('web-demo Vite CORS restricted to local origins')
+}
+
 const checkExecTool = (name, expectedVersion) => {
   const result = run('bash', ['scripts/exec.sh', name, '-v'])
   if (result.status !== 0) {
@@ -274,6 +568,10 @@ checkShellTool('node', expectedNodeVersion)
 checkShellTool('pnpm', expectedPnpmVersion)
 checkRuntimeScript('scripts/env.sh')
 checkRuntimeScript('scripts/exec.sh')
+checkDemoModeEnvDefaults()
+checkViteEnvSchemas()
+checkDesktopEnvironmentConfig()
+checkWebDemoViteCorsConfig()
 checkExecTool('node', expectedNodeVersion)
 checkExecTool('pnpm', expectedPnpmVersion)
 inspectShellBinding('non-interactive')

@@ -17,6 +17,14 @@ module.exports = {
       to: { path: '^apps/' },
     },
     {
+      name: 'packages-do-not-import-apps',
+      severity: 'error',
+      comment:
+        'Shared packages must not import application-owned theme, hooks, utils, i18n, request, or service internals.',
+      from: { path: '^packages/' },
+      to: { path: '^apps/' },
+    },
+    {
       name: 'apps-do-not-import-sibling-apps',
       severity: 'error',
       comment: 'Apps cannot import sibling apps.',

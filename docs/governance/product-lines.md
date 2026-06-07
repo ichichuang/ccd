@@ -12,8 +12,8 @@ packages/vue-hooks  -> shared Vue/browser composables
 packages/vue-ui     -> shared Vue UI primitives
 packages/vue-primevue-adapter -> PrimeVue-specific theme/adaptation layer
 packages/vue-charts -> shared chart runtime and helpers
-apps/web-demo       -> browser app shell plus temporary app-local shared candidates
-apps/desktop        -> Tauri runtime adapter shell
+apps/web-demo       -> browser web-demo application shell, routes, stores, views, and app adapters
+apps/desktop        -> dedicated Tauri desktop runtime shell with own frontend entry and src-tauri backend boundary
 root                -> orchestration-only shell
 ```
 
@@ -23,6 +23,8 @@ root                -> orchestration-only shell
 - `packages/core` may depend on `@ccd/contracts` only.
 - `apps/*` may depend only on the workspace packages explicitly declared by `.ai/governance/policies/topology.json`.
 - `apps/web-demo` currently consumes `@ccd/contracts`, `@ccd/core`, `@ccd/design-tokens`, `@ccd/shared-utils`, `@ccd/unocss-preset`, `@ccd/vue-hooks`, `@ccd/vue-ui`, `@ccd/vue-primevue-adapter`, and `@ccd/vue-charts`.
+- Shared components, tokens, hooks, UI primitives, package-level adapters, contracts, and runtime-neutral logic belong in `packages/*`.
+- App-specific routes, stores, pages/views, plugin wiring, runtime access, and compatibility facades stay app-local.
 - Apps may not import sibling apps.
 - Active packages may not import removed runtime archive paths.
 

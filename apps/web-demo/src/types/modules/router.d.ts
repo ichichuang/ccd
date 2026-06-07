@@ -1,8 +1,14 @@
 import 'vue-router'
 import type { AnimateName } from '@ccd/vue-ui'
+import type { RouteRecordName, RouteRecordRedirectOption } from 'vue-router'
 
 export type CssTime = `${number}ms` | `${number}s`
 export type PhaseValue<T> = T | { enter?: T; leave?: T }
+export type RouteTitleKey = `router.${string}`
+export type RouteIconClassName = `i-${string}`
+export type RouteAccessList = string[]
+export type AppRouteName = RouteRecordName
+export type AppRouteRedirect = RouteRecordRedirectOption
 
 export interface RouteTransition {
   /** 原生具名过渡 (如 cinematic-fade / fade-slide) */
@@ -24,11 +30,13 @@ export interface RouteTransition {
 /** 应用路由元信息基础接口（严格类型策略） */
 export interface AppRouteMeta {
   title?: string
-  icon?: string
+  titleKey?: RouteTitleKey
+  icon?: RouteIconClassName
   hidden?: boolean
   keepAlive?: boolean
   requiresAuth?: boolean
-  roles?: string[]
+  roles?: RouteAccessList
+  auths?: RouteAccessList
   rank?: number
   /** 布局模式 */
   parent?: LayoutMode
@@ -40,7 +48,7 @@ declare module 'vue-router' {
     /** 页面标题（优先使用 titleKey） */
     title?: string
     /** 页面标题国际化 key（首选） */
-    titleKey?: string
+    titleKey?: RouteTitleKey
     /** 布局模式 */
     parent?: LayoutMode
     /** 固定比例（只有ratio布局模式下有效：16:9） */
@@ -48,15 +56,15 @@ declare module 'vue-router' {
     /** 父级菜单路径 */
     parentPaths?: string[]
     /** 菜单图标 */
-    icon?: string
+    icon?: RouteIconClassName
     /** 是否在菜单中显示（默认 true） */
     showLink?: boolean
     /** 菜单排序权重，数值越小越靠前 */
     rank?: number
     /** 页面级权限角色 */
-    roles?: string[]
+    roles?: RouteAccessList
     /** 按钮级权限设置 */
-    auths?: string[]
+    auths?: RouteAccessList
     /** 是否缓存页面（默认 false） */
     keepAlive?: boolean
     /** 是否隐藏面包屑（默认 false） */
@@ -91,7 +99,12 @@ declare module 'vue-router' {
 // 声明全局类型
 declare global {
   /** 增强的路由配置接口 */
-  interface RouteConfig extends Omit<import('vue-router').RouteRecordRaw, 'meta' | 'children'> {
+  interface RouteConfig extends Omit<
+    import('vue-router').RouteRecordRaw,
+    'meta' | 'children' | 'name' | 'redirect'
+  > {
+    name?: AppRouteName
+    redirect?: AppRouteRedirect
     meta?: import('vue-router').RouteMeta
     children?: RouteConfig[]
   }

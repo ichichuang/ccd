@@ -11,6 +11,7 @@ const ROOT = join(__dirname, '..')
 const CONFIG_PATH = join(ROOT, 'project.config.json')
 const ROOT_PACKAGE_PATH = join(ROOT, 'package.json')
 const BRAND_PATH = join(ROOT, 'apps/web-demo/src/constants/brand.ts')
+const WEB_INDEX_PATH = join(ROOT, 'apps/web-demo/index.html')
 const DESKTOP_INDEX_PATH = join(ROOT, 'apps/desktop/index.html')
 const TAURI_CONF_PATH = join(ROOT, 'apps/desktop/src-tauri/tauri.conf.json')
 const CARGO_TOML_PATH = join(ROOT, 'apps/desktop/src-tauri/Cargo.toml')
@@ -275,10 +276,18 @@ function readBrandValue(name) {
   return match?.[2]
 }
 
-function desktopHtmlPlaceholderStatus(pattern) {
-  if (!existsSync(DESKTOP_INDEX_PATH)) return 'missing file'
-  const raw = readFileSync(DESKTOP_INDEX_PATH, 'utf-8')
+function htmlPlaceholderStatus(path, pattern) {
+  if (!existsSync(path)) return 'missing file'
+  const raw = readFileSync(path, 'utf-8')
   return pattern.test(raw) ? 'template placeholder' : 'missing placeholder'
+}
+
+function webHtmlPlaceholderStatus(pattern) {
+  return htmlPlaceholderStatus(WEB_INDEX_PATH, pattern)
+}
+
+function desktopHtmlPlaceholderStatus(pattern) {
+  return htmlPlaceholderStatus(DESKTOP_INDEX_PATH, pattern)
 }
 
 function doctorRows(config) {
@@ -340,6 +349,34 @@ function doctorRows(config) {
       'author',
       config.product.author,
       readBrandValue('author')
+    )
+  )
+  rows.push(
+    row(
+      'apps/web-demo/index.html',
+      'title',
+      'template placeholder',
+      webHtmlPlaceholderStatus(/<title>\s*%BRAND_NAME%\s*<\/title>/)
+    )
+  )
+  rows.push(
+    row(
+      'apps/web-demo/index.html',
+      'meta.description',
+      'template placeholder',
+      webHtmlPlaceholderStatus(
+        /<meta\b(?=[^>]*\bname="description")(?=[^>]*\bcontent="%BRAND_SLOGAN%")[^>]*\/>/
+      )
+    )
+  )
+  rows.push(
+    row(
+      'apps/web-demo/index.html',
+      'meta.author',
+      'template placeholder',
+      webHtmlPlaceholderStatus(
+        /<meta\b(?=[^>]*\bname="author")(?=[^>]*\bcontent="%BRAND_AUTHOR%")[^>]*\/>/
+      )
     )
   )
   rows.push(
