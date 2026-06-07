@@ -1,7 +1,10 @@
-const dashboardRoutes: RouteConfig[] = [
+import { appRouteNames, appRoutePaths } from '@/constants/router'
+import { defineRouteModule } from '@/router/utils/routeModules'
+
+const dashboardRoutes = defineRouteModule<RouteConfig[]>([
   {
-    path: '/dashboard',
-    name: 'Dashboard',
+    path: appRoutePaths.dashboard,
+    name: appRouteNames.dashboard,
     component: () => import('@/views/dashboard/index.vue'),
     meta: {
       titleKey: 'router.dashboard.dashboard',
@@ -11,6 +14,6 @@ const dashboardRoutes: RouteConfig[] = [
       keepAlive: true,
     },
   },
-]
+])
 
 export default dashboardRoutes

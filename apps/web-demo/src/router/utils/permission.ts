@@ -4,7 +4,7 @@
  * UI 副作用（NProgress、Loading、标题更新）已解耦至 guardEffects.ts。
  */
 import { appLogger } from '@/adapters/logger.adapter'
-import { AUTH_ENABLED, routeWhitePathList } from '@/constants/router'
+import { AUTH_ENABLED, appRoutePaths, routeWhitePathList } from '@/constants/router'
 import { usePermissionStore } from '@/stores/modules/session'
 import { useUserStoreWithOut } from '@/stores/modules/session'
 import { useAuth } from '@/hooks/modules/useAuth'
@@ -22,9 +22,9 @@ function getFirstQueryValue(value: LocationQueryValue | LocationQueryValue[]): s
 }
 
 function getCatchAllRedirectedFullPath(to: RouteLocationNormalized): string | undefined {
-  if (to.path !== '/404') return undefined
+  if (to.path !== appRoutePaths.notFound) return undefined
   const redirectedFrom = to.redirectedFrom
-  if (!redirectedFrom || redirectedFrom.path === '/404') return undefined
+  if (!redirectedFrom || redirectedFrom.path === appRoutePaths.notFound) return undefined
   return redirectedFrom.fullPath
 }
 
@@ -107,15 +107,15 @@ export const usePermissionGuard = ({
     if (isLogin && !isWhiteListed(to.path, whiteList)) {
       const validationResult = await validatePersistedSession()
       if (validationResult === 'forbidden') {
-        next('/403')
+        next(appRoutePaths.forbidden)
         return
       }
       isLogin = validationResult === 'valid'
     }
 
     if (isLogin) {
-      if (to.path === '/login') {
-        next({ path: '/' })
+      if (to.path === appRoutePaths.login) {
+        next({ path: appRoutePaths.root })
         return
       } else {
         if (isDynamicRoutesLoaded) {
@@ -126,7 +126,7 @@ export const usePermissionGuard = ({
               userStore.userInfo.permissions
             )
           ) {
-            next('/403')
+            next(appRoutePaths.forbidden)
             return
           }
           next()
@@ -149,7 +149,9 @@ export const usePermissionGuard = ({
           // 这类跳转用户已经明确触发了登录，不再叠加全屏遮罩，只保留 pageLoading 即可。
           // 注意：此处有意保留 loadingStart() 调用，因为此 UI 行为与权限初始化流程强耦合。
           const isLoginToNonFullscreen: boolean =
-            from.path === '/login' && fromParent === 'fullscreen' && toParent !== 'fullscreen'
+            from.path === appRoutePaths.login &&
+            fromParent === 'fullscreen' &&
+            toParent !== 'fullscreen'
           const shouldShowGlobalLoading: boolean =
             !isLoginToNonFullscreen && toParent !== 'fullscreen'
           if (shouldShowGlobalLoading) {
@@ -158,7 +160,10 @@ export const usePermissionGuard = ({
           }
 
           // 避免多跳：如果是从登录页跳转，且目标一致，直接放行
-          if (from.path === '/login' && (to.fullPath === target.path || to.path === target.path)) {
+          if (
+            from.path === appRoutePaths.login &&
+            (to.fullPath === target.path || to.path === target.path)
+          ) {
             next()
             return
           }
@@ -169,8 +174,8 @@ export const usePermissionGuard = ({
         } catch (error: unknown) {
           appLogger.error('动态路由初始化失败', error)
           next({
-            path: '/login',
-            query: to.fullPath !== '/login' ? { redirect: to.fullPath } : {},
+            path: appRoutePaths.login,
+            query: to.fullPath !== appRoutePaths.login ? { redirect: to.fullPath } : {},
           })
           return
         } finally {
@@ -182,7 +187,10 @@ export const usePermissionGuard = ({
         next()
       } else {
         const requestedFullPath = getCatchAllRedirectedFullPath(to) ?? to.fullPath
-        next(`/login?redirect=${encodeURIComponent(requestedFullPath)}`)
+        next({
+          path: appRoutePaths.login,
+          query: { redirect: requestedFullPath },
+        })
       }
     }
   })

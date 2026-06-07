@@ -100,19 +100,77 @@ describe('example user Method builders', () => {
   } as never
 
   it('keeps server-state APIs available as Alova Method builders', () => {
-    expect(buildExampleUserListMethod(client, { page: 1, limit: 10 })).toMatchObject({
+    const listMethod = buildExampleUserListMethod(client, { page: 1, limit: 10 }) as unknown as {
+      config: Record<string, unknown>
+    }
+    expect(listMethod).toMatchObject({
       type: 'GET',
+      config: expect.objectContaining({
+        responseSchema: expect.any(Object),
+      }),
     })
     expect(
-      buildExampleUserCreateMethod(client, {
-        name: 'Alice',
-        status: 'active',
-      })
-    ).toMatchObject({ type: 'POST' })
-    expect(buildExampleUserUpdateMethod(client, 1, { name: 'Alice' })).toMatchObject({
-      type: 'PUT',
+      (listMethod.config.responseSchema as ZodType<unknown>).safeParse(apiResponse).success
+    ).toBe(true)
+    expect(
+      (listMethod.config.responseSchema as ZodType<unknown>).safeParse(apiResponse.data).success
+    ).toBe(false)
+
+    const createMethod = buildExampleUserCreateMethod(client, {
+      name: 'Alice',
+      status: 'active',
+    }) as unknown as { config: Record<string, unknown> }
+    expect(createMethod).toMatchObject({ type: 'POST' })
+    expect(
+      (createMethod.config.responseSchema as ZodType<unknown>).safeParse(itemApiResponse).success
+    ).toBe(true)
+
+    const updateMethod = buildExampleUserUpdateMethod(client, 1, { name: 'Alice' }) as unknown as {
+      config: Record<string, unknown>
+    }
+    expect(updateMethod).toMatchObject({ type: 'PUT' })
+    expect(
+      (updateMethod.config.responseSchema as ZodType<unknown>).safeParse(itemApiResponse).success
+    ).toBe(true)
+
+    const deleteMethod = buildExampleUserDeleteMethod(client, 1) as unknown as {
+      config: Record<string, unknown>
+    }
+    expect(deleteMethod).toMatchObject({ type: 'DELETE' })
+    expect(
+      (deleteMethod.config.responseSchema as ZodType<unknown>).safeParse({
+        code: 200,
+        message: 'success',
+        data: null,
+      }).success
+    ).toBe(true)
+  })
+
+  it('preserves caller config while owning the stable response schemas', () => {
+    expect(
+      buildExampleUserListMethod(client, { page: 1, limit: 10 }, { enableCache: false })
+    ).toMatchObject({
+      config: expect.objectContaining({
+        enableCache: false,
+        params: { page: 1, limit: 10 },
+        responseSchema: expect.any(Object),
+      }),
     })
-    expect(buildExampleUserDeleteMethod(client, 1)).toMatchObject({ type: 'DELETE' })
+    expect(
+      buildExampleUserCreateMethod(
+        client,
+        {
+          name: 'Alice',
+          status: 'active',
+        },
+        { enableCache: false }
+      )
+    ).toMatchObject({
+      config: expect.objectContaining({
+        enableCache: false,
+        responseSchema: expect.any(Object),
+      }),
+    })
   })
 })
 

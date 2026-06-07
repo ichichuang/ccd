@@ -1,7 +1,10 @@
-const coreRoutes: RouteConfig[] = [
+import { appRouteNames, appRoutePaths } from '@/constants/router'
+import { defineRouteModule } from '@/router/utils/routeModules'
+
+const coreRoutes = defineRouteModule<RouteConfig[]>([
   {
-    path: '/',
-    name: 'Root',
+    path: appRoutePaths.root,
+    name: appRouteNames.root,
     redirect: import.meta.env.VITE_ROOT_REDIRECT,
     meta: {
       titleKey: 'router.core.root',
@@ -9,8 +12,8 @@ const coreRoutes: RouteConfig[] = [
     },
   },
   {
-    path: '/login',
-    name: 'Login',
+    path: appRoutePaths.login,
+    name: appRouteNames.login,
     component: () => import('@/views/login/index.vue'),
     meta: {
       titleKey: 'router.core.login',
@@ -18,6 +21,6 @@ const coreRoutes: RouteConfig[] = [
       parent: 'fullscreen',
     },
   },
-]
+])
 
 export default coreRoutes

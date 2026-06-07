@@ -92,40 +92,59 @@ export const buildExampleUserListMethod = (
   client: typeof alovaInstance,
   params: V1UserListReq,
   config?: RequestConfig
-) =>
-  client.Get<V1UserListApiResponse>(USERS_API_URL, {
+) => {
+  const requestConfig: RequestConfig<V1UserListApiResponse> = {
     ...config,
     params,
-  })
+    responseSchema: v1UserListApiResponseSchema,
+  }
+  return client.Get<V1UserListApiResponse>(USERS_API_URL, requestConfig)
+}
 
 export const buildExampleUserCreateMethod = (
   client: typeof alovaInstance,
   data: unknown,
   config?: RequestConfig
-) =>
-  client.Post<V1UserItemApiResponse>(
+) => {
+  const requestConfig: RequestConfig<V1UserItemApiResponse> = {
+    ...config,
+    responseSchema: v1UserItemApiResponseSchema,
+  }
+  return client.Post<V1UserItemApiResponse>(
     USERS_API_URL,
     parseZodHttpPayload(v1UserCreateSchema, data),
-    config
+    requestConfig
   )
+}
 
 export const buildExampleUserUpdateMethod = (
   client: typeof alovaInstance,
   id: number,
   data: unknown,
   config?: RequestConfig
-) =>
-  client.Put<V1UserItemApiResponse>(
+) => {
+  const requestConfig: RequestConfig<V1UserItemApiResponse> = {
+    ...config,
+    responseSchema: v1UserItemApiResponseSchema,
+  }
+  return client.Put<V1UserItemApiResponse>(
     `${USERS_API_URL}/${id}`,
     parseZodHttpPayload(v1UserUpdateSchema, data),
-    config
+    requestConfig
   )
+}
 
 export const buildExampleUserDeleteMethod = (
   client: typeof alovaInstance,
   id: number,
   config?: RequestConfig
-) => client.Delete<V1UserDeleteApiResponse>(`${USERS_API_URL}/${id}`, config)
+) => {
+  const requestConfig: RequestConfig<V1UserDeleteApiResponse> = {
+    ...config,
+    responseSchema: v1UserDeleteApiResponseSchema,
+  }
+  return client.Delete<V1UserDeleteApiResponse>(`${USERS_API_URL}/${id}`, requestConfig)
+}
 
 /** Imperative ProTable executor compatibility wrapper. Prefer buildExampleUserListMethod with useHttpRequest for server-state UIs. */
 export const requestUserList = (

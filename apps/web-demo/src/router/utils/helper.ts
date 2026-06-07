@@ -1,4 +1,5 @@
 import {
+  appRoutePaths,
   errorPagesNameList,
   errorPagesPathList,
   routeWhiteNameList,
@@ -139,7 +140,7 @@ export const goBack = (): void => {
   if (history.state?.back) {
     router.back()
   } else {
-    router.push('/')
+    router.push(appRoutePaths.root)
   }
 }
 
