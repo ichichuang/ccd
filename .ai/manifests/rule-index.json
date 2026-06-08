@@ -5,13 +5,21 @@
     {
       "path": ".ai/rules/architecture/03-auth-rbac.mdc",
       "description": "项目统一的 RBAC 权限控制标准（Vue 模板指令与 TSX 编程式鉴权）。",
-      "globs": ["**/*.vue", "**/*.tsx"],
+      "globs": [
+        "**/*.vue",
+        "**/*.tsx"
+      ],
       "alwaysApply": false
     },
     {
       "path": ".ai/rules/architecture/04-store-organization.mdc",
       "description": "Pinia store grouping contract for system/session/ui ownership and backwards-compatible import surfaces.",
-      "globs": ["src/stores/**/*.ts", "src/**/*.ts", "src/**/*.vue", "src/**/*.tsx"],
+      "globs": [
+        "src/stores/**/*.ts",
+        "src/**/*.ts",
+        "src/**/*.vue",
+        "src/**/*.tsx"
+      ],
       "alwaysApply": false
     },
     {
@@ -40,7 +48,10 @@
     {
       "path": ".ai/rules/components/01-primevue-pt-styling.mdc",
       "description": "Unified PrimeVue PT styling law. Restores full PT architecture, whitelist/blacklist constraints, slot maps, and practical examples.",
-      "globs": ["src/components/**/*.vue", "src/views/**/*.vue"],
+      "globs": [
+        "src/components/**/*.vue",
+        "src/views/**/*.vue"
+      ],
       "alwaysApply": true
     },
     {
@@ -67,73 +78,113 @@
     {
       "path": ".ai/rules/core/00-global-architect.mdc",
       "description": "Chief Architect Global Directives, Ledger tracking, and fundamental workflow constraints. Applies to all files and operations.",
-      "globs": ["**/*"],
+      "globs": [
+        "**/*"
+      ],
       "alwaysApply": false
     },
     {
       "path": ".ai/rules/core/00-root-gatekeeper.mdc",
       "description": "Root gatekeeper for rules lookup and tool/hook priority.",
-      "globs": ["*"],
+      "globs": [
+        "*"
+      ],
       "alwaysApply": true
     },
     {
       "path": ".ai/rules/core/01-global-preflight.mdc",
       "description": "MANDATORY global pre-execution architect checklist for protocol, logic, and cross-layer safety checks.",
-      "globs": ["**/*"],
+      "globs": [
+        "**/*"
+      ],
       "alwaysApply": true
     },
     {
       "path": ".ai/rules/core/02-core-engineering.mdc",
       "description": "Core engineering constitution for Vue3+TS architecture, type safety, rendering, and build/runtime boundaries.",
-      "globs": ["**/*.vue", "**/*.ts", "**/*.tsx", "**/*.js"],
+      "globs": [
+        "**/*.vue",
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.js"
+      ],
       "alwaysApply": false
     },
     {
       "path": ".ai/rules/core/02-ui-preflight.mdc",
       "description": "MANDATORY UI pre-execution architect checklist for views, components, layouts, and design-engine constraints.",
-      "globs": ["src/views/**/*", "src/components/**/*", "src/layouts/**/*"],
+      "globs": [
+        "src/views/**/*",
+        "src/components/**/*",
+        "src/layouts/**/*"
+      ],
       "alwaysApply": true
     },
     {
       "path": ".ai/rules/core/03-vue3-ts-architecture.mdc",
       "description": "Vue 3 Composition API Architecture — script setup macro discipline, reactivity primitives, typed component contracts, composable design axioms, performance patterns.",
-      "globs": ["src/**/*.vue", "src/**/*.ts", "src/**/*.tsx"],
+      "globs": [
+        "src/**/*.vue",
+        "src/**/*.ts",
+        "src/**/*.tsx"
+      ],
       "alwaysApply": true
     },
     {
       "path": ".ai/rules/core/04-type-safety-mutations.mdc",
       "description": "Bans type assertions and in-place mutations in business logic. Mandates typeCasters.ts for casting and lodashes.ts for deep operations. Applies codebase-wide.",
-      "globs": ["src/**/*.ts", "src/**/*.vue", "src/**/*.tsx"],
+      "globs": [
+        "src/**/*.ts",
+        "src/**/*.vue",
+        "src/**/*.tsx"
+      ],
       "alwaysApply": false
     },
     {
       "path": ".ai/rules/core/05-state-boundaries.mdc",
       "description": "Enforces the API Call Isolation Law, Pinia store ownership matrix, and cross-layer data flow. Applies to all business logic in src/.",
-      "globs": ["src/**/*.ts", "src/**/*.vue", "src/**/*.tsx"],
+      "globs": [
+        "src/**/*.ts",
+        "src/**/*.vue",
+        "src/**/*.tsx"
+      ],
       "alwaysApply": false
     },
     {
       "path": ".ai/rules/core/06-utils-hooks.mdc",
       "description": "Enforces the Search Before Writing rule for utility hooks and global events.",
-      "globs": ["src/**/*.vue", "src/**/*.ts"],
+      "globs": [
+        "src/**/*.vue",
+        "src/**/*.ts"
+      ],
       "alwaysApply": true
     },
     {
       "path": ".ai/rules/core/07-vue-auto-imports.mdc",
       "description": "Canonical auto-import contract for this project. Defines exactly which APIs and components are globally available without import statements, and strictly forbids redundant manual imports.",
-      "globs": ["src/**/*.vue", "src/**/*.ts", "src/**/*.tsx"],
+      "globs": [
+        "src/**/*.vue",
+        "src/**/*.ts",
+        "src/**/*.tsx"
+      ],
       "alwaysApply": true
     },
     {
       "path": ".ai/rules/core/08-vue-template-strictness.mdc",
       "description": "Strict enforcement rules for Vue SFC template blocks and script setup type safety. Bans TypeScript syntax inside <template>, forbids any/unknown in component logic, and mandates computed-based type narrowing.",
-      "globs": ["src/**/*.vue", "src/**/*.tsx"],
+      "globs": [
+        "src/**/*.vue",
+        "src/**/*.tsx"
+      ],
       "alwaysApply": true
     },
     {
       "path": ".ai/rules/core/09-ai-anti-failure-guard.mdc",
       "description": "CRITICAL AI Execution Guardrails. Prevents UnoCSS purge, Vue reactivity loss, Type deadlocks, and Intent erasure. Includes Self-Check Loop.",
-      "globs": ["**/*.vue", "**/*.ts"],
+      "globs": [
+        "**/*.vue",
+        "**/*.ts"
+      ],
       "alwaysApply": true
     },
     {
@@ -165,31 +216,44 @@
     {
       "path": ".ai/rules/design-system/01-design-tokens.mdc",
       "description": "Enforces strict usage of Semantic Colors and Size variables (Design Tokens). Forbids magic numbers and hardcoded colors.",
-      "globs": ["src/**/*.{vue,tsx,ts,css,scss}"],
+      "globs": [
+        "src/**/*.{vue,tsx,ts,css,scss}"
+      ],
       "alwaysApply": false
     },
     {
       "path": ".ai/rules/design-system/02-size-density-system.mdc",
       "description": "Enforces the Size Density System — correct usage of SIZE_PRESETS, CSS variable pipeline, and useSizeStore. Forbids hardcoded layout pixel values.",
-      "globs": ["src/**/*.{vue,tsx,ts,css}"],
+      "globs": [
+        "src/**/*.{vue,tsx,ts,css}"
+      ],
       "alwaysApply": true
     },
     {
       "path": ".ai/rules/design-system/03-material-system.mdc",
       "description": "Enforces Material System, Z-Index tokens, Motion curves, and strict Performance Guards for glassmorphism.",
-      "globs": ["src/**/*.vue", "src/**/*.tsx", "src/**/*.ts"],
+      "globs": [
+        "src/**/*.vue",
+        "src/**/*.tsx",
+        "src/**/*.ts"
+      ],
       "alwaysApply": true
     },
     {
       "path": ".ai/rules/design-system/04-design-state-contract.mdc",
       "description": "Enforces the UIDesignState AI Design Contract for every new page. All page-level structural and visual decisions MUST be anchored to this read-only contract before writing any code.",
-      "globs": ["src/views/**/*.{vue,tsx,ts}"],
+      "globs": [
+        "src/views/**/*.{vue,tsx,ts}"
+      ],
       "alwaysApply": true
     },
     {
       "path": ".ai/rules/design-system/05-semantic-color-usage-contract.mdc",
       "description": "AI semantic color contract for theme system and UnoCSS field usage",
-      "globs": ["src/**/*.{vue,tsx,ts,css,scss}", ".ai/rules/**/*.mdc"],
+      "globs": [
+        "src/**/*.{vue,tsx,ts,css,scss}",
+        ".ai/rules/**/*.mdc"
+      ],
       "alwaysApply": false
     },
     {
@@ -208,43 +272,70 @@
     {
       "path": ".ai/rules/integrations/01-http-alova.mdc",
       "description": "Enforces Alova + useHttpRequest for all network calls. Restores full 401 responsibility boundaries, API structure constraints, and detailed error contract.",
-      "globs": ["src/api/**/*.ts", "src/views/**/*.vue", "src/hooks/**/*.ts"],
+      "globs": [
+        "src/api/**/*.ts",
+        "src/views/**/*.vue",
+        "src/hooks/**/*.ts"
+      ],
       "alwaysApply": true
     },
     {
       "path": ".ai/rules/integrations/02-router-rbac.mdc",
       "description": "Enforces DynamicRouteManager and RBAC contract. Restores complete transformation chain and full AppRouteMeta reference.",
-      "globs": ["src/router/**/*.ts", "src/views/**/*.vue"],
+      "globs": [
+        "src/router/**/*.ts",
+        "src/views/**/*.vue"
+      ],
       "alwaysApply": true
     },
     {
       "path": ".ai/rules/integrations/03-layout-architecture.mdc",
       "description": "Unified layout runtime SSOT and responsive shell rendering rules.",
-      "globs": ["src/layouts/**/*.{vue,tsx}", "src/App.vue"],
+      "globs": [
+        "src/layouts/**/*.{vue,tsx}",
+        "src/App.vue"
+      ],
       "alwaysApply": true
     },
     {
       "path": ".ai/rules/integrations/04-safe-storage.mdc",
       "description": "Bans native browser storage APIs in business code. Mandates AES+LZ-String encrypted wrappers from @/utils/safeStorage and createPiniaEncryptedSerializer for Pinia persistence.",
-      "globs": ["src/**/*.ts", "src/**/*.vue", "src/**/*.tsx"],
+      "globs": [
+        "src/**/*.ts",
+        "src/**/*.vue",
+        "src/**/*.tsx"
+      ],
       "alwaysApply": false
     },
     {
       "path": ".ai/rules/integrations/05-date-time.mdc",
       "description": "Bans native Date instantiation and forces useDateUtils/DateUtils. Restores full native ban list, initialization guard examples, and rationale.",
-      "globs": ["src/**/*.ts", "src/**/*.vue", "src/**/*.tsx"],
+      "globs": [
+        "src/**/*.ts",
+        "src/**/*.vue",
+        "src/**/*.tsx"
+      ],
       "alwaysApply": true
     },
     {
       "path": ".ai/rules/integrations/06-adapters-infra.mdc",
       "description": "Enforces the architectural boundaries for Adapters (Anti-Corruption Layer), Infra (Dependency Injection), and Types taxonomy.",
-      "globs": ["src/adapters/**/*.ts", "src/infra/**/*.ts", "src/types/**/*.ts", "src/**/*.ts"],
+      "globs": [
+        "src/adapters/**/*.ts",
+        "src/infra/**/*.ts",
+        "src/types/**/*.ts",
+        "src/**/*.ts"
+      ],
       "alwaysApply": true
     },
     {
       "path": ".ai/rules/integrations/07-interaction-patterns.mdc",
       "description": "Cross-platform interaction patterns — touch/pointer event handling, hover boundary, gesture composables, and PrimeVue touch workarounds.",
-      "globs": ["src/**/*.vue", "src/**/*.tsx", "src/**/*.ts"],
+      "globs": [
+        "src/**/*.vue",
+        "src/**/*.tsx",
+        "src/**/*.ts"
+      ],
       "alwaysApply": true
     },
     {
@@ -299,13 +390,28 @@
     }
   ],
   "byGlob": {
-    ".ai/protocol/**/*.md": [".ai/rules/core/10-ai-generation-workflow.mdc"],
-    ".ai/rules/**/*.mdc": [".ai/rules/design-system/05-semantic-color-usage-contract.mdc"],
-    "*": [".ai/rules/core/00-root-gatekeeper.mdc"],
-    "**/*": [".ai/rules/core/00-global-architect.mdc", ".ai/rules/core/01-global-preflight.mdc"],
-    "**/*.css": [".ai/rules/design-system/00-unocss-guardrails.mdc"],
-    "**/*.js": [".ai/rules/core/02-core-engineering.mdc"],
-    "**/*.scss": [".ai/rules/design-system/00-unocss-guardrails.mdc"],
+    ".ai/protocol/**/*.md": [
+      ".ai/rules/core/10-ai-generation-workflow.mdc"
+    ],
+    ".ai/rules/**/*.mdc": [
+      ".ai/rules/design-system/05-semantic-color-usage-contract.mdc"
+    ],
+    "*": [
+      ".ai/rules/core/00-root-gatekeeper.mdc"
+    ],
+    "**/*": [
+      ".ai/rules/core/00-global-architect.mdc",
+      ".ai/rules/core/01-global-preflight.mdc"
+    ],
+    "**/*.css": [
+      ".ai/rules/design-system/00-unocss-guardrails.mdc"
+    ],
+    "**/*.js": [
+      ".ai/rules/core/02-core-engineering.mdc"
+    ],
+    "**/*.scss": [
+      ".ai/rules/design-system/00-unocss-guardrails.mdc"
+    ],
     "**/*.ts": [
       ".ai/rules/core/02-core-engineering.mdc",
       ".ai/rules/core/09-ai-anti-failure-guard.mdc",
@@ -322,8 +428,12 @@
       ".ai/rules/core/09-ai-anti-failure-guard.mdc",
       ".ai/rules/design-system/00-unocss-guardrails.mdc"
     ],
-    "**/semanticShortcuts.ts": [".ai/rules/design-system/00-unocss-guardrails.mdc"],
-    "**/uno.config.ts": [".ai/rules/design-system/00-unocss-guardrails.mdc"],
+    "**/semanticShortcuts.ts": [
+      ".ai/rules/design-system/00-unocss-guardrails.mdc"
+    ],
+    "**/uno.config.ts": [
+      ".ai/rules/design-system/00-unocss-guardrails.mdc"
+    ],
     "apps/desktop/src-tauri/**": [
       ".ai/rules/integrations/08-cross-platform-tauri.mdc",
       ".ai/rules/integrations/09-desktop-branch-governance.mdc"
@@ -332,7 +442,9 @@
       ".ai/rules/integrations/08-cross-platform-tauri.mdc",
       ".ai/rules/integrations/09-desktop-branch-governance.mdc"
     ],
-    "apps/desktop/src/**/*.tsx": [".ai/rules/integrations/08-cross-platform-tauri.mdc"],
+    "apps/desktop/src/**/*.tsx": [
+      ".ai/rules/integrations/08-cross-platform-tauri.mdc"
+    ],
     "apps/desktop/src/**/*.vue": [
       ".ai/rules/integrations/08-cross-platform-tauri.mdc",
       ".ai/rules/integrations/09-desktop-branch-governance.mdc"
@@ -341,27 +453,51 @@
       ".ai/rules/architecture/05-runtime-bootstrap.mdc",
       ".ai/rules/integrations/08-playwright-visual-regression.mdc"
     ],
-    "e2e/**": [".ai/rules/integrations/09-desktop-branch-governance.mdc"],
-    "e2e/**/*.ts": [".ai/rules/integrations/08-playwright-visual-regression.mdc"],
+    "e2e/**": [
+      ".ai/rules/integrations/09-desktop-branch-governance.mdc"
+    ],
+    "e2e/**/*.ts": [
+      ".ai/rules/integrations/08-playwright-visual-regression.mdc"
+    ],
     "index.html": [
       ".ai/rules/architecture/05-runtime-bootstrap.mdc",
       ".ai/rules/integrations/08-playwright-visual-regression.mdc",
       ".ai/rules/integrations/10-desktop-preflight.mdc"
     ],
-    "package.json": [".ai/rules/integrations/10-desktop-preflight.mdc"],
-    "packages/vue-ui/src/ProForm/**": [".ai/rules/components/02-pro-components.mdc"],
-    "packages/vue-ui/src/ProTable/**": [".ai/rules/components/02-pro-components.mdc"],
-    "playwright.config.ts": [".ai/rules/integrations/08-playwright-visual-regression.mdc"],
-    "scripts/**/*.mjs": [".ai/rules/core/10-ai-generation-workflow.mdc"],
-    "scripts/drift-check.mjs": [".ai/rules/integrations/09-desktop-branch-governance.mdc"],
-    "scripts/sync-desktop-config.mjs": [".ai/rules/integrations/09-desktop-branch-governance.mdc"],
-    "src-tauri/**": [".ai/rules/integrations/10-desktop-preflight.mdc"],
-    "src/**/*.{vue,ts,tsx}": [".ai/rules/integrations/08-playwright-visual-regression.mdc"],
+    "package.json": [
+      ".ai/rules/integrations/10-desktop-preflight.mdc"
+    ],
+    "packages/vue-ui/src/ProForm/**": [
+      ".ai/rules/components/02-pro-components.mdc"
+    ],
+    "packages/vue-ui/src/ProTable/**": [
+      ".ai/rules/components/02-pro-components.mdc"
+    ],
+    "playwright.config.ts": [
+      ".ai/rules/integrations/08-playwright-visual-regression.mdc"
+    ],
+    "scripts/**/*.mjs": [
+      ".ai/rules/core/10-ai-generation-workflow.mdc"
+    ],
+    "scripts/drift-check.mjs": [
+      ".ai/rules/integrations/09-desktop-branch-governance.mdc"
+    ],
+    "scripts/sync-desktop-config.mjs": [
+      ".ai/rules/integrations/09-desktop-branch-governance.mdc"
+    ],
+    "src-tauri/**": [
+      ".ai/rules/integrations/10-desktop-preflight.mdc"
+    ],
+    "src/**/*.{vue,ts,tsx}": [
+      ".ai/rules/integrations/08-playwright-visual-regression.mdc"
+    ],
     "src/**/*.{vue,tsx,ts,css,scss}": [
       ".ai/rules/design-system/01-design-tokens.mdc",
       ".ai/rules/design-system/05-semantic-color-usage-contract.mdc"
     ],
-    "src/**/*.{vue,tsx,ts,css}": [".ai/rules/design-system/02-size-density-system.mdc"],
+    "src/**/*.{vue,tsx,ts,css}": [
+      ".ai/rules/design-system/02-size-density-system.mdc"
+    ],
     "src/**/*.ts": [
       ".ai/rules/architecture/04-store-organization.mdc",
       ".ai/rules/core/03-vue3-ts-architecture.mdc",
@@ -400,30 +536,46 @@
       ".ai/rules/integrations/05-date-time.mdc",
       ".ai/rules/integrations/07-interaction-patterns.mdc"
     ],
-    "src/adapters/**/*.ts": [".ai/rules/integrations/06-adapters-infra.mdc"],
+    "src/adapters/**/*.ts": [
+      ".ai/rules/integrations/06-adapters-infra.mdc"
+    ],
     "src/api/**/*.ts": [
       ".ai/rules/integrations/00-network-routing-guardrails.mdc",
       ".ai/rules/integrations/01-http-alova.mdc"
     ],
-    "src/App.vue": [".ai/rules/integrations/03-layout-architecture.mdc"],
-    "src/components/**/*": [".ai/rules/core/02-ui-preflight.mdc"],
-    "src/components/**/*.{vue,tsx}": [".ai/rules/components/00-primevue-ecosystem.mdc"],
+    "src/App.vue": [
+      ".ai/rules/integrations/03-layout-architecture.mdc"
+    ],
+    "src/components/**/*": [
+      ".ai/rules/core/02-ui-preflight.mdc"
+    ],
+    "src/components/**/*.{vue,tsx}": [
+      ".ai/rules/components/00-primevue-ecosystem.mdc"
+    ],
     "src/components/**/*.vue": [
       ".ai/rules/components/01-primevue-pt-styling.mdc",
       ".ai/rules/components/03-echarts-theming.mdc"
     ],
-    "src/components/UseEcharts/**/*.ts": [".ai/rules/components/03-echarts-theming.mdc"],
-    "src/constants/**/*.ts": [".ai/rules/architecture/05-runtime-bootstrap.mdc"],
+    "src/components/UseEcharts/**/*.ts": [
+      ".ai/rules/components/03-echarts-theming.mdc"
+    ],
+    "src/constants/**/*.ts": [
+      ".ai/rules/architecture/05-runtime-bootstrap.mdc"
+    ],
     "src/hooks/**/*.ts": [
       ".ai/rules/integrations/00-network-routing-guardrails.mdc",
       ".ai/rules/integrations/01-http-alova.mdc"
     ],
-    "src/hooks/modules/**/*.ts": [".ai/rules/core/10-ai-generation-workflow.mdc"],
+    "src/hooks/modules/**/*.ts": [
+      ".ai/rules/core/10-ai-generation-workflow.mdc"
+    ],
     "src/infra/**/*.ts": [
       ".ai/rules/integrations/00-network-routing-guardrails.mdc",
       ".ai/rules/integrations/06-adapters-infra.mdc"
     ],
-    "src/layouts/**/*": [".ai/rules/core/02-ui-preflight.mdc"],
+    "src/layouts/**/*": [
+      ".ai/rules/core/02-ui-preflight.mdc"
+    ],
     "src/layouts/**/*.{vue,tsx}": [
       ".ai/rules/components/00-primevue-ecosystem.mdc",
       ".ai/rules/integrations/03-layout-architecture.mdc"
@@ -436,20 +588,38 @@
       ".ai/rules/integrations/00-network-routing-guardrails.mdc",
       ".ai/rules/integrations/02-router-rbac.mdc"
     ],
-    "src/router/modules/**/*.ts": [".ai/rules/core/10-ai-generation-workflow.mdc"],
+    "src/router/modules/**/*.ts": [
+      ".ai/rules/core/10-ai-generation-workflow.mdc"
+    ],
     "src/stores/**/*.ts": [
       ".ai/rules/architecture/04-store-organization.mdc",
       ".ai/rules/architecture/05-runtime-bootstrap.mdc",
       ".ai/rules/integrations/00-network-routing-guardrails.mdc"
     ],
-    "src/types/**/*.ts": [".ai/rules/integrations/06-adapters-infra.mdc"],
-    "src/utils/desktopWindow.ts": [".ai/rules/integrations/10-desktop-preflight.mdc"],
-    "src/utils/env.ts": [".ai/rules/integrations/10-desktop-preflight.mdc"],
-    "src/utils/theme/**/*.ts": [".ai/rules/architecture/05-runtime-bootstrap.mdc"],
-    "src/views/**/*": [".ai/rules/core/02-ui-preflight.mdc"],
-    "src/views/**/*.{vue,tsx,ts}": [".ai/rules/design-system/04-design-state-contract.mdc"],
-    "src/views/**/*.{vue,tsx}": [".ai/rules/components/00-primevue-ecosystem.mdc"],
-    "src/views/**/*.tsx": [".ai/rules/components/02-pro-components.mdc"],
+    "src/types/**/*.ts": [
+      ".ai/rules/integrations/06-adapters-infra.mdc"
+    ],
+    "src/utils/desktopWindow.ts": [
+      ".ai/rules/integrations/10-desktop-preflight.mdc"
+    ],
+    "src/utils/env.ts": [
+      ".ai/rules/integrations/10-desktop-preflight.mdc"
+    ],
+    "src/utils/theme/**/*.ts": [
+      ".ai/rules/architecture/05-runtime-bootstrap.mdc"
+    ],
+    "src/views/**/*": [
+      ".ai/rules/core/02-ui-preflight.mdc"
+    ],
+    "src/views/**/*.{vue,tsx,ts}": [
+      ".ai/rules/design-system/04-design-state-contract.mdc"
+    ],
+    "src/views/**/*.{vue,tsx}": [
+      ".ai/rules/components/00-primevue-ecosystem.mdc"
+    ],
+    "src/views/**/*.tsx": [
+      ".ai/rules/components/02-pro-components.mdc"
+    ],
     "src/views/**/*.vue": [
       ".ai/rules/components/01-primevue-pt-styling.mdc",
       ".ai/rules/components/02-pro-components.mdc",
@@ -459,7 +629,9 @@
       ".ai/rules/integrations/01-http-alova.mdc",
       ".ai/rules/integrations/02-router-rbac.mdc"
     ],
-    "test-results/**": [".ai/rules/integrations/09-desktop-branch-governance.mdc"]
+    "test-results/**": [
+      ".ai/rules/integrations/09-desktop-branch-governance.mdc"
+    ]
   },
   "alwaysApply": [
     ".ai/rules/components/00-primevue-ecosystem.mdc",
