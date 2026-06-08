@@ -4,6 +4,7 @@ import { SIZE_PERSIST_KEY } from '@/constants/size'
 import { generateSizeVars, applySizeTheme } from '@/utils/theme/sizeEngine'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 import { syncAction } from '@/sync/syncAction'
+import { DateUtils } from '@/utils/date'
 /**
  * 全局尺寸模式（compact / comfortable / loose）
  *
@@ -48,7 +49,7 @@ export const useSizeStore = defineStore('size', {
           size: {
             size: this.sizeName,
           },
-          updatedAt: Date.now(),
+          updatedAt: DateUtils.nowMs(),
         })
       }
     },

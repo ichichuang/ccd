@@ -56,6 +56,7 @@ export function viteBuildInfo(): Plugin {
   let startTime: number
   let endTime: number
   let outDir: string
+  let buildFailed = false
 
   return {
     name: 'vite:buildInfo',
@@ -90,11 +91,15 @@ ${unocssLine}🕒 构建时间: ${__APP_INFO__.lastBuildTime}
       )
 
       if (config.command === 'build') {
+        buildFailed = false
         startTime = Date.now()
       }
     },
+    buildEnd(error) {
+      if (error) buildFailed = true
+    },
     closeBundle() {
-      if (config.command === 'build') {
+      if (config.command === 'build' && !buildFailed) {
         endTime = Date.now()
         getPackageSize({
           folder: outDir,

@@ -179,7 +179,7 @@ export class TableController<T extends Record<string, unknown>> {
       }
 
       if (this._request && !this._requestConfig.accumulate) {
-        // Request mode (standard pagination): auto-fetch on any state change
+        // Request mode (standard pagination): auto-fetch on state changes
         watch(
           fetchTriggerSources(),
           () => {

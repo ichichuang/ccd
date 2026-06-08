@@ -2,7 +2,9 @@
 
 ## GitHub Actions Is the Quality Gate
 
-GitHub Actions validates architecture, metadata, generated artifacts, tests, lint, typecheck, and build correctness.
+GitHub Actions validates architecture, metadata, generated artifacts, tests, lint, typecheck, build correctness, browser QA, and desktop smoke coverage.
+
+Desktop CI coverage is repo-local workflow validation only. Remote branch protection and required-check settings remain operator-gated.
 
 ## Vercel Is the Deployment Build
 

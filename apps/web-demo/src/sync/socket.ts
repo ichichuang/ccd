@@ -1,5 +1,6 @@
 import { useTimeoutFn } from '@vueuse/core'
 import { castValue } from '@ccd/shared-utils'
+import { DateUtils } from '@/utils/date'
 import type { SyncTransportMessage } from './middleware'
 
 export type SyncSocketMessage = SyncTransportMessage
@@ -10,7 +11,7 @@ function createClientId(): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID()
   }
-  return `${Date.now()}-${Math.random().toString(36).slice(2)}`
+  return `${DateUtils.nowMs()}-${Math.random().toString(36).slice(2)}`
 }
 
 export class SyncSocket {

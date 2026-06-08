@@ -44,9 +44,17 @@ See [ADR-008](../adr/ADR-008-desktop-backend-ipc-and-updater-policy.md).
 ## Validation
 
 ```bash
+pnpm desktop:security
+pnpm desktop:smoke:dev
+pnpm desktop:smoke:release
+pnpm desktop:smoke
 pnpm --filter @ccd/desktop type-check
 pnpm --filter @ccd/desktop test
 pnpm --filter @ccd/desktop build
+pnpm build:desktop
+pnpm budget:desktop
 pnpm arch:boundaries
 pnpm arch:runtime
 ```
+
+`pnpm desktop:smoke:dev` exercises the Tauri dev compile path with no dev-server wait and a no-op runner. `pnpm desktop:smoke:release` exercises `tauri build --no-bundle --ci`; it validates release compilation without producing installer bundles.

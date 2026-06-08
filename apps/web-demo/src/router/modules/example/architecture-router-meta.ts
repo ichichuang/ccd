@@ -1,7 +1,9 @@
+import { routerMetaRouteNames, routerMetaRoutePaths } from './shared/router-meta.paths'
+
 const routerMetaRoute: RouteConfig = {
-  path: '/example/router-meta',
-  name: 'ExampleRouterMeta',
-  redirect: '/example/router-meta/index',
+  path: routerMetaRoutePaths.root,
+  name: routerMetaRouteNames.root,
+  redirect: routerMetaRoutePaths.index,
   meta: {
     titleKey: 'router.example.architecture.routerMeta.root',
     rank: 6,
@@ -9,8 +11,8 @@ const routerMetaRoute: RouteConfig = {
   },
   children: [
     {
-      path: '/example/router-meta/index',
-      name: 'ExampleRouterMetaIndex',
+      path: routerMetaRoutePaths.index,
+      name: routerMetaRouteNames.index,
       component: () => import('@/views/example/architecture/router-meta/router-meta-index.vue'),
       meta: {
         titleKey: 'router.example.architecture.routerMeta.index',
@@ -19,8 +21,8 @@ const routerMetaRoute: RouteConfig = {
       },
     },
     {
-      path: '/example/router-meta/external-link',
-      name: 'ExampleExternalLink',
+      path: routerMetaRoutePaths.externalLink,
+      name: routerMetaRouteNames.externalLink,
       component: () => import('@/views/example/architecture/router-meta/external-link.vue'),
       meta: {
         titleKey: 'router.example.architecture.routerMeta.externalLink',
@@ -31,8 +33,8 @@ const routerMetaRoute: RouteConfig = {
       },
     },
     {
-      path: '/example/router-meta/hide-breadcrumb',
-      name: 'ExampleHideBreadcrumb',
+      path: routerMetaRoutePaths.hideBreadcrumb,
+      name: routerMetaRouteNames.hideBreadcrumb,
       component: () => import('@/views/example/architecture/router-meta/hide-breadcrumb.vue'),
       meta: {
         titleKey: 'router.example.architecture.routerMeta.hideBreadcrumb',
@@ -42,8 +44,8 @@ const routerMetaRoute: RouteConfig = {
       },
     },
     {
-      path: '/example/router-meta/hidden-tag',
-      name: 'ExampleHiddenTag',
+      path: routerMetaRoutePaths.hiddenTag,
+      name: routerMetaRouteNames.hiddenTag,
       component: () => import('@/views/example/architecture/router-meta/hidden-tag.vue'),
       meta: {
         titleKey: 'router.example.architecture.routerMeta.hiddenTag',
@@ -53,8 +55,8 @@ const routerMetaRoute: RouteConfig = {
       },
     },
     {
-      path: '/example/router-meta/ratio-demo',
-      name: 'ExampleRatioDemo',
+      path: routerMetaRoutePaths.ratioDemo,
+      name: routerMetaRouteNames.ratioDemo,
       component: () => import('@/views/example/architecture/router-meta/ratio-layout.vue'),
       meta: {
         titleKey: 'router.example.architecture.routerMeta.ratioLayout',
@@ -65,8 +67,8 @@ const routerMetaRoute: RouteConfig = {
       },
     },
     {
-      path: '/example/router-meta/reuse-window',
-      name: 'ExampleReuseWindow',
+      path: routerMetaRoutePaths.reuseWindow,
+      name: routerMetaRouteNames.reuseWindow,
       component: () => import('@/views/example/architecture/router-meta/reuse-window.vue'),
       meta: {
         titleKey: 'router.example.architecture.routerMeta.reuseWindow',
@@ -77,8 +79,8 @@ const routerMetaRoute: RouteConfig = {
       },
     },
     {
-      path: '/example/router-meta/keep-alive',
-      name: 'ExampleKeepAlive',
+      path: routerMetaRoutePaths.keepAlive,
+      name: routerMetaRouteNames.keepAlive,
       component: () => import('@/views/example/architecture/router-meta/keep-alive.vue'),
       meta: {
         titleKey: 'router.example.architecture.routerMeta.keepAlive',
@@ -88,8 +90,8 @@ const routerMetaRoute: RouteConfig = {
       },
     },
     {
-      path: '/example/router-meta/transition-demo',
-      name: 'ExampleTransitionDemo',
+      path: routerMetaRoutePaths.transitionDemo,
+      name: routerMetaRouteNames.transitionDemo,
       component: () => import('@/views/example/architecture/router-meta/transition.vue'),
       meta: {
         titleKey: 'router.example.architecture.routerMeta.transition',

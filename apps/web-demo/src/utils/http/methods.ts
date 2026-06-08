@@ -6,6 +6,7 @@ import { readCsrfToken } from './interceptors'
 import { t } from '@/locales'
 import { alovaInstance } from './instance'
 import { showRawGlobalError } from './policies/notificationPolicy'
+import { DateUtils } from '@/utils/date'
 import {
   HttpRequestError,
   isRetryableError,
@@ -35,7 +36,7 @@ function createNonce(): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID()
   }
-  return `${Date.now()}_${Math.random().toString(36).slice(2)}`
+  return `${DateUtils.nowMs()}_${Math.random().toString(36).slice(2)}`
 }
 
 function stableStringify(value: unknown): string {
@@ -59,7 +60,7 @@ function stableStringify(value: unknown): string {
       return input
     }
     if (input instanceof Date) {
-      return input.toISOString()
+      return DateUtils.toISOString(input)
     }
     if (input instanceof Map) {
       return normalize(Object.fromEntries(input))
@@ -246,7 +247,7 @@ class EnhancedCache {
 
     this.cache.set(key, {
       data,
-      timestamp: Date.now(),
+      timestamp: DateUtils.nowMs(),
       ttl,
     })
   }
@@ -259,7 +260,7 @@ class EnhancedCache {
     }
 
     // 检查是否过期
-    if (Date.now() - item.timestamp > item.ttl) {
+    if (DateUtils.nowMs() - item.timestamp > item.ttl) {
       this.cache.delete(key)
       this.missCount++
       return null
@@ -306,7 +307,7 @@ async function acquireRateLimitSlot(): Promise<void> {
   if (!HTTP_CONFIG.enableRateLimit) return
   const max = HTTP_CONFIG.maxRequestsPerMinute
   const windowMs = 60000
-  const now = Date.now()
+  const now = DateUtils.nowMs()
   const windowStart = now - windowMs
   const valid = rateLimitTimestamps.filter(t => t > windowStart)
   rateLimitTimestamps.length = 0
@@ -317,11 +318,11 @@ async function acquireRateLimitSlot(): Promise<void> {
     if (waitMs > 0) {
       await new Promise(r => setTimeout(r, waitMs))
     }
-    const refreshed = rateLimitTimestamps.filter(t => t > Date.now() - windowMs)
+    const refreshed = rateLimitTimestamps.filter(t => t > DateUtils.nowMs() - windowMs)
     rateLimitTimestamps.length = 0
     rateLimitTimestamps.push(...refreshed)
   }
-  rateLimitTimestamps.push(Date.now())
+  rateLimitTimestamps.push(DateUtils.nowMs())
 }
 
 /**

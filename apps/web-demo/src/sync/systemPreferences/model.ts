@@ -14,6 +14,7 @@ import type {
   SystemPreferences,
 } from '@ccd/contracts'
 import { deepClone } from '@ccd/shared-utils'
+import { DateUtils } from '@/utils/date'
 
 const LAYOUT_MODES: readonly AdminLayoutMode[] = ['vertical', 'horizontal', 'mix']
 const THEME_MODES: readonly ThemeMode[] = ['light', 'dark', 'auto', 'glass']
@@ -62,7 +63,7 @@ function normalizeLayout(input: SystemPreferencePayload['layout']): SystemPrefer
   }
 }
 
-export function readSystemPreferencesFromStores(updatedAt = Date.now()): SystemPreferences {
+export function readSystemPreferencesFromStores(updatedAt = DateUtils.nowMs()): SystemPreferences {
   const themeStore = useThemeStore()
   const sizeStore = useSizeStore()
   const layoutStore = useLayoutStore()

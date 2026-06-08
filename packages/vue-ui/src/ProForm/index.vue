@@ -31,6 +31,23 @@ import Icons from '../Icons/Icons.vue'
 import { castValue } from '@ccd/shared-utils'
 
 const props = defineProps<ProFormProps<TValues>>()
+
+const emit = defineEmits<{
+  (e: 'submit', values: TValues): void
+}>()
+
+defineSlots<
+  {
+    footer?: (props: { formState: FormState<TValues>; submit: () => Promise<void> }) => unknown
+  } & {
+    [K in `field-${string}`]?: (props: {
+      field: FieldSchema<unknown>
+      state: FieldState<unknown>
+      onUpdate: (v: unknown) => void
+    }) => unknown
+  }
+>()
+
 const slots = useSlots()
 const { t } = useI18n()
 
@@ -120,22 +137,6 @@ watch(
 )
 
 const hasVisibleFields = computed(() => internalSchema.value.fields.length > 0)
-
-const emit = defineEmits<{
-  (e: 'submit', values: TValues): void
-}>()
-
-defineSlots<
-  {
-    footer?: (props: { formState: FormState<TValues>; submit: () => Promise<void> }) => unknown
-  } & {
-    [K in `field-${string}`]?: (props: {
-      field: FieldSchema<unknown>
-      state: FieldState<unknown>
-      onUpdate: (v: unknown) => void
-    }) => unknown
-  }
->()
 
 const { form, handleSubmit, getValues, getFormState, updateSchema } = useForm<TValues>({
   schema: internalSchema.value,

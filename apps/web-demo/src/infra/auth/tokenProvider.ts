@@ -7,6 +7,7 @@
  */
 
 import { createCapabilityBridge } from '@ccd/shared-utils'
+import { DateUtils } from '@/utils/date'
 
 export type AuthToken = string | null
 export type AuthTokenReader = () => AuthToken
@@ -57,7 +58,7 @@ export function notifyUnauthorized(): Promise<void> {
     return unauthorizedPromise
   }
 
-  const now = Date.now()
+  const now = DateUtils.nowMs()
   if (
     lastUnauthorizedHandledAt !== null &&
     now - lastUnauthorizedHandledAt < UNAUTHORIZED_NOTIFY_COOLDOWN_MS

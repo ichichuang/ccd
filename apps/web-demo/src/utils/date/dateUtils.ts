@@ -513,6 +513,23 @@ export class DateUtils {
     return dayjs()
   }
 
+  /**
+   * 获取当前毫秒时间戳。
+   * @returns Unix epoch milliseconds
+   */
+  static nowMs(): number {
+    return dayjs().valueOf()
+  }
+
+  /**
+   * 转换为 ISO 字符串。
+   * @param date - 日期输入
+   * @returns ISO 8601 string
+   */
+  static toISOString(date: DateInput): string {
+    return this.validateDateInput(date, 'toISOString').toISOString()
+  }
+
   // =================
   // 基础操作 - 优化错误处理和类型安全
   // =================

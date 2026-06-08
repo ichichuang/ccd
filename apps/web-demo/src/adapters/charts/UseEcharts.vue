@@ -18,6 +18,10 @@ defineOptions({
 })
 
 const props = defineProps<UseEchartsProps & { group?: string }>()
+const emit = defineEmits<{
+  finished: []
+  'chart-ready': [instance: unknown, id?: string]
+}>()
 const chartRef = ref<ChartInstance | null>(null)
 
 const { t, locale } = useI18n()
@@ -85,6 +89,8 @@ defineExpose<ChartInstance>({
     v-bind="props"
     :theme-runtime="themeRuntime"
     :loading-options="effectiveLoadingOptions"
+    @chart-ready="(...args) => emit('chart-ready', ...args)"
+    @finished="emit('finished')"
     v-on="$attrs"
   />
 </template>

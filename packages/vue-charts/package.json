@@ -28,6 +28,7 @@
   "devDependencies": {
     "@vue/tsconfig": "catalog:",
     "typescript": "catalog:",
+    "vite": "catalog:",
     "vue-tsc": "catalog:"
   },
   "main": "./dist/index.js",
