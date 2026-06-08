@@ -17,10 +17,16 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useTitle } from '@vueuse/core'
 import { brand } from '@/constants/brand'
+import { appRouteNames, appRoutePaths } from '@/constants/router'
 
 const APP_TITLE = brand.displayName
 const INTERNAL_TITLE_VALUES = new Set(['CatchAll', 'NotFound', 'Redirect', 'Layout', 'LayoutAdmin'])
 const TITLE_SLUG_PATTERN = /^[a-z0-9]+(?:[-_/][a-z0-9]+)+$/i
+
+interface RouteTitleDeferralOptions {
+  isAppReady?: boolean
+  hasKnownRedirectedFromRoute?: boolean
+}
 
 function normalizeTitlePart(value: unknown): string {
   if (typeof value !== 'string' && typeof value !== 'number') return ''
@@ -60,17 +66,31 @@ export function formatPageTitle(pageTitle: unknown, appTitle: string = APP_TITLE
  */
 export function shouldDeferRouteTitle(
   route: RouteLocationNormalized,
-  isDynamicRoutesLoaded: boolean
+  isDynamicRoutesLoaded: boolean,
+  options: RouteTitleDeferralOptions = {}
 ): boolean {
-  return route.path === '/404' && !isDynamicRoutesLoaded
+  if (route.path !== appRoutePaths.notFound) return false
+  if (!isDynamicRoutesLoaded) return true
+
+  const redirectedFrom = route.redirectedFrom
+  if (!redirectedFrom || redirectedFrom.path === appRoutePaths.notFound) return false
+
+  return options.isAppReady === false && options.hasKnownRedirectedFromRoute === true
+}
+
+function isCatchAllTitleSource(route: RouteLocationGeneric | RouteLocationNormalized): boolean {
+  if (String(route.name ?? '') === appRouteNames.catchAll) return true
+  if (route.path === appRoutePaths.catchAll) return true
+  return route.meta?.titleKey === 'router.error.notFound'
 }
 
 export function getDeferredRouteTitleSource(
   route: RouteLocationNormalized
 ): RouteLocationGeneric | RouteLocationNormalized | undefined {
-  if (route.path !== '/404') return undefined
+  if (route.path !== appRoutePaths.notFound) return undefined
   const redirectedFrom = route.redirectedFrom
-  if (!redirectedFrom || redirectedFrom.path === '/404') return undefined
+  if (!redirectedFrom || redirectedFrom.path === appRoutePaths.notFound) return undefined
+  if (isCatchAllTitleSource(redirectedFrom)) return undefined
   return redirectedFrom
 }
 

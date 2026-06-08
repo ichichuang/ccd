@@ -5,6 +5,7 @@
  */
 import { appLogger } from '@/adapters/logger.adapter'
 import { brand } from '@/constants/brand'
+import { appRoutePaths } from '@/constants/router'
 import { t } from '@/locales'
 import {
   calculatePageTitle,
@@ -19,6 +20,24 @@ import type { RouteLocationNormalized, Router } from 'vue-router'
 const ROUTE_PAGE_LOADING_DELAY_MS = 0
 const ROUTE_PAGE_LOADING_MIN_VISIBLE_MS = 500
 
+function hasRoutePath(routes: RouteConfig[], path: string): boolean {
+  return routes.some(route => route.path === path || hasRoutePath(route.children ?? [], path))
+}
+
+function hasKnownRedirectedFromRoute(
+  to: RouteLocationNormalized,
+  staticRoutes: RouteConfig[]
+): boolean {
+  const redirectedFrom = to.redirectedFrom
+  if (!redirectedFrom || redirectedFrom.path === appRoutePaths.notFound) return false
+  return hasRoutePath(staticRoutes, redirectedFrom.path)
+}
+
+function isAppReadyForTitleUpdates(): boolean {
+  if (typeof document === 'undefined') return true
+  return document.documentElement.dataset.appReady === 'true'
+}
+
 /**
  * 使用纯函数与全局 i18n 更新页面标题
  * 避免在守卫中调用 useI18n/useRoute 等 Composition API
@@ -30,7 +49,10 @@ function createPageTitleUpdater(): (to: RouteLocationNormalized) => void {
     const appTitle: string = brand.displayName
     const permissionStore = usePermissionStore()
 
-    const shouldDeferTitle = shouldDeferRouteTitle(to, permissionStore.isDynamicRoutesLoaded)
+    const shouldDeferTitle = shouldDeferRouteTitle(to, permissionStore.isDynamicRoutesLoaded, {
+      isAppReady: isAppReadyForTitleUpdates(),
+      hasKnownRedirectedFromRoute: hasKnownRedirectedFromRoute(to, permissionStore.getStaticRoutes),
+    })
     const deferredTitleSource = shouldDeferTitle ? getDeferredRouteTitleSource(to) : undefined
     let finalTitle: string
     if (deferredTitleSource) {

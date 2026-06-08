@@ -13,6 +13,7 @@ import {
 } from '../utils/routeModules'
 
 type LazyRouteComponent = () => Promise<unknown>
+type LazyRouteComponentRoute = RouteConfig & { component: LazyRouteComponent }
 
 const permissionStoreMock = vi.hoisted(() => ({
   ensureFixedTabsIfAvailable: vi.fn(),
@@ -33,6 +34,8 @@ vi.mock('@/router/utils/guards', () => routerGuardMock)
 const EXPECTED_EXAMPLE_ROUTE_RECORD_COUNT = 99
 const EXPECTED_STATIC_ROUTE_RECORD_COUNT = 100
 const EXPECTED_REGISTERED_ROUTE_RECORD_COUNT = 106
+const LAZY_ROUTE_IMPORT_CONCURRENCY = 8
+const ROUTE_SMOKE_IMPORT_TIMEOUT_MS = 20_000
 const EXPECTED_REGISTERED_ROUTE_SIGNATURES = [
   '0|/|Root|/dashboard|static',
   '1|/login|Login||lazy',
@@ -197,6 +200,26 @@ function hasLazyRouteComponent(route: RouteConfig): route is RouteConfig & {
   component: LazyRouteComponent
 } {
   return typeof route.component === 'function'
+}
+
+async function resolveLazyRouteComponentModules(
+  routes: LazyRouteComponentRoute[]
+): Promise<Array<{ route: LazyRouteComponentRoute; moduleValue: unknown }>> {
+  const resolvedModules: Array<{ route: LazyRouteComponentRoute; moduleValue: unknown }> = []
+
+  for (let start = 0; start < routes.length; start += LAZY_ROUTE_IMPORT_CONCURRENCY) {
+    const batch = routes.slice(start, start + LAZY_ROUTE_IMPORT_CONCURRENCY)
+    const batchModules = await Promise.all(
+      batch.map(async route => ({
+        route,
+        moduleValue: await route.component(),
+      }))
+    )
+
+    resolvedModules.push(...batchModules)
+  }
+
+  return resolvedModules
 }
 
 function hasDefaultExport(moduleValue: unknown): boolean {
@@ -399,24 +422,21 @@ describe('web-demo route module smoke coverage', () => {
     expect(missingLocaleKeys).toEqual([])
   })
 
-  it('resolves every lazy component import target', async () => {
-    const lazyComponentRoutes = flatRegisteredRoutes.filter(hasLazyRouteComponent)
+  it(
+    'resolves every lazy component import target',
+    async () => {
+      const lazyComponentRoutes = flatRegisteredRoutes.filter(hasLazyRouteComponent)
 
-    expect(lazyComponentRoutes.length).toBeGreaterThan(0)
+      expect(lazyComponentRoutes.length).toBeGreaterThan(0)
 
-    const resolvedModules = await Promise.all(
-      lazyComponentRoutes.map(async route => {
-        return {
-          route,
-          moduleValue: await route.component(),
-        }
+      const resolvedModules = await resolveLazyRouteComponentModules(lazyComponentRoutes)
+
+      resolvedModules.forEach(({ route, moduleValue }) => {
+        expect(hasDefaultExport(moduleValue), `${getRouteLabel(route)} lazy import`).toBe(true)
       })
-    )
-
-    resolvedModules.forEach(({ route, moduleValue }) => {
-      expect(hasDefaultExport(moduleValue), `${getRouteLabel(route)} lazy import`).toBe(true)
-    })
-  })
+    },
+    ROUTE_SMOKE_IMPORT_TIMEOUT_MS
+  )
 })
 
 describe('example system configuration routes', () => {

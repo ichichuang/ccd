@@ -54,6 +54,48 @@ describe('route title stability', () => {
     expect(getDeferredRouteTitleSource(route)).toBeUndefined()
   })
 
+  it('does not reuse catch-all metadata as a deferred business route title source', () => {
+    const route = createRoute({
+      path: '/404',
+      meta: { titleKey: 'router.error.notFound' },
+      redirectedFrom: createRoute({
+        path: '/dashboard',
+        name: 'CatchAll',
+        meta: { titleKey: 'router.error.notFound' },
+      }),
+    })
+
+    expect(shouldDeferRouteTitle(route, false)).toBe(true)
+    expect(getDeferredRouteTitleSource(route)).toBeUndefined()
+  })
+
+  it('continues deferring known catch-all redirects until the app boot handoff is ready', () => {
+    const route = createRoute({
+      path: '/404',
+      meta: { titleKey: 'router.error.notFound' },
+      redirectedFrom: createRoute({ path: '/dashboard' }),
+    })
+
+    expect(
+      shouldDeferRouteTitle(route, true, {
+        isAppReady: false,
+        hasKnownRedirectedFromRoute: true,
+      })
+    ).toBe(true)
+    expect(
+      shouldDeferRouteTitle(route, true, {
+        isAppReady: true,
+        hasKnownRedirectedFromRoute: true,
+      })
+    ).toBe(false)
+    expect(
+      shouldDeferRouteTitle(route, true, {
+        isAppReady: false,
+        hasKnownRedirectedFromRoute: false,
+      })
+    ).toBe(false)
+  })
+
   it('does not defer real 404 titles after dynamic routes are loaded', () => {
     const route = createRoute({
       path: '/404',
