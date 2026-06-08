@@ -2,6 +2,7 @@
 defineOptions({ name: 'ExampleIcons' })
 
 import type { FlipDirection, IconAnimation, IconSize } from '@ccd/vue-ui'
+import type { WritableComputedRef } from 'vue'
 import { computed, nextTick, ref, watch } from 'vue'
 import IconControls from './components/IconControls.vue'
 import {
@@ -14,6 +15,12 @@ import {
 } from './configs/iconLists.generated'
 
 type TabKey = 'lucide' | 'solar' | 'ph' | 'logos' | 'custom'
+const TAB_KEYS = ['lucide', 'solar', 'ph', 'logos', 'custom'] as const
+const TAB_KEY_SET: ReadonlySet<string> = new Set(TAB_KEYS)
+
+function isTabKey(value: string | number): value is TabKey {
+  return typeof value === 'string' && TAB_KEY_SET.has(value)
+}
 
 const INITIAL_DISPLAY_COUNT = 80
 const LOAD_MORE_STEP = 80
@@ -55,10 +62,10 @@ const ICON_COLLECTIONS: Record<TabKey, string[]> = {
 }
 
 const activeTab = ref<TabKey>('lucide')
-const activeTabModel = computed({
+const activeTabModel: WritableComputedRef<string | number> = computed({
   get: () => activeTab.value,
   set: (value: string | number) => {
-    activeTab.value = value as TabKey
+    if (isTabKey(value)) activeTab.value = value
   },
 })
 const displayCount = ref(INITIAL_DISPLAY_COUNT)
@@ -69,7 +76,7 @@ const iconAnimation = ref<IconAnimation | undefined>(undefined)
 const iconFlip = ref<FlipDirection | undefined>(undefined)
 const iconRotate = ref<string | number>('')
 const iconScale = ref<number | undefined>(undefined)
-const searchKeyword = ref('')
+const searchKeyword = ref<string | undefined>('')
 
 const CSS_VAR_PATTERN = /^var\(--[a-zA-Z0-9-_]+\)$/
 const SEMANTIC_ICON_COLOR_CLASSES = new Set([
@@ -99,7 +106,7 @@ const iconColorHint = computed(() => {
 
 const currentIcons = computed(() => {
   const icons = ICON_COLLECTIONS[activeTab.value]
-  const keyword = searchKeyword.value.trim().toLowerCase()
+  const keyword = (searchKeyword.value ?? '').trim().toLowerCase()
   if (!keyword) return icons
   return icons.filter(icon => icon.toLowerCase().includes(keyword))
 })

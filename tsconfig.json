@@ -2,11 +2,10 @@
   "compilerOptions": {
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "apps/web-demo/src/*"
-      ]
+      "@/*": ["apps/web-demo/src/*"]
     }
   },
   "files": [],

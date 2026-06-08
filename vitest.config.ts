@@ -80,8 +80,11 @@ export default defineConfig({
       '@&': resolve(rootDir, 'apps/web-demo/src/layouts/components'),
     },
   },
-  esbuild: {
-    jsxFactory: 'h',
-    jsxFragment: 'Fragment',
+  oxc: {
+    jsx: {
+      runtime: 'classic',
+      pragma: 'h',
+      pragmaFrag: 'Fragment',
+    },
   },
 })

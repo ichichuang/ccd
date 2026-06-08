@@ -24,7 +24,7 @@ export default defineConfig({
       formats: ['es'],
       fileName: () => 'index.js',
     },
-    rollupOptions: {
+    rolldownOptions: {
       external: isExternal,
       output: {
         chunkFileNames: '[name].js',

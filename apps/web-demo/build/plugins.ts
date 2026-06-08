@@ -26,15 +26,14 @@ export const BUILD_PLUGIN_COMPATIBILITY_NOTES = [
     owner: 'web-demo build',
     value:
       'Marks unused ECharts chart/component modules as side-effect free during production builds.',
-    vite8Risk:
-      'Revalidate resolveId moduleSideEffects behavior under Rolldown before any Vite major lane.',
+    vite8Risk: 'Validated under Vite 8.0.16/Rolldown by web build and vendor-heavy bundle budget.',
   },
   {
     id: 'viteBuildInfo',
     keep: true,
     owner: 'web-demo build',
     value: 'Injects deterministic build metadata used by the generated index shell.',
-    vite8Risk: 'Low; HTML/build metadata hook should be rechecked with Vite plugin API changes.',
+    vite8Risk: 'Low; validated under Vite 8.0.16 web build with failure-aware closeBundle output.',
   },
   {
     id: 'vite-plugin-progress',
@@ -48,7 +47,7 @@ export const BUILD_PLUGIN_COMPATIBILITY_NOTES = [
     keep: true,
     owner: 'web-demo build',
     value: 'Owns HTML brand injection and API origin resource hints.',
-    vite8Risk: 'Medium; revalidate transformIndexHtml behavior during Vite major migration.',
+    vite8Risk: 'Validated under Vite 8.0.16 web build; keep app-owned transformIndexHtml boundary.',
   },
   {
     id: 'generateIconListsPlugin',
@@ -63,8 +62,7 @@ export const BUILD_PLUGIN_COMPATIBILITY_NOTES = [
     keep: true,
     owner: 'deploy/build',
     value: 'Optional gzip/brotli artifacts when VITE_COMPRESSION requests precompression.',
-    vite8Risk:
-      'Medium; serving strategy should decide whether this stays in build or moves to CDN/CD.',
+    vite8Risk: 'Validated under Vite 8.0.16 both mode with deterministic gzip and Brotli output.',
   },
   {
     id: 'viteBuildPerformancePlugin',
@@ -82,7 +80,7 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
 
   const plugins: (PluginOption | false)[] = [
     // ECharts tree-shaking 增强：覆盖 echarts package.json 中 sideEffects 声明，
-    // 使 Rollup 能完全消除未使用的图表/组件安装模块
+    // 使 Rolldown 能完全消除未使用的图表/组件安装模块
     isBuild &&
       ({
         name: 'echarts-treeshake-enhance',
@@ -137,6 +135,17 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
 
     // 自动导入 API（仅 hooks + 分组 stores，减少噪音；api/constants 需显式 import）
     AutoImport({
+      include: [
+        /(?:^|[\\/])apps[\\/]web-demo[\\/]src[\\/].*\.[cm]?[jt]sx?$/,
+        /(?:^|[\\/])apps[\\/]web-demo[\\/]src[\\/].*\.vue(?:$|\?vue)/,
+        /^src[\\/].*\.[cm]?[jt]sx?$/,
+        /^src[\\/].*\.vue(?:$|\?vue)/,
+      ],
+      exclude: [
+        /[\\/]node_modules[\\/]/,
+        /[\\/]\.git[\\/]/,
+        /[\\/]packages[\\/][^\\/]+[\\/]dist[\\/]/,
+      ],
       imports: ['vue', 'vue-router', 'pinia', '@vueuse/core', { '@/locales': [['t', '$t']] }],
       dirs: [
         'src/stores/modules/system',
@@ -169,10 +178,9 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
       deep: true,
       directoryAsNamespace: false,
       dts: 'src/types/components.d.ts',
+      dtsTsx: false,
       // 💡 排除布局目录，防止 Layout 管理组件被意外自动加载
       exclude: [/[\\/]node_modules[\\/]/, /[\\/]\.git[\\/]/, /[\\/]src[\\/]layouts[\\/]/],
-      transformer: 'vue3',
-      version: 3,
       include: [/\.vue$/, /\.vue\?vue/, /\.tsx$/],
       // PrimeVue 按需解析：模板中用到的组件自动 import，支持 Tree-shaking
       resolvers: [sharedArchitectureComponentResolver(), createPrimeVueComponentResolver()],

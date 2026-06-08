@@ -1,4 +1,4 @@
-import type { Ref } from 'vue'
+import type { ComputedRef, Ref } from 'vue'
 import type { EChartsOption } from 'echarts'
 import { isRecord } from '@ccd/shared-utils'
 import { useThemeStore, useSizeStore } from '@/stores/modules/system'
@@ -6,6 +6,10 @@ import { getChartSystemVariables, parseEChartsOption } from '@ccd/vue-charts'
 import type { SystemMetricsDTO } from '../page.state'
 
 const DASHBOARD_CHART_EASING = 'cubicOut'
+
+interface UseChartOptionsReturn {
+  chartOptions: ComputedRef<EChartsOption>
+}
 
 function firstOptionRecord(value: unknown): Record<string, unknown> {
   const first = Array.isArray(value) ? value[0] : value
@@ -17,7 +21,7 @@ function firstOptionRecord(value: unknown): Record<string, unknown> {
  * Strictly follows .ai/rules/components/03-echarts-theming.mdc
  * @param dataRef - Reactive ref of metrics data for live chart updates
  */
-export function useChartOptions(dataRef: Ref<SystemMetricsDTO[]>) {
+export function useChartOptions(dataRef: Ref<SystemMetricsDTO[]>): UseChartOptionsReturn {
   const themeStore = useThemeStore()
   const sizeStore = useSizeStore()
 
@@ -157,7 +161,7 @@ export function useChartOptions(dataRef: Ref<SystemMetricsDTO[]>) {
         ],
       })
     } catch {
-      return {} as EChartsOption
+      return parseEChartsOption({})
     }
   })
 

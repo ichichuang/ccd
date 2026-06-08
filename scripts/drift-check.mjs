@@ -151,7 +151,7 @@ function extractDataArchetypeFromVue(content) {
   return m ? m[1].trim() : null
 }
 
-function checkManualChunksDrift() {
+function checkChunkGroupsDrift() {
   const errors = []
   if (!existsSync(BUILD_SYSTEM_MD) || !existsSync(VITE_CONFIG)) {
     return errors
@@ -177,7 +177,7 @@ function checkManualChunksDrift() {
   for (const name of configChunks) {
     if (!docChunks.has(name)) {
       errors.push(
-        `BUILD_SYSTEM.md vs vite.config.ts 漂移: manualChunks 中存在 "${name}"，但文档 §5.1 未记录，请同步更新文档或配置。`
+        `BUILD_SYSTEM.md vs vite.config.ts 漂移: codeSplitting chunk group 中存在 "${name}"，但文档 §5.1 未记录，请同步更新文档或配置。`
       )
     }
   }
@@ -185,7 +185,7 @@ function checkManualChunksDrift() {
   for (const name of docChunks) {
     if (!configChunks.has(name)) {
       errors.push(
-        `BUILD_SYSTEM.md vs vite.config.ts 漂移: 文档 §5.1 中存在 "${name}"，但 vite.config.ts manualChunks 未使用，请同步更新文档或配置。`
+        `BUILD_SYSTEM.md vs vite.config.ts 漂移: 文档 §5.1 中存在 "${name}"，但 vite.config.ts codeSplitting chunk group 未使用，请同步更新文档或配置。`
       )
     }
   }
@@ -295,9 +295,9 @@ function main() {
     errors.push(...checkClassColorDrift(`apps/web-demo/src/${rel}`, content))
   }
 
-  // ---------- 3. Build System vs vite.config.ts (manualChunks) ----------
-  const manualChunkErrors = checkManualChunksDrift()
-  errors.push(...manualChunkErrors)
+  // ---------- 3. Build System vs vite.config.ts (Rolldown codeSplitting groups) ----------
+  const chunkGroupErrors = checkChunkGroupsDrift()
+  errors.push(...chunkGroupErrors)
 
   // ---------- 4. AutoImport / Components vs build plugin config ----------
   const buildPluginsErrors = checkBuildPluginsDrift()
