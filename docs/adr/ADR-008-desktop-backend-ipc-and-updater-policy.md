@@ -36,6 +36,8 @@ Updater and deep-link configuration stays disabled unless a future task supplies
 ## Validation
 
 - `pnpm desktop:security`
+- `pnpm desktop:smoke:dev`
+- `pnpm desktop:smoke:release`
 - `pnpm --filter @ccd/desktop type-check`
 - `pnpm build:desktop`
 - `pnpm governance:gate`

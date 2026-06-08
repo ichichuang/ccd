@@ -382,7 +382,10 @@
         "type-check": "vue-tsc -p tsconfig.json --noEmit",
         "tauri": "tauri",
         "typecheck": "pnpm type-check",
-        "test": "vitest run --passWithNoTests"
+        "test": "vitest run --passWithNoTests",
+        "smoke": "node ../../scripts/architecture/desktop-smoke.mjs all",
+        "smoke:dev": "node ../../scripts/architecture/desktop-smoke.mjs dev",
+        "smoke:release": "node ../../scripts/architecture/desktop-smoke.mjs release"
       },
       "dependencies": {
         "@ccd/contracts": "workspace:*",
