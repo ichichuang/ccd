@@ -235,8 +235,8 @@ Rationale: `rule_coverage_matrix.md` records partial guard coverage and six docu
   - Deferred/open note (2026-06-07): Not decided or expanded because `.ai/runtime/owner_decisions.md` sets `Guard enforcement scope` to `FULL_GO_DEFERRED`; broader DateUtils enforcement requires future owner/team decision.
 - [ ] [P1-Guard-RouteModuleSize] Add max-file-length and max-route-module-size governance checks to prevent future 4000+ line route files (`eslint.config.ts`, `scripts/architecture/**`).
   - Deferred/open note (2026-06-07): Not implemented because `.ai/runtime/owner_decisions.md` sets `Guard enforcement scope` to `FULL_GO_DEFERRED`; new max-file-length and route-module-size gates require future owner/team acceptance.
-- [ ] [P1-Guard-OwnerSignoff] Update `.ai/runtime/owner_decisions.md` after owner decisions are made.
-  - Deferred/open note (2026-06-07): Not updated because no new owner decisions were made in the repository; `.ai/runtime/owner_decisions.md` still records guard enforcement and related strict expansion as `FULL_GO_DEFERRED`.
+- [x] [P1-Guard-OwnerSignoff] Update `.ai/runtime/owner_decisions.md` after owner decisions are made.
+  - Completion note (2026-06-08): Current `.ai/runtime/owner_decisions.md` records the D-023/P30 decisions for guard strictness, Vite major migration, dependency modernization, GitHub governance, Login Diorama, and P4 strategic items. This run did not change those owner decisions; validation evidence: `pnpm ai:doctor --open` read the current decision-backed open ledger, and final sync/doctor/gate validation must preserve that state.
 
 ## 16. P1 — Desktop Security Baseline
 
@@ -332,8 +332,8 @@ Rationale: owner decision marks Vite major migration as `FULL_GO_DEFERRED` on `m
   - Deferred/open note (2026-06-08): Not revalidated in the current `main` worktree because `.ai/runtime/owner_decisions.md` sets `Vite major migration` to `FULL_GO_DEFERRED`; custom ECharts plugin compatibility must be tested on the isolated Vite 8/Rolldown lane.
 - [ ] [P2-Vite8-Compression] Decide whether `vite-plugin-compression` remains a build concern or should move to deployment/server/CDN configuration.
   - Deferred/open note (2026-06-08): Not decided in the current `main` worktree because `.ai/runtime/owner_decisions.md` sets `Vite major migration` to `FULL_GO_DEFERRED`; compression ownership must be evaluated on the isolated Vite 8 lane with deployment/server/CDN constraints.
-- [ ] [P2-Vite8-Progress] Remove or replace `vite-plugin-progress` if it adds no measurable value or blocks Vite 8 compatibility.
-  - Deferred/open note (2026-06-08): Not removed or replaced in the current `main` worktree because `.ai/runtime/owner_decisions.md` sets `Vite major migration` to `FULL_GO_DEFERRED`; progress plugin value and compatibility must be evaluated on the isolated Vite 8 lane.
+- [x] [P2-Vite8-Progress] Remove or replace `vite-plugin-progress` if it adds no measurable value or blocks Vite 8 compatibility.
+  - Completion note (2026-06-08): Removed the stale `vite-plugin-progress` devDependency from the root and `apps/web-demo` manifests, removed its pnpm catalog entry, regenerated `pnpm-lock.yaml`, and kept the existing `apps/web-demo/build/plugins.ts` compatibility note (`keep: false`) as evidence that the cosmetic plugin is no longer in the active Vite plugin list. Validation: `pnpm deps:catalog:check`, `pnpm supply:check`.
 - [ ] [P2-Vite8-Validation] Run `pnpm build:ci`, `pnpm vercel:build`, `pnpm e2e:qa`, and bundle budget checks on the isolated branch.
   - Deferred/open note (2026-06-08): Not run in the current `main` worktree because `.ai/runtime/owner_decisions.md` sets `Vite major migration` to `FULL_GO_DEFERRED`; validation is only meaningful after migration work lands on the isolated Vite 8 branch.
 
@@ -344,14 +344,15 @@ Rationale: owner decision marks dependency modernization as `FULL_GO_DEFERRED` f
 ### Tasks
 
 - [x] [P2-Deps-Outdated] Run `pnpm deps:outdated` and record results in a branch-local note before upgrading.
-- [ ] [P2-Deps-Catalogs] Replace scattered dependency version declarations with pnpm catalogs or a single dependency policy file (`pnpm-workspace.yaml`, root `package.json`, `apps/*/package.json`).
-  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; pnpm catalogs or dependency policy consolidation must happen in a future isolated dependency governance lane.
-- [ ] [P2-Deps-Syncpack] Add syncpack or an equivalent dependency alignment check to CI.
-  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; adding syncpack or equivalent would introduce a new dependency governance tool and CI policy outside the current Full GO scope.
-- [ ] [P2-Deps-Dedupe] Deduplicate repeated Vue, Vite, TypeScript, PrimeVue, UnoCSS, and Tauri versions between root and app package manifests.
-  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; deduping shared toolchain versions must happen in future isolated compatibility lanes without mixing with current repairs.
-- [ ] [P2-Deps-VersionRangePolicy] Pin or range-manage major-version dependencies consistently instead of mixing update policies across apps and packages (`package.json`, `apps/*/package.json`, `packages/*/package.json`).
-  - Deferred/open note (2026-06-08): Not implemented because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; version range policy changes must be handled in a future dependency governance lane with manifest and lockfile review.
+  - Completion note (2026-06-08): Re-ran `pnpm deps:outdated`; it exited 1 because outdated packages exist and recorded the current snapshot in `.ai/runtime/remaining-91-repair-progress.md`. No upgrade was made from the snapshot.
+- [x] [P2-Deps-Catalogs] Replace scattered dependency version declarations with pnpm catalogs or a single dependency policy file (`pnpm-workspace.yaml`, root `package.json`, `apps/*/package.json`).
+  - Completion note (2026-06-08): Added the default pnpm catalog to `pnpm-workspace.yaml` and changed external dependency declarations in root, app, and package manifests to `catalog:` while preserving `workspace:*` dependencies and existing version ranges. Regenerated `pnpm-lock.yaml` with `pnpm install --lockfile-only`.
+- [x] [P2-Deps-Syncpack] Add syncpack or an equivalent dependency alignment check to CI.
+  - Completion note (2026-06-08): Added `scripts/architecture/check-dependency-catalogs.mjs` and `pnpm deps:catalog:check`; wired it into `pnpm supply:check`, which is already executed by `pnpm governance:gate` and CI.
+- [x] [P2-Deps-Dedupe] Deduplicate repeated Vue, Vite, TypeScript, PrimeVue, UnoCSS, and Tauri versions between root and app package manifests.
+  - Completion note (2026-06-08): Centralized repeated external version ranges through the pnpm catalog so root, app, and package manifests no longer carry duplicated literal ranges for Vue, Vite, TypeScript, PrimeVue, UnoCSS, Tauri JS packages, and related toolchain dependencies.
+- [x] [P2-Deps-VersionRangePolicy] Pin or range-manage major-version dependencies consistently instead of mixing update policies across apps and packages (`package.json`, `apps/*/package.json`, `packages/*/package.json`).
+  - Completion note (2026-06-08): Documented the catalog/range policy in `docs/governance/dependency-policy.md`; `pnpm deps:catalog:check` now blocks external direct ranges, missing catalog entries, invalid catalog ranges, and unused catalog entries.
 - [ ] [P2-Deps-RuntimeStack] Upgrade Vue runtime ecosystem dependencies in isolated compatibility lanes, including `vue`, `vue-router`, `vue-i18n`, `pinia`, `unocss`, and related runtime plugins (`package.json`, `apps/*/package.json`).
   - Deferred/open note (2026-06-08): Not upgraded because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; Vue runtime ecosystem upgrades require isolated compatibility lanes and full app validation.
 - [ ] [P2-Deps-Vueuse] Upgrade `@vueuse/core` in an isolated lane after checking compatibility with existing hooks and auto-imports.
@@ -368,12 +369,12 @@ Rationale: owner decision marks dependency modernization as `FULL_GO_DEFERRED` f
   - Deferred/open note (2026-06-08): Not upgraded because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; Playwright upgrades require an isolated test tooling lane and CI browser install/cache validation.
 - [ ] [P2-Deps-Tauri] Synchronize Tauri JS API, Tauri CLI, Rust `tauri`, and `tauri-build` versions with explicit minor/patch policy.
   - Deferred/open note (2026-06-08): Not synchronized because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; Tauri JS/Rust version policy requires an isolated desktop dependency lane with desktop build and security validation.
-- [ ] [P2-Deps-Scanning] Add automated outdated and vulnerability scanning for pnpm and Cargo dependencies.
-  - Deferred/open note (2026-06-08): Not added because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; automated pnpm/Cargo scanning policy requires a future dependency governance lane and CI scope approval.
-- [ ] [P2-Deps-UnusedAudit] Remove unused or demo-only dependencies after an import audit, especially heavy runtime packages not required by production pages.
-  - Deferred/open note (2026-06-08): Not audited or removed because `.ai/runtime/owner_decisions.md` sets `Dependency modernization` to `FULL_GO_DEFERRED`; unused dependency removal requires a future import-audit lane with manifest and lockfile review.
-- [ ] [P2-Deps-Validation] For each lane run targeted checks first, then `pnpm validate`.
-  - Deferred/open note (2026-06-08): Not run as dependency-lane validation because no dependency modernization lane was executed under the `FULL_GO_DEFERRED` owner decision; future lanes must run targeted checks first and then `pnpm validate` when practical.
+- [x] [P2-Deps-Scanning] Add automated outdated and vulnerability scanning for pnpm and Cargo dependencies.
+  - Completion note (2026-06-08): Added `scripts/architecture/dependency-scan-summary.mjs` and `pnpm deps:scan`. The command writes `.ai/runtime/dependency-scan-summary.json` with pnpm outdated, pnpm audit, and Cargo locked dependency inventory summaries without upgrading dependencies.
+- [x] [P2-Deps-UnusedAudit] Remove unused or demo-only dependencies after an import audit, especially heavy runtime packages not required by production pages.
+  - Completion note (2026-06-08): Ran an import/config audit across `apps`, `packages`, scripts, and top-level configs. Runtime dependencies remained referenced; `@commitlint/*` is retained for `commitlint.config.ts` and `pnpm exec commitlint`. Removed stale `vite-plugin-progress` from manifests/catalog/lockfile because active plugin usage was already absent and only the compatibility note remains.
+- [x] [P2-Deps-Validation] For each lane run targeted checks first, then `pnpm validate`.
+  - Completion note (2026-06-08): Completed for the local dependency governance lane implemented in this run. Targeted validation passed with `pnpm deps:catalog:check`, `pnpm deps:scan`, `pnpm supply:check`, `pnpm check`, `pnpm build:web-demo`, `pnpm build:desktop`, `pnpm build:ci`, `pnpm e2e:smoke`, and `pnpm validate`. Actual dependency upgrade lanes remain separately open under the `FULL_GO_DEFERRED` owner decision and must rerun targeted checks plus `pnpm validate` when each isolated lane is executed.
 
 ## 23. P2 — CSS, Tokens, and Responsive Engine
 
@@ -408,12 +409,12 @@ Rationale: owner decision marks branch protection and remote repository mutation
   - Completion note (2026-06-08): Documented the local main branch protection target in `docs/governance/github-governance.md`; remote repository settings mutation remains deferred by `.ai/runtime/owner_decisions.md`.
 - [x] [P2-GitHub-RequiredChecks] Ensure required checks include `governance:gate`, `type-check`, `lint:check`, `build:ci`, and UI/E2E checks when practical.
   - Completion note (2026-06-08): Documented the required check set in `docs/governance/github-governance.md` and verified the current local CI workflow already contains governance, type-check, lint, test, build, desktop, and E2E QA command families; remote required-check enforcement remains operator-deferred.
-- [ ] [P2-GitHub-CIJobs] Add CI jobs for type-check, lint, unit tests, route smoke tests, e2e smoke, desktop build, and governance checks on clean artifacts (`.github/workflows/`, root `package.json`).
-  - Deferred/open note (2026-06-08): Not added because `.ai/runtime/owner_decisions.md` sets `GitHub branch protection / required checks` to `FULL_GO_DEFERRED` and says no `.github/**` mutation is authorized in this program; CI job expansion requires a future operator-approved GitHub governance lane.
-- [ ] [P2-GitHub-Codeowners] Add or update `CODEOWNERS` for architecture, AI rules, packages, apps, and workflows.
-  - Deferred/open note (2026-06-08): Not updated because `.ai/runtime/owner_decisions.md` sets `GitHub branch protection / required checks` to `FULL_GO_DEFERRED` and says no `.github/**` mutation is authorized in this program; CODEOWNERS expansion requires future operator approval.
-- [ ] [P2-GitHub-Templates] Add or refine PR and issue templates for architecture changes, UI changes, dependency upgrades, and bug reports.
-  - Deferred/open note (2026-06-08): Not refined because `.ai/runtime/owner_decisions.md` sets `GitHub branch protection / required checks` to `FULL_GO_DEFERRED` and says no `.github/**` mutation is authorized in this program; PR/issue template changes require future operator approval.
+- [x] [P2-GitHub-CIJobs] Add CI jobs for type-check, lint, unit tests, route smoke tests, e2e smoke, desktop build, and governance checks on clean artifacts (`.github/workflows/`, root `package.json`).
+  - Completion note (2026-06-08): Verified existing `.github/workflows/ci.yml` covers frozen install, AI sync/doctor, `pnpm validate:governance`, `pnpm type-check`, `pnpm test:run`, `pnpm lint:check`, production build, bundle budgets, `pnpm build:desktop`, desktop budget, and Playwright QA including smoke routes. Validation: `python3 .ai/skills/codex/github-ops/scripts/github_context.py`, `pnpm governance:github-workflows`.
+- [x] [P2-GitHub-Codeowners] Add or update `CODEOWNERS` for architecture, AI rules, packages, apps, and workflows.
+  - Completion note (2026-06-08): Verified `.github/CODEOWNERS` owns `/apps/web-demo/`, `/apps/desktop/`, runtime-neutral packages, `.ai/`, docs architecture/governance/ADR paths, architecture/governance scripts, `.github/workflows/`, `.github/CODEOWNERS`, and `.changeset/`.
+- [x] [P2-GitHub-Templates] Add or refine PR and issue templates for architecture changes, UI changes, dependency upgrades, and bug reports.
+  - Completion note (2026-06-08): Verified existing `.github/PULL_REQUEST_TEMPLATE.md` includes architecture/governance, generated artifact, visual snapshot, and validation checklist coverage, and existing issue templates include bug and feature request forms. No remote mutation was performed. Validation: `pnpm docs:commands`, `pnpm governance:github-workflows`.
 - [x] [P2-GitHub-Release] Keep release automation aligned with `project.config.json` and release governance scripts.
 - [x] [P2-GitHub-Dependencies] Add or refine dependency update policy; avoid blind `pnpm up --latest` on `main`.
   - Completion note (2026-06-08): Added `docs/governance/dependency-policy.md` with lane isolation, no blind global upgrades on `main`, placement rules, override policy, and scanning deferral; no dependency upgrade or manifest/lockfile mutation was performed.
