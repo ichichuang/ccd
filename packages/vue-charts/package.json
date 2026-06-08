@@ -19,16 +19,16 @@
   },
   "dependencies": {
     "@ccd/design-tokens": "workspace:*",
-    "@vueuse/core": "^13.9.0",
-    "echarts": "^6.0.0",
-    "vue": "^3.5.12",
-    "vue-echarts": "^8.0.0",
-    "vue-i18n": "^10.0.8"
+    "@vueuse/core": "catalog:",
+    "echarts": "catalog:",
+    "vue": "catalog:",
+    "vue-echarts": "catalog:",
+    "vue-i18n": "catalog:"
   },
   "devDependencies": {
-    "@vue/tsconfig": "^0.7.0",
-    "typescript": "^5.8.3",
-    "vue-tsc": "^2.2.10"
+    "@vue/tsconfig": "catalog:",
+    "typescript": "catalog:",
+    "vue-tsc": "catalog:"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",

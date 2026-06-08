@@ -1,7 +1,55 @@
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import pc from 'picocolors'
 import type { Plugin } from 'vite'
 import { brand } from '../src/constants/brand'
-import { __APP_INFO__, getPackageSize } from './utils'
+import { __APP_INFO__, getPackageSize, pathResolve } from './utils'
+
+type DependencyMap = Record<string, string>
+
+let catalogCache: DependencyMap | undefined
+
+function readDefaultPnpmCatalog(): DependencyMap {
+  if (catalogCache) return catalogCache
+
+  const catalog: DependencyMap = {}
+
+  try {
+    const workspace = readFileSync(
+      join(pathResolve('../../..', import.meta.url), 'pnpm-workspace.yaml'),
+      'utf8'
+    )
+    const lines = workspace.split(/\r?\n/)
+    const catalogStartIndex = lines.findIndex(line => line === 'catalog:')
+
+    if (catalogStartIndex === -1) {
+      catalogCache = catalog
+      return catalog
+    }
+
+    for (const line of lines.slice(catalogStartIndex + 1)) {
+      if (line.length > 0 && !line.startsWith('  ')) break
+
+      const match = /^ {2}(.+?):\s+(.+)$/.exec(line)
+      if (!match) continue
+
+      const name = match[1].replace(/^['"]|['"]$/g, '')
+      catalog[name] = match[2].trim()
+    }
+  } catch {
+    catalogCache = catalog
+    return catalog
+  }
+
+  catalogCache = catalog
+  return catalog
+}
+
+function resolveDependencySpec(name: string, spec: string | undefined): string | undefined {
+  if (!spec) return undefined
+  if (spec === 'catalog:') return readDefaultPnpmCatalog()[name] ?? spec
+  return spec
+}
 
 export function viteBuildInfo(): Plugin {
   let config: { command: string }
@@ -22,8 +70,12 @@ export function viteBuildInfo(): Plugin {
         dependencies?: Record<string, string>
         devDependencies?: Record<string, string>
       }
-      const vueVersion = pkg.dependencies?.vue ?? pkg.devDependencies?.vue ?? 'Unknown'
-      const unocssVersion = pkg.dependencies?.unocss ?? pkg.devDependencies?.unocss
+      const vueVersion =
+        resolveDependencySpec('vue', pkg.dependencies?.vue ?? pkg.devDependencies?.vue) ?? 'Unknown'
+      const unocssVersion = resolveDependencySpec(
+        'unocss',
+        pkg.dependencies?.unocss ?? pkg.devDependencies?.unocss
+      )
       const unocssLine = unocssVersion ? `🎨 UnoCSS: ${unocssVersion}\n` : ''
 
       console.log(

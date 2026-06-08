@@ -40,7 +40,7 @@ Turbo preserves topological workspace execution. Package dependency direction is
 
 ### Supply-chain validation
 
-`pnpm supply:check` validates lifecycle-script policy, runtime dependency allowlists, singleton runtime dependencies, and the generated SBOM.
+`pnpm supply:check` validates lifecycle-script policy, runtime dependency allowlists, singleton runtime dependencies, dependency catalog alignment, and the generated SBOM. `pnpm deps:scan` records local outdated, audit, and Cargo inventory evidence without upgrading packages.
 
 ## Governance Command Matrix
 
@@ -54,6 +54,8 @@ Turbo preserves topological workspace execution. Package dependency direction is
 | `pnpm arch:runtime`                | Enforce runtime-neutral packages and root decommission.     | Inside gate and final validation.   | Diagnose runtime leaks.                    | Blocking              |
 | `pnpm api:report`                  | Validate public API snapshots and regenerate API report.    | Inside gate and final validation.   | Review API compatibility.                  | Blocking              |
 | `pnpm supply:check`                | Validate supply-chain policy and SBOM.                      | Inside gate and final validation.   | Dependency review.                         | Blocking              |
+| `pnpm deps:catalog:check`          | Validate pnpm catalog dependency alignment.                 | Inside supply check.                | Dependency manifest review.                | Blocking              |
+| `pnpm deps:scan`                   | Record outdated, audit, and Cargo dependency scan summary.  | Optional evidence lane.             | Dependency security review.                | Informational         |
 | `pnpm release:governance`          | Validate release topology and protected paths.              | Inside gate.                        | Release readiness.                         | Blocking              |
 | `pnpm governance:github-workflows` | Validate remote workflow registry hygiene.                  | Inside gate.                        | GitHub workflow drift diagnosis.           | Blocking              |
 | `pnpm arch:report`                 | Regenerate governance report.                               | Inside gate.                        | Observability refresh.                     | Blocking on drift     |

@@ -13,6 +13,8 @@ CCD dependency work is policy-driven and lane-isolated. Do not run blind global 
 ## Version Policy
 
 - Dependency modernization is owner-deferred for current Full GO.
+- External dependency ranges are centralized in the default pnpm catalog in `pnpm-workspace.yaml`; workspace package manifests reference those ranges with `catalog:`.
+- `pnpm deps:catalog:check` is the syncpack-equivalent alignment check. It fails when an external dependency bypasses the catalog, when a catalog entry is missing, or when an entry is unused.
 - Future upgrades use single-dependency or tightly coupled compatibility lanes.
 - Vite major migration stays separate from Vue tooling, UI, HTTP, desktop, and dependency cleanup lanes.
 - Version range changes require manifest diff review, lockfile review, targeted validation, and rollback notes.
@@ -33,4 +35,12 @@ Do not use overrides to mask architecture violations, package export failures, o
 
 ## Scanning Policy
 
-`pnpm supply:check` and generated SBOM review are the current repository gates. Automated outdated or vulnerability scanning for pnpm and Cargo dependencies requires a future owner/operator-approved dependency governance lane.
+`pnpm supply:check` and generated SBOM review are the current repository gates.
+
+`pnpm deps:scan` records a local runtime dependency scan summary for:
+
+- pnpm outdated inventory.
+- pnpm audit advisories.
+- Cargo locked dependency inventory.
+
+The scan is evidence-producing, not an automatic upgrade. Advisories and outdated packages must be handled in isolated dependency lanes with manifest diff review, lockfile review, targeted validation, and rollback notes.

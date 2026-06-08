@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
+import { spawnSync } from 'node:child_process'
 import process from 'node:process'
 import { readPolicies, workspacePackages } from '../governance/policy-utils.mjs'
 
@@ -11,9 +12,21 @@ const { topology } = policies
 const governedPackages = workspacePackages(topology)
 const findings = []
 
+function runCatalogCheck() {
+  const result = spawnSync(process.execPath, [join(root, 'scripts/architecture/check-dependency-catalogs.mjs')], {
+    cwd: root,
+    encoding: 'utf8',
+  })
+  if (result.stdout) process.stdout.write(result.stdout)
+  if (result.stderr) process.stderr.write(result.stderr)
+  if (result.status !== 0) process.exit(result.status ?? 1)
+}
+
 function readJson(path) {
   return JSON.parse(readFileSync(path, 'utf8'))
 }
+
+runCatalogCheck()
 
 for (const packageInfo of governedPackages) {
   const packageDir = packageInfo.path

@@ -60,6 +60,15 @@ pnpm supply:check
 
 用于校验依赖策略与供应链基线。
 
+## 依赖目录与扫描
+
+```bash
+pnpm deps:catalog:check
+pnpm deps:scan
+```
+
+`deps:catalog:check` 用于校验外部依赖是否统一通过 `pnpm-workspace.yaml` 的默认 catalog 管理；`deps:scan` 用于生成本地 outdated、pnpm audit 与 Cargo 锁定依赖清单摘要，不会自动升级依赖。
+
 ## 运行时泄漏检查
 
 ```bash

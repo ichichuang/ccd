@@ -20,7 +20,7 @@
   "dependencies": {
     "@ccd/contracts": "workspace:*",
     "@ccd/design-tokens": "workspace:*",
-    "vue": "^3.5.12",
-    "vue-i18n": "^10.0.8"
+    "vue": "catalog:",
+    "vue-i18n": "catalog:"
   }
 }

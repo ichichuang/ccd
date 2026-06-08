@@ -27,19 +27,19 @@
     "@ccd/design-tokens": "workspace:*",
     "@ccd/shared-utils": "workspace:*",
     "@ccd/vue-hooks": "workspace:*",
-    "@tanstack/vue-virtual": "^3.13.23",
-    "@vueuse/core": "^13.9.0",
-    "overlayscrollbars": "^2.14.0",
-    "overlayscrollbars-vue": "^0.5.9",
-    "primevue": "^4.5.4",
-    "vue": "^3.5.12",
-    "vue-i18n": "^10.0.8"
+    "@tanstack/vue-virtual": "catalog:",
+    "@vueuse/core": "catalog:",
+    "overlayscrollbars": "catalog:",
+    "overlayscrollbars-vue": "catalog:",
+    "primevue": "catalog:",
+    "vue": "catalog:",
+    "vue-i18n": "catalog:"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue-jsx": "^5.1.3",
-    "@vue/tsconfig": "^0.7.0",
-    "typescript": "^5.8.3",
-    "vue-tsc": "^2.2.10"
+    "@vitejs/plugin-vue-jsx": "catalog:",
+    "@vue/tsconfig": "catalog:",
+    "typescript": "catalog:",
+    "vue-tsc": "catalog:"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
