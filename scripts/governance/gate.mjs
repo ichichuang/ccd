@@ -30,6 +30,10 @@ const checks = [
     command: ['bash', 'scripts/exec.sh', 'pnpm', 'desktop:security'],
   },
   {
+    name: 'CSS px-to-rem policy',
+    command: ['bash', 'scripts/exec.sh', 'pnpm', 'css:pxtorem:check'],
+  },
+  {
     name: 'API snapshot compatibility',
     command: ['bash', 'scripts/exec.sh', 'pnpm', 'api:report'],
   },

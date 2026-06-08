@@ -4,10 +4,8 @@ import { scrollbarMemoryProviderKey } from '@ccd/vue-ui'
 import AnimateRouterView from '@&/AnimateRouterView.vue'
 import Loading from '@&/Loading.vue'
 import { useLayoutStore } from '@/stores/modules/system'
-import type { CScrollbar } from '@ccd/vue-ui'
 
 const layoutStore = useLayoutStore()
-const scrollbarRef = ref<InstanceType<typeof CScrollbar> | null>(null)
 
 provide(scrollbarMemoryProviderKey, {
   get: key => layoutStore.getContentScrollMemory(key),
@@ -24,7 +22,6 @@ const routeScrollMemoryKey = computed(
 <template>
   <div class="col-fill relative min-w-0">
     <CScrollbar
-      ref="scrollbarRef"
       class="col-fill"
       back-to-top
       :back-to-top-threshold="400"

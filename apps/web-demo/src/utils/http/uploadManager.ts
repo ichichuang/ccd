@@ -7,6 +7,7 @@ import { appLogger } from '@/adapters/logger.adapter'
 import { UPLOAD_TASK_PREFIX } from '@/constants/business'
 import { HTTP_CONFIG } from '@/constants/http'
 import { t } from '@/locales'
+import { DateUtils } from '@/utils/date'
 import { post } from './methods'
 import type {
   ChunkInfo,
@@ -169,7 +170,7 @@ export class UploadManager implements IUploadManager {
       failedChunks: new Set(),
       status: 'pending',
       progress: 0,
-      startTime: new Date(),
+      startTime: DateUtils.now().toDate(),
       cancelToken: new AbortController(),
     }
 
@@ -499,7 +500,7 @@ export class UploadManager implements IUploadManager {
     if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
       return `${UPLOAD_TASK_PREFIX}${crypto.randomUUID()}`
     }
-    return `${UPLOAD_TASK_PREFIX}${Date.now()}_${Math.random().toString(36).slice(2, 11)}`
+    return `${UPLOAD_TASK_PREFIX}${DateUtils.nowMs()}_${Math.random().toString(36).slice(2, 11)}`
   }
 }
 

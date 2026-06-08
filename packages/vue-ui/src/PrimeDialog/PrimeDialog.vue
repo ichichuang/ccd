@@ -14,6 +14,17 @@ import { DEFAULT_PRIME_DIALOG_RUNTIME_CONFIG, PRIME_DIALOG_RUNTIME_CONFIG_KEY } 
 import type { ButtonProps, DialogOptions, EventType } from './utils/types'
 import type { ArgsType } from './utils/types'
 
+const props = withDefaults(defineProps<{ dialogStore: readonly DialogOptions[] }>(), {
+  dialogStore: () => [],
+})
+
+const emit = defineEmits<{
+  close: [options: DialogOptions, index: number, args?: ArgsType]
+  afterHide: [instanceId: string]
+  open: [options: DialogOptions, index: number]
+  maximize: [options: DialogOptions, index: number]
+}>()
+
 function isFunction(value: unknown): value is (...args: unknown[]) => unknown {
   return typeof value === 'function'
 }
@@ -114,20 +125,9 @@ const getButtonLabel = (btn: ButtonProps): string => {
   return btn.label
 }
 
-const props = withDefaults(defineProps<{ dialogStore: readonly DialogOptions[] }>(), {
-  dialogStore: () => [],
-})
-
 /** 仅最上层弹窗响应遮罩点击，避免点击一次关闭全部 */
 const effectiveCloseOnMask = (options: DialogOptions, index: number): boolean =>
   options.closeOnMask !== false && index === props.dialogStore.length - 1
-
-const emit = defineEmits<{
-  close: [options: DialogOptions, index: number, args?: ArgsType]
-  afterHide: [instanceId: string]
-  open: [options: DialogOptions, index: number]
-  maximize: [options: DialogOptions, index: number]
-}>()
 
 const sureBtnMap = ref<Record<string, { loading: boolean }>>({})
 const closingInstanceIds = new Set<string>()

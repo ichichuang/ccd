@@ -6,8 +6,6 @@ import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Icons } from '../../Icons'
 
-const { t } = useI18n()
-
 /**
  * 列设置面板：拖拽排序 + 显隐开关，变更通过 update 事件上抛。
  */
@@ -29,6 +27,7 @@ const emit = defineEmits<{
   update: [orderedIds: string[], hiddenIds: string[]]
 }>()
 
+const { t } = useI18n()
 const localRows = ref<LocalRow[]>([])
 
 function buildLocal(): void {
@@ -86,9 +85,9 @@ function syncFromParent(): void {
   buildLocal()
 }
 
-defineExpose({ syncFromParent })
-
 onMounted(() => buildLocal())
+
+defineExpose({ syncFromParent })
 </script>
 
 <template>

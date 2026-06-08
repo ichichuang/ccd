@@ -23,6 +23,7 @@ import type { DateFormat, DateInput, FormatOptions, Locale } from '@/utils/date'
 import type { SupportedLocale } from '@/locales'
 import { useLocaleStore } from '@/stores/modules/system'
 import { useMitt } from '@/utils/mitt'
+import { castValue } from '@ccd/shared-utils'
 
 // 使用浏览器本地时区作为默认值（不强绑语言）
 const DEFAULT_TIMEZONE =
@@ -92,7 +93,7 @@ export function useDateUtils(): UseDateUtilsReturn {
   // 初始化：从 store 推导初始 locale，并使用本地时区对齐 DateUtils
   // （DateUtils 若已被 setupDateUtils 初始化，这里只会做轻量同步，不重复 init）
   const initFromStore = async () => {
-    const locale = localeStore.locale as Locale
+    const locale = castValue<Locale>(localeStore.locale)
     currentLocale.value = locale
 
     // 按“本地时区为准”，仅在初始化时同步一次
@@ -110,7 +111,7 @@ export function useDateUtils(): UseDateUtilsReturn {
   watch(
     () => localeStore.locale,
     async newLocale => {
-      const locale = newLocale as Locale
+      const locale = castValue<Locale>(newLocale)
       currentLocale.value = locale
       // DateUtils 的 locale 同步交由 initWithFramework + mitt 驱动，这里只负责本地状态与初始化标记
       isInitialized.value = true

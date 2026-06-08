@@ -14,8 +14,6 @@ import { TOOLBAR_DEFAULTS } from '../engine/config'
 import type { ColumnSettingItem } from './ProTableColumnSettings.vue'
 import ProTableColumnSettings from './ProTableColumnSettings.vue'
 
-const { t } = useI18n()
-
 const props = withDefaults(
   defineProps<{
     title?: string
@@ -38,6 +36,16 @@ const props = withDefaults(
   }
 )
 
+const emit = defineEmits<{
+  'update:globalFilter': [val: string]
+  'update:density': [mode: SizeMode]
+  'update-column-settings': [orderedIds: string[], hiddenIds: string[]]
+  refresh: []
+  'toggle-fullscreen': []
+  export: [mode: 'page' | 'selected']
+}>()
+
+const { t } = useI18n()
 const densityOptions = computed(() => [
   { value: 'compact' as const, label: t('proTable.densityCompact') || '' },
   { value: 'comfortable' as const, label: t('proTable.densityComfortable') || '' },
@@ -50,15 +58,6 @@ function pickDensity(mode: SizeMode): void {
   emit('update:density', mode)
   densityPanel.value?.hide()
 }
-
-const emit = defineEmits<{
-  'update:globalFilter': [val: string]
-  'update:density': [mode: SizeMode]
-  'update-column-settings': [orderedIds: string[], hiddenIds: string[]]
-  refresh: []
-  'toggle-fullscreen': []
-  export: [mode: 'page' | 'selected']
-}>()
 
 const filterVal = ref<string | undefined>('')
 const settingsPanel = ref<{ toggle: (e: Event) => void } | null>(null)

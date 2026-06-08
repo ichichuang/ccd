@@ -99,11 +99,11 @@ function buildRouteUrl(
   query: LocationQueryRaw | undefined,
   windowKey: string
 ): string {
-  let url = ''
+  const publicPath = import.meta.env.VITE_PUBLIC_PATH
+  let url: string
 
   if (import.meta.env.VITE_ROUTER_MODE === 'hash') {
     const location = window.location
-    const publicPath = import.meta.env.VITE_PUBLIC_PATH
     url = location.origin + publicPath + '#' + targetRoute.path
     if (query && Object.keys(query).length > 0) {
       const queryString = new URLSearchParams(query as Record<string, string>).toString()
@@ -113,7 +113,6 @@ function buildRouteUrl(
       (url.includes('?') ? '&' : '?') +
       `${ROUTE_WINDOW_KEY_QUERY_PARAM}=${encodeURIComponent(windowKey)}`
   } else {
-    const publicPath = import.meta.env.VITE_PUBLIC_PATH
     url = publicPath + targetRoute.path.replace(/^\//, '')
     if (query && Object.keys(query).length > 0) {
       const queryString = new URLSearchParams(query as Record<string, string>).toString()

@@ -4,6 +4,7 @@ import process from 'node:process'
 import { spawnSync } from 'node:child_process'
 import fg from 'fast-glob'
 import ts from 'typescript'
+import { parse as parseVueSfc } from '@vue/compiler-sfc'
 import {
   classifyPrimeVueBoundaryReference,
   extractPrimeVueReferences,
@@ -140,6 +141,78 @@ const approvedDirectTransportFiles = new Set([
 const stripJsComments = content =>
   content.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1')
 
+const lineForIndex = (content, index) => content.slice(0, Math.max(0, index)).split(/\r?\n/).length
+
+const scriptKindForPath = relPath => (relPath.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS)
+
+const createSourceFile = (relPath, content) =>
+  ts.createSourceFile(relPath, content, ts.ScriptTarget.Latest, true, scriptKindForPath(relPath))
+
+const parseVueDescriptor = relPath => {
+  const content = readText(relPath)
+  const result = parseVueSfc(content, {
+    filename: relPath,
+    sourceMap: false,
+  })
+  if (result.errors.length > 0) {
+    fail('vue-sfc-parse', relPath, `Vue SFC parser reported ${result.errors.length} error(s)`)
+  }
+  return result.descriptor
+}
+
+const getVueScriptSetupContent = relPath => parseVueDescriptor(relPath).scriptSetup?.content ?? ''
+
+const getScriptLikeSources = relPath => {
+  if (!relPath.endsWith('.vue')) {
+    return [{ relPath, content: readText(relPath), kind: scriptKindForPath(relPath) }]
+  }
+
+  const descriptor = parseVueDescriptor(relPath)
+  return [descriptor.script, descriptor.scriptSetup]
+    .filter(Boolean)
+    .map(block => ({
+      relPath,
+      content: block.content,
+      kind: block.lang === 'tsx' ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
+    }))
+}
+
+const hasModifier = (node, kind) => Boolean(ts.getModifiers(node)?.some(modifier => modifier.kind === kind))
+
+const isExportedDeclaration = node => hasModifier(node, ts.SyntaxKind.ExportKeyword)
+
+const getCallExpressionName = node => {
+  if (!ts.isCallExpression(node)) return null
+  if (ts.isIdentifier(node.expression)) return node.expression.text
+  return null
+}
+
+const unwrapExpression = node => {
+  let current = node
+  while (ts.isParenthesizedExpression(current) || ts.isAsExpression(current) || ts.isTypeAssertionExpression(current)) {
+    current = current.expression
+  }
+  return current
+}
+
+const isConstAssertion = (node, sourceFile) =>
+  ts.isAsExpression(node) && node.type.getText(sourceFile) === 'const'
+
+const isAllowedTypeAssertion = (node, sourceFile) => {
+  if (isConstAssertion(node, sourceFile)) return true
+  const typeText = node.type.getText(sourceFile)
+  const expressionText = node.expression.getText(sourceFile)
+
+  if (/^(?:HTML|SVG|MouseEvent|PointerEvent|KeyboardEvent|InputEvent|Event|Element|Node|Window|Document|ViewTransition)\b/.test(typeText)) {
+    return true
+  }
+  if (/^typeof\s+/.test(typeText)) return true
+  if (/\b(?:target|currentTarget|nativeEvent|event|el|element)\b/i.test(expressionText) && /(?:Element|Event|Node|Window|Document)\b/.test(typeText)) {
+    return true
+  }
+  return false
+}
+
 const routeAccessFacadePath = 'apps/web-demo/src/router/utils/accessControl.ts'
 const routeAccessFacade = shouldRunSingletonCheck(routeAccessFacadePath)
   ? readTextIfExists(routeAccessFacadePath)
@@ -218,6 +291,278 @@ const isGlobAllowed = (relPath, patterns) =>
 const hasHardcodedColor = content =>
   /#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\b/.test(content) ||
   /\b(?:text|bg|border|ring|from|via|to|decoration|accent|outline|divide|placeholder|caret)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|white|black)(?:-|\/|\b)/.test(content)
+
+const VUE_SFC_MACRO_ORDER = [
+  'defineOptions',
+  'defineProps',
+  'defineEmits',
+  'defineModel',
+  'defineSlots',
+]
+const VUE_SFC_MACROS = new Set([...VUE_SFC_MACRO_ORDER, 'defineExpose'])
+const VUE_SFC_MACRO_RANK = new Map(VUE_SFC_MACRO_ORDER.map((name, index) => [name, index]))
+
+const collectMacroUsages = (statement, sourceFile) => {
+  const usages = []
+  const visit = node => {
+    if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && VUE_SFC_MACROS.has(node.expression.text)) {
+      usages.push({
+        name: node.expression.text,
+        pos: node.getStart(sourceFile),
+      })
+    }
+    ts.forEachChild(node, visit)
+  }
+  visit(statement)
+  return usages
+}
+
+const isTypeOnlyTopLevelStatement = statement =>
+  ts.isImportDeclaration(statement) ||
+  ts.isImportEqualsDeclaration(statement) ||
+  ts.isExportDeclaration(statement) ||
+  ts.isInterfaceDeclaration(statement) ||
+  ts.isTypeAliasDeclaration(statement) ||
+  ts.isModuleDeclaration(statement)
+
+const vueSfcMacroFiles = scanFiles(
+  ['apps/web-demo/src/**/*.vue', 'apps/desktop/src/**/*.vue', 'packages/**/*.vue'],
+  {
+    ignore: ['**/dist/**', '**/node_modules/**'],
+  }
+)
+
+for (const relPath of vueSfcMacroFiles) {
+  const scriptSetup = getVueScriptSetupContent(relPath)
+  if (!scriptSetup.trim()) continue
+
+  const sourceFile = createSourceFile(relPath, scriptSetup)
+  const macroUsages = []
+  let businessLogicSeen = false
+
+  sourceFile.statements.forEach((statement, statementIndex) => {
+    const usages = collectMacroUsages(statement, sourceFile)
+    if (usages.length > 0) {
+      for (const usage of usages) {
+        macroUsages.push({ ...usage, statementIndex })
+        if (usage.name !== 'defineExpose' && businessLogicSeen) {
+          fail(
+            'vue-sfc-macro-order',
+            relPath,
+            `${usage.name}() must be declared before business logic in <script setup> (line ${lineForIndex(scriptSetup, usage.pos)})`
+          )
+        }
+      }
+    } else if (!isTypeOnlyTopLevelStatement(statement) && !ts.isEmptyStatement(statement)) {
+      businessLogicSeen = true
+    }
+
+    if (usages.some(usage => usage.name === 'defineExpose')) {
+      const hasFollowingDeclaration = sourceFile.statements
+        .slice(statementIndex + 1)
+        .some(nextStatement => !ts.isEmptyStatement(nextStatement))
+      if (hasFollowingDeclaration) {
+        fail(
+          'vue-sfc-macro-order',
+          relPath,
+          `defineExpose() must be the last declaration in <script setup> (line ${lineForIndex(scriptSetup, usages[0].pos)})`
+        )
+      }
+    }
+  })
+
+  let previousRank = -1
+  for (const usage of macroUsages.filter(usage => usage.name !== 'defineExpose')) {
+    const rank = VUE_SFC_MACRO_RANK.get(usage.name)
+    if (rank < previousRank) {
+      fail(
+        'vue-sfc-macro-order',
+        relPath,
+        `${usage.name}() violates required macro order: ${VUE_SFC_MACRO_ORDER.join(' -> ')}`
+      )
+      break
+    }
+    previousRank = rank
+  }
+}
+
+for (const relPath of vueSfcMacroFiles) {
+  const scriptSetup = stripJsComments(getVueScriptSetupContent(relPath))
+  if (/\buseMitt\s*\(/.test(scriptSetup)) {
+    fail(
+      'use-auto-mitt',
+      relPath,
+      'Vue <script setup> components must use useAutoMitt() for event-bus subscriptions'
+    )
+  }
+}
+
+const approvedBusinessTypeAssertionFiles = new Set([
+  'apps/web-demo/src/hooks/layout/useAdminBreadcrumbs.ts',
+  'apps/web-demo/src/hooks/modules/useDialog.tsx',
+  'apps/web-demo/src/hooks/modules/useProTableUrlSync.ts',
+  'apps/web-demo/src/hooks/modules/useThemeSwitch.ts',
+])
+const approvedBusinessTypeAssertionPatterns = ['apps/web-demo/src/router/utils/**']
+
+const businessTypeAssertionFiles = scanFiles(
+  [
+    'apps/web-demo/src/views/**/*.{vue,ts,tsx}',
+    'apps/web-demo/src/hooks/**/*.{ts,tsx}',
+    'apps/web-demo/src/stores/**/*.{ts,tsx}',
+    'apps/web-demo/src/api/**/*.{ts,tsx}',
+    'apps/web-demo/src/router/**/*.{ts,tsx}',
+  ],
+  {
+    ignore: [
+      '**/*.spec.ts',
+      '**/*.test.ts',
+      'apps/web-demo/src/views/example/**',
+      'apps/web-demo/src/views/login/**',
+      'apps/web-demo/src/views/notfound/**',
+    ],
+  }
+)
+
+for (const relPath of businessTypeAssertionFiles) {
+  if (approvedBusinessTypeAssertionFiles.has(relPath)) continue
+  if (isGlobAllowed(relPath, approvedBusinessTypeAssertionPatterns)) continue
+
+  if (relPath.endsWith('.vue')) {
+    const template = parseVueDescriptor(relPath).template?.content ?? ''
+    if (/\bas\s+[A-Za-z_{]/.test(template) || /<\s*[A-Z][A-Za-z0-9_]*\s*>/.test(template)) {
+      fail(
+        'business-type-assertion',
+        relPath,
+        'Vue templates must not contain TypeScript assertions; narrow in <script setup> with castValue/type guards'
+      )
+    }
+  }
+
+  for (const source of getScriptLikeSources(relPath)) {
+    const sourceFile = ts.createSourceFile(source.relPath, source.content, ts.ScriptTarget.Latest, true, source.kind)
+    const visit = node => {
+      if ((ts.isAsExpression(node) || ts.isTypeAssertionExpression(node)) && !isAllowedTypeAssertion(node, sourceFile)) {
+        fail(
+          'business-type-assertion',
+          relPath,
+          `business code type assertions must use castValue()/type guards or an approved bridge exception (line ${lineForIndex(source.content, node.getStart(sourceFile))})`
+        )
+      }
+      ts.forEachChild(node, visit)
+    }
+    visit(sourceFile)
+  }
+}
+
+const composableReturnFiles = scanFiles(
+  [
+    'apps/web-demo/src/hooks/**/*.{ts,tsx}',
+    'apps/web-demo/src/layouts/**/use*.{ts,tsx}',
+    'apps/web-demo/src/views/**/{hooks,composables}/**/*.{ts,tsx}',
+    'packages/vue-hooks/src/**/*.{ts,tsx}',
+    'packages/vue-ui/src/**/hooks/**/*.{ts,tsx}',
+    'packages/vue-charts/src/**/*.{ts,tsx}',
+    'packages/vue-app-platform/src/**/*.{ts,tsx}',
+  ],
+  {
+    ignore: ['**/*.spec.ts', '**/*.test.ts', '**/dist/**'],
+  }
+)
+
+for (const relPath of composableReturnFiles) {
+  const sourceText = readText(relPath)
+  const sourceFile = createSourceFile(relPath, sourceText)
+
+  for (const statement of sourceFile.statements) {
+    if (ts.isFunctionDeclaration(statement) && statement.name?.text.startsWith('use') && isExportedDeclaration(statement)) {
+      if (!statement.type) {
+        fail(
+          'composable-return-type',
+          relPath,
+          `${statement.name.text}() must declare an explicit return type`
+        )
+      }
+    }
+
+    if (!ts.isVariableStatement(statement) || !isExportedDeclaration(statement)) continue
+    for (const declaration of statement.declarationList.declarations) {
+      if (!ts.isIdentifier(declaration.name) || !declaration.name.text.startsWith('use')) continue
+      const initializer = declaration.initializer
+      const initializerHasReturnType =
+        initializer &&
+        (ts.isArrowFunction(initializer) || ts.isFunctionExpression(initializer)) &&
+        Boolean(initializer.type)
+      if (!declaration.type && !initializerHasReturnType) {
+        fail(
+          'composable-return-type',
+          relPath,
+          `${declaration.name.text} must declare an explicit return type`
+        )
+      }
+    }
+  }
+}
+
+const dynamicUnoUtilityPrefix =
+  '(?:p|m|px|py|pt|pb|pl|pr|mx|my|mt|mr|mb|ml|gap|gap-x|gap-y|bg|text|border|ring|w|h|min-w|max-w|min-h|max-h|rounded|shadow|z|opacity|grid-cols|col-span|row-span|duration|ease|translate|scale|rotate|top|left|right|bottom|inset)'
+const unsafeDynamicUnoTemplatePattern = new RegExp(
+  `(?:^|\\s)(?:!|[a-z-]+:)*${dynamicUnoUtilityPrefix}-\\$\\{`,
+  'm'
+)
+const unsafeDynamicUnoConcatPattern = new RegExp(
+  `['"](?:!|[a-z-]+:)*${dynamicUnoUtilityPrefix}-['"]\\s*\\+`
+)
+const approvedDynamicUnoClassFiles = new Set([
+  'packages/unocss-preset/src/safelist/index.ts',
+])
+
+const dynamicUnoFiles = scanFiles(
+  [
+    'apps/web-demo/src/**/*.{vue,ts,tsx}',
+    'packages/**/*.{vue,ts,tsx}',
+  ],
+  {
+    ignore: [
+      '**/*.spec.ts',
+      '**/*.test.ts',
+      '**/dist/**',
+      '**/node_modules/**',
+      'apps/web-demo/src/views/example/**',
+    ],
+  }
+)
+for (const relPath of dynamicUnoFiles) {
+  if (approvedDynamicUnoClassFiles.has(relPath)) continue
+  const content = stripJsComments(readText(relPath))
+  if (unsafeDynamicUnoTemplatePattern.test(content) || unsafeDynamicUnoConcatPattern.test(content)) {
+    fail(
+      'unocss-dynamic-class',
+      relPath,
+      'dynamic UnoCSS utility composition is forbidden; use static class literals or add a documented safelist generator'
+    )
+  }
+}
+
+const unoSafelistPath = 'packages/unocss-preset/src/safelist/index.ts'
+const unoSafelistContent = shouldRunSingletonCheck(unoSafelistPath) ? readTextIfExists(unoSafelistPath) : ''
+if (unoSafelistContent) {
+  for (const requiredToken of [
+    'buildDynamicSizeDemoSafelist',
+    'DYNAMIC_SIZE_DEMO_SAFELIST_CLASSES',
+    'buildDynamicThemeDemoSafelist',
+    'DYNAMIC_THEME_DEMO_SAFELIST_CLASSES',
+    'getEngineSafelist',
+  ]) {
+    if (!unoSafelistContent.includes(requiredToken)) {
+      fail(
+        'unocss-safelist-contract',
+        unoSafelistPath,
+        `dynamic UnoCSS safelist contract must retain ${requiredToken}`
+      )
+    }
+  }
+}
 
 for (const relPath of governedGeneratedCodeFiles) {
   if (relPath.startsWith('apps/')) continue
@@ -499,21 +844,40 @@ for (const relPath of syncBoundaryFiles) {
   }
 }
 
-// --- raw-date-constructor: new Date() without args is forbidden outside approved files ---
+// --- raw-date-native-api: native Date APIs are forbidden outside DateUtils/tests and approved timestamp infrastructure ---
 const approvedRawDateFiles = new Set([
-  'apps/web-demo/src/utils/date/timezone.ts',
-  'apps/web-demo/src/utils/http/connection.ts',
-  'apps/web-demo/src/utils/http/uploadManager.ts',
+  'apps/web-demo/src/utils/http/interceptors.ts',
 ])
 
 const dateCheckFiles = scanFiles(['apps/web-demo/src/**/*.{ts,tsx,vue}'])
 for (const relPath of dateCheckFiles) {
   if (/\.(spec|test)\.ts$/.test(relPath)) continue
   if (relPath.includes('/example/')) continue
+  if (relPath.startsWith('apps/web-demo/src/utils/date/')) continue
   if (approvedRawDateFiles.has(relPath)) continue
   const content = stripJsComments(readText(relPath))
-  if (/\bnew\s+Date\s*\(\s*\)/.test(content)) {
-    fail('raw-date-constructor', relPath, 'Use DateUtils.now() instead of raw new Date()')
+  const rawDateChecks = [
+    {
+      pattern: /\bnew\s+Date\s*\(/,
+      message: 'Use DateUtils.now()/DateUtils static APIs instead of raw new Date()',
+    },
+    {
+      pattern: /\bDate\.now\s*\(/,
+      message: 'Use DateUtils.nowMs() instead of raw Date.now()',
+    },
+    {
+      pattern: /(?<!DateUtils)\.toISOString\s*\(/,
+      message: 'Use DateUtils.toISOString() instead of raw Date#toISOString()',
+    },
+    {
+      pattern: /\.(?:toLocaleDateString|toLocaleTimeString|getFullYear|getMonth|getDate|getHours|getMinutes|getSeconds)\s*\(/,
+      message: 'Use DateUtils/useDateUtils formatting helpers instead of native Date display APIs',
+    },
+  ]
+  for (const check of rawDateChecks) {
+    if (check.pattern.test(content)) {
+      fail('raw-date-native-api', relPath, check.message)
+    }
   }
 }
 
@@ -683,14 +1047,30 @@ for (const relPath of apiFiles) {
 }
 
 const routerModuleFiles = scanFiles(['apps/web-demo/src/router/modules/**/*.ts'])
+const MAX_ROUTE_MODULE_LINES = 300
+const MAX_ROUTE_MODULE_RECORDS = 40
+
 for (const relPath of routerModuleFiles) {
   const sourceText = readText(relPath)
+  const isRouteModuleTest = /\.(?:spec|test)\.ts$/.test(relPath)
+  if (!isRouteModuleTest) {
+    const lineCount = sourceText.split(/\r?\n/).length
+    if (lineCount > MAX_ROUTE_MODULE_LINES) {
+      fail(
+        'route-module-line-budget',
+        relPath,
+        `route module has ${lineCount} lines; split it below ${MAX_ROUTE_MODULE_LINES} lines`
+      )
+    }
+  }
+
   if (/import\s+.+\s+from\s+['"]@\/views\//.test(sourceText)) {
     fail('route-sync-view-import', relPath, 'route modules must not synchronously import @/views components')
   }
 
   const sourceFile = ts.createSourceFile(relPath, sourceText, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
   const viewImportBindings = new Set()
+  let routeRecordCount = 0
 
   for (const statement of sourceFile.statements) {
     if (!ts.isImportDeclaration(statement)) continue
@@ -709,12 +1089,21 @@ for (const relPath of routerModuleFiles) {
 
   const visit = node => {
     if (ts.isObjectLiteralExpression(node) && isRouteLikeObject(node, sourceFile)) {
+      routeRecordCount += 1
       validateRouteObject(node, sourceFile, relPath, viewImportBindings)
     }
     ts.forEachChild(node, visit)
   }
 
   visit(sourceFile)
+
+  if (!isRouteModuleTest && routeRecordCount > MAX_ROUTE_MODULE_RECORDS) {
+    fail(
+      'route-module-record-budget',
+      relPath,
+      `route module defines ${routeRecordCount} route records; split it below ${MAX_ROUTE_MODULE_RECORDS} records`
+    )
+  }
 }
 
 function isRouteLikeObject(node, sourceFile) {

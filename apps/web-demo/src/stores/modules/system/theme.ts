@@ -16,6 +16,7 @@ import {
 import { isThemeLocked } from '@/utils/theme/transitions'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 import { syncAction } from '@/sync/syncAction'
+import { DateUtils } from '@/utils/date'
 
 // 模块级变量持有 handler 引用，确保 removeEventListener 可精确移除同一函数引用
 let _themeMediaQueryHandler: (() => void) | null = null
@@ -66,7 +67,7 @@ export const useThemeStore = defineStore('theme', {
           theme: this.themeName,
           accentColor: this.accentColor,
         },
-        updatedAt: Date.now(),
+        updatedAt: DateUtils.nowMs(),
       })
     },
 

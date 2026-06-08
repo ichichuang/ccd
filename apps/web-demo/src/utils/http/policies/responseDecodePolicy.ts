@@ -14,7 +14,7 @@ export async function readResponseTextAndJson(
   response: Response
 ): Promise<{ json: Record<string, unknown> | null; text: string }> {
   const text = await response.text()
-  let json: Record<string, unknown> | null = null
+  let json: Record<string, unknown> | null
 
   try {
     json = JSON.parse(text) as Record<string, unknown>

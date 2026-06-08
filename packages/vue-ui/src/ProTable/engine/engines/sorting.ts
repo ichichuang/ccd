@@ -14,12 +14,10 @@ export function applySort<T extends Record<string, unknown>>(
     const bv = getField(b, field)
     if (av === null || av === undefined) return 1
     if (bv === null || bv === undefined) return -1
-    let result = 0
-    if (typeof av === 'number' && typeof bv === 'number') {
-      result = av - bv
-    } else {
-      result = String(av).localeCompare(String(bv))
-    }
+    const result =
+      typeof av === 'number' && typeof bv === 'number'
+        ? av - bv
+        : String(av).localeCompare(String(bv))
     return dir === 'asc' ? result : -result
   })
 }

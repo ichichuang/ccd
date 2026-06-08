@@ -1,4 +1,5 @@
 import { appLogger } from '@/adapters/logger.adapter'
+import { castValue } from '@ccd/shared-utils'
 
 /**
  * 自动导入模块的通用函数
@@ -16,7 +17,7 @@ export async function autoImportModules<T = unknown>(
       const moduleName = getModuleName(path, prefixToRemove)
 
       const moduleExports = await moduleLoader()
-      const moduleContent = (moduleExports.default ?? moduleExports) as T
+      const moduleContent = castValue<T>(moduleExports.default ?? moduleExports)
       importedModules[moduleName] = moduleContent
     } catch (error) {
       appLogger.warn(`[ModuleLoader] Failed to load module from ${path}:`, error)
@@ -49,7 +50,7 @@ export function autoImportModulesSync<T = unknown>(
     try {
       const moduleName = getModuleName(path, prefixToRemove)
 
-      const moduleContent = (moduleExports.default ?? moduleExports) as T
+      const moduleContent = castValue<T>(moduleExports.default ?? moduleExports)
       importedModules[moduleName] = moduleContent
     } catch (error) {
       appLogger.warn(`[ModuleLoader] Failed to process module from ${path}:`, error)

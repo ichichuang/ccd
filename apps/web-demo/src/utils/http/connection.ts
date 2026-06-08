@@ -1,6 +1,7 @@
 import { appLogger } from '@/adapters/logger.adapter'
 import { HTTP_CONFIG } from '@/constants/http'
 import { t } from '@/locales'
+import { DateUtils } from '@/utils/date'
 import type { ConnectionConfig, ConnectionState } from './types'
 
 /**
@@ -29,7 +30,7 @@ export class ConnectionManager {
     this.state = {
       isConnected: navigator.onLine,
       isReconnecting: false,
-      lastConnectedAt: navigator.onLine ? new Date() : undefined,
+      lastConnectedAt: navigator.onLine ? DateUtils.now().toDate() : undefined,
       disconnectReason: navigator.onLine ? undefined : t('http.connection.networkUnavailable'),
       reconnectAttempts: 0,
       maxReconnectAttempts: this.config.maxReconnectAttempts,
@@ -139,7 +140,7 @@ export class ConnectionManager {
   private onReconnectSuccess(): void {
     this.state.isConnected = true
     this.state.isReconnecting = false
-    this.state.lastConnectedAt = new Date()
+    this.state.lastConnectedAt = DateUtils.now().toDate()
     this.state.disconnectReason = undefined
     this.state.reconnectAttempts = 0
 
@@ -244,7 +245,7 @@ export class ConnectionManager {
       }
 
       this.state.isConnected = true
-      this.state.lastConnectedAt = new Date()
+      this.state.lastConnectedAt = DateUtils.now().toDate()
       this.state.disconnectReason = undefined
       this.state.reconnectAttempts = 0
 
