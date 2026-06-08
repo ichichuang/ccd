@@ -455,6 +455,28 @@ const checkWebDemoViteCorsConfig = () => {
   ok('web-demo Vite CORS restricted to local origins')
 }
 
+const checkDesktopViteCorsConfig = () => {
+  const viteConfig = readText('apps/desktop/vite.config.ts')
+  const sharedConfig = readText('apps/vite.shared.ts')
+
+  if (viteConfig.includes('cors: true')) {
+    fail('apps/desktop/vite.config.ts must not use open Vite CORS')
+    return
+  }
+
+  if (!viteConfig.includes('localViteCors') || !sharedConfig.includes('localViteCors')) {
+    fail('apps/desktop/vite.config.ts must use the shared restricted local Vite CORS policy')
+    return
+  }
+
+  if (!/preview:\s*\{[\s\S]*cors:\s*localViteCors/.test(viteConfig)) {
+    fail('apps/desktop/vite.config.ts preview must use the shared restricted local Vite CORS policy')
+    return
+  }
+
+  ok('desktop Vite CORS restricted to local origins')
+}
+
 const checkExecTool = (name, expectedVersion) => {
   const result = run('bash', ['scripts/exec.sh', name, '-v'])
   if (result.status !== 0) {
@@ -572,6 +594,7 @@ checkDemoModeEnvDefaults()
 checkViteEnvSchemas()
 checkDesktopEnvironmentConfig()
 checkWebDemoViteCorsConfig()
+checkDesktopViteCorsConfig()
 checkExecTool('node', expectedNodeVersion)
 checkExecTool('pnpm', expectedPnpmVersion)
 inspectShellBinding('non-interactive')

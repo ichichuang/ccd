@@ -22,7 +22,6 @@ const { locale, switchLocale, supportedLocales } = useLocale()
 const { t } = useI18n({ useScope: 'global' })
 
 const utilityRootRef = ref<HTMLElement | null>(null)
-const localePanelRef = ref<HTMLElement | null>(null)
 const isLocaleOpen = ref(false)
 
 const localePanelId = 'login-locale-panel'
@@ -140,7 +139,6 @@ onBeforeUnmount(() => {
       <div
         v-if="isLocaleOpen"
         :id="localePanelId"
-        ref="localePanelRef"
         :class="[
           MENU_ADMIN_CONTEXT_PANEL_UNIFIED,
           'login-locale-popup absolute left-1/2 top-[calc(100%+var(--spacing-xs))] z-popover min-w-[132px] -translate-x-1/2 select-none',
@@ -149,15 +147,17 @@ onBeforeUnmount(() => {
         :aria-label="t('login.localeSelect')"
       >
         <div class="col-stretch gap-xs">
-          <button
+          <Button
             v-for="item in localeOptions"
             :key="item.key"
             type="button"
+            severity="secondary"
+            variant="text"
             role="menuitemradio"
             :aria-checked="isLocaleActive(item.key)"
             :class="[
               MENU_ADMIN_CONTEXT_ITEM_UNIFIED,
-              'w-full justify-between',
+              'w-full justify-between border-0! bg-transparent! shadow-none!',
               isLocaleActive(item.key) ? 'bg-primary/10! text-primary!' : '',
             ]"
             @click="selectLocale(item.key)"
@@ -169,7 +169,7 @@ onBeforeUnmount(() => {
               size="xs"
               :class="MENU_ADMIN_CONTEXT_ICON_UNIFIED"
             />
-          </button>
+          </Button>
         </div>
       </div>
     </Transition>
