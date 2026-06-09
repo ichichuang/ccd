@@ -1,10 +1,11 @@
-import { deepClone } from '@ccd/shared-utils'
+import { castValue, deepClone } from '@ccd/shared-utils'
 import { getRouterCapabilities, isRouterCapabilitiesInstalled } from '@/infra/router/routeProvider'
 import { checkRouteAccess } from '@/router/utils/accessControl'
 import { generateRouteWindowKey, getRouteWindowKeyFromUrl } from '@/router/utils/windowKeys'
 import { useUserStoreWithOut } from '@/stores/modules/session/user'
 import store from '@/stores'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
+import { DateUtils } from '@/utils/date'
 import { defineStore } from 'pinia'
 import type { LocationQueryRaw } from 'vue-router'
 
@@ -337,7 +338,7 @@ export const usePermissionStore = defineStore('permission', {
 
       if (existing) {
         existing.url = url
-        existing.openedAt = Date.now()
+        existing.openedAt = DateUtils.nowMs()
         existing.isOpen = true
         return key
       }
@@ -347,7 +348,7 @@ export const usePermissionStore = defineStore('permission', {
         routeName,
         query,
         url,
-        openedAt: Date.now(),
+        openedAt: DateUtils.nowMs(),
         isOpen: true,
       })
 
@@ -370,7 +371,7 @@ export const usePermissionStore = defineStore('permission', {
      * 清理过期窗口记录
      */
     cleanupOldWindows(maxAge: number = 7 * 24 * 60 * 60 * 1000): void {
-      const now = Date.now()
+      const now = DateUtils.nowMs()
       this.windows = this.windows.filter(w => w.isOpen || now - w.openedAt < maxAge)
     },
 
@@ -390,7 +391,9 @@ export const usePermissionStore = defineStore('permission', {
       serialize: (value: unknown) => {
         try {
           // 使用 deepClone 替代低效的 JSON.parse(JSON.stringify())
-          const stateToStore = deepClone(value) as { state?: { windows?: WindowMetadata[] } }
+          const stateToStore = castValue<{ state?: { windows?: WindowMetadata[] } }>(
+            deepClone(value)
+          )
 
           // 优化数据清洗：使用解构赋值剔除 isOpen 字段
           if (stateToStore?.state?.windows) {

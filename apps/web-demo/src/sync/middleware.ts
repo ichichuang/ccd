@@ -1,4 +1,5 @@
 import { getSyncHandler } from './registry'
+import { DateUtils } from '@/utils/date'
 
 export type SyncSource = 'local' | 'remote'
 
@@ -44,7 +45,7 @@ function createContext(input: SyncContextInput): SyncContext {
     payload: input.payload,
     source: input.source,
     clientId: input.clientId ?? runtimeClientId,
-    timestamp: input.timestamp ?? Date.now(),
+    timestamp: input.timestamp ?? DateUtils.nowMs(),
   }
 }
 

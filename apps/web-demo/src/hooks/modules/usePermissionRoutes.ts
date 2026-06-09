@@ -1,7 +1,8 @@
 import { requestSystemAsyncRoutes } from '@/api/system/system.api'
-import { deepClone } from '@ccd/shared-utils'
+import { castValue, deepClone } from '@ccd/shared-utils'
 import { usePermissionStore } from '@/stores/modules/session'
 import { parseBackendRoutes } from '@/adapters/http.adapter'
+import { DateUtils } from '@/utils/date'
 
 /** 路由拉取配置 */
 const FETCH_TIMEOUT_MS: number = 10_000
@@ -85,13 +86,13 @@ export function usePermissionRoutes(): {
     const maxRetries = options.maxRetries ?? MAX_RETRIES
 
     // 缓存 staleness 检查：5 分钟内的缓存直接返回
-    const now: number = Date.now()
+    const now: number = DateUtils.nowMs()
     if (
       permissionStore.dynamicRoutes.length > 0 &&
       lastFetchTimestamp > 0 &&
       now - lastFetchTimestamp < CACHE_MAX_AGE_MS
     ) {
-      return deepClone(permissionStore.dynamicRoutes) as BackendRouteConfig[]
+      return castValue<BackendRouteConfig[]>(deepClone(permissionStore.dynamicRoutes))
     }
 
     try {
@@ -101,12 +102,12 @@ export function usePermissionRoutes(): {
       )
       const typedRoutes: BackendRouteConfig[] = parseBackendRoutes(routes)
       permissionStore.setDynamicRoutes(typedRoutes)
-      lastFetchTimestamp = Date.now()
+      lastFetchTimestamp = DateUtils.nowMs()
       return typedRoutes
     } catch (error: unknown) {
       console.error('🪒 Router: 获取动态路由失败，使用本地缓存:', error)
       if (permissionStore.dynamicRoutes.length > 0) {
-        return deepClone(permissionStore.dynamicRoutes) as BackendRouteConfig[]
+        return castValue<BackendRouteConfig[]>(deepClone(permissionStore.dynamicRoutes))
       }
       throw error
     }

@@ -5,7 +5,28 @@ function baseInputs() {
   return {
     tauriConfig: {
       app: {
+        windows: [
+          {
+            label: 'main',
+            title: 'CCD Desktop',
+            width: 1200,
+            height: 800,
+            minWidth: 960,
+            minHeight: 640,
+            center: true,
+            resizable: true,
+            fullscreen: false,
+            maximized: false,
+            decorations: true,
+            visible: true,
+            devtools: false,
+          },
+        ],
         security: {
+          assetProtocol: {
+            enable: false,
+            scope: [],
+          },
           csp: {
             'default-src': ["'self'", 'ipc:', 'http://ipc.localhost'],
             'base-uri': ["'none'"],
@@ -92,6 +113,21 @@ describe('desktop security rules', () => {
       expect.arrayContaining([
         'apps/desktop/package.json: @tauri-apps/plugin-shell requires enabled shell scope policy before use',
         'apps/desktop/src-tauri/Cargo.toml: tauri-plugin-shell requires enabled shell scope policy before use',
+      ])
+    )
+  })
+
+  it('rejects implicit or unsafe production window and navigation defaults', () => {
+    const inputs = baseInputs()
+    inputs.tauriConfig.app.windows[0].devtools = true
+    inputs.tauriConfig.app.security.assetProtocol.enable = true
+    inputs.scopePolicy.surfaces.find(surface => surface.surface === 'external-navigation').deny = []
+
+    expect(validateDesktopSecurity(inputs)).toEqual(
+      expect.arrayContaining([
+        'apps/desktop/src-tauri/tauri.conf.json: window main must disable devtools in production config',
+        'apps/desktop/src-tauri/tauri.conf.json: app.security.assetProtocol.enable must be false by default',
+        'apps/desktop/src-tauri/security-scopes.json: external-navigation must be denied by default',
       ])
     )
   })

@@ -26,10 +26,14 @@ const PX_TO_REM_SELECTOR_BLACKLIST: (string | RegExp)[] = [
 
 const PX_TO_REM_FILE_EXCLUDES: RegExp[] = [
   /node_modules/i,
+  /(?:^|[/\\])packages[/\\](?:vue-ui|vue-primevue-adapter|vue-charts)[/\\]dist[/\\]/i,
   /(?:^|[/\\])uno\.css(?:\?|$)/i,
   /(?:^|[/\\])__uno(?:\.css)?(?:\?|$)/i,
   /virtual:uno/i,
   /@unocss/i,
+  /@primeuix/i,
+  /@primevue/i,
+  /(?:^|[/\\])primevue(?:[/\\]|$)/i,
 ]
 
 function shouldExcludePxToRemFile(file: string): boolean {

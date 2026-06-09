@@ -38,7 +38,7 @@ export function createCoreRuntime(adapters: CoreAdapters): CoreRuntime {
       const value = await adapters.storage.get(key)
       if (value === null) return fallback
       try {
-        return JSON.parse(value) as unknown as typeof fallback
+        return JSON.parse(value) as typeof fallback
       } catch (error) {
         adapters.logger.warn('Failed to parse stored JSON value.', { key, error })
         return fallback

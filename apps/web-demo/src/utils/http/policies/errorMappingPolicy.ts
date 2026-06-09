@@ -28,7 +28,7 @@ export function resolveHttpErrorPolicy(
 ): HttpErrorPolicy {
   const errorMessage = data?.message || t('http.error.httpError', { status })
   const errorType = getErrorTypeByStatus(status)
-  let statusMessage = `HTTP ${status}`
+  let statusMessage: string
 
   switch (status) {
     case 400:

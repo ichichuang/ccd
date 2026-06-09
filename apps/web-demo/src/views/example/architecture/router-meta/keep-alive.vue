@@ -1,13 +1,19 @@
 <script setup lang="ts">
 defineOptions({ name: 'ExampleKeepAlive' })
 
+import {
+  routerMetaRouteNames,
+  routerMetaRoutePaths,
+} from '@/router/modules/example/shared/router-meta.paths'
 import { DateUtils } from '@/utils/date'
 
 const router = useRouter()
 const route = useRoute()
 
-const inputValue = ref('缓存状态测试')
-const noteValue = ref('在这里输入任意内容，切换到其他路由后再返回，验证 KeepAlive 是否保留状态。')
+const inputValue = ref<string | undefined>('缓存状态测试')
+const noteValue = ref<string | undefined>(
+  '在这里输入任意内容，切换到其他路由后再返回，验证 KeepAlive 是否保留状态。'
+)
 const counter = ref(0)
 const activatedCount = ref(0)
 const deactivatedCount = ref(0)
@@ -43,11 +49,11 @@ onUnmounted(() => {
 })
 
 const goTransitionDemo = () => {
-  router.push('/example/router-meta/transition-demo')
+  router.push(routerMetaRoutePaths.transitionDemo)
 }
 
 const goRouterMetaIndex = () => {
-  router.push('/example/router-meta/index')
+  router.push(routerMetaRoutePaths.index)
 }
 
 const resetLocalState = () => {
@@ -163,8 +169,8 @@ const resetLocalState = () => {
           <pre class="code-block">{{
             JSON.stringify(
               {
-                path: '/example/router-meta/keep-alive',
-                name: 'ExampleKeepAlive',
+                path: routerMetaRoutePaths.keepAlive,
+                name: routerMetaRouteNames.keepAlive,
                 meta: {
                   titleKey: 'router.example.architecture.routerMeta.keepAlive',
                   rank: 7,

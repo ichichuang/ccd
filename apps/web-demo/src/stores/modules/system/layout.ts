@@ -3,6 +3,7 @@ import {
   DEFAULT_LAYOUT_VISIBILITY_SETTINGS,
   LAYOUT_PERSIST_PICK,
 } from '@/constants/layout'
+import { DateUtils } from '@/utils/date'
 import { useDeviceStore } from '@/stores/modules/system/device'
 import { castValue, deepClone } from '@ccd/shared-utils'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
@@ -47,7 +48,7 @@ export const useLayoutStore = defineStore('layout', {
     /** 移动端抽屉侧边栏打开状态（运行时状态，不持久化） */
     mobileDrawerOpen: false,
     /** 表单记忆指针（formId -> storageKey） */
-    formMemoryPointers: {} as Record<string, string>,
+    formMemoryPointers: castValue<Record<string, string>>({}),
     contentScrollMemory: {},
   }),
 
@@ -110,7 +111,7 @@ export const useLayoutStore = defineStore('layout', {
           layout: this.preferredMode,
           collapsed: this.sidebarCollapse,
         },
-        updatedAt: Date.now(),
+        updatedAt: DateUtils.nowMs(),
       })
     },
     setExpandedMenuKeys(keys: Record<string, boolean>) {

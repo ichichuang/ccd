@@ -7,6 +7,7 @@ import { appLogger } from '@/adapters/logger.adapter'
 import { brand } from '@/constants/brand'
 import { appRoutePaths } from '@/constants/router'
 import { t } from '@/locales'
+import { DateUtils } from '@/utils/date'
 import {
   calculatePageTitle,
   getDeferredRouteTitleSource,
@@ -107,7 +108,7 @@ export function registerGuardEffects(router: Router): void {
     clearRoutePageLoadingTimer()
     clearRoutePageLoadingReleaseTimer()
 
-    routePageLoadingStartedAt = Date.now()
+    routePageLoadingStartedAt = DateUtils.nowMs()
     if (routePageLoadingActive) return
 
     routePageLoadingActive = true
@@ -130,7 +131,7 @@ export function registerGuardEffects(router: Router): void {
     clearRoutePageLoadingTimer()
     if (!routePageLoadingActive) return
 
-    const elapsed = Date.now() - routePageLoadingStartedAt
+    const elapsed = DateUtils.nowMs() - routePageLoadingStartedAt
     const remainingVisibleMs = Math.max(0, ROUTE_PAGE_LOADING_MIN_VISIBLE_MS - elapsed)
 
     clearRoutePageLoadingReleaseTimer()

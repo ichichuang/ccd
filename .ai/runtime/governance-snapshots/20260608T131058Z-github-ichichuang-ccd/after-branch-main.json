@@ -1,0 +1,102 @@
+{
+  "name": "main",
+  "commit": {
+    "sha": "babdcba3bdf3761ed6ced624733ce39465a21635",
+    "node_id": "C_kwDOPX7ASNoAKGJhYmRjYmEzYmRmMzc2MWVkNmNlZDYyNDczM2NlMzk0NjVhMjE2MzU",
+    "commit": {
+      "author": {
+        "name": "ichichuang",
+        "email": "chichuang134@gmail.com",
+        "date": "2026-06-08T03:32:06Z"
+      },
+      "committer": {
+        "name": "ichichuang",
+        "email": "chichuang134@gmail.com",
+        "date": "2026-06-08T03:32:06Z"
+      },
+      "message": "fix(ci): 稳定路由烟测与刷新标题\n\n目的：修复 origin/main 上 Core Quality、E2E QA 与 GitHub Pages build 的失败。\n\n变更范围：\n\n- 为路由模块烟测的懒加载组件导入增加有界并发，保留完整路由覆盖。\n\n- 修正页面标题延迟逻辑，避免冷启动时写入 catch-all 的 404 标题。\n\n- 结合 app-ready 状态和已注册静态路由，保持真实未知路由显示 404。\n\n- 补充标题稳定性单元测试，并更新 GitHub CI 失败分析报告。\n\n验证：目标 Vitest、pnpm test:run、目标 Playwright、pnpm e2e:qa:prepared 均通过。\n\n验证：pnpm build:web-demo、pnpm type-check、pnpm lint:check、pnpm governance:gate 均通过。\n\n验证：pnpm validate 通过。\n\n残余风险：Pages deploy 原先是 build 失败后的下游跳过状态，推送后需确认新运行。",
+      "tree": {
+        "sha": "74420bb09b42855a36234410fbc645f788af6458",
+        "url": "https://api.github.com/repos/ichichuang/ccd/git/trees/74420bb09b42855a36234410fbc645f788af6458"
+      },
+      "url": "https://api.github.com/repos/ichichuang/ccd/git/commits/babdcba3bdf3761ed6ced624733ce39465a21635",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/ichichuang/ccd/commits/babdcba3bdf3761ed6ced624733ce39465a21635",
+    "html_url": "https://github.com/ichichuang/ccd/commit/babdcba3bdf3761ed6ced624733ce39465a21635",
+    "comments_url": "https://api.github.com/repos/ichichuang/ccd/commits/babdcba3bdf3761ed6ced624733ce39465a21635/comments",
+    "author": {
+      "login": "ichichuang",
+      "id": 94677949,
+      "node_id": "U_kgDOBaSrvQ",
+      "avatar_url": "https://avatars.githubusercontent.com/u/94677949?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/ichichuang",
+      "html_url": "https://github.com/ichichuang",
+      "followers_url": "https://api.github.com/users/ichichuang/followers",
+      "following_url": "https://api.github.com/users/ichichuang/following{/other_user}",
+      "gists_url": "https://api.github.com/users/ichichuang/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/ichichuang/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/ichichuang/subscriptions",
+      "organizations_url": "https://api.github.com/users/ichichuang/orgs",
+      "repos_url": "https://api.github.com/users/ichichuang/repos",
+      "events_url": "https://api.github.com/users/ichichuang/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/ichichuang/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "ichichuang",
+      "id": 94677949,
+      "node_id": "U_kgDOBaSrvQ",
+      "avatar_url": "https://avatars.githubusercontent.com/u/94677949?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/ichichuang",
+      "html_url": "https://github.com/ichichuang",
+      "followers_url": "https://api.github.com/users/ichichuang/followers",
+      "following_url": "https://api.github.com/users/ichichuang/following{/other_user}",
+      "gists_url": "https://api.github.com/users/ichichuang/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/ichichuang/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/ichichuang/subscriptions",
+      "organizations_url": "https://api.github.com/users/ichichuang/orgs",
+      "repos_url": "https://api.github.com/users/ichichuang/repos",
+      "events_url": "https://api.github.com/users/ichichuang/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/ichichuang/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "ae02e2a275c7ca03a99c801b2f7b8da70e5beb5f",
+        "url": "https://api.github.com/repos/ichichuang/ccd/commits/ae02e2a275c7ca03a99c801b2f7b8da70e5beb5f",
+        "html_url": "https://github.com/ichichuang/ccd/commit/ae02e2a275c7ca03a99c801b2f7b8da70e5beb5f"
+      }
+    ]
+  },
+  "_links": {
+    "self": "https://api.github.com/repos/ichichuang/ccd/branches/main",
+    "html": "https://github.com/ichichuang/ccd/tree/main"
+  },
+  "protected": true,
+  "protection": {
+    "enabled": true,
+    "required_status_checks": {
+      "enforcement_level": "non_admins",
+      "contexts": ["Core Quality", "E2E QA"],
+      "checks": [
+        { "context": "Core Quality", "app_id": null },
+        { "context": "E2E QA", "app_id": null }
+      ]
+    }
+  },
+  "protection_url": "https://api.github.com/repos/ichichuang/ccd/branches/main/protection"
+}

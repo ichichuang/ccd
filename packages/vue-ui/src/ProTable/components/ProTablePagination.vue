@@ -7,8 +7,6 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { PAGINATION_DEFAULTS } from '../engine/config'
 
-const { t } = useI18n()
-
 const props = defineProps<{
   page: number
   pageSize: number
@@ -21,6 +19,7 @@ const emit = defineEmits<{
   'update:pageSize': [pageSize: number]
 }>()
 
+const { t } = useI18n()
 const pageSizeOptions = computed(() =>
   (props.pageSizeOptions ?? [...PAGINATION_DEFAULTS.pageSizeOptions]).map(v => ({
     label: String(v),

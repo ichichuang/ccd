@@ -3,7 +3,7 @@ import { useI18n } from 'vue-i18n'
 import type { LoginParams } from '@/types/dto/auth.dto'
 import type { FormSchema, ProFormExpose } from '@ccd/vue-ui'
 import { useLoginSubmit } from '../composables/useLoginSubmit'
-import type { LoginResponsiveState } from '../types'
+import type { LoginCharacterState, LoginFieldName, LoginResponsiveState } from '../types'
 
 defineOptions({ name: 'LoginForm' })
 
@@ -13,11 +13,20 @@ const props = defineProps<{
   responsive: LoginResponsiveState
 }>()
 
+const emit = defineEmits<{
+  characterStateChange: [state: LoginCharacterState]
+}>()
+
 const { t, locale } = useI18n({ useScope: 'global' })
 const { loading, submitLogin } = useLoginSubmit()
 const formRef = ref<ProFormExpose | null>(null)
 const isPasswordVisible = ref<boolean>(false)
 const rememberMe = ref<boolean>(false)
+const activeField = ref<LoginFieldName | null>(null)
+const fieldDraft = reactive<Record<LoginFieldName, string>>({
+  username: '',
+  password: '',
+})
 
 const loginSchema = computed<FormSchema>(() => ({
   fields: [
@@ -74,16 +83,50 @@ function getInputValue(value: unknown): string {
   return typeof value === 'string' ? value : ''
 }
 
-function commitInputValue(onUpdate: (value: unknown) => void, value: unknown): void {
-  onUpdate(typeof value === 'string' ? value : '')
+function emitCharacterState(): void {
+  emit('characterStateChange', {
+    activeField: activeField.value,
+    usernameLength: fieldDraft.username.length,
+    passwordLength: fieldDraft.password.length,
+    showPassword: isPasswordVisible.value,
+  })
+}
+
+function commitInputValue(
+  field: LoginFieldName,
+  onUpdate: (value: unknown) => void,
+  value: unknown
+): void {
+  const normalizedValue = typeof value === 'string' ? value : ''
+  fieldDraft[field] = normalizedValue
+  activeField.value = field
+  onUpdate(normalizedValue)
+  emitCharacterState()
+}
+
+function handleFieldFocus(field: LoginFieldName, value: unknown): void {
+  activeField.value = field
+  fieldDraft[field] = getInputValue(value)
+  emitCharacterState()
+}
+
+function handleFieldBlur(field: LoginFieldName, value: unknown): void {
+  fieldDraft[field] = getInputValue(value)
+  activeField.value = null
+  emitCharacterState()
 }
 
 function togglePasswordVisibility(): void {
   isPasswordVisible.value = !isPasswordVisible.value
+  emitCharacterState()
 }
 
 function fillPreset(values: LoginFormValues): void {
   formRef.value?.form.setFieldsValue(values)
+  fieldDraft.username = values.username
+  fieldDraft.password = values.password
+  activeField.value = 'username'
+  emitCharacterState()
 }
 
 async function handleLoginSubmit(): Promise<void> {
@@ -94,12 +137,17 @@ async function handleLoginSubmit(): Promise<void> {
 
   await submitLogin(instance.getFormState().values, () => {
     instance.form.setFieldsValue({ password: '' })
+    fieldDraft.password = ''
+    activeField.value = 'password'
+    emitCharacterState()
   })
 }
 
 const formGap = computed(() =>
   props.responsive.isCompact ? 'var(--spacing-2xs)' : 'var(--spacing-xs)'
 )
+
+onMounted(() => emitCharacterState())
 </script>
 
 <template>
@@ -114,9 +162,12 @@ const formGap = computed(() =>
       @submit="handleLoginSubmit"
     >
       <template #field-username="{ state, onUpdate }">
-        <div class="relative w-full">
+        <div
+          class="login-field-shell row-center h-[var(--spacing-2xl)] w-full overflow-hidden rounded-md border border-solid border-input bg-background/88 text-foreground shadow-sm transition-[border-color,box-shadow,background-color] duration-sm hover:border-primary/45 focus-within:!border-primary focus-within:!bg-background focus-within:[box-shadow:var(--p-form-field-focus-ring-shadow)]"
+          :class="state.errors.length > 0 ? '!border-danger' : ''"
+        >
           <span
-            class="pointer-events-none absolute inset-y-0 left-0 z-content center h-full w-[var(--spacing-2xl)] text-primary/75"
+            class="pointer-events-none center h-full w-[var(--spacing-2xl)] shrink-0 text-primary/75"
           >
             <Icons
               name="i-lucide-user"
@@ -131,17 +182,22 @@ const formGap = computed(() =>
             size="large"
             :disabled="loading || state.disabled"
             :invalid="state.errors.length > 0"
-            class="h-[var(--spacing-2xl)]! w-full rounded-lg! border border-solid border-input! bg-background/88! pl-[var(--spacing-2xl)]! text-foreground! shadow-none! transition-colors duration-sm hover:!border-primary/45 focus-visible:!border-primary focus-visible:!bg-background focus-visible:[box-shadow:var(--p-form-field-focus-ring-shadow)]"
+            class="login-field-input h-full! min-w-0! flex-1! rounded-none! border-0! bg-transparent! px-0! text-foreground! shadow-none! outline-none! ring-0!"
             fluid
-            @update:model-value="value => commitInputValue(onUpdate, value)"
+            @focus="handleFieldFocus('username', state.value)"
+            @blur="handleFieldBlur('username', state.value)"
+            @update:model-value="value => commitInputValue('username', onUpdate, value)"
           />
         </div>
       </template>
 
       <template #field-password="{ state, onUpdate }">
-        <div class="relative w-full">
+        <div
+          class="login-field-shell row-center h-[var(--spacing-2xl)] w-full overflow-hidden rounded-md border border-solid border-input bg-background/88 text-foreground shadow-sm transition-[border-color,box-shadow,background-color] duration-sm hover:border-primary/45 focus-within:!border-primary focus-within:!bg-background focus-within:[box-shadow:var(--p-form-field-focus-ring-shadow)]"
+          :class="state.errors.length > 0 ? '!border-danger' : ''"
+        >
           <span
-            class="pointer-events-none absolute inset-y-0 left-0 z-content center h-full w-[var(--spacing-2xl)] text-primary/75"
+            class="pointer-events-none center h-full w-[var(--spacing-2xl)] shrink-0 text-primary/75"
           >
             <Icons
               name="i-lucide-lock"
@@ -157,26 +213,27 @@ const formGap = computed(() =>
             size="large"
             :disabled="loading || state.disabled"
             :invalid="state.errors.length > 0"
-            class="h-[var(--spacing-2xl)]! w-full rounded-lg! border border-solid border-input! bg-background/88! pl-[var(--spacing-2xl)]! pr-[var(--spacing-2xl)]! text-foreground! shadow-none! transition-colors duration-sm hover:!border-primary/45 focus-visible:!border-primary focus-visible:!bg-background focus-visible:[box-shadow:var(--p-form-field-focus-ring-shadow)]"
+            class="login-field-input h-full! min-w-0! flex-1! rounded-none! border-0! bg-transparent! px-0! text-foreground! shadow-none! outline-none! ring-0!"
             fluid
-            @update:model-value="value => commitInputValue(onUpdate, value)"
+            @focus="handleFieldFocus('password', state.value)"
+            @blur="handleFieldBlur('password', state.value)"
+            @update:model-value="value => commitInputValue('password', onUpdate, value)"
           />
-          <span
-            role="button"
-            tabindex="0"
-            class="absolute inset-y-0 right-0 z-content center h-full w-[var(--spacing-2xl)] cursor-pointer text-muted-foreground transition-colors duration-sm hover:text-primary ring-focus-focus"
+          <Button
+            type="button"
+            severity="secondary"
+            variant="text"
+            class="h-full! w-[var(--spacing-2xl)] shrink-0 rounded-none! border-0! bg-transparent! p-0! text-muted-foreground! shadow-none! transition-colors duration-sm hover:!bg-primary/8 hover:!text-primary ring-focus-focus"
             :aria-label="isPasswordVisible ? t('login.passwordHide') : t('login.passwordShow')"
             :aria-pressed="isPasswordVisible"
-            :aria-disabled="loading || state.disabled"
-            @click="!(loading || state.disabled) && togglePasswordVisibility()"
-            @keydown.enter.prevent="!(loading || state.disabled) && togglePasswordVisibility()"
-            @keydown.space.prevent="!(loading || state.disabled) && togglePasswordVisibility()"
+            :disabled="loading || state.disabled"
+            @click="togglePasswordVisibility"
           >
             <Icons
               :name="isPasswordVisible ? 'i-lucide-eye-off' : 'i-lucide-eye'"
               size="sm"
             />
-          </span>
+          </Button>
         </div>
       </template>
 
@@ -195,12 +252,13 @@ const formGap = computed(() =>
               />
               <span class="leading-none">{{ t('login.rememberMe') }}</span>
             </label>
-            <a
-              href="#"
-              class="text-sm font-medium text-primary leading-none decoration-none hover:underline"
-            >
-              {{ t('login.forgotPassword') }}
-            </a>
+            <Button
+              type="button"
+              severity="secondary"
+              variant="text"
+              class="h-[var(--spacing-lg)] rounded-md border-0 bg-transparent px-xs! py-0! text-sm! font-medium! text-primary! shadow-none! transition-colors duration-sm hover:!bg-primary/8 ring-focus-focus"
+              :label="t('login.forgotPassword')"
+            />
           </div>
 
           <Button
@@ -215,22 +273,24 @@ const formGap = computed(() =>
           <div
             class="grid grid-cols-2 gap-0 overflow-hidden rounded-lg border border-solid border-border/45 bg-muted/30 p-2xs"
           >
-            <button
+            <Button
               id="login-fill-admin"
               type="button"
-              class="cursor-pointer rounded-md border-0 bg-transparent px-sm py-xs text-sm font-medium text-muted-foreground transition-colors duration-sm hover:bg-background/75 hover:text-foreground ring-focus-focus"
+              severity="secondary"
+              variant="text"
+              class="justify-center rounded-md! border-0! bg-transparent! px-sm! py-xs! text-sm! font-medium! text-muted-foreground! shadow-none! transition-colors duration-sm hover:!bg-background/75 hover:!text-foreground ring-focus-focus"
+              :label="t('login.quickAdmin')"
               @click="fillPreset(ADMIN_PRESET)"
-            >
-              {{ t('login.quickAdmin') }}
-            </button>
-            <button
+            />
+            <Button
               id="login-fill-user"
               type="button"
-              class="cursor-pointer rounded-md border-0 bg-transparent px-sm py-xs text-sm font-medium text-muted-foreground transition-colors duration-sm hover:bg-background/75 hover:text-foreground ring-focus-focus"
+              severity="secondary"
+              variant="text"
+              class="justify-center rounded-md! border-0! bg-transparent! px-sm! py-xs! text-sm! font-medium! text-muted-foreground! shadow-none! transition-colors duration-sm hover:!bg-background/75 hover:!text-foreground ring-focus-focus"
+              :label="t('login.quickUser')"
               @click="fillPreset(USER_PRESET)"
-            >
-              {{ t('login.quickUser') }}
-            </button>
+            />
           </div>
         </div>
       </template>

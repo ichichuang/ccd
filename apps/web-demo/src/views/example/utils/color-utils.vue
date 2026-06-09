@@ -12,68 +12,90 @@ import { generateChartPalette } from '@ccd/vue-charts'
 
 defineOptions({ name: 'ExampleUtilColorUtils' })
 
+type SliderModel = number | number[]
+
+function textInputValue(value: string | undefined): string {
+  return value ?? ''
+}
+
+function sliderValue(value: SliderModel, fallback = 0): number {
+  if (Array.isArray(value)) return value[0] ?? fallback
+  return value
+}
+
 // ── hexToRgb / rgbToHex ─────────────────────────────────────────
-const hexInput = ref<string>('#3b82f6')
-const rgbOutput = computed<string>(() => hexToRgb(hexInput.value))
+const hexInput = ref<string | undefined>('#3b82f6')
+const rgbOutput = computed<string>(() => hexToRgb(textInputValue(hexInput.value)))
 const roundTrip = computed<string>(() => rgbToHex(rgbOutput.value))
 
 // ── adjustBrightness ────────────────────────────────────────────
-const brightnessHex = ref<string>('#3b82f6')
-const brightnessPercent = ref<number>(0)
+const brightnessHex = ref<string | undefined>('#3b82f6')
+const brightnessPercent = ref<SliderModel>(0)
+const brightnessPercentValue = computed<number>(() => sliderValue(brightnessPercent.value))
 const brightnessOutput = computed<string>(() =>
-  adjustBrightness(brightnessHex.value, brightnessPercent.value)
+  adjustBrightness(textInputValue(brightnessHex.value), brightnessPercentValue.value)
 )
 const brightnessSteps = computed<string[]>(() => {
   const steps: string[] = []
   for (let p = -60; p <= 60; p += 15) {
-    steps.push(adjustBrightness(brightnessHex.value, p))
+    steps.push(adjustBrightness(textInputValue(brightnessHex.value), p))
   }
   return steps
 })
 
 // ── mixHex ──────────────────────────────────────────────────────
-const mixColor1 = ref<string>('#3b82f6')
-const mixColor2 = ref<string>('#ef4444')
-const mixWeight = ref<number>(50)
+const mixColor1 = ref<string | undefined>('#3b82f6')
+const mixColor2 = ref<string | undefined>('#ef4444')
+const mixWeight = ref<SliderModel>(50)
+const mixWeightValue = computed<number>(() => sliderValue(mixWeight.value, 50))
 const mixOutput = computed<string>(() =>
-  mixHex(mixColor1.value, mixColor2.value, mixWeight.value / 100)
+  mixHex(
+    textInputValue(mixColor1.value),
+    textInputValue(mixColor2.value),
+    mixWeightValue.value / 100
+  )
 )
 const mixSteps = computed<string[]>(() => {
   const steps: string[] = []
   for (let w = 0; w <= 100; w += 10) {
-    steps.push(mixHex(mixColor1.value, mixColor2.value, w / 100))
+    steps.push(mixHex(textInputValue(mixColor1.value), textInputValue(mixColor2.value), w / 100))
   }
   return steps
 })
 
 // ── shiftHue ────────────────────────────────────────────────────
-const hueHex = ref<string>('#3b82f6')
-const hueDegree = ref<number>(0)
-const hueOutput = computed<string>(() => shiftHue(hueHex.value, hueDegree.value))
+const hueHex = ref<string | undefined>('#3b82f6')
+const hueDegree = ref<SliderModel>(0)
+const hueDegreeValue = computed<number>(() => sliderValue(hueDegree.value))
+const hueOutput = computed<string>(() =>
+  shiftHue(textInputValue(hueHex.value), hueDegreeValue.value)
+)
 const hueWheel = computed<string[]>(() => {
   const steps: string[] = []
   for (let d = 0; d < 360; d += 30) {
-    steps.push(shiftHue(hueHex.value, d))
+    steps.push(shiftHue(textInputValue(hueHex.value), d))
   }
   return steps
 })
 
 // ── isDarkColor ─────────────────────────────────────────────────
-const darkCheckHex = ref<string>('#3b82f6')
-const darkResult = computed<boolean>(() => isDarkColor(darkCheckHex.value))
+const darkCheckHex = ref<string | undefined>('#3b82f6')
+const darkResult = computed<boolean>(() => isDarkColor(textInputValue(darkCheckHex.value)))
 
 // ── applyOpacityToColor ─────────────────────────────────────────
-const opacityHex = ref<string>('#3b82f6')
-const opacityValue = ref<number>(50)
+const opacityHex = ref<string | undefined>('#3b82f6')
+const opacityValue = ref<SliderModel>(50)
+const opacityPercentValue = computed<number>(() => sliderValue(opacityValue.value, 50))
 const opacityOutput = computed<string>(() =>
-  applyOpacityToColor(opacityHex.value, opacityValue.value)
+  applyOpacityToColor(textInputValue(opacityHex.value), opacityPercentValue.value)
 )
 
 // ── generateChartPalette ────────────────────────────────────────
-const paletteBase = ref<string>('#3b82f6')
-const paletteCount = ref<number>(8)
+const paletteBase = ref<string | undefined>('#3b82f6')
+const paletteCount = ref<SliderModel>(8)
+const paletteCountValue = computed<number>(() => Math.round(sliderValue(paletteCount.value, 8)))
 const paletteOutput = computed<string[]>(() =>
-  generateChartPalette(paletteBase.value, paletteCount.value)
+  generateChartPalette(textInputValue(paletteBase.value), paletteCountValue.value)
 )
 </script>
 
@@ -155,7 +177,7 @@ const paletteOutput = computed<string[]>(() =>
                 size="small"
               />
               <label class="text-xs text-muted-foreground">
-                亮度偏移 ({{ brightnessPercent }}%)
+                亮度偏移 ({{ brightnessPercentValue }}%)
               </label>
               <Slider
                 v-model="brightnessPercent"
@@ -205,7 +227,9 @@ const paletteOutput = computed<string[]>(() =>
                 placeholder="#ef4444"
                 size="small"
               />
-              <label class="text-xs text-muted-foreground">权重 color1 ({{ mixWeight }}%)</label>
+              <label class="text-xs text-muted-foreground">
+                权重 color1 ({{ mixWeightValue }}%)
+              </label>
               <Slider
                 v-model="mixWeight"
                 :min="0"
@@ -248,7 +272,7 @@ const paletteOutput = computed<string[]>(() =>
                 placeholder="#3b82f6"
                 size="small"
               />
-              <label class="text-xs text-muted-foreground">色相偏移 ({{ hueDegree }}°)</label>
+              <label class="text-xs text-muted-foreground">色相偏移 ({{ hueDegreeValue }}°)</label>
               <Slider
                 v-model="hueDegree"
                 :min="0"
@@ -321,7 +345,9 @@ const paletteOutput = computed<string[]>(() =>
                 placeholder="#3b82f6"
                 size="small"
               />
-              <label class="text-xs text-muted-foreground">透明度 ({{ opacityValue }}%)</label>
+              <label class="text-xs text-muted-foreground">
+                透明度 ({{ opacityPercentValue }}%)
+              </label>
               <Slider
                 v-model="opacityValue"
                 :min="0"
@@ -356,7 +382,7 @@ const paletteOutput = computed<string[]>(() =>
                 />
               </div>
               <div class="col-stretch gap-xs min-w-0">
-                <label class="text-xs text-muted-foreground">数量 ({{ paletteCount }})</label>
+                <label class="text-xs text-muted-foreground">数量 ({{ paletteCountValue }})</label>
                 <Slider
                   v-model="paletteCount"
                   :min="2"

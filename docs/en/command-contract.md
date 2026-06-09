@@ -16,6 +16,8 @@ Preferred canonical commands:
 - `pnpm e2e:qa`
 - `pnpm ci:prepare-internal`
 - `pnpm ci:smoke:packages`
+- `pnpm desktop:security`
+- `pnpm desktop:smoke`
 
 ## Daily Commands
 
@@ -31,6 +33,9 @@ Preferred canonical commands:
 - `pnpm ci:smoke:packages`
 - `pnpm docs:commands`
 - `pnpm governance:gate`
+- `pnpm desktop:security`
+- `pnpm desktop:smoke:dev`
+- `pnpm desktop:smoke:release`
 
 ## Deployment Commands
 

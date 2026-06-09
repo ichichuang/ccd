@@ -65,6 +65,18 @@ M13 removes package source include globs from the app tsconfig. After `pnpm ci:p
 
 M13a removes root theme tooling imports from `apps/web-demo/src/utils/theme/**`. Root scripts now consume pure theme generation, color, and contrast helpers through `@ccd/design-tokens/theme-engine`; the app theme utilities remain app-owned compatibility/runtime facades.
 
+## Route Inventory
+
+Current route ownership is app-local under `apps/web-demo/src/router/modules/**`:
+
+- `core.ts`: root redirects, login, and error routes.
+- `dashboard.ts`: authenticated dashboard entry routes.
+- `example.ts`: example route aggregation boundary.
+- `example/**`: split architecture, component, chart, hook, PrimeVue, ProForm, ProTable, system-configuration, utility, store, directive, permission, adapter, infra, and router-meta demonstration route modules.
+- `example.spec.ts`: route title/page i18n coverage for the example route surface.
+
+Route modules and their views remain browser-app-owned. New reusable platform behavior must move through governed `packages/*`; app routes must not become public package exports.
+
 ## PrimeVue Boundary
 
 Direct PrimeVue imports in `apps/web-demo` are limited to app bootstrap/plugin wiring, app global shell wiring, exact legacy/demo allowlist entries, generated type registry output, and the path-scoped `apps/web-demo/src/views/example/components/primevue-collection/**` showcase exception. New app feature-code direct PrimeVue imports must migrate behind `@ccd/vue-ui` / `@ccd/vue-primevue-adapter` or receive an owner-approved exact exception.

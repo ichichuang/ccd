@@ -5,6 +5,21 @@ import { toIconName } from './utils/helper'
 import { SIZE_SCALE_KEYS } from '@ccd/design-tokens'
 import type { SizeScaleKey } from '@ccd/design-tokens'
 
+/**
+ * Icons 组件 (UnoCSS preset-icons)
+ * 尺寸：标准阶梯 xs～5xl 通过 text-* 联动 SizeStore；数字/字符串通过内联样式。
+ */
+const props = withDefaults(defineProps<IconsProps>(), {
+  size: 'md',
+  color: undefined,
+  animation: undefined,
+  flip: undefined,
+  rotate: undefined,
+  scale: undefined,
+  label: undefined,
+  title: undefined,
+})
+
 const SIZE_CLASS_MAP: Record<SizeScaleKey, string> = {
   xs: 'text-xs',
   sm: 'text-sm',
@@ -55,21 +70,6 @@ function isSizeScaleKey(value: string): value is SizeScaleKey {
 function isAllowedSizeString(value: string): boolean {
   return ALLOWED_SIZE_UNIT_PATTERN.test(value) || CSS_VAR_PATTERN.test(value)
 }
-
-/**
- * Icons 组件 (UnoCSS preset-icons)
- * 尺寸：标准阶梯 xs～5xl 通过 text-* 联动 SizeStore；数字/字符串通过内联样式。
- */
-const props = withDefaults(defineProps<IconsProps>(), {
-  size: 'md',
-  color: undefined,
-  animation: undefined,
-  flip: undefined,
-  rotate: undefined,
-  scale: undefined,
-  label: undefined,
-  title: undefined,
-})
 
 // 1. 图标名称 → UnoCSS 类名（custom 集合保留冒号 i-custom:name，其余集合 : 转 -）
 const iconClass = computed(() => {

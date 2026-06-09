@@ -8,6 +8,7 @@ import {
 import type { DialogOptions } from '@ccd/vue-ui'
 import { useDialog } from '@/hooks/modules/useDialog'
 import { useTimeoutFn } from '@vueuse/core'
+import { castValue } from '@ccd/shared-utils'
 
 export type RowId = string | number
 
@@ -98,7 +99,7 @@ function resolveRowId<TRow extends Record<string, unknown>>(
   getRowId: ProTableCrudMappers<TRow>['getRowId']
 ): RowId {
   if (getRowId) return getRowId(row)
-  const id = (row as Record<string, unknown>).id
+  const id = castValue<Record<string, unknown>>(row).id
   if (typeof id === 'string' || typeof id === 'number') return id
   throw new Error('[useRecordOverlay] Pass mappers.getRowId when row.id is not string | number')
 }

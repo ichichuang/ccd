@@ -16,12 +16,16 @@ const SETTINGS_DIALOG_PT: DialogOptions['pt'] = {
   },
 }
 
-export function useGlobalSettingsDialog() {
+interface UseGlobalSettingsDialogReturn {
+  openGlobalSettings: () => void
+}
+
+export function useGlobalSettingsDialog(): UseGlobalSettingsDialogReturn {
   const { t } = useI18n()
   const { openDialog } = useDialog()
   const runtime = useLayoutRuntime()
 
-  function openGlobalSettings() {
+  function openGlobalSettings(): void {
     openDialog({
       header: () => t('layout.globalSettingsTitle'),
       class: SETTINGS_DIALOG_CLASS,

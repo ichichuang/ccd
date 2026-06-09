@@ -16,6 +16,7 @@ import type {
 import { registerSystemPreferenceSync } from './register'
 import { sanitizeSystemPreferencePayload } from './guards'
 import { resetSystemPreferenceSyncStateForTest } from './state'
+import { DateUtils } from '@/utils/date'
 
 type SyncStoreId = 'theme' | 'size' | 'layout' | 'locale' | 'preferences'
 
@@ -46,7 +47,7 @@ function resolveSyncType(storeId: SyncStoreId): SystemPreferenceSyncType {
 }
 
 function buildPayload(storeId: SyncStoreId): SystemPreferencePayload {
-  lastLocalPreferenceTimestamp = Math.max(Date.now(), lastLocalPreferenceTimestamp + 1)
+  lastLocalPreferenceTimestamp = Math.max(DateUtils.nowMs(), lastLocalPreferenceTimestamp + 1)
   const preferences = readSystemPreferencesFromStores(lastLocalPreferenceTimestamp)
   if (storeId === 'theme') return { theme: preferences.theme, updatedAt: preferences.updatedAt }
   if (storeId === 'size') return { size: preferences.size, updatedAt: preferences.updatedAt }
@@ -66,7 +67,7 @@ export function applyRemoteSystemPreferences(preferences: SystemPreferences): vo
     type: 'preferences:update',
     payload: normalized,
     clientId: 'system-preferences-bootstrap',
-    timestamp: Date.now(),
+    timestamp: DateUtils.nowMs(),
   })
 }
 
@@ -91,7 +92,7 @@ export function setupSystemPreferencesSync(options: SystemPreferencesSyncOptions
   initTransport({ websocketUrl: options.websocketUrl })
 
   const localPreferences = readLocalSystemPreferences()
-  const current = readSystemPreferencesFromStores(Date.now())
+  const current = readSystemPreferencesFromStores(DateUtils.nowMs())
   if (localPreferences) {
     applyRemoteSystemPreferences(localPreferences)
   } else {

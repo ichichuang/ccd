@@ -39,12 +39,6 @@ import type {
   UseEchartsProps,
 } from './utils/types'
 
-const VEChartsAsync = defineAsyncComponent(async () => {
-  await import('./echarts-setup')
-  const module = await import('vue-echarts')
-  return module.default
-})
-
 const props = withDefaults(defineProps<UseEchartsProps & { group?: string }>(), {
   ...createDefaultUseEchartsProps(),
   group: undefined,
@@ -52,8 +46,14 @@ const props = withDefaults(defineProps<UseEchartsProps & { group?: string }>(), 
 
 const emit = defineEmits<{
   finished: []
-  chartReady: [instance: unknown, id?: string]
+  'chart-ready': [instance: unknown, id?: string]
 }>()
+
+const VEChartsAsync = defineAsyncComponent(async () => {
+  await import('./echarts-setup')
+  const module = await import('vue-echarts')
+  return module.default
+})
 
 type VEChartsExpose = {
   chart?: EChartsType | null
@@ -435,7 +435,7 @@ function scheduleChartReadyEmit(): void {
     if (chartInstance && !chartInstance.isDisposed()) {
       isChartInitialized.value = true
       registerCurrentConnectGroup()
-      emit('chartReady', chartInstance, props.group || props.connectConfig?.groupId)
+      emit('chart-ready', chartInstance, props.group || props.connectConfig?.groupId)
     }
   }, 0)
 }

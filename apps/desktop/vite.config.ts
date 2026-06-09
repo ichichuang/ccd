@@ -4,6 +4,7 @@ import { defineConfig } from 'vite'
 import { createCcdUnoConfig } from '@ccd/unocss-preset'
 import {
   loadAppViteEnv,
+  localViteCors,
   localViteHost,
   resolveAppRoot,
   resolveRepoRoot,
@@ -32,7 +33,12 @@ export default defineConfig(({ mode }) => {
     server: {
       host: localViteHost,
       port: desktopPort,
+      cors: localViteCors,
       strictPort: true,
+    },
+    preview: {
+      host: localViteHost,
+      cors: localViteCors,
     },
   }
 })

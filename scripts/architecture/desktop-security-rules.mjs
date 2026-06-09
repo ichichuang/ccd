@@ -220,6 +220,63 @@ function validateCapabilities(capabilities, scopePolicy, findings) {
   }
 }
 
+function validateWindowDefaults(tauriConfig, findings) {
+  const windows = tauriConfig.app?.windows
+  if (!Array.isArray(windows) || windows.length === 0) {
+    findings.push('apps/desktop/src-tauri/tauri.conf.json: app.windows must define at least one explicit window')
+    return
+  }
+
+  for (const windowConfig of windows) {
+    const label =
+      typeof windowConfig?.label === 'string' && windowConfig.label.trim()
+        ? windowConfig.label
+        : '<unknown>'
+    for (const field of ['label', 'title']) {
+      if (typeof windowConfig?.[field] !== 'string' || windowConfig[field].trim().length === 0) {
+        findings.push(`apps/desktop/src-tauri/tauri.conf.json: window ${label} must define ${field}`)
+      }
+    }
+    for (const field of ['width', 'height', 'minWidth', 'minHeight']) {
+      if (!Number.isFinite(windowConfig?.[field]) || windowConfig[field] <= 0) {
+        findings.push(`apps/desktop/src-tauri/tauri.conf.json: window ${label} must define positive ${field}`)
+      }
+    }
+    for (const field of ['center', 'resizable', 'fullscreen', 'maximized', 'decorations', 'visible', 'devtools']) {
+      if (typeof windowConfig?.[field] !== 'boolean') {
+        findings.push(`apps/desktop/src-tauri/tauri.conf.json: window ${label} must explicitly define ${field}`)
+      }
+    }
+    if (windowConfig?.fullscreen !== false) {
+      findings.push(`apps/desktop/src-tauri/tauri.conf.json: window ${label} must not default to fullscreen`)
+    }
+    if (windowConfig?.devtools !== false) {
+      findings.push(`apps/desktop/src-tauri/tauri.conf.json: window ${label} must disable devtools in production config`)
+    }
+  }
+}
+
+function validateNavigationDefaults(tauriConfig, scopePolicy, findings) {
+  const assetProtocol = tauriConfig.app?.security?.assetProtocol
+  if (assetProtocol?.enable !== false) {
+    findings.push('apps/desktop/src-tauri/tauri.conf.json: app.security.assetProtocol.enable must be false by default')
+  }
+  if (!Array.isArray(assetProtocol?.scope) || assetProtocol.scope.length !== 0) {
+    findings.push('apps/desktop/src-tauri/tauri.conf.json: app.security.assetProtocol.scope must be empty by default')
+  }
+
+  const externalNavigation = surfaceMap(scopePolicy).get('external-navigation')
+  if (
+    externalNavigation?.enabled !== false ||
+    !Array.isArray(externalNavigation.allow) ||
+    externalNavigation.allow.length !== 0 ||
+    !Array.isArray(externalNavigation.deny) ||
+    !externalNavigation.deny.includes('*')
+  ) {
+    findings.push('apps/desktop/src-tauri/security-scopes.json: external-navigation must be denied by default')
+  }
+}
+
 function validatePluginPackages(packageManifest, cargoToml, scopePolicy, findings) {
   const surfaces = surfaceMap(scopePolicy)
   const deps = {
@@ -249,6 +306,8 @@ export function validateDesktopSecurity(inputs) {
   validateCsp(inputs.tauriConfig, findings)
   validateScopePolicy(inputs.scopePolicy, findings)
   validateCapabilities(inputs.capabilities, inputs.scopePolicy, findings)
+  validateWindowDefaults(inputs.tauriConfig, findings)
+  validateNavigationDefaults(inputs.tauriConfig, inputs.scopePolicy, findings)
   validatePluginPackages(inputs.packageManifest, inputs.cargoToml, inputs.scopePolicy, findings)
   return findings
 }

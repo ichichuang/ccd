@@ -104,6 +104,18 @@ const props = withDefaults(defineProps<ProTableProps<T>>(), {
   urlSync: false,
 })
 
+const emit = defineEmits<{
+  'update:selected': [rows: T[]]
+  load: [params: { page: number; pageSize: number; sort: SortState; filter: FilterState }]
+  'sort-change': [sort: SortState]
+  'filter-change': [filter: FilterState]
+  'page-change': [page: number, pageSize: number]
+  refresh: []
+  'load-more': []
+  'row-click': [row: T]
+  'request-error': [error: Error]
+}>()
+
 const { t } = useI18n()
 const urlSyncAdapter = inject(
   PRO_TABLE_URL_SYNC_ADAPTER_KEY,
@@ -152,7 +164,8 @@ function createUnifiedRequest(): RequestFn<T> | undefined {
 
       if (!props.apiExecutor) {
         throw new Error(
-          '[ProTable] apiUrl mode requires `apiExecutor` to decouple component from concrete HTTP client.'
+          '[ProTable] apiUrl mode requires `apiExecutor` prop. ' +
+            'Pass the app-owned HTTP adapter instead of importing app HTTP from @ccd/vue-ui.'
         )
       }
       const raw = await props.apiExecutor({
@@ -168,18 +181,6 @@ function createUnifiedRequest(): RequestFn<T> | undefined {
   return undefined
 }
 
-const emit = defineEmits<{
-  'update:selected': [rows: T[]]
-  load: [params: { page: number; pageSize: number; sort: SortState; filter: FilterState }]
-  'sort-change': [sort: SortState]
-  'filter-change': [filter: FilterState]
-  'page-change': [page: number, pageSize: number]
-  refresh: []
-  'load-more': []
-  'row-click': [row: T]
-  'request-error': [error: Error]
-}>()
-
 if (isDev && props.apiUrl && !props.apiExecutor) {
   console.error(
     '[ProTable] apiUrl mode requires `apiExecutor` prop. ' +
@@ -189,7 +190,7 @@ if (isDev && props.apiUrl && !props.apiExecutor) {
 
 const pagConfig = computed<PaginationConfig>(() => {
   if (!props.pagination || props.pagination === true) return {}
-  return props.pagination as unknown as PaginationConfig
+  return props.pagination
 })
 
 /** Snapshot at init — merged into pageSizeOptions so switching away (e.g. 5→10) does not drop the initial size. */
@@ -333,7 +334,7 @@ watch(
       rows = rows.slice(0, max)
     }
     const keyField = String(props.rowKey ?? PRO_TABLE_PROPS_DEFAULTS.rowKey)
-    const keys = rows.map(r => String((r as Record<string, unknown>)[keyField]))
+    const keys = rows.map(r => String(r[keyField]))
     const current = ctrl.state.selection
     if (
       keys.length === current.selectedRowKeys.length &&
@@ -362,7 +363,7 @@ watch(
     const keyField = String(props.rowKey ?? PRO_TABLE_PROPS_DEFAULTS.rowKey)
     const parentVal = props.selected
     const parentRows: T[] = !parentVal ? [] : Array.isArray(parentVal) ? parentVal : [parentVal]
-    const parentKeys = parentRows.map(r => String((r as Record<string, unknown>)[keyField]))
+    const parentKeys = parentRows.map(r => String(r[keyField]))
     const currentKeys = ctrl.state.selection.selectedRowKeys
     if (
       currentKeys.length === parentKeys.length &&
@@ -446,9 +447,9 @@ function handleExport(mode: 'page' | 'selected'): void {
 const tableSelection = computed({
   get: (): T | T[] | undefined => {
     if (props.selectable === 'single') {
-      return ctrl.state.selection.selectedRows[0] as T | undefined
+      return ctrl.state.selection.selectedRows[0]
     }
-    return ctrl.state.selection.selectedRows as T[]
+    return ctrl.state.selection.selectedRows
   },
   set: (val: T | T[] | undefined | null) => {
     let rows: T[] = !val ? [] : Array.isArray(val) ? val : [val]
@@ -538,19 +539,25 @@ function getColumnClass(col: ProTableColumn<T>, row: T): string {
   return typeof col.className === 'function' ? col.className(row) : col.className
 }
 
+function isTableRow(value: unknown): value is T {
+  return value !== null && typeof value === 'object' && !Array.isArray(value)
+}
+
 /** Body slot 作用域类型（PrimeVue Column #body 不暴露泛型，在此做一次收窄） */
 function getBodyCellNode(
   col: ProTableColumn<T>,
   slotProps: { data: unknown; index: number }
 ): VNode | string | number | null {
-  return renderCell(col, slotProps.data as unknown as T, slotProps.index)
+  if (!isTableRow(slotProps.data)) return null
+  return renderCell(col, slotProps.data, slotProps.index)
 }
 
 function getBodyColumnClass(
   col: ProTableColumn<T>,
   slotProps: { data: unknown; index: number }
 ): string {
-  return getColumnClass(col, slotProps.data as unknown as T)
+  if (!isTableRow(slotProps.data)) return ''
+  return getColumnClass(col, slotProps.data)
 }
 
 // --- API Exposure ---

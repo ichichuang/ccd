@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import {
+  routerMetaRouteNames,
+  routerMetaRoutePaths,
+} from '@/router/modules/example/shared/router-meta.paths'
 import { goToRoute } from '@/router/utils/helper'
 
 const route = useRoute()
@@ -20,50 +24,50 @@ const examples: MetaExampleItem[] = [
   {
     title: '外链示例',
     metaFields: 'isLink, linkUrl',
-    path: '/example/router-meta/external-link',
-    name: 'ExampleExternalLink',
+    path: routerMetaRoutePaths.externalLink,
+    name: routerMetaRouteNames.externalLink,
     icon: 'i-lucide-external-link',
   },
   {
     title: '隐藏面包屑',
     metaFields: 'hideBreadcrumb',
-    path: '/example/router-meta/hide-breadcrumb',
-    name: 'ExampleHideBreadcrumb',
+    path: routerMetaRoutePaths.hideBreadcrumb,
+    name: routerMetaRouteNames.hideBreadcrumb,
     icon: 'i-lucide-navigation',
   },
   {
     title: '隐藏标签页',
     metaFields: 'hiddenTag',
-    path: '/example/router-meta/hidden-tag',
-    name: 'ExampleHiddenTag',
+    path: routerMetaRoutePaths.hiddenTag,
+    name: routerMetaRouteNames.hiddenTag,
     icon: 'i-lucide-tag',
   },
   {
     title: '比例布局 (16:9)',
     metaFields: 'parent: ratio, ratio',
-    path: '/example/router-meta/ratio-demo',
-    name: 'ExampleRatioDemo',
+    path: routerMetaRoutePaths.ratioDemo,
+    name: routerMetaRouteNames.ratioDemo,
     icon: 'i-lucide-ratio',
   },
   {
     title: '窗口复用',
     metaFields: 'parent: fullscreen, reuseWindow',
-    path: '/example/router-meta/reuse-window',
-    name: 'ExampleReuseWindow',
+    path: routerMetaRoutePaths.reuseWindow,
+    name: routerMetaRouteNames.reuseWindow,
     icon: 'i-lucide-app-window',
   },
   {
     title: 'KeepAlive 缓存',
     metaFields: 'keepAlive',
-    path: '/example/router-meta/keep-alive',
-    name: 'ExampleKeepAlive',
+    path: routerMetaRoutePaths.keepAlive,
+    name: routerMetaRouteNames.keepAlive,
     icon: 'i-lucide-database',
   },
   {
     title: '路由过渡动画',
     metaFields: 'transition',
-    path: '/example/router-meta/transition-demo',
-    name: 'ExampleTransitionDemo',
+    path: routerMetaRoutePaths.transitionDemo,
+    name: routerMetaRouteNames.transitionDemo,
     icon: 'i-lucide-sparkles',
   },
 ]
