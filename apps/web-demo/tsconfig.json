@@ -31,9 +31,7 @@
   },
   "vueCompilerOptions": {
     "strictTemplates": true,
-    // target: 3.3 保持原值 — 升级至 3.5 导致 vue-tsc 2.2.10 将 <Transition>/<TransitionGroup>
-    // 等内置组件报错 "Property 'X' does not exist on type '{}'", 待 vue-language-tools 修复后再升级。
-    "target": 3.3,
+    "target": 3.5,
     "strict": true
   }
 }
