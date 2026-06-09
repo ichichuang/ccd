@@ -62,10 +62,10 @@ Parser compatibility:
 | -------- | ----: | ----- |
 | P0 | 0 | No current blockers identified by the deep-research report. |
 | P1 | 0 | High-priority governance/security/delivery defects are closed in this stage. |
-| P2 | 9 | Medium-priority modernization and isolated dependency lanes. |
+| P2 | 8 | Medium-priority modernization and isolated dependency lanes. |
 | P3 | 6 | Cleanup, documentation, audit-readback, and developer-experience issues. |
 | P4 | 10 | Strategic deferred or blocked guardrails that should remain open until owner decisions change. |
-| Total | 25 | All completed tasks from the previous ledger were removed. |
+| Total | 24 | All completed tasks from the previous ledger were removed. |
 
 ## 4. P1 — Closed Governance, Security, and Delivery Defects
 
@@ -98,11 +98,6 @@ No open Vite major lane tasks remain. The Vite 8 isolated compatibility lane was
   - Affected paths: hooks, auto-import configuration, packages using VueUse.
   - Acceptance: hooks and auto-import behavior remain stable; existing Rolldown/VueUse annotation warnings are tracked separately from the upgrade decision.
   - Validation: hook tests, type-check, build.
-
-- [ ] [P2-Deps-VueTooling] Align Vue compiler, `vue-tsc`, `@vue/tsconfig`, TypeScript, `@vitejs/plugin-vue`, and `@vitejs/plugin-vue-jsx` as one tested tooling set.
-  - Acceptance: SFC tooling, TS diagnostics, macro behavior, auto-import types, and build behavior remain deterministic.
-  - Constraint: do not mix this with Vite major migration unless the owner explicitly approves a combined tooling lane.
-  - Validation: `pnpm type-check`, `pnpm lint:check`, `pnpm build:ci`.
 
 - [ ] [P2-Deps-ESLint] Upgrade ESLint ecosystem only if lint behavior remains deterministic.
   - Affected paths: `eslint.config.ts`, lint scripts, Vue/TS lint plugins.
