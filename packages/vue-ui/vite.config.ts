@@ -11,7 +11,7 @@ export default defineConfig({
       formats: ['es'],
       fileName: () => 'index.js',
     },
-    rollupOptions: {
+    rolldownOptions: {
       external: [
         '@ccd/design-tokens',
         '@ccd/shared-utils',

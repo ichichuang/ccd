@@ -50,6 +50,34 @@ const scssPreprocessorOptions: ModernScssPreprocessorOptions = {
   charset: false,
 }
 
+function resolveVendorChunkName(id: string): string | null {
+  if (!id.includes('node_modules')) return null
+
+  // Core framework: startup-critical and shared by most routes.
+  if (id.includes('/vue/') || id.includes('vue-router') || id.includes('/pinia/')) {
+    return 'vendor-core'
+  }
+
+  // Heavy visual runtimes: async-only consumers should not leak into core.
+  if (
+    id.includes('echarts') ||
+    id.includes('zrender') ||
+    id.includes('vue-echarts') ||
+    id.includes('/gsap/') ||
+    id.includes('lottie-web') ||
+    id.includes('vue3-lottie')
+  ) {
+    return 'vendor-heavy'
+  }
+
+  // PrimeVue UI framework and theme runtime stay together to avoid style/runtime shards.
+  if (id.includes('@primeuix') || id.includes('@primevue') || id.includes('/primevue/')) {
+    return 'vendor-ui'
+  }
+
+  return null
+}
+
 export default ({ mode, command }: ConfigEnv): UserConfigExport => {
   // 1. 加载环境变量
   const env = wrapperEnv(loadAppViteEnv(mode, root))
@@ -76,13 +104,11 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
   const shouldOpenDevServer = isDev && !isAutomatedServer
   const shouldOpenPreview = VITE_SERVER_OPEN === 'true' && !isAutomatedServer
 
-  // 2. 动态控制 esbuild 的 drop / pure 选项
+  // 2. 动态控制 Oxc/Rolldown 的 drop / pure 选项
   //    保留 console.error 和 console.warn 用于生产环境错误可见性
-  const esbuildDrop: Array<'debugger'> = []
-  if (VITE_DROP_DEBUGGER) esbuildDrop.push('debugger')
-  const esbuildPure: string[] = []
+  const oxcPureConsoleCalls: string[] = []
   if (VITE_DROP_CONSOLE) {
-    esbuildPure.push(
+    oxcPureConsoleCalls.push(
       'console.log',
       'console.info',
       'console.debug',
@@ -169,15 +195,11 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
       include,
       exclude,
       force: false,
-      esbuildOptions: {
-        target: 'esnext',
-        keepNames: isDev,
+      rolldownOptions: {
+        output: {
+          keepNames: isDev,
+        },
       },
-    },
-
-    esbuild: {
-      drop: esbuildDrop.length ? esbuildDrop : undefined,
-      pure: esbuildPure.length ? esbuildPure : undefined,
     },
 
     // 5. 构建配置
@@ -190,11 +212,11 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
       assetsInlineLimit: 4096, // < 4kb 转 base64
       modulePreload: { polyfill: false },
 
-      rollupOptions: {
+      rolldownOptions: {
         treeshake: {
-          preset: 'smallest',
           moduleSideEffects: id =>
             /\.(css|scss|sass)$/.test(id) || id.includes('uno.css') || id.startsWith('virtual:'),
+          manualPureFunctions: oxcPureConsoleCalls.length ? oxcPureConsoleCalls : undefined,
         },
         input: {
           index: pathResolve('./index.html', import.meta.url),
@@ -205,51 +227,27 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
           entryFileNames: 'static/js/[name]-[hash].js',
           assetFileNames: 'static/[ext]/[name]-[hash].[ext]',
 
-          // Rollup 4 碎片合并：<2KB 的 chunk 自动归并到最近的父模块。
-          // Vite 7 当前仍走 Rollup output；迁移 Rolldown 时需复核该实验选项是否仍被支持。
-          // 消除 40+ 个微型碎片，减少 HTTP 请求数和压缩文件数。
-          experimentalMinChunkSize: 2 * 1024,
+          codeSplitting: {
+            groups: [
+              {
+                name: resolveVendorChunkName,
+                minSize: 2 * 1024,
+              },
+            ],
+          },
 
-          manualChunks(id: string) {
-            if (id.includes('node_modules')) {
-              // ── 1. Core framework: startup-critical and shared by most routes ──
-              if (id.includes('/vue/') || id.includes('vue-router') || id.includes('/pinia/'))
-                return 'vendor-core'
-
-              // ── 2. Heavy visual runtimes: async-only consumers should not leak into core ──
-              if (
-                id.includes('echarts') ||
-                id.includes('zrender') ||
-                id.includes('vue-echarts') ||
-                id.includes('/gsap/') ||
-                id.includes('lottie-web') ||
-                id.includes('vue3-lottie')
-              )
-                return 'vendor-heavy'
-
-              // ── 3. PrimeVue UI framework and theme runtime ──
-              // @primeuix/themes 与 @primevue/core、primevue/* 组件基础模块高度耦合，
-              // 合并为单一 chunk 避免 BaseStyle/utils 碎片散落在各路由 chunk 中
-              if (id.includes('@primeuix') || id.includes('@primevue') || id.includes('/primevue/'))
-                return 'vendor-ui'
-
-              // Other dependencies are left to Rollup so small async chains can co-locate
-              // with the route or feature that actually imports them.
-              return undefined
-            }
-            return undefined
+          minify: {
+            compress: {
+              dropDebugger: VITE_DROP_DEBUGGER,
+            },
           },
         },
       },
 
-      commonjsOptions: {
-        include: [/node_modules/],
-        transformMixedEsModules: false,
-      },
-
       reportCompressedSize: !isDev,
       copyPublicDir: true,
-      minify: 'esbuild' as const, // 使用 esbuild 默认压缩器（速度快，产物质量与 terser 接近）
+      minify: 'oxc' as const,
+      cssMinify: 'lightningcss' as const,
     },
 
     // 6. 全局常量注入：仅向客户端注入最小应用信息（避免大 JSON 导致 define 替换异常）
