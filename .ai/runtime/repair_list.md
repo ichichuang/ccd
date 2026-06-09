@@ -89,7 +89,7 @@ No open Vite major lane tasks remain. The Vite 8 isolated compatibility lane was
 
 ### Dependency modernization lanes
 
-- [ ] [P2-Deps-RuntimeStack] Upgrade Vue runtime ecosystem only in an isolated compatibility lane.
+- [x] [P2-Deps-RuntimeStack] Upgrade Vue runtime ecosystem only in an isolated compatibility lane.
   - Affected packages: `vue`, `vue-router`, `vue-i18n`, `pinia`, `unocss`, and related runtime plugins.
   - Acceptance: route behavior, i18n, state, UnoCSS, and browser app behavior remain stable.
   - Validation: targeted runtime tests, `pnpm type-check`, `pnpm test:run`, `pnpm e2e:qa`, `pnpm validate`.
