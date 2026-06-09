@@ -160,6 +160,69 @@ function validateCsp(tauriConfig, findings) {
   }
 }
 
+function validateCspPolicyDocumentation(tauriConfig, scopePolicy, findings) {
+  const csp = tauriConfig.app?.security?.csp
+  const documentedPolicy = scopePolicy.cspPolicy?.production
+  if (!documentedPolicy || typeof documentedPolicy !== 'object') {
+    findings.push('apps/desktop/src-tauri/security-scopes.json: cspPolicy.production is required')
+    return
+  }
+
+  if (typeof documentedPolicy.rationale !== 'string' || documentedPolicy.rationale.trim().length === 0) {
+    findings.push('apps/desktop/src-tauri/security-scopes.json: cspPolicy.production.rationale is required')
+  }
+
+  if (!Array.isArray(documentedPolicy.devExceptions)) {
+    findings.push('apps/desktop/src-tauri/security-scopes.json: cspPolicy.production.devExceptions must be an array')
+  } else {
+    for (const exception of documentedPolicy.devExceptions) {
+      if (typeof exception !== 'string' || exception.trim().length === 0) {
+        findings.push('apps/desktop/src-tauri/security-scopes.json: CSP dev exceptions must be documented strings')
+      }
+      if (exception.includes("'unsafe-inline'") || exception.includes("'unsafe-eval'")) {
+        findings.push('apps/desktop/src-tauri/security-scopes.json: CSP dev exceptions must not allow unsafe-inline or unsafe-eval')
+      }
+    }
+  }
+
+  const documentedDirectives = documentedPolicy.directives
+  if (!documentedDirectives || typeof documentedDirectives !== 'object' || Array.isArray(documentedDirectives)) {
+    findings.push('apps/desktop/src-tauri/security-scopes.json: cspPolicy.production.directives is required')
+    return
+  }
+
+  const actualDirectives = cspSourceSet(csp)
+  const documentedDirectiveNames = new Set(Object.keys(documentedDirectives))
+
+  for (const [directive, sources] of actualDirectives) {
+    const documented = documentedDirectives[directive]
+    if (!documented) {
+      findings.push(`apps/desktop/src-tauri/security-scopes.json: missing CSP documentation for ${directive}`)
+      continue
+    }
+    if (typeof documented.reason !== 'string' || documented.reason.trim().length === 0) {
+      findings.push(`apps/desktop/src-tauri/security-scopes.json: ${directive} must document a reason`)
+    }
+    const documentedSources = new Set(asSourceList(documented.sources))
+    for (const source of sources) {
+      if (!documentedSources.has(source)) {
+        findings.push(`apps/desktop/src-tauri/security-scopes.json: ${directive} documentation is missing source ${source}`)
+      }
+    }
+    for (const source of documentedSources) {
+      if (!sources.has(source)) {
+        findings.push(`apps/desktop/src-tauri/security-scopes.json: ${directive} documents unused source ${source}`)
+      }
+    }
+  }
+
+  for (const directive of documentedDirectiveNames) {
+    if (!actualDirectives.has(directive)) {
+      findings.push(`apps/desktop/src-tauri/security-scopes.json: ${directive} documents a CSP directive not present in tauri.conf.json`)
+    }
+  }
+}
+
 function validateScopePolicy(scopePolicy, findings) {
   if (scopePolicy.defaultDecision !== 'deny') {
     findings.push('apps/desktop/src-tauri/security-scopes.json: defaultDecision must be "deny"')
@@ -304,6 +367,7 @@ function validatePluginPackages(packageManifest, cargoToml, scopePolicy, finding
 export function validateDesktopSecurity(inputs) {
   const findings = []
   validateCsp(inputs.tauriConfig, findings)
+  validateCspPolicyDocumentation(inputs.tauriConfig, inputs.scopePolicy, findings)
   validateScopePolicy(inputs.scopePolicy, findings)
   validateCapabilities(inputs.capabilities, inputs.scopePolicy, findings)
   validateWindowDefaults(inputs.tauriConfig, findings)

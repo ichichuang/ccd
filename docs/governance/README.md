@@ -8,6 +8,8 @@ pnpm governance:gate
 
 `pnpm governance:full` is an alias for the same gate. CI calls the gate once, then runs type-check, tests, lint, build, desktop bundle guard, and E2E QA. Individual commands remain for local diagnosis only.
 
+The repository-wide full validation gate is `pnpm validate`. It runs through `scripts/validate-workspace.mjs full` and covers governance, dependencies, docs, runtime boundaries, package preparation, type-check, lint, unit tests, web and desktop builds, desktop security/smoke, E2E QA, budgets, CI parity, and locked Cargo validation. `pnpm check` is intentionally fast and non-complete.
+
 ## Entrypoints
 
 | Entrypoint                    | Role                                                             |
@@ -61,8 +63,11 @@ Turbo preserves topological workspace execution. Package dependency direction is
 | `pnpm arch:report`                 | Regenerate governance report.                               | Inside gate.                        | Observability refresh.                     | Blocking on drift     |
 | `pnpm arch:graphs`                 | Generate workspace/package/runtime graphs.                  | Inside gate.                        | Topology visibility refresh.               | Blocking on drift     |
 | `pnpm doctor`                      | Validate deterministic local runtime and AI runtime health. | Optional preflight.                 | Local shell/runtime diagnosis.             | Blocking when invoked |
-| `pnpm type-check`                  | Turbo workspace type check.                                 | Required after gate.                | Pre-PR quality check.                      | Blocking              |
-| `pnpm build`                       | Workspace production build through core and web-demo.       | Required after gate.                | Release/build validation.                  | Blocking              |
+| `pnpm validate`                    | Canonical full local gate.                                  | Union of Core Quality and E2E QA.   | Complete pre-merge validation.             | Blocking              |
+| `pnpm check`                       | Fast type-check plus lint gate.                             | Not a complete CI gate.             | Quick local feedback.                      | Partial               |
+| `pnpm build:ci`                    | Core Quality parity orchestrator.                           | Required quality job equivalent.    | Reproduce CI quality failures.             | Blocking              |
+| `pnpm type-check`                  | Turbo workspace type check.                                 | Inside build:ci and validate.       | Diagnostic helper.                         | Blocking              |
+| `pnpm build`                       | Workspace production build through core and web-demo.       | Build helper only.                  | Release/build diagnosis.                   | Blocking when invoked |
 
 ## Deterministic Resolution
 

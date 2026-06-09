@@ -17,6 +17,12 @@ CI 主要承担：
 - desktop bundle guard
 - e2e QA
 
+本地语义：
+
+- `pnpm build:ci` 复现 GitHub Actions 的 `Core Quality` job。
+- `pnpm e2e:qa` 复现 `E2E QA` job 的 Playwright QA 命令族。
+- `pnpm validate` 是完整本地门禁，覆盖 CI quality、E2E QA、依赖扫描证据、治理与桌面安全检查。
+
 ## Vercel 的职责
 
 Vercel 是部署构建入口。
@@ -49,7 +55,7 @@ VITE_PUBLIC_PATH=/ccd/
 
 ### pnpm build:ci
 
-这是面向 CI 的验证构建，通常包含更完整的校验链路。
+这是面向 CI `Core Quality` job 的验证链路，不包含单独的 `E2E QA` job。需要完整本地门禁时运行 `pnpm validate`。
 
 ### pnpm vercel:build
 

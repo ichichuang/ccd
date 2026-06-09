@@ -8,7 +8,7 @@ CCD enforces runtime isolation through workspace package boundaries and adapter 
 packages/contracts          -> strict runtime-neutral contracts
 packages/core               -> strict runtime-neutral injected-adapter facade
 packages/design-tokens      -> runtime-neutral token layer; classified diagnostics debt only
-packages/shared-utils       -> runtime-neutral utility layer; classified env-test debt only
+packages/shared-utils       -> runtime-neutral utility layer
 packages/unocss-preset      -> node-build package
 packages/vue-*              -> governed web-library packages with exact runtime surface classification
 apps/web-demo               -> browser app runtime; adapters preferred, exact app-local exceptions registered
@@ -25,7 +25,7 @@ root                        -> orchestration-only shell
 - runtime side effects: `console`, timers, direct `crypto`
 - Tauri APIs or `invoke()`
 
-`packages/design-tokens` and `packages/shared-utils` are also classified as runtime-neutral. Existing non-strict diagnostics/test-reset runtime references are exact policy exceptions and are tracked as debt, not as reusable runtime permission.
+`packages/design-tokens` and `packages/shared-utils` are also classified as runtime-neutral. Existing non-strict diagnostics runtime references are exact policy exceptions and are tracked as debt, not as reusable runtime permission. `packages/shared-utils/src/createCapabilityBridge.ts` no longer reads `import.meta.env`; test resets require the explicit `CAPABILITY_BRIDGE_TEST_RESET_TOKEN` export instead.
 
 Validation:
 
@@ -52,13 +52,11 @@ M3 does not migrate existing app source. Existing non-adapter browser runtime us
 
 M4 app-local classification adds a second layer of meaning on top of those exact runtime exceptions: app shell, app adapter, app store, app plugin integration, app view, app layout, app-local compatibility facade, app-local shared candidate, migration candidate, stale-doc candidate, test-only, violation candidate, or needs-owner-decision. This classification is evidence for future lanes, not a runtime allowlist broadening.
 
-M5 planning records the safeStorage/theme/size/device split without moving source: pure contracts/helpers/resolvers may target `packages/contracts`, `packages/shared-utils`, or `packages/design-tokens`; injected DOM/storage/runtime primitives may target `packages/vue-app-platform`; concrete browser collectors, persistence, Pinia stores, router/i18n bindings, and app bootstrap wiring stay app-owned or adapter-injected.
+P2A records the current safeStorage/theme/size/device split without moving runtime source: type-only storage contracts live in `packages/contracts`; JSON storage codecs and pure capability bridge helpers live in `packages/shared-utils`; pure theme/size/device derivation lives in `packages/design-tokens`; concrete browser collectors, persistence, Pinia stores, router/i18n bindings, and app bootstrap wiring stay app-owned or adapter-injected.
 
-SafeStorage crypto remains blocked on B-07 owner decision. Web Crypto/fallback implementation must not move into `packages/core` or `packages/contracts`.
+D-016 and D-019 approve app-owned safeStorage terminal runtime boundaries. Crypto/HMAC/Web Crypto, frontend obfuscation-key resolution, `lz-string` compression, Pinia serializer behavior, migration/fallback behavior, browser storage access, and app safeStorage facade exports stay under `apps/web-demo/src/utils/safeStorage/**`; they must not move into `packages/core`, `packages/contracts`, or `@ccd/shared-utils`.
 
-M5 does not broaden runtime or PrimeVue allowlists. PrimeVue allowlist reduction requires future source migration first because no current row is safely removable without behavior/API movement.
-
-M6 records proposed decisions and lane split only. It does not approve crypto movement, PrimeVue allowlist edits, runtime policy weakening, or source migration.
+P2A does not broaden runtime or PrimeVue allowlists. Current app-side raw PrimeVue allowlist rows are closed; new app-side raw `primevue/*` or `@primevue/*` imports still require a future exact owner decision.
 
 M8 establishes pure size resolver helpers under `packages/design-tokens` and keeps browser DOM/preload/storage/device/store behavior in `apps/web-demo`. This is non-crypto foundation progress only and does not reduce runtime exception requirements for app-owned surfaces.
 

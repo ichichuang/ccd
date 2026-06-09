@@ -29,10 +29,16 @@ pnpm dev:desktop
 
 ## 构建
 
-### 验证构建（CI 思路）
+### CI Quality 验证
 
 ```bash
 pnpm build:ci
+```
+
+### 完整本地门禁
+
+```bash
+pnpm validate
 ```
 
 ### 部署构建（Vercel 思路）
@@ -84,9 +90,7 @@ pnpm ccd:ship -- "feat: describe change"
 ## 提交前校验
 
 ```bash
-pnpm lint:check
-pnpm type-check
-pnpm governance:gate
+pnpm validate
 ```
 
 ## 命令决策矩阵
@@ -101,7 +105,8 @@ pnpm governance:gate
 | `pnpm ci:smoke:packages`           | 验证工作区包解析与 dist 产物                       | 内部包构建后或部署构建前              |
 | `pnpm governance:refresh`          | 刷新治理生成产物                                   | API、拓扑、策略或报告源变更后         |
 | `pnpm governance:gate`             | 运行统一架构与治理门禁                             | 提交前、CI 中、刷新治理后             |
-| `pnpm build:ci`                    | CI 验证构建                                        | 推送前或复现 CI 时                    |
+| `pnpm check`                       | 快速非完整类型检查与 lint 门禁                     | 仅用于快速本地反馈                    |
+| `pnpm build:ci`                    | CI `Core Quality` 等价门禁                         | 推送前或复现 CI quality job 时        |
 | `pnpm vercel:build`                | Vercel 部署构建                                    | 仅用于 Vercel 部署校验                |
 | `pnpm dev:web-demo`                | 启动浏览器 `web-demo` 应用开发服务                 | 本地浏览器应用开发                    |
 | `pnpm dev:desktop`                 | 启动桌面外壳前端开发服务                           | 本地桌面前端开发                      |
@@ -112,6 +117,7 @@ pnpm governance:gate
 | `pnpm desktop:smoke:release`       | 校验 Tauri release 编译路径（不打包 bundle）       | Tauri 发布配置或 CI 复现时            |
 | `pnpm desktop:smoke`               | 串行运行桌面安全、dev smoke 与 release smoke       | 桌面 P3 全量本地 smoke                |
 | `pnpm budget:desktop`              | 校验桌面前端构建产物预算                           | 桌面构建后                            |
+| `pnpm validate`                    | 运行完整本地门禁                                   | 合并前或需要完整本地验证时            |
 | `pnpm e2e:qa`                      | QA 回归测试                                        | UI、路由、布局或运行时变更后          |
 | `pnpm ai:sync`                     | 同步 AI 协议适配器                                 | AI 协议或适配器源变更后               |
 | `pnpm ai:sync:codex`               | 同步 Codex 相关 AI 产物                            | Skill 或 Codex 适配器变更后           |
@@ -122,7 +128,5 @@ pnpm governance:gate
 在向远端推送前，建议至少确认：
 
 1. `pnpm ccd:doctor` 正常
-2. `pnpm lint:check` 通过
-3. `pnpm type-check` 通过
-4. `pnpm governance:gate` 通过
-5. `git diff --check` 无空白问题
+2. `pnpm validate` 通过
+3. `git diff --check` 无空白问题

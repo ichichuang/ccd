@@ -40,6 +40,27 @@ CCD uses workspace ownership rather than archive ownership.
 | App runtime capability                | `apps/*/src/adapters/**` or exact approved app infrastructure exceptions | Do not move browser/Tauri/auth/router/store effects into `contracts` or `core`; do not add broad runtime allowlist globs. |
 | Reusable/public monorepo capability   | owning package under `packages/*` via package exports                    | Do not create public shared-capability exports from `apps/*` unless a future explicit owner decision changes the target.  |
 
+## P2A Owner Lane Closure
+
+P2A classifies the remaining shared-capability candidates into stable owner lanes:
+
+| Candidate                                                   | Current owner                            | P2A decision                                                                                                                                           |
+| ----------------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Cross-runtime contracts, DTOs, capability shapes            | `packages/contracts`                     | Type-only package-owned surface. No implementation, runtime API, Vue, alova, safeStorage runtime, or Tauri code belongs here.                          |
+| Runtime-neutral adapter facade                              | `packages/core`                          | Stays minimal and depends only on `@ccd/contracts`; not a shared frontend bucket.                                                                      |
+| Pure theme, size, breakpoint, device derivation             | `packages/design-tokens`                 | Package-owned. Browser DOM application, preload persistence, device listeners, and Pinia integration stay app-owned.                                   |
+| Pure generic helpers, JSON storage codec, capability bridge | `packages/shared-utils`                  | Package-owned and runtime-neutral. `createCapabilityBridge` uses an explicit test reset token and no longer needs an env-runtime exception.            |
+| Shared Vue/browser composables                              | `packages/vue-hooks`                     | Package-owned only when free of app router/store/i18n coupling. App-specific facades stay in `apps/web-demo/src/hooks/**`.                             |
+| Pure app-platform/layout helpers                            | `packages/vue-app-platform`              | Package-owned only for reusable primitives. Concrete app layout state, persistence, and bootstrap wiring stay in `apps/web-demo`.                      |
+| CCD UI primitives                                           | `packages/vue-ui`                        | Package-owned UI APIs. App plugin injection and app router/storage/date adapters stay app-local.                                                       |
+| PrimeVue adaptation                                         | `packages/vue-primevue-adapter`          | Package-owned PrimeVue theme/PT/locale/services/runtime install. App raw PrimeVue imports remain forbidden without a future exact owner decision.      |
+| Chart runtime and helpers                                   | `packages/vue-charts`                    | Package-owned chart component/runtime. App chart demos, data, and route ownership stay app-local.                                                      |
+| HTTP runtime                                                | `apps/web-demo/src/utils/http/**`        | App-owned. Do not move alova instance, interceptors, auth refresh, retry/cache/dedup, notification, or app schema validation into shared packages.     |
+| safeStorage terminal runtime                                | `apps/web-demo/src/utils/safeStorage/**` | App-owned. Do not move crypto/HMAC/Web Crypto, `lz-string`, serializer, browser storage, maintenance, migration, or facade runtime to shared packages. |
+| Pages, routes, stores, plugin wiring                        | `apps/web-demo` / `apps/desktop`         | App-owned. Extract only proven pure helpers through future owner-approved lanes.                                                                       |
+
+P2A does not execute Vite major migration or dependency modernization. Those remain isolated P2B/P2C lanes.
+
 ## App-local shared candidates
 
 M4 classifies app-local shared-looking paths before any source migration. This classification does not approve indefinite app ownership, and it does not authorize app paths to become public shared-capability export surfaces; it only separates app shell, app adapters, compatibility facades, stores, views, and future migration candidates.

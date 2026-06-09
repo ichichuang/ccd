@@ -41,6 +41,42 @@ function baseInputs() {
     },
     scopePolicy: {
       defaultDecision: 'deny',
+      cspPolicy: {
+        production: {
+          rationale: 'Bundled local assets plus Tauri IPC bridge only.',
+          devExceptions: [],
+          directives: {
+            'default-src': {
+              sources: ["'self'", 'ipc:', 'http://ipc.localhost'],
+              reason: 'Allow bundled assets and Tauri IPC bridge.',
+            },
+            'base-uri': {
+              sources: ["'none'"],
+              reason: 'Prevent document base URL injection.',
+            },
+            'connect-src': {
+              sources: ["'self'", 'ipc:', 'http://ipc.localhost'],
+              reason: 'Allow same-origin requests and Tauri IPC bridge.',
+            },
+            'frame-ancestors': {
+              sources: ["'none'"],
+              reason: 'Prevent embedding.',
+            },
+            'object-src': {
+              sources: ["'none'"],
+              reason: 'Deny object/embed content.',
+            },
+            'script-src': {
+              sources: ["'self'"],
+              reason: 'Allow bundled scripts only.',
+            },
+            'style-src': {
+              sources: ["'self'"],
+              reason: 'Allow bundled styles only.',
+            },
+          },
+        },
+      },
       surfaces: [
         'filesystem',
         'shell',

@@ -44,14 +44,14 @@ Current app-local shared candidates include:
 
 M4 classification separates app shell, app adapters, app stores, app-local compatibility facades, app views, test-only files, and migration candidates. It does not approve indefinite app ownership.
 
-M5 extraction planning keeps runtime behavior unchanged and narrows future source lanes:
+P2A extraction closure keeps runtime behavior unchanged and narrows future source lanes:
 
-- safeStorage: contracts/types and pure codec helpers may move to packages later; browser storage, key/env/logger behavior stays app-owned.
-- safeStorage crypto: blocked on owner decision; Web Crypto/fallback implementation must not move to `packages/core` or `packages/contracts`.
+- safeStorage: type-only storage contracts are package-owned in `@ccd/contracts`; JSON codec helpers are package-owned in `@ccd/shared-utils`; browser storage, key/env/logger behavior stays app-owned.
+- safeStorage crypto/compression: D-016 and D-019 keep Crypto/HMAC/Web Crypto, frontend obfuscation-key resolution, `lz-string`, Pinia serializer behavior, browser storage, migration/fallback behavior, and app safeStorage facade exports under `apps/web-demo/src/utils/safeStorage/**`; they must not move to `packages/core`, `packages/contracts`, or `@ccd/shared-utils`.
 - theme/size/device: pure resolvers target `packages/design-tokens`; injected runtime primitives target `packages/vue-app-platform`; browser collectors, preload, persistence, and stores stay app-owned.
 - hooks/facades: `useAutoMitt`, `useDialog`, and `useProTableUrlSync` remain thin app facades over package primitives and adapter keys.
 
-M6 adds proposed owner-decision records only. It does not approve source migration; `B-07` remains blocked until an owner approves crypto ownership.
+M6 owner-decision notes are superseded for safeStorage by D-016 and D-019. They do not authorize source migration outside the owner lanes above.
 
 M8 moves/exposes only runtime-neutral size resolver helpers in `@ccd/design-tokens`. `apps/web-demo` still owns size DOM application, preload storage reads, browser device collectors, Pinia state, and cross-window sync.
 
@@ -79,11 +79,11 @@ Route modules and their views remain browser-app-owned. New reusable platform be
 
 ## PrimeVue Boundary
 
-Direct PrimeVue imports in `apps/web-demo` are limited to app bootstrap/plugin wiring, app global shell wiring, exact legacy/demo allowlist entries, generated type registry output, and the path-scoped `apps/web-demo/src/views/example/components/primevue-collection/**` showcase exception. New app feature-code direct PrimeVue imports must migrate behind `@ccd/vue-ui` / `@ccd/vue-primevue-adapter` or receive an owner-approved exact exception.
+`packages/vue-primevue-adapter` owns PrimeVue theme, PT, locale, runtime installation, services, and integration adapters. App bootstrap/plugin files install PrimeVue through `installPrimeVueRuntime()` and consume adapter facades rather than raw PrimeVue imports.
 
-M5 found no PrimeVue allowlist row that can be removed safely without source migration. C-06 remains open until future wrapper/source migrations shrink exact app exceptions and the showcase exception.
+Post-P29/P31 current state: the app-side PrimeVue exact allowlist has 0 rows, the previous `apps/web-demo/src/views/example/components/primevue-collection/**` showcase exception is removed, and `C-06` is closed.
 
-M6 keeps C-06 open and proposes future one-feature-area-at-a-time reduction before allowlist rows are removed.
+New app feature-code direct `primevue/*` or `@primevue/*` imports must migrate behind `@ccd/vue-ui` / `@ccd/vue-primevue-adapter` or receive an owner-approved exact exception.
 
 ## Adapter Ownership
 
@@ -98,6 +98,18 @@ Current adapter responsibilities:
 - browser storage adapter
 - browser network adapter
 - browser logger adapter
+
+## Governed App Infrastructure Exceptions
+
+Some app-owned runtime infrastructure intentionally remains outside `src/adapters/**` because it binds app policy, stores, router, i18n, or browser-first-paint behavior. These are not shared package candidates unless a future owner decision changes the lane:
+
+| Boundary                                                                                                 | Owner           | Reason                                                                                                                                                                          |
+| -------------------------------------------------------------------------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/web-demo/src/utils/http/**`                                                                        | `apps/web-demo` | Alova instance, interceptors, auth refresh, retry/cache/dedup, notification policy, and app Zod validation are app policy. Type-only HTTP contracts remain in `@ccd/contracts`. |
+| `apps/web-demo/src/utils/safeStorage/**`                                                                 | `apps/web-demo` | Crypto/HMAC/Web Crypto, `lz-string`, browser storage, obfuscation-key resolution, serializer, maintenance, and migration behavior are app terminal runtime boundaries.          |
+| `apps/web-demo/src/plugins/**`                                                                           | `apps/web-demo` | Plugin wiring injects app date/storage/router/store/i18n capabilities into package extension points.                                                                            |
+| `apps/web-demo/src/router/**` and `apps/web-demo/src/stores/**`                                          | `apps/web-demo` | Routes and Pinia stores own concrete app navigation and state behavior. Extract only pure helpers through a future package lane.                                                |
+| `apps/web-demo/src/utils/theme/engine.ts`, `mode.ts`, `transitions.ts`, `sizeEngine.ts`, `deviceSync.ts` | `apps/web-demo` | DOM writes, preload storage reads, device collection, transitions, and store coupling remain app-owned; pure resolvers are already in `@ccd/design-tokens`.                     |
 
 ## Classified Non-Adapter Runtime Access
 

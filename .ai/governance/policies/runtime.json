@@ -1305,16 +1305,6 @@
       "policyAction": "allow-exact-classified-exception"
     },
     {
-      "path": "packages/shared-utils/src/createCapabilityBridge.ts",
-      "surfaces": ["import.meta.env"],
-      "classification": "violation-candidate",
-      "relatedIssueIds": ["C-01"],
-      "migrationTarget": "replace import.meta.env test gate with injected or build-neutral test reset policy",
-      "revisitLane": "M5/M6",
-      "reason": "Existing runtime env access is classified debt in a pure shared utility package.",
-      "policyAction": "allow-exact-classified-exception"
-    },
-    {
       "path": "packages/vue-app-platform/src/bootstrap.ts",
       "surfaces": ["document", "documentElement", "requestAnimationFrame", "setTimeout"],
       "classification": "web-library-package",
