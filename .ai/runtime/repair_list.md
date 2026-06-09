@@ -62,10 +62,10 @@ Parser compatibility:
 | -------- | ----: | ----- |
 | P0 | 0 | No current blockers identified by the deep-research report. |
 | P1 | 0 | High-priority governance/security/delivery defects are closed in this stage. |
-| P2 | 13 | Medium-priority modernization and isolated dependency lanes. |
+| P2 | 9 | Medium-priority modernization and isolated dependency lanes. |
 | P3 | 6 | Cleanup, documentation, audit-readback, and developer-experience issues. |
 | P4 | 10 | Strategic deferred or blocked guardrails that should remain open until owner decisions change. |
-| Total | 29 | All completed tasks from the previous ledger were removed. |
+| Total | 25 | All completed tasks from the previous ledger were removed. |
 
 ## 4. P1 — Closed Governance, Security, and Delivery Defects
 
@@ -85,26 +85,7 @@ These items are real, but they should not be mixed into governance cleanup or ar
 
 ### Vite major lane
 
-- [ ] [P2-Vite8-IsolatedLane] Run Vite major migration only in a dedicated isolated branch.
-  - Source finding: Vite major modernization remains unfinished while current main intentionally avoids Vite 8 final-state dependency policy.
-  - Affected paths: Vite configs, `apps/web-demo/build/**`, package manifests, `pnpm-workspace.yaml`, `pnpm-lock.yaml`.
-  - Acceptance: no Vite 8/Rolldown/Oxc changes land in ordinary governance cleanup; branch name and PR title clearly identify the Vite major lane.
-  - Validation: branch review plus full lane validation before merge.
-
-- [ ] [P2-Vite8-Inventory] Inventory Vite/Rollup/esbuild-specific behavior before any Vite major migration.
-  - Affected paths: `apps/web-demo/vite.config.ts`, `apps/desktop/vite.config.ts`, package-level Vite configs, root `vitest.config.ts`, `apps/web-demo/build/**`.
-  - Acceptance: inventory covers `optimizeDeps`, esbuild options, minify behavior, Rollup `manualChunks`, small-chunk behavior, compression, HTML injection, ECharts tree-shaking, plugin progress/timing, and package-build configs.
-  - Validation: inventory report committed in the isolated lane.
-
-- [ ] [P2-Vite8-RolldownOxc] Migrate or adapt Rolldown/Oxc-related options only after the inventory is complete.
-  - Affected paths: Vite configs and build helper scripts.
-  - Acceptance: optimizer, minifier, pure/drop behavior, chunks, and custom plugins are validated under the target Vite major.
-  - Validation: `pnpm build:ci`, `pnpm vercel:build`, `pnpm e2e:qa`, bundle budget checks.
-
-- [ ] [P2-Vite8-BundleAndDeploy] Re-evaluate compression, bundle budgets, deployment ownership, and plugin usefulness during the Vite major lane.
-  - Affected paths: `apps/web-demo/build/compress.ts`, `apps/web-demo/build/plugins.ts`, Vercel/Pages build docs, budget scripts.
-  - Acceptance: compression ownership is documented as build-layer, deployment-layer, server-layer, or CDN-layer; cosmetic plugins that add no measurable value are removed.
-  - Validation: build output comparison, budget reports, deployment build.
+No open Vite major lane tasks remain. The Vite 8 isolated compatibility lane was completed on `modernize/vite8-compat` with inventory, Rolldown/Oxc config migration, bundle budget validation, deployment build validation, and full governance validation.
 
 ### Dependency modernization lanes
 

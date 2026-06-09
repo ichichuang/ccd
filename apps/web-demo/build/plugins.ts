@@ -138,6 +138,16 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
     // 自动导入 API（仅 hooks + 分组 stores，减少噪音；api/constants 需显式 import）
     AutoImport({
       imports: ['vue', 'vue-router', 'pinia', '@vueuse/core', { '@/locales': [['t', '$t']] }],
+      include: [
+        /[\\/]src[\\/].*\.[cm]?[jt]sx?$/,
+        /[\\/]src[\\/].*\.vue$/,
+        /[\\/]src[\\/].*\.vue\?vue/,
+      ],
+      exclude: [
+        /[\\/]node_modules[\\/]/,
+        /[\\/]\.git[\\/]/,
+        /[\\/]packages[\\/][^\\/]+[\\/]dist[\\/]/,
+      ],
       dirs: [
         'src/stores/modules/system',
         'src/stores/modules/session',
