@@ -41,42 +41,42 @@ Dependency direction is fixed:
 
 Before documenting or invoking any command, confirm it exists in `package.json`.
 
-| Command                            | Purpose                                                                   | When to run                                                       |
-| ---------------------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| `pnpm project:doctor`              | Validate project metadata and governed config                             | Before commits and after project metadata changes                 |
-| `pnpm ccd:doctor`                  | Run the daily project health check                                        | Before local development or release prep                          |
-| `pnpm ccd:fix`                     | Sync metadata, refresh generated outputs, format, and validate            | Before preparing a local change                                   |
-| `pnpm ccd:ship -- "type: message"` | Fix, validate, stage, and commit through Husky and commitlint             | For a normal local commit                                         |
-| `pnpm ci:prepare-internal`         | Build internal workspace packages                                         | Before app builds, Vercel builds, or package-resolution debugging |
-| `pnpm ci:smoke:packages`           | Verify workspace package resolution and built `dist` outputs              | After internal package builds or before deployment builds         |
-| `pnpm governance:refresh`          | Refresh generated governance outputs                                      | After API, topology, policy, or report-source changes             |
-| `pnpm governance:gate`             | Run the unified architecture and governance gate                          | Before commits, in CI, or after governance refreshes              |
-| `pnpm type-check`                  | Run workspace TypeScript checks                                           | After TypeScript, Vue, contract, or package export changes        |
-| `pnpm lint:check`                  | Run workspace ESLint checks                                               | After code, script, or Vue SFC changes                            |
-| `pnpm check`                       | Run type-check and lint checks                                            | For quick local quality validation                                |
-| `pnpm build:ci`                    | Run the CI validation build                                               | Before pushing or reproducing CI                                  |
-| `pnpm vercel:build`                | Run the Vercel deployment build                                           | Only for Vercel deployment validation                             |
-| `pnpm dev:web-demo`                | Start the browser `web-demo` development server                           | Browser app development                                           |
-| `pnpm dev:desktop`                 | Start the desktop shell frontend development server                       | Desktop frontend development                                      |
-| `pnpm build:web-demo`              | Build the web-demo static app                                             | GitHub Pages and local static build validation                    |
-| `pnpm build:desktop`               | Build the Tauri desktop runtime shell frontend                            | Desktop frontend build validation                                 |
-| `pnpm desktop:security`            | Validate Tauri CSP, capabilities, plugins, windows, and navigation policy | After desktop security boundary changes                           |
-| `pnpm desktop:smoke:dev`           | Validate the Tauri dev compile path                                       | After Tauri config or desktop dependency changes                  |
-| `pnpm desktop:smoke:release`       | Validate the Tauri release compile path without bundling                  | After Tauri release config changes or CI reproduction             |
-| `pnpm desktop:smoke`               | Run desktop security plus dev and release smoke checks                    | Full local desktop P3 smoke                                       |
-| `pnpm budget:desktop`              | Validate desktop frontend bundle budget                                   | After desktop builds                                              |
-| `pnpm validate`                    | Run governance, runtime, type, and build validation                       | Before merge or when full local validation is needed              |
-| `pnpm e2e:qa`                      | Run QA regression tests                                                   | After UI, route, layout, or runtime changes                       |
+| Command                            | Purpose                                                                    | When to run                                                       |
+| ---------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `pnpm project:doctor`              | Validate project metadata and governed config                              | Before commits and after project metadata changes                 |
+| `pnpm ccd:doctor`                  | Run the daily project health check                                         | Before local development or release prep                          |
+| `pnpm ccd:fix`                     | Sync metadata, refresh generated outputs, format, and validate             | Before preparing a local change                                   |
+| `pnpm ccd:ship -- "type: message"` | Fix, validate, stage, and commit through Husky and commitlint              | For a normal local commit                                         |
+| `pnpm ci:prepare-internal`         | Build internal workspace packages                                          | Before app builds, Vercel builds, or package-resolution debugging |
+| `pnpm ci:smoke:packages`           | Verify workspace package resolution and built `dist` outputs               | After internal package builds or before deployment builds         |
+| `pnpm governance:refresh`          | Refresh generated governance outputs                                       | After API, topology, policy, or report-source changes             |
+| `pnpm governance:gate`             | Run the unified architecture and governance gate                           | Before commits, in CI, or after governance refreshes              |
+| `pnpm type-check`                  | Run workspace TypeScript checks                                            | After TypeScript, Vue, contract, or package export changes        |
+| `pnpm lint:check`                  | Run workspace ESLint checks                                                | After code, script, or Vue SFC changes                            |
+| `pnpm check`                       | Run the fast non-complete type-check and lint gate                         | Quick local feedback only; not a merge gate                       |
+| `pnpm build:ci`                    | Run the CI Core Quality parity gate                                        | Before pushing or reproducing the CI quality job                  |
+| `pnpm vercel:build`                | Run the Vercel deployment build                                            | Only for Vercel deployment validation                             |
+| `pnpm dev:web-demo`                | Start the browser `web-demo` development server                            | Browser app development                                           |
+| `pnpm dev:desktop`                 | Start the desktop shell frontend development server                        | Desktop frontend development                                      |
+| `pnpm build:web-demo`              | Build the web-demo static app                                              | GitHub Pages and local static build validation                    |
+| `pnpm build:desktop`               | Build the Tauri desktop runtime shell frontend                             | Desktop frontend build validation                                 |
+| `pnpm desktop:security`            | Validate Tauri CSP, capabilities, plugins, windows, and navigation policy  | After desktop security boundary changes                           |
+| `pnpm desktop:smoke:dev`           | Validate the Tauri dev compile path                                        | After Tauri config or desktop dependency changes                  |
+| `pnpm desktop:smoke:release`       | Validate the Tauri release compile path without bundling                   | After Tauri release config changes or CI reproduction             |
+| `pnpm desktop:smoke`               | Run desktop security plus dev and release smoke checks                     | Full local desktop P3 smoke                                       |
+| `pnpm budget:desktop`              | Validate desktop frontend bundle budget                                    | After desktop builds                                              |
+| `pnpm validate`                    | Run the canonical full local gate through `scripts/validate-workspace.mjs` | Before merge or when complete local validation is needed          |
+| `pnpm e2e:qa`                      | Run QA regression tests                                                    | After UI, route, layout, or runtime changes                       |
 
 ## GitHub Actions / Vercel / GitHub Pages Separation
 
 - GitHub Actions is the quality gate.
 - Vercel is the deployment build target.
 - GitHub Pages serves the web-demo static deployment.
-- `build:ci` is the CI validation build.
+- `build:ci` is the CI `Core Quality` parity gate.
 - `vercel:build` is the deployment build.
 
-Do not confuse deployment build with CI validation build.
+Do not confuse deployment build with CI quality validation.
 
 ## Generated Artifact Rule
 

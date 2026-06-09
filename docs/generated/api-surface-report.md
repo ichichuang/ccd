@@ -28,7 +28,7 @@
 
 - Path: `packages/shared-utils`
 - Export subpaths: `.`
-- Root symbols: `applyUniqueRoot`, `areExpandedKeyRecordsEqual`, `CapabilityBridge`, `CapabilityBridgeOptions`, `castArray`, `castRecord`, `castValue`, `ConsoleLogger`, `ConsoleLoggerTarget`, `createCapabilityBridge`, `createConsoleLogger`, `debounceFn`, `deepClone`, `deepEqual`, `deepMerge`, `fnv1a`, `formatSerialId`, `generateIdFromKey`, `generateUniqueId`, `isRecord`, `JsonStorageParseResult`, `JsonStorageStringifyResult`, `objectGet`, `parseJsonStorageValue`, `stableSerializeRecord`, `stringifyJsonStorageValue`, `throttleFn`, `toKebabCase`, `toRecord`
+- Root symbols: `applyUniqueRoot`, `areExpandedKeyRecordsEqual`, `CAPABILITY_BRIDGE_TEST_RESET_TOKEN`, `CapabilityBridge`, `CapabilityBridgeOptions`, `CapabilityBridgeTestResetToken`, `castArray`, `castRecord`, `castValue`, `ConsoleLogger`, `ConsoleLoggerTarget`, `createCapabilityBridge`, `createConsoleLogger`, `debounceFn`, `deepClone`, `deepEqual`, `deepMerge`, `fnv1a`, `formatSerialId`, `generateIdFromKey`, `generateUniqueId`, `isRecord`, `JsonStorageParseResult`, `JsonStorageStringifyResult`, `objectGet`, `parseJsonStorageValue`, `stableSerializeRecord`, `stringifyJsonStorageValue`, `throttleFn`, `toKebabCase`, `toRecord`
 
 ## @ccd/vue-hooks
 

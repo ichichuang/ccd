@@ -78,7 +78,7 @@ const architectureGateChecks = [
   {
     rel: '.github/workflows/ci.yml',
     label: 'ci architecture gate',
-    acceptedCommands: ['pnpm ai:doctor', 'node scripts/ai-doctor.mjs'],
+    acceptedCommands: ['pnpm ai:doctor', 'node scripts/ai-doctor.mjs', 'pnpm build:ci'],
   },
 ]
 

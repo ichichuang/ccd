@@ -2,6 +2,58 @@
   "schemaVersion": 1,
   "description": "Desktop runtime scope policy. Every listed Tauri plugin or external navigation surface is denied until a concrete use case adds scoped permissions and validation.",
   "defaultDecision": "deny",
+  "cspPolicy": {
+    "production": {
+      "rationale": "CCD Desktop serves bundled local assets only. Tauri IPC is limited to Tauri's local IPC bridge sources; external navigation, remote frames, object embedding, and form posts are denied by default.",
+      "devExceptions": [],
+      "directives": {
+        "default-src": {
+          "sources": ["'self'", "ipc:", "http://ipc.localhost"],
+          "reason": "Allow bundled app assets and Tauri IPC bridge only."
+        },
+        "base-uri": {
+          "sources": ["'none'"],
+          "reason": "Prevent document base URL injection."
+        },
+        "connect-src": {
+          "sources": ["'self'", "ipc:", "http://ipc.localhost"],
+          "reason": "Allow same-origin frontend requests and Tauri IPC bridge only."
+        },
+        "font-src": {
+          "sources": ["'self'", "data:"],
+          "reason": "Allow bundled fonts and generated icon/font data URLs."
+        },
+        "form-action": {
+          "sources": ["'none'"],
+          "reason": "Desktop shell does not submit external forms."
+        },
+        "frame-ancestors": {
+          "sources": ["'none'"],
+          "reason": "Prevent embedding the desktop shell."
+        },
+        "frame-src": {
+          "sources": ["'none'"],
+          "reason": "No remote or local frames are required."
+        },
+        "img-src": {
+          "sources": ["'self'", "data:", "blob:"],
+          "reason": "Allow bundled images plus generated data/blob image previews."
+        },
+        "object-src": {
+          "sources": ["'none'"],
+          "reason": "Object/embed content is not part of the desktop shell."
+        },
+        "script-src": {
+          "sources": ["'self'"],
+          "reason": "Only bundled application scripts are allowed; inline script and eval stay denied."
+        },
+        "style-src": {
+          "sources": ["'self'"],
+          "reason": "Only bundled stylesheet assets are allowed; inline style stays denied."
+        }
+      }
+    }
+  },
   "preEnableRequirements": [
     "Document the concrete desktop use case.",
     "Add the required Tauri plugin dependency only for that use case.",

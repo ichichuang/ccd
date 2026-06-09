@@ -163,7 +163,7 @@ P29/P31 后的当前状态：app-side PrimeVue exact allowlist 为 0 行，`apps
 
 运行时能力必须通过 contracts 定义的接口注入。
 
-`packages/design-tokens` 与 `packages/shared-utils` 也属于运行时无关包类。当前少量诊断或测试重置相关 runtime 引用被登记为待清理候选，不是包级运行时授权。
+`packages/design-tokens` 与 `packages/shared-utils` 也属于运行时无关包类。当前 `packages/design-tokens` 中少量诊断 runtime 引用被登记为待清理候选，不是包级运行时授权；`packages/shared-utils/src/createCapabilityBridge.ts` 已不再读取 `import.meta.env`，测试重置通过显式 reset token 控制。
 
 ## 适配层边界
 

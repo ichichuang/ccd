@@ -102,3 +102,8 @@ catalog:
   vue-tsc: ^2.2.10
   vue3-lottie: ^3.3.1
   zod: ^4.3.6
+
+catalogs:
+  overrides:
+    glob: ^11.0.3
+    lru-cache: 11.2.4

@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import process from 'node:process'
+import prettier from 'prettier'
 import { readPolicies, workspacePackages } from '../governance/policy-utils.mjs'
 
 const root = process.cwd()
@@ -59,10 +60,19 @@ for (const packageInfo of governedPackages) {
   }
 }
 
-mkdirSync(dirname(join(root, 'docs/generated/sbom.json')), { recursive: true })
+const sbomPath = join(root, 'docs/generated/sbom.json')
+const sbom = {
+  schemaVersion: 1,
+  generatedBy: 'scripts/architecture/check-supply-chain.mjs',
+  policyVersion: readJson(join(root, '.ai/governance/policies/version.json')).policyVersion,
+  packages: governedPackages.map(packageInfo => readJson(join(root, packageInfo.path, 'package.json'))),
+}
+mkdirSync(dirname(sbomPath), { recursive: true })
 writeFileSync(
-  join(root, 'docs/generated/sbom.json'),
-  `${JSON.stringify({ schemaVersion: 1, generatedBy: 'scripts/architecture/check-supply-chain.mjs', policyVersion: readJson(join(root, '.ai/governance/policies/version.json')).policyVersion, packages: governedPackages.map(packageInfo => readJson(join(root, packageInfo.path, 'package.json'))) }, null, 2)}\n`
+  sbomPath,
+  await prettier.format(JSON.stringify(sbom, null, 2), {
+    filepath: sbomPath,
+  })
 )
 
 if (findings.length > 0) {

@@ -13,15 +13,15 @@ CCD dependency work is policy-driven and lane-isolated. Do not run blind global 
 ## Version Policy
 
 - Dependency modernization is owner-deferred for current Full GO.
-- External dependency ranges are centralized in the default pnpm catalog in `pnpm-workspace.yaml`; workspace package manifests reference those ranges with `catalog:`.
-- `pnpm deps:catalog:check` is the syncpack-equivalent alignment check. It fails when an external dependency bypasses the catalog, when a catalog entry is missing, or when an entry is unused.
+- External dependency ranges are centralized in the default pnpm catalog in `pnpm-workspace.yaml`; workspace package manifests and root pnpm overrides reference those ranges with `catalog:`.
+- `pnpm deps:catalog:check` is the syncpack-equivalent alignment check. It fails when an external dependency or override bypasses the catalog, when a catalog entry is missing, or when an entry is unused.
 - Future upgrades use single-dependency or tightly coupled compatibility lanes.
 - Vite major migration stays separate from Vue tooling, UI, HTTP, desktop, and dependency cleanup lanes.
 - Version range changes require manifest diff review, lockfile review, targeted validation, and rollback notes.
 
 ## pnpm Overrides Policy
 
-`pnpm.overrides` may be used only for a documented transitive dependency risk, compatibility constraint, or security response.
+`pnpm.overrides` may be used only for a documented transitive dependency risk, compatibility constraint, or security response. External override ranges must resolve through the pnpm catalog; do not hard-pin an override range directly in `package.json`.
 
 An override change must record:
 
@@ -32,6 +32,13 @@ An override change must record:
 - Removal condition or next review trigger.
 
 Do not use overrides to mask architecture violations, package export failures, or broken direct dependency declarations.
+
+Current overrides:
+
+| Override                | Catalog source                 | Reason                                                                                                                                     | Removal condition                                                                                                       |
+| ----------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `glob`                  | `catalogs.overrides.glob`      | Preserve the existing transitive compatibility policy while direct workspace manifests use `catalog:`.                                     | Remove after an isolated dependency lane proves the normal catalog range can resolve without lockfile or tooling drift. |
+| `path-scurry>lru-cache` | `catalogs.overrides.lru-cache` | Preserve the previously locked `path-scurry@2.0.1` transitive resolution while moving the override version declaration into pnpm catalogs. | Remove in the same isolated dependency lane that refreshes `glob`/`path-scurry` lockfile resolution.                    |
 
 ## Scanning Policy
 

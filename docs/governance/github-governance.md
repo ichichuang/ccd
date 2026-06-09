@@ -38,6 +38,7 @@ When operator approval is granted, `main` should require:
 
 The required check set should cover these command families:
 
+- Canonical local full gate: `pnpm validate`.
 - AI adapter sync and doctor checks: `pnpm ai:sync`, `pnpm ai:doctor`, and generated AI artifact drift checks.
 - Governance gate: `pnpm governance:gate` or its CI alias `pnpm validate:governance`.
 - Workspace package preparation: `pnpm ci:prepare-internal`.
@@ -56,7 +57,9 @@ Current `.github/workflows/ci.yml` exposes two merge-blocking GitHub Actions job
 - `Core Quality`
 - `E2E QA`
 
-`Core Quality` aggregates AI sync/doctor, generated artifact drift, governance gate, workspace preparation, type-check, unit tests, lint, production build, browser bundle budget, desktop smoke/security/build, and desktop budget commands. `E2E QA` covers the Playwright QA command family.
+`Core Quality` runs `pnpm build:ci`, which is the local CI parity mode of `scripts/validate-workspace.mjs`. It aggregates AI sync/doctor/preflight, generated artifact drift, governance and docs checks, dependency catalog and supply checks, runtime/boundary/API checks, workspace preparation, type-check, unit tests, lint, production builds, package smoke, browser bundle budget, desktop smoke/security/build, desktop budget, and locked Cargo validation. `E2E QA` covers the Playwright QA command family.
+
+Local `pnpm validate` is the union of `Core Quality`, `E2E QA`, dependency scan evidence, and the explicit standalone checks required before merge. Remote branch-protection settings are not mutated by local validation.
 
 The deploy workflow also exposes `build` and `deploy` checks on `main` pushes. They are not required for branch protection because `build` is an ambiguous generic name and the deploy workflow is not the PR quality gate.
 

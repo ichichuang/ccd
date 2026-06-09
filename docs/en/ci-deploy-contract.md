@@ -6,6 +6,12 @@ GitHub Actions validates architecture, metadata, generated artifacts, tests, lin
 
 Desktop CI coverage is repo-local workflow validation only. Remote branch protection and required-check settings remain operator-gated.
 
+Local parity:
+
+- `pnpm build:ci` reproduces the `Core Quality` job.
+- `pnpm e2e:qa` reproduces the Playwright QA command family used by the `E2E QA` job.
+- `pnpm validate` is the complete local gate and covers both CI quality families plus dependency scan evidence and standalone governance/security checks.
+
 ## Vercel Is the Deployment Build
 
 Vercel is configured to run:
@@ -34,7 +40,7 @@ VITE_PUBLIC_PATH=/ccd/
 
 ## build:ci vs vercel:build
 
-- `pnpm build:ci` is the CI validation build.
+- `pnpm build:ci` is the CI `Core Quality` parity gate.
 - `pnpm vercel:build` is the deployment build.
 
 They are not interchangeable.

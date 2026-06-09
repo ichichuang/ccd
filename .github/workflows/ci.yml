@@ -68,53 +68,8 @@ jobs:
       - name: Authorize GitHub CLI
         run: echo "${{ github.token }}" | gh auth login --with-token
 
-      # repair_list.md is local runtime state and created by ai:sync from the Markdown template; doctor requires it.
-      - name: CI runtime summary
-        run: bash scripts/exec.sh pnpm runtime:summary
-
-      - name: Sync AI adapters (materialize local runtime)
-        run: bash scripts/exec.sh pnpm ai:sync
-
-      - name: Prepare internal workspace packages
-        run: bash scripts/exec.sh pnpm ci:prepare-internal
-
-      - name: AI Architecture Doctor
-        run: bash scripts/exec.sh pnpm ai:doctor
-
-      - name: Unified Governance Gate
-        run: bash scripts/exec.sh pnpm validate:governance
-
-      - name: Verify Generated AI Artifacts Are Synced
-        run: |
-          bash scripts/exec.sh pnpm ai:sync
-          bash scripts/exec.sh pnpm ai:sync:codex
-          if ! git diff --quiet -- AGENTS.md CLAUDE.md .ai/manifests/skills-lock.json; then
-            echo "::error::Generated AI artifacts are stale. Run pnpm ai:sync && pnpm ai:sync:codex and commit the results."
-            git diff -- AGENTS.md CLAUDE.md .ai/manifests/skills-lock.json
-            exit 1
-          fi
-
-      - name: Strict Type Check
-        run: bash scripts/exec.sh pnpm type-check
-
-      - name: Unit Tests
-        run: bash scripts/exec.sh pnpm test:run
-
-      - name: Strict Lint Check
-        run: bash scripts/exec.sh pnpm lint:check
-
-      - name: Production Build Test
-        run: bash scripts/exec.sh pnpm exec turbo run build
-
-      - name: Browser Bundle Guard
-        run: bash scripts/exec.sh pnpm budget:bundles
-
-      - name: Desktop Tauri Smoke and Bundle Guard
-        run: |
-          bash scripts/exec.sh pnpm desktop:smoke:dev
-          bash scripts/exec.sh pnpm desktop:smoke:release
-          bash scripts/exec.sh pnpm build:desktop
-          bash scripts/exec.sh pnpm budget:desktop
+      - name: Core validation parity
+        run: bash scripts/exec.sh pnpm build:ci
 
   e2e-qa:
     name: E2E QA

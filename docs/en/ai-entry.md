@@ -41,18 +41,29 @@ Restricted areas unless explicitly required:
 
 Before documenting or invoking any command, confirm it exists in `package.json`.
 
-Preferred commands:
+Public commands:
 
-- `pnpm project:doctor`
 - `pnpm ccd:fix`
 - `pnpm ccd:ship -- "type: message"`
-- `pnpm governance:refresh`
-- `pnpm governance:gate`
+- `pnpm check`
+- `pnpm validate`
 - `pnpm build:ci`
 - `pnpm vercel:build`
 - `pnpm e2e:qa`
+- `pnpm dev:web-demo`
+- `pnpm dev:desktop`
+- `pnpm build:web-demo`
+- `pnpm build:desktop`
+
+Internal orchestration helpers:
+
+- `pnpm project:doctor`
+- `pnpm governance:refresh`
+- `pnpm governance:gate`
 - `pnpm ci:prepare-internal`
 - `pnpm ci:smoke:packages`
+
+`pnpm check` is fast and non-complete. `pnpm validate` is the canonical full local gate. `pnpm build:ci` reproduces the CI `Core Quality` job.
 
 ## Forbidden Changes
 

@@ -41,6 +41,24 @@ New Rust commands must return structured errors instead of string-only IPC error
 
 See [ADR-008](../adr/ADR-008-desktop-backend-ipc-and-updater-policy.md).
 
+## Security Policy
+
+Production CSP is explicit in `apps/desktop/src-tauri/tauri.conf.json` and documented in `apps/desktop/src-tauri/security-scopes.json`.
+
+Current policy:
+
+- `default-src`: local app assets plus Tauri IPC bridge sources only.
+- `connect-src`: same-origin requests plus Tauri IPC bridge sources only.
+- `script-src`: bundled scripts only; no inline script and no eval.
+- `style-src`: bundled stylesheets only.
+- `img-src`: bundled images plus generated `data:` and `blob:` images.
+- `font-src`: bundled fonts plus generated `data:` fonts.
+- `base-uri`, `form-action`, `frame-ancestors`, `frame-src`, and `object-src`: denied.
+
+There are currently no development CSP exceptions. If a future dev-only exception is required, keep production restrictive, document the exception in `security-scopes.json`, and extend `pnpm desktop:security` before enabling the behavior.
+
+Capability policy remains deny-by-default. `apps/desktop/src-tauri/capabilities/default.json` is local to the `main` window and grants no Tauri core or plugin permissions by default. `apps/desktop/src-tauri/security-scopes.json` documents every denied or planned plugin/navigation surface; no plugin may be enabled until it has scoped allow/deny rules and validation.
+
 ## Validation
 
 ```bash

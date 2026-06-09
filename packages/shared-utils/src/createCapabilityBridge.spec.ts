@@ -1,5 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { createCapabilityBridge } from './createCapabilityBridge'
+import {
+  CAPABILITY_BRIDGE_TEST_RESET_TOKEN,
+  createCapabilityBridge,
+} from './createCapabilityBridge'
 import type { ExplicitCapabilityShape } from './createCapabilityBridge'
 
 type ExpectTrue<T extends true> = T
@@ -131,21 +134,20 @@ describe('createCapabilityBridge', () => {
       bridge.install({ getValue: () => 'a', getCount: () => 1 })
       expect(bridge.isInstalled()).toBe(true)
 
-      bridge.resetForTest()
+      bridge.resetForTest(CAPABILITY_BRIDGE_TEST_RESET_TOKEN)
       expect(bridge.isInstalled()).toBe(false)
       expect(bridge.get()).toBeNull()
     })
 
-    it('throws outside test mode', () => {
-      const mutableEnv = import.meta.env as { MODE?: string }
-      const originalMode = mutableEnv.MODE
-      try {
-        mutableEnv.MODE = 'production'
-        bridge.install({ getValue: () => 'a', getCount: () => 1 })
-        expect(() => bridge.resetForTest()).toThrow('resetForTest is test-only')
-      } finally {
-        mutableEnv.MODE = originalMode
-      }
+    it('requires the explicit test reset token', () => {
+      bridge.install({ getValue: () => 'a', getCount: () => 1 })
+
+      expect(() =>
+        bridge.resetForTest(
+          Symbol('wrong-token') as unknown as typeof CAPABILITY_BRIDGE_TEST_RESET_TOKEN
+        )
+      ).toThrow('resetForTest is test-only')
+      expect(bridge.isInstalled()).toBe(true)
     })
   })
 })

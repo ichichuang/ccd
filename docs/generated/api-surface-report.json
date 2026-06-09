@@ -250,8 +250,10 @@
       "rootSymbols": [
         "applyUniqueRoot",
         "areExpandedKeyRecordsEqual",
+        "CAPABILITY_BRIDGE_TEST_RESET_TOKEN",
         "CapabilityBridge",
         "CapabilityBridgeOptions",
+        "CapabilityBridgeTestResetToken",
         "castArray",
         "castRecord",
         "castValue",

@@ -4,20 +4,41 @@
 
 Before documenting or invoking any command, confirm it exists in `package.json`.
 
-Preferred canonical commands:
+Public human-facing commands:
 
-- `pnpm project:doctor`
 - `pnpm ccd:fix`
 - `pnpm ccd:ship -- "type: message"`
-- `pnpm governance:refresh`
-- `pnpm governance:gate`
+- `pnpm check`
+- `pnpm validate`
 - `pnpm build:ci`
 - `pnpm vercel:build`
 - `pnpm e2e:qa`
-- `pnpm ci:prepare-internal`
-- `pnpm ci:smoke:packages`
+- `pnpm dev:web-demo`
+- `pnpm dev:desktop`
+- `pnpm build:web-demo`
+- `pnpm build:desktop`
 - `pnpm desktop:security`
 - `pnpm desktop:smoke`
+
+Internal orchestration helpers remain public package scripts only so CI, docs, governance, generated artifacts, package builds, and diagnostics can call them deterministically:
+
+- `pnpm project:doctor`
+- `pnpm governance:refresh`
+- `pnpm governance:gate`
+- `pnpm ci:prepare-internal`
+- `pnpm ci:smoke:packages`
+- `pnpm docs:commands`
+- `pnpm arch:runtime`
+- `pnpm arch:boundaries`
+- `pnpm api:report`
+- `pnpm deps:catalog:check`
+- `pnpm supply:check`
+
+`pnpm check` is intentionally non-complete. It only runs type-check and lint for fast local feedback.
+
+`pnpm validate` is the canonical full local gate and is implemented by `scripts/validate-workspace.mjs full`.
+
+`pnpm build:ci` is the local equivalent of the GitHub Actions `Core Quality` job and is implemented by `scripts/validate-workspace.mjs ci`.
 
 ## Daily Commands
 
