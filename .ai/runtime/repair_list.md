@@ -107,10 +107,12 @@ No open Vite major lane tasks remain. The Vite 8 isolated compatibility lane was
   - Config compatibility: removed obsolete `vue/script-setup-uses-vars` references because `eslint-plugin-vue` v10 removed the rule and `vue-eslint-parser` v9+ handles `<script setup>` usage; scoped the new `vue/no-required-prop-with-default` advisory off only for the existing `PrimeDialog` wrapper contract to keep this dependency lane out of PrimeVue/UI contract changes.
   - Validation: `pnpm exec vitest run scripts/eslint-rules/no-hardcoded-colors.spec.ts`, `pnpm deps:catalog:check`, `pnpm lint:check`, `pnpm check`.
 
-- [ ] [P2-Deps-PrimeVue] Upgrade PrimeVue only after adapter API compatibility is verified.
+- [x] [P2-Deps-PrimeVue] Upgrade PrimeVue only after adapter API compatibility is verified.
   - Affected paths: `packages/vue-primevue-adapter/**`, `packages/vue-ui/**`, `apps/web-demo/**`.
   - Acceptance: PrimeVue remains the UI ecosystem; theme, PassThrough, services, locale mapping, and global config stay adapter-owned.
-  - Validation: adapter tests, UI smoke, build, visual/E2E where practical.
+  - Completed on `modernize/primevue-adapter-compat`: aligned catalog-managed `primevue`, `@primevue/core`, `@primevue/forms`, `@primevue/icons`, and `@primevue/auto-import-resolver` from `^4.5.4` to `^4.5.5`; lockfile resolved `@primevue/metadata` to `4.5.5` while stable `@primeuix/themes` remained `2.0.3`.
+  - Compatibility evidence: official PrimeVue 4.5.5 release notes identify this as a patch release; package metadata keeps `@primevue/core` peer dependency at `vue: ^3.5.0`; current CCD Vue catalog is `^3.5.35`.
+  - Validation: `pnpm --filter @ccd/vue-primevue-adapter type-check`, `pnpm --filter @ccd/vue-primevue-adapter test`, `pnpm --filter @ccd/vue-ui type-check`, `pnpm --filter @ccd/vue-ui test`, `pnpm exec vitest run apps/web-demo/src/plugins/modules/primevue.spec.ts scripts/architecture/primevue-boundary-policy.spec.ts`.
 
 - [ ] [P2-Deps-Alova] Upgrade alova only after request tests and app-owned runtime boundaries are sufficient.
   - Affected paths: `apps/web-demo/src/utils/http/**`, HTTP contracts, API modules.
