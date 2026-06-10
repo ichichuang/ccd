@@ -42,6 +42,14 @@ Dependency direction is fixed:
 - Runtime APIs are only allowed in app adapter layers.
 - Root must not host active runtime source code.
 
+## P4 Strategic Guardrail State
+
+P0, P1, P2, and P3 repair work is closed for the current architecture program. The remaining P4 entries are non-actionable strategic guardrails, not repair tasks approved for implementation.
+
+The durable registry is `docs/governance/strategic-guardrails.md`. `pnpm ai:doctor --open` intentionally keeps those P4 rows visible through `.ai/runtime/repair_list.md` as warning-preserving guardrails.
+
+Do not implement P4 strategic products, create a new organization or repository, extract a starter, split a standalone design-system repository, add Reka UI or TanStack Query, enable additional Tauri plugins, add Rust commands, move alova HTTP runtime into core/shared, move safeStorage runtime into shared utilities, add global `@ccd/*` aliases, mutate remote GitHub settings, or perform dependency upgrades without a future owner-approved lane.
+
 ## Canonical Commands
 
 Before documenting or invoking any command, confirm it exists in `package.json`.
