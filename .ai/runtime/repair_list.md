@@ -114,9 +114,11 @@ No open Vite major lane tasks remain. The Vite 8 isolated compatibility lane was
   - Compatibility evidence: official PrimeVue 4.5.5 release notes identify this as a patch release; package metadata keeps `@primevue/core` peer dependency at `vue: ^3.5.0`; current CCD Vue catalog is `^3.5.35`.
   - Validation: `pnpm --filter @ccd/vue-primevue-adapter type-check`, `pnpm --filter @ccd/vue-primevue-adapter test`, `pnpm --filter @ccd/vue-ui type-check`, `pnpm --filter @ccd/vue-ui test`, `pnpm exec vitest run apps/web-demo/src/plugins/modules/primevue.spec.ts scripts/architecture/primevue-boundary-policy.spec.ts`.
 
-- [ ] [P2-Deps-Alova] Upgrade alova only after request tests and app-owned runtime boundaries are sufficient.
+- [x] [P2-Deps-Alova] Upgrade alova only after request tests and app-owned runtime boundaries are sufficient.
   - Affected paths: `apps/web-demo/src/utils/http/**`, HTTP contracts, API modules.
   - Acceptance: alova runtime stays app-owned; interceptors, auth refresh, retry/cache/dedup, error mapping, and schema validation remain stable.
+  - Completed on `modernize/alova-http-compat`: upgraded catalog-managed `alova` from `^3.3.3` to `^3.5.1`; lockfile resolved `alova` from `3.4.0` to `3.5.1` and directly coupled `@alova/shared` from `1.3.1` to `1.3.2`.
+  - Compatibility evidence: official alova v3 docs keep the current import surface (`alova/fetch`, `alova/vue`, `alova/client`); official alova releases list `3.5.0` as a minor fetch-adapter patch and `3.5.1` as a patch release; package metadata has no peer dependencies and requires Node `>=18`.
   - Validation: request-layer tests, `pnpm arch:runtime`, `pnpm api:report`, `pnpm validate`.
 
 - [ ] [P2-Deps-Playwright] Upgrade Playwright only after CI browser install/cache behavior is confirmed.
