@@ -162,8 +162,24 @@
   },
   "pnpm": {
     "overrides": {
+      "@commitlint/config-validator>ajv": "catalog:overrides",
+      "defu": "catalog:overrides",
+      "diff": "catalog:overrides",
+      "editorconfig>minimatch": "catalog:overrides-minimatch9",
+      "fast-uri": "catalog:overrides",
+      "flatted": "catalog:overrides",
       "glob": "catalog:overrides",
-      "path-scurry>lru-cache": "catalog:overrides"
+      "glob>minimatch": "catalog:overrides-minimatch10",
+      "immutable": "catalog:overrides",
+      "js-cookie": "catalog:overrides",
+      "lodash": "catalog:overrides",
+      "npm-run-all2>minimatch": "catalog:overrides-minimatch9",
+      "path-scurry>lru-cache": "catalog:overrides",
+      "picomatch": "catalog:overrides",
+      "rollup": "catalog:overrides",
+      "shell-quote": "catalog:overrides",
+      "undici": "catalog:overrides",
+      "yaml": "catalog:overrides"
     },
     "onlyBuiltDependencies": [
       "@parcel/watcher",

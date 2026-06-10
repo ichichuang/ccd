@@ -24,7 +24,7 @@ The current scope remains **CCD architecture system completion**, not business-p
 - Runtime APIs appear only in app adapter layers or approved runtime-specific boundaries.
 - Root package remains orchestration-only.
 
-The deep-research audit found no current P0 blocker. P1 closure has completed the governance, delivery-command, catalog, desktop-security, and CI/local validation cleanup. The remaining open work is isolated modernization lanes, audit-readback, cleanup, and deferred strategic guardrails.
+The deep-research audit found no current P0 blocker. P1 closure has completed the governance, delivery-command, catalog, desktop-security, and CI/local validation cleanup. P2 dependency modernization validation is closed; the remaining open work is audit-readback, cleanup, DX, and deferred strategic guardrails.
 
 ## 1. Ledger Format Contract
 
@@ -62,10 +62,10 @@ Parser compatibility:
 | -------- | ----: | ----- |
 | P0 | 0 | No current blockers identified by the deep-research report. |
 | P1 | 0 | High-priority governance/security/delivery defects are closed in this stage. |
-| P2 | 8 | Medium-priority modernization and isolated dependency lanes. |
+| P2 | 0 | Medium-priority modernization and isolated dependency lanes are closed for this stage. |
 | P3 | 6 | Cleanup, documentation, audit-readback, and developer-experience issues. |
 | P4 | 10 | Strategic deferred or blocked guardrails that should remain open until owner decisions change. |
-| Total | 24 | All completed tasks from the previous ledger were removed. |
+| Total | 16 | P3/P4 guardrails remain open; P2 close-out evidence is retained until the next cleanup pass. |
 
 ## 4. P1 — Closed Governance, Security, and Delivery Defects
 
@@ -137,9 +137,17 @@ No open Vite major lane tasks remain. The Vite 8 isolated compatibility lane was
   - Security evidence: no Tauri plugin package/crate, permission, capability, CSP, updater, deep-link, shell, filesystem, HTTP, opener, notification, or Rust command was added; `capabilities/default.json` remains permission-empty and `security-scopes.json` remains deny-by-default.
   - Validation: `pnpm deps:catalog:check`, `pnpm desktop:security`, `pnpm --filter @ccd/desktop exec tauri --version`, `cargo check --locked --manifest-path apps/desktop/src-tauri/Cargo.toml`.
 
-- [ ] [P2-Deps-Validation] For every dependency modernization lane, run targeted checks first and then full validation.
+- [x] [P2-Deps-Validation] For every dependency modernization lane, run targeted checks first and then full validation.
   - Acceptance: each lane records a current outdated/scan snapshot, affected ecosystem, compatibility notes, rollback risk, and validation results.
-  - Validation: `pnpm deps:outdated`, `pnpm deps:scan`, `pnpm supply:check`, targeted tests, `pnpm validate`.
+  - Completed on `modernize/dependency-validation-closeout`: confirmed merged P2 lanes on main for Vite 8, Vue tooling/runtime stack, VueUse, ESLint, PrimeVue, alova, Playwright, and Tauri through the runtime ledger, pnpm catalog, lockfile, manifests, and Tauri Cargo lock evidence.
+  - Catalog evidence: `pnpm deps:catalog:check` passed with 117 catalog entries across 13 manifests; direct external dependencies and pnpm overrides remain catalog-owned; internal `@ccd/*` dependencies use `workspace:*`.
+  - Lockfile evidence: `pnpm install --lockfile-only --ignore-scripts` and `pnpm install --ignore-scripts` completed after the security response; `lodash-es` resolves to `4.18.1` and `uuid` resolves to `13.0.2`.
+  - Security response: patched direct `lodash-es` and `uuid` through the default pnpm catalog; added documented, catalog-backed, temporary transitive security overrides for `ajv`, `defu`, `diff`, `fast-uri`, `flatted`, `immutable`, `js-cookie`, `lodash`, `minimatch`, `picomatch`, `rollup`, `shell-quote`, `undici`, and `yaml`.
+  - Residual advisory: `pnpm audit --audit-level high --json` still reports two `tmp@0.0.33` advisory records through `commitizen>inquirer>external-editor>tmp`; this is deferred to a future Commitizen/inquirer tooling lane because the patched floor jumps to `tmp>=0.2.6`, outside the old `0.0.x` chain.
+  - Outdated snapshot: `.ai/runtime/dependency-outdated-snapshot.md` records 37 remaining outdated packages after the security response: 21 patch/minor candidates and 16 major/compatibility-lane candidates. These remain future isolated lanes, not P2 close-out work.
+  - Generated artifact evidence: `pnpm deps:scan` refreshed ignored local `.ai/runtime/dependency-scan-summary.json`; `pnpm supply:check` regenerated `docs/generated/sbom.json` through the repo script and left tracked generated artifacts unchanged.
+  - Rollback: remove the corresponding pnpm override/catalog entry or direct catalog bump, run `pnpm install --lockfile-only --ignore-scripts`, then rerun `pnpm deps:catalog:check`, `pnpm deps:scan`, `pnpm supply:check`, and the affected validation command.
+  - Validation: `pnpm deps:outdated` rerun and exits `1` because deferred outdated packages remain; passed `pnpm ai:sync`, `pnpm ai:doctor --open`, `pnpm codex:preflight`, `pnpm deps:catalog:check`, `pnpm deps:scan`, `pnpm supply:check`, `pnpm governance:github-workflows`, `pnpm docs:commands`, `pnpm arch:runtime`, `pnpm arch:boundaries`, `pnpm api:report`, `pnpm project:doctor`, `pnpm check`, `pnpm lint:check`, `pnpm validate`, `pnpm build:web-demo`, `pnpm build:desktop`, `pnpm build:ci`, `pnpm e2e:qa`, `pnpm budget:bundles`, `pnpm budget:desktop`, `pnpm governance:gate`, `cargo check --locked --manifest-path apps/desktop/src-tauri/Cargo.toml`, and `git diff --check`.
 
 ## 6. P3 — Low Priority Cleanup, Documentation, and DX
 

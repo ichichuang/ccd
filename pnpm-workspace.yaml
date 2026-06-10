@@ -62,7 +62,7 @@ catalog:
   husky: ^9.1.7
   jsdom: ^28.1.0
   lint-staged: ^15.2.11
-  lodash-es: ^4.17.21
+  lodash-es: ^4.18.0
   lz-string: ^1.5.0
   magic-string: ^0.30.21
   mitt: ^3.0.1
@@ -91,7 +91,7 @@ catalog:
   unocss: ^66.7.0
   unplugin-auto-import: ^20.0.0
   unplugin-vue-components: ^28.8.0
-  uuid: ^13.0.0
+  uuid: ^13.0.1
   vite: ^8.0.16
   vite-plugin-compression: ^0.5.1
   vitest: ^4.1.8
@@ -106,5 +106,22 @@ catalog:
 
 catalogs:
   overrides:
+    ajv: ^8.18.0
+    defu: ^6.1.5
+    diff: ^4.0.4
+    fast-uri: ^3.1.2
+    flatted: ^3.4.2
     glob: ^11.0.3
+    immutable: ^5.1.5
+    js-cookie: ^3.0.7
+    lodash: ^4.18.0
     lru-cache: 11.2.4
+    picomatch: ^2.3.2
+    rollup: ^4.59.0
+    shell-quote: ^1.8.4
+    undici: ^7.24.0
+    yaml: ^2.8.3
+  overrides-minimatch9:
+    minimatch: ^9.0.7
+  overrides-minimatch10:
+    minimatch: ^10.2.3
