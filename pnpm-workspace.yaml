@@ -5,7 +5,7 @@ packages:
 catalog:
   '@commitlint/cli': ^19.6.0
   '@commitlint/config-conventional': ^19.6.0
-  '@eslint/js': ^9.39.2
+  '@eslint/js': ^10.0.1
   '@faker-js/faker': ^9.9.0
   '@iconify-json/logos': ^1.2.10
   '@iconify-json/lucide': ^1.2.86
@@ -51,13 +51,13 @@ catalog:
   dayjs: ^1.11.13
   dependency-cruiser: ^17.4.0
   echarts: ^6.0.0
-  eslint: ^9.39.2
+  eslint: ^10.4.1
   eslint-config-prettier: ^10.1.8
   eslint-plugin-boundaries: ^6.0.2
-  eslint-plugin-vue: ^9.31.0
+  eslint-plugin-vue: ^10.9.2
   fast-glob: ^3.3.3
   glob: ^11.1.0
-  globals: ^17.1.0
+  globals: ^17.6.0
   gsap: ^3.14.2
   husky: ^9.1.7
   jsdom: ^28.1.0
@@ -87,7 +87,7 @@ catalog:
   tsx: ^4.20.3
   turbo: ^2.6.3
   typescript: ^5.9.3
-  typescript-eslint: ^8.53.1
+  typescript-eslint: ^8.61.0
   unocss: ^66.7.0
   unplugin-auto-import: ^20.0.0
   unplugin-vue-components: ^28.8.0
@@ -97,7 +97,7 @@ catalog:
   vitest: ^4.1.8
   vue: ^3.5.35
   vue-echarts: ^8.0.0
-  vue-eslint-parser: ^10.2.0
+  vue-eslint-parser: ^10.4.1
   vue-i18n: ^11.4.5
   vue-router: ^5.1.0
   vue-tsc: ^3.3.4

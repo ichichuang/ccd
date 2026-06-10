@@ -193,7 +193,6 @@ export default tseslint.config(
       },
     },
     rules: {
-      'vue/script-setup-uses-vars': 'error',
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
     },
@@ -430,11 +429,18 @@ export default tseslint.config(
       'prefer-const': 'error',
       eqeqeq: ['error', 'always', { null: 'ignore' }],
       'no-undef': 'off',
-      'vue/script-setup-uses-vars': 'error',
-
       // ✅ 核心修改：放宽组件命名限制
       // 理由：设计系统和自动生成组件中，index.vue 或单词组件名很常见
       'vue/multi-word-component-names': 'off',
+    },
+  },
+
+  {
+    name: 'app/vue-eslint-v10-prime-dialog-compat',
+    files: ['packages/vue-ui/src/PrimeDialog/PrimeDialog.vue'],
+    rules: {
+      // Keep this dependency lane from changing the existing PrimeVue wrapper prop contract.
+      'vue/no-required-prop-with-default': 'off',
     },
   },
 
