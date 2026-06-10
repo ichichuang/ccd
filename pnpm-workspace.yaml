@@ -14,10 +14,10 @@ catalog:
   '@iconify/utils': ^3.1.0
   '@playwright/test': ^1.59.1
   '@primeuix/themes': ^2.0.3
-  '@primevue/auto-import-resolver': ^4.5.4
-  '@primevue/core': ^4.5.4
-  '@primevue/forms': ^4.5.4
-  '@primevue/icons': ^4.5.4
+  '@primevue/auto-import-resolver': ^4.5.5
+  '@primevue/core': ^4.5.5
+  '@primevue/forms': ^4.5.5
+  '@primevue/icons': ^4.5.5
   '@tanstack/vue-virtual': ^3.13.23
   '@tauri-apps/api': ^2.9.1
   '@tauri-apps/cli': ^2.9.1
@@ -76,7 +76,7 @@ catalog:
   postcss-html: ^1.8.1
   postcss-pxtorem: ^6.1.0
   prettier: ^3.8.1
-  primevue: ^4.5.4
+  primevue: ^4.5.5
   rollup-plugin-visualizer: ^6.0.3
   sass: ^1.97.3
   stylelint: ^17.4.0
