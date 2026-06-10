@@ -7,6 +7,8 @@
 | Node.js | `24.x`      |
 | pnpm    | `>= 10.0.0` |
 
+Node 24 是当前仓库的有意策略：本地 `mise.toml`、根 `package.json` engines、CI Node 配置、`@tsconfig/node24` 与 `@types/node@24` 保持一致。普通功能、文档或清理分支不要放宽该策略。
+
 ## 安装
 
 ```bash

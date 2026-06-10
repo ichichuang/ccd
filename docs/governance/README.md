@@ -98,3 +98,6 @@ Governance-sensitive changes require the owners in `.github/CODEOWNERS`. Cross-b
 
 - [GitHub Governance Policy](github-governance.md)
 - [Dependency Governance Policy](dependency-policy.md)
+- [Historical Artifact Policy](historical-artifacts.md)
+- [Desktop Security Scope Review](desktop-security-scope-review.md)
+- [PrimeVue and vue-i18n Verification](primevue-i18n-verification.md)
