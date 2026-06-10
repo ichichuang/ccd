@@ -100,10 +100,12 @@ No open Vite major lane tasks remain. The Vite 8 isolated compatibility lane was
   - Completed on `modernize/vueuse-compat`: upgraded catalog-managed `@vueuse/core` from `^13.9.0` to `^14.3.0`; lockfile resolved `@vueuse/core`, `@vueuse/shared`, and `@vueuse/metadata` to `14.3.0`.
   - Validation: `pnpm --filter @ccd/vue-hooks test`, `pnpm --filter @ccd/vue-hooks type-check`, `pnpm --filter @ccd/vue-ui test`, `pnpm --filter @ccd/vue-ui type-check`, `pnpm --filter @ccd/vue-charts test`, `pnpm --filter @ccd/vue-charts type-check`, `pnpm --filter @ccd/web-demo test`, `pnpm --filter @ccd/web-demo type-check`.
 
-- [ ] [P2-Deps-ESLint] Upgrade ESLint ecosystem only if lint behavior remains deterministic.
+- [x] [P2-Deps-ESLint] Upgrade ESLint ecosystem only if lint behavior remains deterministic.
   - Affected paths: `eslint.config.ts`, lint scripts, Vue/TS lint plugins.
   - Acceptance: lint output is stable and not noisier; no rule weakening is introduced just to pass.
-  - Validation: `pnpm lint:check`, focused rule regression tests if present.
+  - Completed on `modernize/eslint-compat`: upgraded catalog-managed `eslint` from `^9.39.2` to `^10.4.1`, `@eslint/js` from `^9.39.2` to `^10.0.1`, `typescript-eslint` from `^8.53.1` to `^8.61.0`, `eslint-plugin-vue` from `^9.31.0` to `^10.9.2`, `vue-eslint-parser` from `^10.2.0` to `^10.4.1`, and `globals` from `^17.1.0` to `^17.6.0`.
+  - Config compatibility: removed obsolete `vue/script-setup-uses-vars` references because `eslint-plugin-vue` v10 removed the rule and `vue-eslint-parser` v9+ handles `<script setup>` usage; scoped the new `vue/no-required-prop-with-default` advisory off only for the existing `PrimeDialog` wrapper contract to keep this dependency lane out of PrimeVue/UI contract changes.
+  - Validation: `pnpm exec vitest run scripts/eslint-rules/no-hardcoded-colors.spec.ts`, `pnpm deps:catalog:check`, `pnpm lint:check`, `pnpm check`.
 
 - [ ] [P2-Deps-PrimeVue] Upgrade PrimeVue only after adapter API compatibility is verified.
   - Affected paths: `packages/vue-primevue-adapter/**`, `packages/vue-ui/**`, `apps/web-demo/**`.
