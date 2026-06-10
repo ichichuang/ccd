@@ -38,7 +38,7 @@ catalog:
   '@vue/compiler-sfc': ^3.5.35
   '@vue/test-utils': ^2.4.6
   '@vue/tsconfig': ^0.9.1
-  '@vueuse/core': ^13.9.0
+  '@vueuse/core': ^14.3.0
   alova: ^3.3.3
   autoprefixer: ^10.4.23
   baseline-browser-mapping: ^2.9.19

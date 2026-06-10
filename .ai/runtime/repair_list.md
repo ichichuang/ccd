@@ -94,10 +94,11 @@ No open Vite major lane tasks remain. The Vite 8 isolated compatibility lane was
   - Acceptance: route behavior, i18n, state, UnoCSS, and browser app behavior remain stable.
   - Validation: targeted runtime tests, `pnpm type-check`, `pnpm test:run`, `pnpm e2e:qa`, `pnpm validate`.
 
-- [ ] [P2-Deps-Vueuse] Upgrade `@vueuse/core` only in an isolated compatibility lane.
+- [x] [P2-Deps-Vueuse] Upgrade `@vueuse/core` only in an isolated compatibility lane.
   - Affected paths: hooks, auto-import configuration, packages using VueUse.
   - Acceptance: hooks and auto-import behavior remain stable; existing Rolldown/VueUse annotation warnings are tracked separately from the upgrade decision.
-  - Validation: hook tests, type-check, build.
+  - Completed on `modernize/vueuse-compat`: upgraded catalog-managed `@vueuse/core` from `^13.9.0` to `^14.3.0`; lockfile resolved `@vueuse/core`, `@vueuse/shared`, and `@vueuse/metadata` to `14.3.0`.
+  - Validation: `pnpm --filter @ccd/vue-hooks test`, `pnpm --filter @ccd/vue-hooks type-check`, `pnpm --filter @ccd/vue-ui test`, `pnpm --filter @ccd/vue-ui type-check`, `pnpm --filter @ccd/vue-charts test`, `pnpm --filter @ccd/vue-charts type-check`, `pnpm --filter @ccd/web-demo test`, `pnpm --filter @ccd/web-demo type-check`.
 
 - [ ] [P2-Deps-ESLint] Upgrade ESLint ecosystem only if lint behavior remains deterministic.
   - Affected paths: `eslint.config.ts`, lint scripts, Vue/TS lint plugins.
