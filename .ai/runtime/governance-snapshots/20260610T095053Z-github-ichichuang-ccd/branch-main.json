@@ -1,0 +1,102 @@
+{
+  "name": "main",
+  "commit": {
+    "sha": "33f54bf4783d340aa41607b5b235716ec546eae4",
+    "node_id": "C_kwDOPX7ASNoAKDMzZjU0YmY0NzgzZDM0MGFhNDE2MDdiNWIyMzU3MTZlYzU0NmVhZTQ",
+    "commit": {
+      "author": {
+        "name": "ichichuang",
+        "email": "94677949+ichichuang@users.noreply.github.com",
+        "date": "2026-06-10T09:28:22Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-06-10T09:28:22Z"
+      },
+      "message": "chore(deps): 收敛 P2 依赖现代化最终验证\n\n\n目的：\n- 关闭 P2-Deps-Validation。\n- 确认 Vite 8、Vue、VueUse、ESLint、PrimeVue、alova、Playwright 与 Tauri 车道。\n- 保持运行时边界、治理门禁和产品范围不变。\n\n变更：\n- 通过 pnpm catalog patch lodash-es 与 uuid。\n- 添加 catalog 化的临时传递依赖安全覆盖。\n- 更新依赖治理策略、过期快照和 repair ledger。\n- 仅通过仓库脚本刷新依赖扫描与供应链证据。\n\n验证：\n- pnpm ai:sync / ai:doctor / codex:preflight。\n- pnpm deps:catalog:check / deps:scan / supply:check。\n- pnpm docs:commands / arch:runtime / arch:boundaries / api:report。\n- pnpm project:doctor / check / lint:check / validate。\n- pnpm build:web-demo / build:desktop / build:ci / e2e:qa。\n- pnpm budget:bundles / budget:desktop / governance:gate。\n- cargo check locked Tauri manifest。\n- git diff --check。\n\n残余风险：\n- tmp@0.0.33 advisory 仍由 commitizen>inquirer>external-editor 引入。\n- patched floor 为 tmp>=0.2.6，需要未来 Commitizen/inquirer 隔离车道。\n- 37 个 outdated 包保留为未来 P3/P4 或单独兼容性车道。",
+      "tree": {
+        "sha": "1c9292bb39cdb19a4fab6a9171480354f6b8c77a",
+        "url": "https://api.github.com/repos/ichichuang/ccd/git/trees/1c9292bb39cdb19a4fab6a9171480354f6b8c77a"
+      },
+      "url": "https://api.github.com/repos/ichichuang/ccd/git/commits/33f54bf4783d340aa41607b5b235716ec546eae4",
+      "comment_count": 0,
+      "verification": {
+        "verified": true,
+        "reason": "valid",
+        "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJqKS42CRC1aQ7uu5UhlAAANIoQALFsPzzXrOiXvcx4okNfdYk5\nXZ//8CTbspGkQNoqxwx/MD4KL+y26GMIScsAR51H7QDel74mVbJJnbeJswQhLv/i\nD86qE2KjT5VTS4J8f96bgOFBXfL4IofK4mfRAeDzL34F7d6trBaukrtdl5EOx+X/\nUOIQnV5vxdxDaF62pTon7lBIaY2pLCxJY9JV9/5dRHCKskUPibGriU1jcjsHuEAo\n2NAQZHbf0jhGGT7eFezTJx9uX2b2LwWm9bUnda4Ds3MhHmLuPFuMdaFsfJzFsQPH\n00APt85jiTx/qYHeRiLns/iPiH2shEB18TES3Jc/TkDsc4E9RSA0J+0htWtgUIBk\nbe3LYEawgCVULCw6xshMZOXI6qiZ4YEAHsE8RkwS22S29F2e5jH8DKhHkcwNfbLH\nKHEJI7McQ1S7kQ5NbpdAqrM1bUMWm8wnnLv5zXO/JfzNN4j3sWS/WzbnOBhQTVOA\n+1Cn+8xQ3XFho/GQSuks3Fes/bjjEVwphzTOUz/Ufc9+46C5GuhH9ILNkWOB1OiQ\noAh+HuAPCswpN3a73rmTr35M8ZVrC/4BRUzJ9Rtc8wfXoIeCFr+Tna4kToS6hvJ8\nj9BCrbHA4wQCiKjca00yuAlbFLLtCBwtV8Ek/iRdrRzDwzavAYi3JCCsIHeOmXWS\nohUhJiZ9PLRTDHw02BPB\n=BVH2\n-----END PGP SIGNATURE-----\n",
+        "payload": "tree 1c9292bb39cdb19a4fab6a9171480354f6b8c77a\nparent c1138df779d23d8c9e2984200f0b25c9f565b82a\nauthor ichichuang <94677949+ichichuang@users.noreply.github.com> 1781083702 +0800\ncommitter GitHub <noreply@github.com> 1781083702 +0800\n\nchore(deps): 收敛 P2 依赖现代化最终验证\n\n\n目的：\n- 关闭 P2-Deps-Validation。\n- 确认 Vite 8、Vue、VueUse、ESLint、PrimeVue、alova、Playwright 与 Tauri 车道。\n- 保持运行时边界、治理门禁和产品范围不变。\n\n变更：\n- 通过 pnpm catalog patch lodash-es 与 uuid。\n- 添加 catalog 化的临时传递依赖安全覆盖。\n- 更新依赖治理策略、过期快照和 repair ledger。\n- 仅通过仓库脚本刷新依赖扫描与供应链证据。\n\n验证：\n- pnpm ai:sync / ai:doctor / codex:preflight。\n- pnpm deps:catalog:check / deps:scan / supply:check。\n- pnpm docs:commands / arch:runtime / arch:boundaries / api:report。\n- pnpm project:doctor / check / lint:check / validate。\n- pnpm build:web-demo / build:desktop / build:ci / e2e:qa。\n- pnpm budget:bundles / budget:desktop / governance:gate。\n- cargo check locked Tauri manifest。\n- git diff --check。\n\n残余风险：\n- tmp@0.0.33 advisory 仍由 commitizen>inquirer>external-editor 引入。\n- patched floor 为 tmp>=0.2.6，需要未来 Commitizen/inquirer 隔离车道。\n- 37 个 outdated 包保留为未来 P3/P4 或单独兼容性车道。",
+        "verified_at": "2026-06-10T09:28:23Z"
+      }
+    },
+    "url": "https://api.github.com/repos/ichichuang/ccd/commits/33f54bf4783d340aa41607b5b235716ec546eae4",
+    "html_url": "https://github.com/ichichuang/ccd/commit/33f54bf4783d340aa41607b5b235716ec546eae4",
+    "comments_url": "https://api.github.com/repos/ichichuang/ccd/commits/33f54bf4783d340aa41607b5b235716ec546eae4/comments",
+    "author": {
+      "login": "ichichuang",
+      "id": 94677949,
+      "node_id": "U_kgDOBaSrvQ",
+      "avatar_url": "https://avatars.githubusercontent.com/u/94677949?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/ichichuang",
+      "html_url": "https://github.com/ichichuang",
+      "followers_url": "https://api.github.com/users/ichichuang/followers",
+      "following_url": "https://api.github.com/users/ichichuang/following{/other_user}",
+      "gists_url": "https://api.github.com/users/ichichuang/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/ichichuang/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/ichichuang/subscriptions",
+      "organizations_url": "https://api.github.com/users/ichichuang/orgs",
+      "repos_url": "https://api.github.com/users/ichichuang/repos",
+      "events_url": "https://api.github.com/users/ichichuang/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/ichichuang/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447,
+      "node_id": "MDQ6VXNlcjE5ODY0NDQ3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/web-flow",
+      "html_url": "https://github.com/web-flow",
+      "followers_url": "https://api.github.com/users/web-flow/followers",
+      "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+      "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+      "organizations_url": "https://api.github.com/users/web-flow/orgs",
+      "repos_url": "https://api.github.com/users/web-flow/repos",
+      "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/web-flow/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "c1138df779d23d8c9e2984200f0b25c9f565b82a",
+        "url": "https://api.github.com/repos/ichichuang/ccd/commits/c1138df779d23d8c9e2984200f0b25c9f565b82a",
+        "html_url": "https://github.com/ichichuang/ccd/commit/c1138df779d23d8c9e2984200f0b25c9f565b82a"
+      }
+    ]
+  },
+  "_links": {
+    "self": "https://api.github.com/repos/ichichuang/ccd/branches/main",
+    "html": "https://github.com/ichichuang/ccd/tree/main"
+  },
+  "protected": true,
+  "protection": {
+    "enabled": true,
+    "required_status_checks": {
+      "enforcement_level": "non_admins",
+      "contexts": ["Core Quality", "E2E QA"],
+      "checks": [
+        { "context": "Core Quality", "app_id": null },
+        { "context": "E2E QA", "app_id": null }
+      ]
+    }
+  },
+  "protection_url": "https://api.github.com/repos/ichichuang/ccd/branches/main/protection"
+}

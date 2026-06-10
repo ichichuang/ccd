@@ -8,6 +8,11 @@ Human developers should read `README.md` and `docs/zh/**`.
 
 CCD is a self-protecting deterministic multi-runtime platform repository.
 
+Runtime policy: Node.js `24.x` is intentional for this repository. The root
+`engines.node`, `mise.toml`, CI setup, `@tsconfig/node24`, and `@types/node@24`
+are aligned. Do not relax the engine policy in cleanup or feature branches; use
+a dedicated toolchain policy lane if the owner approves a broader baseline.
+
 Canonical package topology:
 
 ```text

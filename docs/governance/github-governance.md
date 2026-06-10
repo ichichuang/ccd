@@ -12,6 +12,23 @@ Evidence was captured before mutation and after read-back under:
 .ai/runtime/governance-snapshots/20260608T131058Z-github-ichichuang-ccd
 ```
 
+The latest read-only readback was captured on 2026-06-10 under:
+
+```text
+.ai/runtime/governance-snapshots/20260610T095053Z-github-ichichuang-ccd
+```
+
+This readback did not mutate remote settings. It confirmed:
+
+- Repository `ichichuang/ccd` is public and defaults to `main`.
+- `main` is protected with strict required status checks.
+- Required check contexts remain `Core Quality` and `E2E QA`.
+- Pull requests are required before merge with one approving review.
+- Conversation resolution and linear history are enabled.
+- Force pushes and branch deletion are disabled.
+- The repository ruleset `Protect Main` remains disabled, so active enforcement is still branch-protection based.
+- Remote workflow records include active `.github/workflows/ci.yml`, active `.github/workflows/deploy.yml`, active dynamic Dependabot workflow metadata, and disabled historical desktop workflow records.
+
 Verified remote `main` branch protection now requires:
 
 - Pull requests before merge.
@@ -64,6 +81,8 @@ Local `pnpm validate` is the union of `Core Quality`, `E2E QA`, dependency scan 
 The deploy workflow also exposes `build` and `deploy` checks on `main` pushes. They are not required for branch protection because `build` is an ambiguous generic name and the deploy workflow is not the PR quality gate.
 
 GitHub rejected an attempted app-pinned required-check payload containing both legacy `contexts` and app-pinned `checks`. The final applied policy uses the unambiguous current CI job contexts, and local workflow job-name audit found no duplicate job names.
+
+The 2026-06-10 readback reconfirmed this state. The active local CI job names are still `Core Quality` and `E2E QA`; deploy workflow jobs remain non-required deployment checks.
 
 ## Future Remote Changes
 

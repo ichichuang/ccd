@@ -24,7 +24,7 @@ The current scope remains **CCD architecture system completion**, not business-p
 - Runtime APIs appear only in app adapter layers or approved runtime-specific boundaries.
 - Root package remains orchestration-only.
 
-The deep-research audit found no current P0 blocker. P1 closure has completed the governance, delivery-command, catalog, desktop-security, and CI/local validation cleanup. P2 dependency modernization validation is closed; the remaining open work is audit-readback, cleanup, DX, and deferred strategic guardrails.
+The deep-research audit found no current P0 blocker. P1 closure has completed the governance, delivery-command, catalog, desktop-security, and CI/local validation cleanup. P2 dependency modernization validation is closed. P3 cleanup, documentation, audit-readback, and DX close-out is complete; the remaining open work is deferred strategic guardrails.
 
 ## 1. Ledger Format Contract
 
@@ -63,9 +63,9 @@ Parser compatibility:
 | P0 | 0 | No current blockers identified by the deep-research report. |
 | P1 | 0 | High-priority governance/security/delivery defects are closed in this stage. |
 | P2 | 0 | Medium-priority modernization and isolated dependency lanes are closed for this stage. |
-| P3 | 6 | Cleanup, documentation, audit-readback, and developer-experience issues. |
+| P3 | 0 | Cleanup, documentation, audit-readback, and developer-experience issues are closed for this stage. |
 | P4 | 10 | Strategic deferred or blocked guardrails that should remain open until owner decisions change. |
-| Total | 16 | P3/P4 guardrails remain open; P2 close-out evidence is retained until the next cleanup pass. |
+| Total | 10 | P4 guardrails remain open; P2 close-out evidence is retained until the next cleanup pass. |
 
 ## 4. P1 — Closed Governance, Security, and Delivery Defects
 
@@ -157,41 +157,14 @@ These issues do not block the architecture, but they reduce contributor clarity,
 
 ### Tasks
 
-- [ ] [P3-PackageCleanup-CrossPlatform] Standardize package build cleanup on Node-based artifact cleanup.
-  - Source finding: some packages still use shell-specific cleanup such as `rm -f` while others use the central Node cleaner.
-  - Affected paths: `packages/design-tokens/package.json`, `packages/vue-hooks/package.json`, other package manifests for consistency.
-  - Acceptance: package cleanup is cross-platform and routed through `scripts/clean-artifacts.mjs` or an equivalent Node-based wrapper.
-  - Validation: package builds, `pnpm build:ci`, `pnpm validate`.
+No open P3 tasks remain. Completed P3 evidence is recorded in:
 
-- [ ] [P3-HistoricalArtifacts-Archive] Archive or relocate historical and generated-adjacent artifacts from active source areas.
-  - Source finding: `output/playwright/**` and `ccd-public-layer-repair-plan-package/**` add noise on `main`.
-  - Affected paths: `output/playwright/**`, `ccd-public-layer-repair-plan-package/**`, docs/history/archive paths if created.
-  - Acceptance: active source-of-truth areas are not mixed with stale screenshots, planning packages, or historical repair material unless explicitly labeled as historical evidence.
-  - Validation: `pnpm governance:gate`, `pnpm project:doctor`, docs review.
-
-- [ ] [P3-NodeEngine-Policy] Decide and document whether the strict Node 24 engine lane is intentional.
-  - Source finding: root `node: "24.x"` is stricter than the minimum required by current tooling, which may increase contributor friction.
-  - Affected paths: root `package.json`, `mise.toml`, README setup docs, CI workflow.
-  - Acceptance: either keep Node 24 as an intentional repository policy and document why, or relax the engine policy to the supported toolchain baseline.
-  - Validation: `pnpm project:doctor`, `pnpm docs:commands`, CI install/build.
-
-- [ ] [P3-Audit-RemoteGovernanceReadback] Maintain direct GitHub branch-protection and required-check readback evidence.
-  - Source finding: the audit could not fully verify actual branch-protection rules or required-check names.
-  - Affected paths: `docs/governance/github-governance.md`, `.ai/runtime/governance-snapshots/**`.
-  - Acceptance: current `main` protection, required checks, review policy, conversation resolution, linear history, force-push/delete restrictions, and workflow job names are captured by a reproducible readback process.
-  - Validation: GitHub settings readback when authorized, `pnpm governance:github-workflows`, docs review.
-
-- [ ] [P3-Audit-DesktopScopeLineReview] Perform a line-by-line review of Tauri capability files and security scopes.
-  - Source finding: the audit could verify the existence of capability and security-scope files but did not inspect every permission line in detail.
-  - Affected paths: `apps/desktop/src-tauri/capabilities/**`, `apps/desktop/src-tauri/security-scopes.json`, `apps/desktop/src-tauri/tauri.conf.json`.
-  - Acceptance: every enabled, denied, and planned desktop capability has documented rationale, threat model, and validation coverage.
-  - Validation: `pnpm desktop:security`, desktop smoke, security-scope snapshot.
-
-- [ ] [P3-Audit-PrimeVueI18nDocs] Complete official-doc verification for PrimeVue and vue-i18n version-specific behavior.
-  - Source finding: the audit had limited access to some official PrimeVue/vue-i18n docs and avoided strong version-specific claims.
-  - Affected paths: `packages/vue-primevue-adapter/**`, `packages/vue-app-platform/**`, `apps/web-demo/src/locales/**`, ADR/docs.
-  - Acceptance: current PrimeVue v4 usage, PassThrough/theme patterns, locale mapping, and vue-i18n composition API usage are verified against official sources and documented.
-  - Validation: docs review, adapter/i18n tests, `pnpm docs:commands`.
+- `docs/governance/historical-artifacts.md`
+- `docs/governance/github-governance.md`
+- `.ai/runtime/governance-snapshots/20260610T095053Z-github-ichichuang-ccd/**`
+- `docs/governance/desktop-security-scope-review.md`
+- `docs/governance/primevue-i18n-verification.md`
+- `docs/adr/ADR-004-runtime-environment-policy.md`
 
 ## 7. P4 — Strategic Deferred and Blocked Guardrails
 

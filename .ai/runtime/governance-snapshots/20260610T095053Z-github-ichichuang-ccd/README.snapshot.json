@@ -1,0 +1,41 @@
+{
+  "capturedAt": "2026-06-10T09:50:53Z",
+  "repository": "ichichuang/ccd",
+  "mode": "read-only",
+  "branch": "main",
+  "summary": {
+    "remoteHeadsOnlyMain": true,
+    "defaultBranch": "main",
+    "viewerPermission": "ADMIN",
+    "requiredStatusChecks": ["Core Quality", "E2E QA"],
+    "strictStatusChecks": true,
+    "requiredApprovingReviewCount": 1,
+    "requiredConversationResolution": true,
+    "requiredLinearHistory": true,
+    "allowForcePushes": false,
+    "allowDeletions": false,
+    "activeRulesetEnforcement": "disabled Protect Main repository ruleset; branch protection is active enforcement",
+    "remoteWorkflowRegistry": "active ci.yml, active deploy.yml, active dynamic Dependabot metadata, disabled historical desktop workflow records"
+  },
+  "files": [
+    "repo.json",
+    "branch-main.json",
+    "branch-main-protection.json",
+    "branch-main-required-status-checks.json",
+    "rulesets.json",
+    "ruleset-14718935.json",
+    "workflows.json",
+    "remote-heads.txt",
+    "local-workflow-job-names.json"
+  ],
+  "commands": [
+    "gh repo view ichichuang/ccd --json nameWithOwner,defaultBranchRef,viewerPermission,isPrivate,url",
+    "gh api repos/ichichuang/ccd/branches/main",
+    "gh api repos/ichichuang/ccd/branches/main/protection",
+    "gh api repos/ichichuang/ccd/branches/main/protection/required_status_checks",
+    "gh api repos/ichichuang/ccd/rulesets",
+    "gh api repos/ichichuang/ccd/rulesets/14718935",
+    "gh api repos/ichichuang/ccd/actions/workflows",
+    "git ls-remote --heads origin"
+  ]
+}

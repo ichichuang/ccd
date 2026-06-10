@@ -1,0 +1,77 @@
+{
+  "total_count": 6,
+  "workflows": [
+    {
+      "id": 258463452,
+      "node_id": "W_kwDOPX7ASM4PZ9bc",
+      "name": "Build Desktop (Windows)",
+      "path": ".github/workflows/build-desktop-windows.yml",
+      "state": "disabled_manually",
+      "created_at": "2026-04-09T20:52:01.000+08:00",
+      "updated_at": "2026-05-18T16:18:31.000+08:00",
+      "url": "https://api.github.com/repos/ichichuang/ccd/actions/workflows/258463452",
+      "html_url": "https://github.com/ichichuang/ccd/blob/main/.github/workflows/build-desktop-windows.yml",
+      "badge_url": "https://github.com/ichichuang/ccd/workflows/Build%20Desktop%20(Windows)/badge.svg"
+    },
+    {
+      "id": 242757719,
+      "node_id": "W_kwDOPX7ASM4OeDBX",
+      "name": "CI Guardian",
+      "path": ".github/workflows/ci.yml",
+      "state": "active",
+      "created_at": "2026-03-07T10:30:35.000+08:00",
+      "updated_at": "2026-03-07T10:30:35.000+08:00",
+      "url": "https://api.github.com/repos/ichichuang/ccd/actions/workflows/242757719",
+      "html_url": "https://github.com/ichichuang/ccd/blob/main/.github/workflows/ci.yml",
+      "badge_url": "https://github.com/ichichuang/ccd/workflows/CI%20Guardian/badge.svg"
+    },
+    {
+      "id": 258312263,
+      "node_id": "W_kwDOPX7ASM4PZYhH",
+      "name": "Deploy to GitHub Pages",
+      "path": ".github/workflows/deploy.yml",
+      "state": "active",
+      "created_at": "2026-04-09T15:08:18.000+08:00",
+      "updated_at": "2026-04-09T15:08:18.000+08:00",
+      "url": "https://api.github.com/repos/ichichuang/ccd/actions/workflows/258312263",
+      "html_url": "https://github.com/ichichuang/ccd/blob/main/.github/workflows/deploy.yml",
+      "badge_url": "https://github.com/ichichuang/ccd/workflows/Deploy%20to%20GitHub%20Pages/badge.svg"
+    },
+    {
+      "id": 261585932,
+      "node_id": "W_kwDOPX7ASM4Pl3wM",
+      "name": "Release Desktop",
+      "path": ".github/workflows/release-desktop.yml",
+      "state": "disabled_manually",
+      "created_at": "2026-04-16T11:44:55.000+08:00",
+      "updated_at": "2026-05-18T16:18:33.000+08:00",
+      "url": "https://api.github.com/repos/ichichuang/ccd/actions/workflows/261585932",
+      "html_url": "https://github.com/ichichuang/ccd/blob/main/.github/workflows/release-desktop.yml",
+      "badge_url": "https://github.com/ichichuang/ccd/workflows/Release%20Desktop/badge.svg"
+    },
+    {
+      "id": 261585911,
+      "node_id": "W_kwDOPX7ASM4Pl3v3",
+      "name": "Smoke Desktop",
+      "path": ".github/workflows/smoke-desktop.yml",
+      "state": "disabled_manually",
+      "created_at": "2026-04-16T11:44:48.000+08:00",
+      "updated_at": "2026-05-18T16:18:35.000+08:00",
+      "url": "https://api.github.com/repos/ichichuang/ccd/actions/workflows/261585911",
+      "html_url": "https://github.com/ichichuang/ccd/blob/main/.github/workflows/smoke-desktop.yml",
+      "badge_url": "https://github.com/ichichuang/ccd/workflows/Smoke%20Desktop/badge.svg"
+    },
+    {
+      "id": 256648240,
+      "node_id": "W_kwDOPX7ASM4PTCQw",
+      "name": "Dependabot Updates",
+      "path": "dynamic/dependabot/dependabot-updates",
+      "state": "active",
+      "created_at": "2026-04-06T10:05:18.000+08:00",
+      "updated_at": "2026-04-06T10:05:18.000+08:00",
+      "url": "https://api.github.com/repos/ichichuang/ccd/actions/workflows/256648240",
+      "html_url": "https://github.com/ichichuang/ccd/actions/workflows/dependabot/dependabot-updates",
+      "badge_url": "https://github.com/ichichuang/ccd/actions/workflows/dependabot/dependabot-updates/badge.svg"
+    }
+  ]
+}

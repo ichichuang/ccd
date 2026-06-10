@@ -1,0 +1,17 @@
+[
+  {
+    "id": 14718935,
+    "name": "Protect Main",
+    "target": "branch",
+    "source_type": "Repository",
+    "source": "ichichuang/ccd",
+    "enforcement": "disabled",
+    "node_id": "RRS_lACqUmVwb3NpdG9yec49fsBIzgDgl9c",
+    "_links": {
+      "self": { "href": "https://api.github.com/repos/ichichuang/ccd/rulesets/14718935" },
+      "html": { "href": "https://github.com/ichichuang/ccd/rules/14718935" }
+    },
+    "created_at": "2026-04-06T10:01:47.596+08:00",
+    "updated_at": "2026-04-06T10:01:47.653+08:00"
+  }
+]

@@ -1,6 +1,10 @@
 # CCD Public-Layer Repair Planning Package
 
+Historical status: archived evidence package.
+
 This package is a repository-resident planning system for the `ichichuang/ccd` public-layer remediation work. It is not an implementation patch.
+
+The package is retained for traceability of the 2026-06 public-layer repair plan and historical run evidence. It is not an active source-of-truth area for current CCD governance. Current governance state lives under `.ai/**`, `docs/governance/**`, root/workspace manifests, and generated reports refreshed by repository scripts.
 
 The package converts the prior audit findings into durable execution artifacts for a coding agent such as Codex Desktop, Codex CLI, Cursor, Claude Code, or another AI coding agent.
 
@@ -31,6 +35,8 @@ The agent must create a real active evidence directory under `docs/ai-runs/YYYYM
 ## Important
 
 Do not treat this package as proof that validation has passed. It defines the required validation and evidence contract. The future coding agent must run commands and record evidence inside the repository.
+
+Do not copy new active governance state into this package. New remediation work should create current evidence under the repository's normal governance/docs/runtime locations and reference this package only as historical context.
 
 ## Ready-to-paste Codex Goal Prompt
 
