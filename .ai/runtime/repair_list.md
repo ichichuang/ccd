@@ -129,10 +129,13 @@ No open Vite major lane tasks remain. The Vite 8 isolated compatibility lane was
   - Browser install/cache evidence: `pnpm exec playwright install --list` reports Playwright `1.60.0` browser cache entries for Chromium `1223`, Chromium headless shell `1223`, and FFmpeg `1011`; `pnpm exec playwright install chromium --dry-run` targets Chrome for Testing `148.0.7778.96`; CI remains on system Google Chrome through `PLAYWRIGHT_CHROMIUM_CHANNEL=chrome` and `google-chrome --version`.
   - Validation: `pnpm deps:catalog:check`, `pnpm exec playwright --version`, `PLAYWRIGHT_CHROMIUM_CHANNEL=chrome pnpm exec playwright test --list`, `pnpm exec playwright install chromium`, `pnpm e2e:smoke`, `pnpm e2e:layout`, `pnpm e2e:visual`, `pnpm e2e:qa`.
 
-- [ ] [P2-Deps-Tauri] Synchronize Tauri JS API, CLI, Rust `tauri`, and `tauri-build` versions with an explicit minor/patch policy.
+- [x] [P2-Deps-Tauri] Synchronize Tauri JS API, CLI, Rust `tauri`, and `tauri-build` versions with an explicit minor/patch policy.
   - Affected paths: `apps/desktop/package.json`, root manifest/catalog, `apps/desktop/src-tauri/Cargo.toml`, `apps/desktop/src-tauri/Cargo.lock`.
   - Acceptance: JS API, CLI, Rust crate, and build crate are aligned by an explicit policy; no new plugin or permission is enabled as part of version sync.
-  - Validation: `pnpm build:desktop`, `pnpm desktop:security`, `cargo check --locked --manifest-path apps/desktop/src-tauri/Cargo.toml`.
+  - Completed on `modernize/tauri-compat`: aligned catalog-managed `@tauri-apps/api` floor from `^2.9.1` to `^2.11.0` with lockfile resolved at `2.11.0`, aligned catalog-managed `@tauri-apps/cli` floor from `^2.9.1` to `^2.11.2` with lockfile resolved at `2.11.2`, and made Rust `tauri` / `tauri-build` manifest floors explicit at `2.11.2` / `2.6.2`; existing `Cargo.lock` already resolved that Rust set.
+  - Compatibility evidence: official Tauri core release index lists `tauri` `2.11.2`, `@tauri-apps/api` `2.11.0`, `@tauri-apps/cli` `2.11.2`, `wry` `0.55.1`, and `tao` `0.35.3`; official `tauri@2.11.2` release notes list coupled dependency upgrades to `tauri-utils@2.9.2`, `tauri-runtime@2.11.2`, `tauri-runtime-wry@2.11.2`, `tauri-macros@2.6.2`, and `tauri-build@2.6.2`.
+  - Security evidence: no Tauri plugin package/crate, permission, capability, CSP, updater, deep-link, shell, filesystem, HTTP, opener, notification, or Rust command was added; `capabilities/default.json` remains permission-empty and `security-scopes.json` remains deny-by-default.
+  - Validation: `pnpm deps:catalog:check`, `pnpm desktop:security`, `pnpm --filter @ccd/desktop exec tauri --version`, `cargo check --locked --manifest-path apps/desktop/src-tauri/Cargo.toml`.
 
 - [ ] [P2-Deps-Validation] For every dependency modernization lane, run targeted checks first and then full validation.
   - Acceptance: each lane records a current outdated/scan snapshot, affected ecosystem, compatibility notes, rollback risk, and validation results.
