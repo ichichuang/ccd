@@ -91,11 +91,10 @@ export const usePermissionGuard = ({
   }
 
   // 全局前置守卫（纯访问控制，不包含 UI 副作用）
-  router.beforeEach(async (to, from, next) => {
+  router.beforeEach(async (to, from) => {
     // 未启用登录/鉴权模式时，直接放行
     if (!AUTH_ENABLED) {
-      next()
-      return
+      return true
     }
 
     const whiteList = routeWhitePathList
@@ -107,16 +106,14 @@ export const usePermissionGuard = ({
     if (isLogin && !isWhiteListed(to.path, whiteList)) {
       const validationResult = await validatePersistedSession()
       if (validationResult === 'forbidden') {
-        next(appRoutePaths.forbidden)
-        return
+        return appRoutePaths.forbidden
       }
       isLogin = validationResult === 'valid'
     }
 
     if (isLogin) {
       if (to.path === appRoutePaths.login) {
-        next({ path: appRoutePaths.root })
-        return
+        return { path: appRoutePaths.root }
       } else {
         if (isDynamicRoutesLoaded) {
           if (
@@ -126,11 +123,9 @@ export const usePermissionGuard = ({
               userStore.userInfo.permissions
             )
           ) {
-            next(appRoutePaths.forbidden)
-            return
+            return appRoutePaths.forbidden
           }
-          next()
-          return
+          return true
         }
         let stopGlobalLoading: (() => void) | null = null
         try {
@@ -164,33 +159,30 @@ export const usePermissionGuard = ({
             from.path === appRoutePaths.login &&
             (to.fullPath === target.path || to.path === target.path)
           ) {
-            next()
-            return
+            return true
           }
 
           // 其他场景（如 F5 刷新）：中断当前导航，重定向到完整目标路径
-          next({ path: target.path, query: target.query, replace: true })
-          return
+          return { path: target.path, query: target.query, replace: true }
         } catch (error: unknown) {
           appLogger.error('动态路由初始化失败', error)
-          next({
+          return {
             path: appRoutePaths.login,
             query: to.fullPath !== appRoutePaths.login ? { redirect: to.fullPath } : {},
-          })
-          return
+          }
         } finally {
           stopGlobalLoading?.()
         }
       }
     } else {
       if (isWhiteListed(to.path, whiteList)) {
-        next()
-      } else {
-        const requestedFullPath = getCatchAllRedirectedFullPath(to) ?? to.fullPath
-        next({
-          path: appRoutePaths.login,
-          query: { redirect: requestedFullPath },
-        })
+        return true
+      }
+
+      const requestedFullPath = getCatchAllRedirectedFullPath(to) ?? to.fullPath
+      return {
+        path: appRoutePaths.login,
+        query: { redirect: requestedFullPath },
       }
     }
   })

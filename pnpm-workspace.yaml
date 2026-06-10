@@ -25,15 +25,16 @@ catalog:
   '@types/lodash-es': ^4.17.12
   '@types/node': ^24.12.4
   '@types/postcss-pxtorem': ^6.1.0
-  '@unocss/preset-attributify': ^66.6.0
-  '@unocss/preset-icons': ^66.6.0
-  '@unocss/preset-typography': ^66.6.0
-  '@unocss/preset-uno': ^66.6.0
-  '@unocss/reset': ^66.6.0
-  '@unocss/transformer-directives': ^66.6.0
-  '@unocss/transformer-variant-group': ^66.6.0
+  '@unocss/preset-attributify': ^66.7.0
+  '@unocss/preset-icons': ^66.7.0
+  '@unocss/preset-typography': ^66.7.0
+  '@unocss/preset-uno': ^66.7.0
+  '@unocss/reset': ^66.7.0
+  '@unocss/transformer-directives': ^66.7.0
+  '@unocss/transformer-variant-group': ^66.7.0
   '@vitejs/plugin-vue': ^6.0.7
   '@vitejs/plugin-vue-jsx': ^5.1.5
+  '@vue/compiler-dom': ^3.5.35
   '@vue/compiler-sfc': ^3.5.35
   '@vue/test-utils': ^2.4.6
   '@vue/tsconfig': ^0.9.1
@@ -69,7 +70,7 @@ catalog:
   overlayscrollbars: ^2.14.0
   overlayscrollbars-vue: ^0.5.9
   picocolors: ^1.1.1
-  pinia: ^3.0.3
+  pinia: ^3.0.4
   pinia-plugin-persistedstate: ^4.7.1
   postcss: ^8.5.15
   postcss-html: ^1.8.1
@@ -87,18 +88,18 @@ catalog:
   turbo: ^2.6.3
   typescript: ^5.9.3
   typescript-eslint: ^8.53.1
-  unocss: ^66.6.0
+  unocss: ^66.7.0
   unplugin-auto-import: ^20.0.0
   unplugin-vue-components: ^28.8.0
   uuid: ^13.0.0
   vite: ^8.0.16
   vite-plugin-compression: ^0.5.1
   vitest: ^4.1.8
-  vue: ^3.5.12
+  vue: ^3.5.35
   vue-echarts: ^8.0.0
   vue-eslint-parser: ^10.2.0
-  vue-i18n: ^10.0.8
-  vue-router: ^4.4.5
+  vue-i18n: ^11.4.5
+  vue-router: ^5.1.0
   vue-tsc: ^3.3.4
   vue3-lottie: ^3.3.1
   zod: ^4.3.6
