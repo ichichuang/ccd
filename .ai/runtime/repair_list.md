@@ -121,10 +121,13 @@ No open Vite major lane tasks remain. The Vite 8 isolated compatibility lane was
   - Compatibility evidence: official alova v3 docs keep the current import surface (`alova/fetch`, `alova/vue`, `alova/client`); official alova releases list `3.5.0` as a minor fetch-adapter patch and `3.5.1` as a patch release; package metadata has no peer dependencies and requires Node `>=18`.
   - Validation: request-layer tests, `pnpm arch:runtime`, `pnpm api:report`, `pnpm validate`.
 
-- [ ] [P2-Deps-Playwright] Upgrade Playwright only after CI browser install/cache behavior is confirmed.
+- [x] [P2-Deps-Playwright] Upgrade Playwright only after CI browser install/cache behavior is confirmed.
   - Affected paths: Playwright config, e2e tests, CI workflow, browser cache/install docs.
   - Acceptance: E2E remains stable locally and in CI.
-  - Validation: `pnpm e2e:smoke`, `pnpm e2e:layout`, `pnpm e2e:visual`, `pnpm e2e:qa`, CI run.
+  - Completed on `modernize/playwright-compat`: upgraded catalog-managed `@playwright/test` from `^1.59.1` to `^1.60.0`; lockfile resolved directly coupled `playwright` and `playwright-core` from `1.59.1` to `1.60.0`.
+  - Compatibility evidence: official Playwright 1.60 release notes keep current CCD usage compatible; the only relevant breaking config removal is legacy context `videosPath` / `videoSize`, which CCD does not use. Package metadata keeps Node support at `>=18`; current CCD root engine is Node `24.x`.
+  - Browser install/cache evidence: `pnpm exec playwright install --list` reports Playwright `1.60.0` browser cache entries for Chromium `1223`, Chromium headless shell `1223`, and FFmpeg `1011`; `pnpm exec playwright install chromium --dry-run` targets Chrome for Testing `148.0.7778.96`; CI remains on system Google Chrome through `PLAYWRIGHT_CHROMIUM_CHANNEL=chrome` and `google-chrome --version`.
+  - Validation: `pnpm deps:catalog:check`, `pnpm exec playwright --version`, `PLAYWRIGHT_CHROMIUM_CHANNEL=chrome pnpm exec playwright test --list`, `pnpm exec playwright install chromium`, `pnpm e2e:smoke`, `pnpm e2e:layout`, `pnpm e2e:visual`, `pnpm e2e:qa`.
 
 - [ ] [P2-Deps-Tauri] Synchronize Tauri JS API, CLI, Rust `tauri`, and `tauri-build` versions with an explicit minor/patch policy.
   - Affected paths: `apps/desktop/package.json`, root manifest/catalog, `apps/desktop/src-tauri/Cargo.toml`, `apps/desktop/src-tauri/Cargo.lock`.
