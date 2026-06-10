@@ -3,42 +3,31 @@
 - Target path: `.ai/runtime/repair_list.md`
 - Template source: `.ai/runtime/repair_list.template.md`
 - Owner decisions: `.ai/runtime/owner_decisions.md`
+- Strategic guardrails: `docs/governance/strategic-guardrails.md`
 - Rule coverage: `.ai/runtime/rule_coverage_matrix.md`
 - Generated JSON target: `.ai/runtime/repair-ledger.json`
 - Runtime state policy: `.ai/runtime/repair_list.md` is local runtime state; `pnpm ai:sync` may create it from `.ai/runtime/repair_list.template.md` when missing, but must not overwrite it once it exists.
-- Last regenerated: 2026-06-09
-- Reset basis: 2026-06-09 deep-research issue analysis + current post-merge runtime repair ledger.
-- Cleanup rule applied: all completed repair task lines were removed. This file contains only open, deferred, blocked, or re-opened work.
+- Last cleaned: 2026-06-10
+- Cleanup rule applied: all completed repair task lines were removed. This file contains no actionable open repair items.
 - Owner decision: keep the current CCD repository and perform staged modernization, not a full rebuild.
 
 ## 0. Purpose
 
-This ledger is the canonical AI-readable repair and modernization plan for CCD after the 2026-06-09 deep-research audit.
+This ledger is the AI-readable open repair surface for CCD after the final P4 strategic guardrail closure.
 
-The current scope remains **CCD architecture system completion**, not business-product development. CCD should remain a governed multi-runtime platform skeleton:
+P0, P1, P2, and P3 repair work is closed for the current architecture program. The only unchecked entries that remain are non-actionable P4 strategic guardrails. They stay visible to `pnpm ai:doctor --open` because current repository policy uses the open ledger as the durable warning surface for deferred strategic or blocked work.
 
-- `apps/web-demo` demonstrates browser-side architecture capabilities.
-- `apps/desktop` demonstrates Tauri desktop packaging, IPC, permissions, windows, security, and desktop runtime adapter capabilities.
-- `packages/contracts` and `packages/core` stay runtime-neutral.
-- Runtime capabilities are injected through contracts and app adapters.
-- Runtime APIs appear only in app adapter layers or approved runtime-specific boundaries.
-- Root package remains orchestration-only.
-
-The deep-research audit found no current P0 blocker. P1 closure has completed the governance, delivery-command, catalog, desktop-security, and CI/local validation cleanup. P2 dependency modernization validation is closed. P3 cleanup, documentation, audit-readback, and DX close-out is complete; the remaining open work is deferred strategic guardrails.
+Durable item details live in `docs/governance/strategic-guardrails.md`. This file intentionally keeps only parseable open task lines plus the minimum policy context required by AI workflows.
 
 ## 1. Ledger Format Contract
 
-- Open, deferred, blocked, or re-opened tasks use unchecked task lines.
+- Open strategic guardrails use unchecked task lines so `pnpm ai:doctor --open` remains warning-preserving.
+- Actionable repair tasks must not be kept in this file unless they are current work with an owner-approved lane.
 - Completed task lines are intentionally not kept in this cleaned runtime ledger.
-- Each actionable task must start with `- [ ] [Module] Task`.
-- The `Module` label must include priority, for example `[P1-Validate-AllInOneGate]` or `[P2-Vite8-IsolatedLane]`.
-- Do not mark a task complete until implementation and relevant validation commands pass.
-- During the next cleanup pass, remove completed task lines from this runtime ledger again.
-
-Parser compatibility:
-
-- `scripts/migrate-ledger.mjs` must parse `- [ ] [Module] Task`.
-- Legacy icon lines are migration-only and should not be introduced into this ledger.
+- Each unchecked task must start with `- [ ] [Module] Task`.
+- The `Module` label must include priority, for example `[P4-HttpCore-Blocked]`.
+- Parser compatibility: `scripts/migrate-ledger.mjs` must parse `- [ ] [Module] Task`.
+- Legacy icon lines are migration-only and must not be introduced into this ledger.
 
 ## 2. Architectural Non-Negotiables
 
@@ -64,197 +53,61 @@ Parser compatibility:
 | P1 | 0 | High-priority governance/security/delivery defects are closed in this stage. |
 | P2 | 0 | Medium-priority modernization and isolated dependency lanes are closed for this stage. |
 | P3 | 0 | Cleanup, documentation, audit-readback, and developer-experience issues are closed for this stage. |
-| P4 | 10 | Strategic deferred or blocked guardrails that should remain open until owner decisions change. |
-| Total | 10 | P4 guardrails remain open; P2 close-out evidence is retained until the next cleanup pass. |
+| P4 | 10 | Non-actionable strategic guardrails that remain visible to `ai:doctor --open`. |
+| Total | 10 | No actionable open repair items remain. |
 
-## 4. P1 — Closed Governance, Security, and Delivery Defects
+## 4. P0-P3 Closure
 
-### Rationale
+No open P0, P1, P2, or P3 tasks remain in this runtime ledger.
 
-P1 closure completed the delivery and governance contract hardening identified by the 2026-06-09 audit. Completed task lines are intentionally removed from this runtime ledger so only unresolved work remains.
+Completed evidence is recorded in the relevant governance and ADR documents:
 
-### Tasks
-
-No open P1 tasks remain. The unresolved task lines below are P2, P3, and P4 only.
-
-## 5. P2 — Medium Priority Modernization and Isolated Lanes
-
-### Rationale
-
-These items are real, but they should not be mixed into governance cleanup or architecture-boundary repair. Vite major migration and dependency modernization must remain isolated lanes.
-
-### Vite major lane
-
-No open Vite major lane tasks remain. The Vite 8 isolated compatibility lane was completed on `modernize/vite8-compat` with inventory, Rolldown/Oxc config migration, bundle budget validation, deployment build validation, and full governance validation.
-
-### Dependency modernization lanes
-
-- [x] [P2-Deps-RuntimeStack] Upgrade Vue runtime ecosystem only in an isolated compatibility lane.
-  - Affected packages: `vue`, `vue-router`, `vue-i18n`, `pinia`, `unocss`, and related runtime plugins.
-  - Acceptance: route behavior, i18n, state, UnoCSS, and browser app behavior remain stable.
-  - Validation: targeted runtime tests, `pnpm type-check`, `pnpm test:run`, `pnpm e2e:qa`, `pnpm validate`.
-
-- [x] [P2-Deps-Vueuse] Upgrade `@vueuse/core` only in an isolated compatibility lane.
-  - Affected paths: hooks, auto-import configuration, packages using VueUse.
-  - Acceptance: hooks and auto-import behavior remain stable; existing Rolldown/VueUse annotation warnings are tracked separately from the upgrade decision.
-  - Completed on `modernize/vueuse-compat`: upgraded catalog-managed `@vueuse/core` from `^13.9.0` to `^14.3.0`; lockfile resolved `@vueuse/core`, `@vueuse/shared`, and `@vueuse/metadata` to `14.3.0`.
-  - Validation: `pnpm --filter @ccd/vue-hooks test`, `pnpm --filter @ccd/vue-hooks type-check`, `pnpm --filter @ccd/vue-ui test`, `pnpm --filter @ccd/vue-ui type-check`, `pnpm --filter @ccd/vue-charts test`, `pnpm --filter @ccd/vue-charts type-check`, `pnpm --filter @ccd/web-demo test`, `pnpm --filter @ccd/web-demo type-check`.
-
-- [x] [P2-Deps-ESLint] Upgrade ESLint ecosystem only if lint behavior remains deterministic.
-  - Affected paths: `eslint.config.ts`, lint scripts, Vue/TS lint plugins.
-  - Acceptance: lint output is stable and not noisier; no rule weakening is introduced just to pass.
-  - Completed on `modernize/eslint-compat`: upgraded catalog-managed `eslint` from `^9.39.2` to `^10.4.1`, `@eslint/js` from `^9.39.2` to `^10.0.1`, `typescript-eslint` from `^8.53.1` to `^8.61.0`, `eslint-plugin-vue` from `^9.31.0` to `^10.9.2`, `vue-eslint-parser` from `^10.2.0` to `^10.4.1`, and `globals` from `^17.1.0` to `^17.6.0`.
-  - Config compatibility: removed obsolete `vue/script-setup-uses-vars` references because `eslint-plugin-vue` v10 removed the rule and `vue-eslint-parser` v9+ handles `<script setup>` usage; scoped the new `vue/no-required-prop-with-default` advisory off only for the existing `PrimeDialog` wrapper contract to keep this dependency lane out of PrimeVue/UI contract changes.
-  - Validation: `pnpm exec vitest run scripts/eslint-rules/no-hardcoded-colors.spec.ts`, `pnpm deps:catalog:check`, `pnpm lint:check`, `pnpm check`.
-
-- [x] [P2-Deps-PrimeVue] Upgrade PrimeVue only after adapter API compatibility is verified.
-  - Affected paths: `packages/vue-primevue-adapter/**`, `packages/vue-ui/**`, `apps/web-demo/**`.
-  - Acceptance: PrimeVue remains the UI ecosystem; theme, PassThrough, services, locale mapping, and global config stay adapter-owned.
-  - Completed on `modernize/primevue-adapter-compat`: aligned catalog-managed `primevue`, `@primevue/core`, `@primevue/forms`, `@primevue/icons`, and `@primevue/auto-import-resolver` from `^4.5.4` to `^4.5.5`; lockfile resolved `@primevue/metadata` to `4.5.5` while stable `@primeuix/themes` remained `2.0.3`.
-  - Compatibility evidence: official PrimeVue 4.5.5 release notes identify this as a patch release; package metadata keeps `@primevue/core` peer dependency at `vue: ^3.5.0`; current CCD Vue catalog is `^3.5.35`.
-  - Validation: `pnpm --filter @ccd/vue-primevue-adapter type-check`, `pnpm --filter @ccd/vue-primevue-adapter test`, `pnpm --filter @ccd/vue-ui type-check`, `pnpm --filter @ccd/vue-ui test`, `pnpm exec vitest run apps/web-demo/src/plugins/modules/primevue.spec.ts scripts/architecture/primevue-boundary-policy.spec.ts`.
-
-- [x] [P2-Deps-Alova] Upgrade alova only after request tests and app-owned runtime boundaries are sufficient.
-  - Affected paths: `apps/web-demo/src/utils/http/**`, HTTP contracts, API modules.
-  - Acceptance: alova runtime stays app-owned; interceptors, auth refresh, retry/cache/dedup, error mapping, and schema validation remain stable.
-  - Completed on `modernize/alova-http-compat`: upgraded catalog-managed `alova` from `^3.3.3` to `^3.5.1`; lockfile resolved `alova` from `3.4.0` to `3.5.1` and directly coupled `@alova/shared` from `1.3.1` to `1.3.2`.
-  - Compatibility evidence: official alova v3 docs keep the current import surface (`alova/fetch`, `alova/vue`, `alova/client`); official alova releases list `3.5.0` as a minor fetch-adapter patch and `3.5.1` as a patch release; package metadata has no peer dependencies and requires Node `>=18`.
-  - Validation: request-layer tests, `pnpm arch:runtime`, `pnpm api:report`, `pnpm validate`.
-
-- [x] [P2-Deps-Playwright] Upgrade Playwright only after CI browser install/cache behavior is confirmed.
-  - Affected paths: Playwright config, e2e tests, CI workflow, browser cache/install docs.
-  - Acceptance: E2E remains stable locally and in CI.
-  - Completed on `modernize/playwright-compat`: upgraded catalog-managed `@playwright/test` from `^1.59.1` to `^1.60.0`; lockfile resolved directly coupled `playwright` and `playwright-core` from `1.59.1` to `1.60.0`.
-  - Compatibility evidence: official Playwright 1.60 release notes keep current CCD usage compatible; the only relevant breaking config removal is legacy context `videosPath` / `videoSize`, which CCD does not use. Package metadata keeps Node support at `>=18`; current CCD root engine is Node `24.x`.
-  - Browser install/cache evidence: `pnpm exec playwright install --list` reports Playwright `1.60.0` browser cache entries for Chromium `1223`, Chromium headless shell `1223`, and FFmpeg `1011`; `pnpm exec playwright install chromium --dry-run` targets Chrome for Testing `148.0.7778.96`; CI remains on system Google Chrome through `PLAYWRIGHT_CHROMIUM_CHANNEL=chrome` and `google-chrome --version`.
-  - Validation: `pnpm deps:catalog:check`, `pnpm exec playwright --version`, `PLAYWRIGHT_CHROMIUM_CHANNEL=chrome pnpm exec playwright test --list`, `pnpm exec playwright install chromium`, `pnpm e2e:smoke`, `pnpm e2e:layout`, `pnpm e2e:visual`, `pnpm e2e:qa`.
-
-- [x] [P2-Deps-Tauri] Synchronize Tauri JS API, CLI, Rust `tauri`, and `tauri-build` versions with an explicit minor/patch policy.
-  - Affected paths: `apps/desktop/package.json`, root manifest/catalog, `apps/desktop/src-tauri/Cargo.toml`, `apps/desktop/src-tauri/Cargo.lock`.
-  - Acceptance: JS API, CLI, Rust crate, and build crate are aligned by an explicit policy; no new plugin or permission is enabled as part of version sync.
-  - Completed on `modernize/tauri-compat`: aligned catalog-managed `@tauri-apps/api` floor from `^2.9.1` to `^2.11.0` with lockfile resolved at `2.11.0`, aligned catalog-managed `@tauri-apps/cli` floor from `^2.9.1` to `^2.11.2` with lockfile resolved at `2.11.2`, and made Rust `tauri` / `tauri-build` manifest floors explicit at `2.11.2` / `2.6.2`; existing `Cargo.lock` already resolved that Rust set.
-  - Compatibility evidence: official Tauri core release index lists `tauri` `2.11.2`, `@tauri-apps/api` `2.11.0`, `@tauri-apps/cli` `2.11.2`, `wry` `0.55.1`, and `tao` `0.35.3`; official `tauri@2.11.2` release notes list coupled dependency upgrades to `tauri-utils@2.9.2`, `tauri-runtime@2.11.2`, `tauri-runtime-wry@2.11.2`, `tauri-macros@2.6.2`, and `tauri-build@2.6.2`.
-  - Security evidence: no Tauri plugin package/crate, permission, capability, CSP, updater, deep-link, shell, filesystem, HTTP, opener, notification, or Rust command was added; `capabilities/default.json` remains permission-empty and `security-scopes.json` remains deny-by-default.
-  - Validation: `pnpm deps:catalog:check`, `pnpm desktop:security`, `pnpm --filter @ccd/desktop exec tauri --version`, `cargo check --locked --manifest-path apps/desktop/src-tauri/Cargo.toml`.
-
-- [x] [P2-Deps-Validation] For every dependency modernization lane, run targeted checks first and then full validation.
-  - Acceptance: each lane records a current outdated/scan snapshot, affected ecosystem, compatibility notes, rollback risk, and validation results.
-  - Completed on `modernize/dependency-validation-closeout`: confirmed merged P2 lanes on main for Vite 8, Vue tooling/runtime stack, VueUse, ESLint, PrimeVue, alova, Playwright, and Tauri through the runtime ledger, pnpm catalog, lockfile, manifests, and Tauri Cargo lock evidence.
-  - Catalog evidence: `pnpm deps:catalog:check` passed with 117 catalog entries across 13 manifests; direct external dependencies and pnpm overrides remain catalog-owned; internal `@ccd/*` dependencies use `workspace:*`.
-  - Lockfile evidence: `pnpm install --lockfile-only --ignore-scripts` and `pnpm install --ignore-scripts` completed after the security response; `lodash-es` resolves to `4.18.1` and `uuid` resolves to `13.0.2`.
-  - Security response: patched direct `lodash-es` and `uuid` through the default pnpm catalog; added documented, catalog-backed, temporary transitive security overrides for `ajv`, `defu`, `diff`, `fast-uri`, `flatted`, `immutable`, `js-cookie`, `lodash`, `minimatch`, `picomatch`, `rollup`, `shell-quote`, `undici`, and `yaml`.
-  - Residual advisory: `pnpm audit --audit-level high --json` still reports two `tmp@0.0.33` advisory records through `commitizen>inquirer>external-editor>tmp`; this is deferred to a future Commitizen/inquirer tooling lane because the patched floor jumps to `tmp>=0.2.6`, outside the old `0.0.x` chain.
-  - Outdated snapshot: `.ai/runtime/dependency-outdated-snapshot.md` records 37 remaining outdated packages after the security response: 21 patch/minor candidates and 16 major/compatibility-lane candidates. These remain future isolated lanes, not P2 close-out work.
-  - Generated artifact evidence: `pnpm deps:scan` refreshed ignored local `.ai/runtime/dependency-scan-summary.json`; `pnpm supply:check` regenerated `docs/generated/sbom.json` through the repo script and left tracked generated artifacts unchanged.
-  - Rollback: remove the corresponding pnpm override/catalog entry or direct catalog bump, run `pnpm install --lockfile-only --ignore-scripts`, then rerun `pnpm deps:catalog:check`, `pnpm deps:scan`, `pnpm supply:check`, and the affected validation command.
-  - Validation: `pnpm deps:outdated` rerun and exits `1` because deferred outdated packages remain; passed `pnpm ai:sync`, `pnpm ai:doctor --open`, `pnpm codex:preflight`, `pnpm deps:catalog:check`, `pnpm deps:scan`, `pnpm supply:check`, `pnpm governance:github-workflows`, `pnpm docs:commands`, `pnpm arch:runtime`, `pnpm arch:boundaries`, `pnpm api:report`, `pnpm project:doctor`, `pnpm check`, `pnpm lint:check`, `pnpm validate`, `pnpm build:web-demo`, `pnpm build:desktop`, `pnpm build:ci`, `pnpm e2e:qa`, `pnpm budget:bundles`, `pnpm budget:desktop`, `pnpm governance:gate`, `cargo check --locked --manifest-path apps/desktop/src-tauri/Cargo.toml`, and `git diff --check`.
-
-## 6. P3 — Low Priority Cleanup, Documentation, and DX
-
-### Rationale
-
-These issues do not block the architecture, but they reduce contributor clarity, portability, auditability, and source-tree cleanliness.
-
-### Tasks
-
-No open P3 tasks remain. Completed P3 evidence is recorded in:
-
+- `docs/governance/README.md`
 - `docs/governance/historical-artifacts.md`
 - `docs/governance/github-governance.md`
-- `.ai/runtime/governance-snapshots/20260610T095053Z-github-ichichuang-ccd/**`
+- `docs/governance/dependency-policy.md`
 - `docs/governance/desktop-security-scope-review.md`
 - `docs/governance/primevue-i18n-verification.md`
 - `docs/adr/ADR-004-runtime-environment-policy.md`
+- `docs/adr/ADR-007-runtime-stack-and-tooling-choices.md`
+- `docs/adr/ADR-008-desktop-backend-ipc-and-updater-policy.md`
 
-## 7. P4 — Strategic Deferred and Blocked Guardrails
+## 5. P4 Strategic Guardrails
 
-### Rationale
+These entries are non-actionable strategic guardrails. Do not implement them in repair, cleanup, dependency, desktop, or governance-closeout lanes unless the owner records a future approval with scope, prerequisites, validation, and rollback.
 
-These entries intentionally remain open to prevent premature strategic or product work. Do not implement them in architecture repair lanes unless owner decisions change.
+Detailed status, reason, prerequisites, owner approval requirement, allowed future lane, and validation guardrail for every item are recorded in:
+
+- `docs/governance/strategic-guardrails.md`
 
 ### Tasks
 
-- [ ] [P4-Desktop-RustCommands] Add Rust command handlers only through audited typed IPC boundaries when backend commands are actually introduced.
-  - Owner decision: non-actionable until a real desktop backend capability is approved.
-  - Prerequisites: contract-first IPC design, Rust command threat model, scoped Tauri permission rationale, frontend adapter validation, rollback plan.
-  - Validation guardrail: `pnpm desktop:security`, `pnpm desktop:smoke:dev`, `pnpm desktop:smoke:release`, `pnpm build:desktop`, Rust tests when commands exist.
+- [ ] [P4-Desktop-RustCommands] NON-ACTIONABLE STRATEGIC GUARDRAIL: add Rust command handlers only through audited typed IPC boundaries when backend commands are actually introduced.
+- [ ] [P4-Desktop-RustErrors] NON-ACTIONABLE STRATEGIC GUARDRAIL: use structured Rust-side IPC error types instead of string-only errors when commands are introduced.
+- [ ] [P4-Desktop-UpdaterDeepLink-Blocked] NON-ACTIONABLE STRATEGIC GUARDRAIL: keep updater and deep-link runtime disabled until a desktop security model is approved.
+- [ ] [P4-NewOrganization-Deferred] NON-ACTIONABLE STRATEGIC GUARDRAIL: do not create a new GitHub organization or new repository until current repository governance and architecture are stable and explicitly approved.
+- [ ] [P4-Starter-Deferred] NON-ACTIONABLE STRATEGIC GUARDRAIL: create `ccd-vue-starter` only after public package APIs and release policy are stable.
+- [ ] [P4-DesignSystem-Deferred] NON-ACTIONABLE STRATEGIC GUARDRAIL: split a standalone design-system repository only after UI primitives and adapter boundaries are stable.
+- [ ] [P4-RekaUI-Deferred] NON-ACTIONABLE STRATEGIC GUARDRAIL: evaluate Reka UI only for specific headless primitive gaps after PrimeVue adapter boundaries are stable.
+- [ ] [P4-TanStackQuery-Deferred] NON-ACTIONABLE STRATEGIC GUARDRAIL: evaluate TanStack Query Vue only if server-state complexity exceeds what alova plus explicit adapters can cleanly handle.
+- [ ] [P4-HttpCore-Blocked] NON-ACTIONABLE STRATEGIC GUARDRAIL: do not promote alova HTTP runtime into `packages/core` or a new generic shared request package.
+- [ ] [P4-SafeStorageShared-Blocked] NON-ACTIONABLE STRATEGIC GUARDRAIL: do not promote safeStorage crypto, compression, serializer, migration, maintenance, or runtime facade to `@ccd/shared-utils`.
 
-- [ ] [P4-Desktop-RustErrors] Use structured Rust-side IPC error types instead of string-only errors when commands are introduced.
-  - Owner decision: non-actionable until Rust IPC commands exist.
-  - Prerequisites: stable command contract, frontend error mapping contract, Rust error enum or typed error envelope.
-  - Validation guardrail: Rust tests, IPC adapter tests, `pnpm governance:gate`.
-
-- [ ] [P4-Desktop-UpdaterDeepLink-Blocked] Do not enable updater or deep-link runtime until a desktop security model is approved.
-  - Owner decision: blocked by desktop trust-model requirements.
-  - Prerequisites: trusted update source, signature validation, allowed URL schemes, downgrade behavior, failure handling, scoped Tauri permissions, owner approval, rollback plan.
-  - Validation guardrail: `pnpm desktop:security`, `pnpm desktop:smoke:release`, `pnpm governance:gate`.
-
-- [ ] [P4-NewOrganization-Deferred] Do not create a new GitHub organization or new repository until current repository governance and architecture are stable and explicitly approved.
-  - Owner decision: current repository remains the architecture target.
-  - Prerequisites: stable governance baseline, publication/release strategy, migration plan, owner approval, rollback/archival plan.
-  - Validation guardrail: remote mutation scope remains limited to explicitly approved governance tasks.
-
-- [ ] [P4-Starter-Deferred] Create `ccd-vue-starter` only after public package APIs and release policy are stable.
-  - Owner decision: starter extraction is deferred.
-  - Prerequisites: stable `@ccd/contracts`, `@ccd/core`, `@ccd/vue-ui`, `@ccd/vue-primevue-adapter`, package publication policy, template maintenance owner, separate repository approval.
-  - Validation guardrail: `pnpm api:report`, `pnpm project:doctor`, `pnpm governance:gate`.
-
-- [ ] [P4-DesignSystem-Deferred] Split a standalone design-system repository only after UI primitives and adapter boundaries are stable.
-  - Owner decision: keep tokens, UI primitives, and PrimeVue adapter in the current monorepo for now.
-  - Prerequisites: UI primitive API stability, package publication policy, token compatibility plan, consumer migration plan, owner approval.
-  - Validation guardrail: `pnpm arch:boundaries`, `pnpm api:report`, `pnpm docs:commands`, `pnpm governance:gate`.
-
-- [ ] [P4-RekaUI-Deferred] Evaluate Reka UI only for specific headless primitive gaps after PrimeVue adapter boundaries are stable.
-  - Owner decision: PrimeVue remains the UI ecosystem.
-  - Prerequisites: gap analysis, PrimeVue adapter boundary review, dependency impact review, owner approval, migration/rollback plan.
-  - Validation guardrail: dependency catalog/supply checks and PrimeVue boundary guards remain green.
-
-- [ ] [P4-TanStackQuery-Deferred] Evaluate TanStack Query Vue only if server-state complexity exceeds what alova plus explicit adapters can cleanly handle.
-  - Owner decision: alova remains app-owned and sufficient until source evidence proves otherwise.
-  - Prerequisites: server-state complexity evidence, HTTP adapter impact review, cache/invalidation policy, owner approval, rollback plan.
-  - Validation guardrail: app-owned HTTP tests, `pnpm arch:runtime`, `pnpm api:report`, dependency catalog checks.
-
-- [ ] [P4-HttpCore-Blocked] Do not promote alova HTTP runtime into `packages/core` or a new generic shared request package.
-  - Block reason: HTTP runtime, interceptors, auth refresh, policies, UI notification behavior, and app validation remain app-owned.
-  - Allowed work: type-only HTTP contracts in `packages/contracts/src/http/**` and app-owned adapter/runtime hardening.
-  - Validation guardrail: `pnpm arch:runtime`, `pnpm api:report`, app HTTP tests, `pnpm governance:gate`.
-
-- [ ] [P4-SafeStorageShared-Blocked] Do not promote safeStorage crypto, compression, serializer, migration, maintenance, or runtime facade to `@ccd/shared-utils`.
-  - Block reason: safeStorage runtime remains app-owned.
-  - Allowed work: storage capability contracts and regression guards.
-  - Validation guardrail: safeStorage tests, no-shared-move guard, `pnpm arch:runtime`, `pnpm governance:gate`.
-
-## 8. Validation Matrix
+## 6. Validation Matrix
 
 Use the smallest valid validation set first, then escalate.
 
 | Change type | Minimum validation | Full validation |
 | ----------- | ------------------ | --------------- |
 | Ledger Markdown change | `pnpm ai:sync`, `pnpm ai:doctor --open`, `pnpm codex:preflight` | `pnpm governance:gate` |
-| Script surface / command docs | `pnpm docs:commands`, `pnpm ai:doctor --open` | `pnpm validate` |
-| Canonical validator | targeted `node scripts/validate-workspace.mjs full` smoke if created | `pnpm validate`, CI |
-| Dependency catalog centralization | `pnpm deps:catalog:check`, `pnpm deps:scan`, `pnpm supply:check` | `pnpm validate` |
-| Desktop security | `pnpm desktop:security`, desktop smoke | `pnpm build:desktop`, cargo desktop check, `pnpm validate` |
+| Strategic guardrail registry | `pnpm docs:commands`, `pnpm ai:doctor --open` | `pnpm validate` |
+| Generated/docs artifacts | `pnpm docs:commands`, `pnpm governance:gate` | `pnpm validate` |
 | Runtime boundaries | `pnpm arch:runtime`, `pnpm arch:boundaries` | `pnpm validate` |
 | Package/public API | `pnpm api:report`, package build | `pnpm build:ci`, `pnpm validate` |
-| Vite major lane | targeted web/desktop/package builds | `pnpm build:ci`, `pnpm vercel:build`, `pnpm e2e:qa`, budgets |
-| Dependency lane | targeted ecosystem tests | `pnpm validate` |
-| Generated/docs artifacts | `pnpm docs:commands`, `pnpm governance:gate` | `pnpm validate` |
+| Desktop security | `pnpm desktop:security`, desktop smoke | `pnpm build:desktop`, cargo desktop check, `pnpm validate` |
 | Remote governance readback | GitHub settings/API readback when authorized | `pnpm governance:github-workflows`, docs review |
 
-## 9. Recommended Execution Order
-
-Execute in this order unless the owner explicitly overrides it:
-
-1. Keep this runtime ledger parseable and aligned with AI protocol references.
-2. Clean package build cleanup portability and historical artifacts.
-3. Decide and document the Node engine policy.
-4. Complete audit-readback gaps for remote governance, desktop scopes, PrimeVue, and vue-i18n.
-5. Run Vite major migration only in an isolated branch.
-6. Run dependency modernization only in isolated ecosystem lanes.
-7. Revisit P4 strategic items only after explicit owner approval.
-
-## 10. Anti-Patterns
+## 7. Anti-Patterns
 
 Do not do the following:
 
@@ -272,25 +125,14 @@ Do not do the following:
 - Do not mutate GitHub branch protection, rulesets, or required checks without an explicit remote-governance lane.
 - Do not treat deferred P4 strategy items as current defects.
 
-## 11. Completion Criteria
+## 8. Completion Criteria
 
-This ledger is considered stable only when:
+This ledger is considered stable when:
 
 - `.ai/runtime/repair_list.md` exists locally and is used by AI workflows.
 - This file contains no stale completed repair task lines.
+- This file contains no actionable open repair items.
+- P4 guardrails remain visible to `pnpm ai:doctor --open` as non-actionable strategic guardrails.
 - `scripts/migrate-ledger.mjs` can generate `.ai/runtime/repair-ledger.json` from this Markdown.
 - `pnpm ai:sync` preserves existing local Markdown ledger content.
-- `pnpm ai:doctor --open` lists open tasks from this Markdown.
-- `pnpm codex:preflight` checks Markdown paths.
-- `pnpm ai:sync`, `pnpm ai:doctor --open`, `pnpm codex:preflight`, and `pnpm governance:gate` pass.
-- The canonical all-in-one validation command is truthful.
-- Root script surface is reduced or clearly classified.
-- Dependency catalogs are centralized without unauthorized upgrades.
-- Desktop security posture is explicit and validated.
-- Vite major and dependency modernization remain isolated lanes until intentionally executed.
-
-## 12. How to Use This Checklist
-
-Place this Markdown file at `/.ai/runtime/repair_list.md`.
-
-Each actionable task can be checked off only after implementation and relevant validation commands pass. When a task is completed, mark it complete in the working ledger and include validation evidence in the commit or repair note. During the next cleanup pass, remove completed task lines from this runtime ledger so it remains focused on unresolved repair work.
+- `pnpm ai:doctor --open`, `pnpm codex:preflight`, and `pnpm governance:gate` pass.
