@@ -52,7 +52,7 @@ Parser compatibility:
 | AI protocol and rules  | AI execution contract, preflight, rules, adapters                                                                     | `.ai/protocol/**`, `.ai/rules/**`, `.ai/skills/**`, `AGENTS.md`, `CLAUDE.md`                                                                     |
 | Runtime ledger         | Local repair tracking and generated ledger JSON                                                                       | `.ai/runtime/repair_list.md`, `.ai/runtime/repair_list.template.md`, `.ai/runtime/repair-ledger.json`                                            |
 | AI scripts             | Sync, doctor, preflight, migration, architecture guard                                                                | `scripts/ai-sync.mjs`, `scripts/ai-doctor.mjs`, `scripts/codex-preflight.mjs`, `scripts/migrate-ledger.mjs`, `scripts/ai-architecture-guard.mjs` |
-| Architecture contracts | Human and AI architecture contracts                                                                                   | `docs/en/architecture-contract.md`, `docs/en/governance-contract.md`, `docs/governance/**`                                                       |
+| Architecture contracts | Human and AI architecture contracts                                                                                   | `wiki/canonical/**`, `wiki/indexes/**`, `.ai/protocol/**`                                                                                        |
 | Contracts              | Runtime-neutral interfaces and DTOs                                                                                   | `packages/contracts/**`                                                                                                                          |
 | Core                   | Runtime-neutral platform facade                                                                                       | `packages/core/**`                                                                                                                               |
 | Frontend platform      | Tokens, UnoCSS preset, hooks, UI primitives, chart platform                                                           | `packages/design-tokens/**`, `packages/unocss-preset/**`, `packages/vue-hooks/**`, `packages/vue-ui/**`, `packages/vue-charts/**`                |
@@ -115,9 +115,9 @@ Rationale: historical alternate naming and ambiguous browser-app wording created
 
 ### Tasks
 
-- [ ] [P1-Naming-Canonical] Align active documentation, scripts, package filters, generated command documentation, AI/runtime docs, and app metadata on the canonical `web-demo` browser app name without renaming `apps/web-demo` or `@ccd/web-demo` (`README.md`, `README.en.md`, `docs/`, root `package.json`, `apps/web-demo/package.json`).
+- [ ] [P1-Naming-Canonical] Align active documentation, scripts, package filters, generated command documentation, AI/runtime docs, and app metadata on the canonical `web-demo` browser app name without renaming `apps/web-demo` or `@ccd/web-demo` (`README.md`, `README.en.md`, `wiki/`, root `package.json`, `apps/web-demo/package.json`).
 - [ ] [P1-Naming-Folder] Keep the folder/package identity decision open; do not rename `apps/web-demo` or `@ccd/web-demo` unless a future owner decision approves a different canonical app identity (`apps/web-demo`, `@ccd/web-demo`).
-- [ ] [P1-Docs-AppRoles] Update documentation to clearly identify `apps/web-demo` as the `web-demo` browser application and `apps/desktop` as the Tauri desktop runtime shell (`README.md`, `README.en.md`, `docs/`).
+- [ ] [P1-Wiki-AppRoles] Update documentation to clearly identify `apps/web-demo` as the `web-demo` browser application and `apps/desktop` as the Tauri desktop runtime shell (`README.md`, `README.en.md`, `wiki/`).
 - [ ] [P1-DemoMode-Prod] Disable production demo/mock mode unless the deployment is explicitly a public demo environment (`apps/web-demo/.env.production` or equivalent).
 
 ## 9. P1 — Route Module Integrity
@@ -354,10 +354,10 @@ Rationale: `postcss-pxtorem` selector blacklists are functional but fragile in a
 
 ### Tasks
 
-- [ ] [P2-Governance-Generated] Do not manually edit `docs/generated/**`, `.ai/generated/**`, or `.ai/governance/api-snapshots/**`.
+- [ ] [P2-Governance-Generated] Do not manually edit `wiki/generated/**`, `.ai/generated/**`, or `.ai/governance/api-snapshots/**`.
 - [ ] [P2-Governance-Refresh] Run `pnpm governance:refresh` after dependency graph, API surface, supply-chain, or generated report changes.
 - [ ] [P2-Governance-Gate] Run `pnpm governance:gate` before merging architecture changes.
-- [ ] [P2-Governance-DocsCommands] Run `pnpm docs:commands` if command documentation is touched.
+- [ ] [P2-Governance-WikiCommands] Run `pnpm wiki:commands` if command documentation is touched.
 - [ ] [P2-Governance-ProjectDoctor] Run `pnpm project:doctor` if `project.config.json`, package metadata, version, branding, or generated project metadata is touched.
 
 ## 25. P2 — GitHub Repository Governance
@@ -458,8 +458,8 @@ Rationale: owner decision marks Login Diorama as `FULL_GO_DEFERRED` for current 
 
 ### Documentation tasks
 
-- [ ] [P3-Docs-ArchitectureMap] Add a concise monorepo architecture map showing permitted dependency direction and runtime boundaries (`docs/`, `README.md`).
-- [ ] [P3-Docs-PackageResponsibilities] Document the responsibilities of every shared package and every app-local adapter boundary (`docs/`, `packages/*`, `apps/*`).
+- [ ] [P3-Wiki-ArchitectureMap] Add a concise monorepo architecture map showing permitted dependency direction and runtime boundaries (`wiki/`, `README.md`).
+- [ ] [P3-Wiki-PackageResponsibilities] Document the responsibilities of every shared package and every app-local adapter boundary (`wiki/`, `packages/*`, `apps/*`).
 - [ ] [P3-Docs-RouteInventory] Add route/page inventory documentation for all report instance pages and their owners (`apps/web-demo/src/router/modules/example.ts`, `apps/web-demo/src/views/example/**`).
 - [ ] [P3-Docs-DevCommands] Standardize local development command documentation for web, desktop, build, type-check, lint, and validation workflows (`README.md`, `README.en.md`, root `package.json`).
 - [ ] [P3-Docs-RemoveDemoWording] Remove stale template, example, or demo-only wording from production-facing docs and metadata where the project is no longer only a demo (`README.md`, `.env.*`, `apps/web-demo/**`).
@@ -504,7 +504,7 @@ Do not implement these until P0, P1, and the relevant P2 lanes are stable.
 
 ### Low-priority strategic documentation
 
-- [ ] [P4-ADR-Stack] Add architecture decision records for Vue 3, Vite, UnoCSS, PrimeVue, Tauri v2, pnpm workspace, and Turborepo choices (`docs/adr/`).
+- [ ] [P4-ADR-Stack] Add architecture decision records for Vue 3, Vite, UnoCSS, PrimeVue, Tauri v2, pnpm workspace, and Turborepo choices (`wiki/canonical/decisions/`).
 - [ ] [P4-Desktop-RustCommands] Add Rust command handlers only through audited, typed boundaries when backend commands are introduced.
 - [ ] [P4-Desktop-RustErrors] Add Rust-side structured error types instead of string-only IPC errors when commands are added.
 - [ ] [P4-Desktop-Updater] Add updater and deep-link configuration only when needed and only with a documented security model.

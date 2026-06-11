@@ -1,5 +1,0 @@
-$ git status --short --branch --untracked-files=all
-## main...origin/main [ahead 2]
-?? docs/ai-runs/20260601-205214-ccd-full-remediation-d021-generated-registry/command-logs/00-git-status.log
-
-[exit:0]

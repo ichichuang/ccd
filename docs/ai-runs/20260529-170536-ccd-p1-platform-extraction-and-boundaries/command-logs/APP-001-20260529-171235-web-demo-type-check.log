@@ -1,4 +1,0 @@
-Fri May 29 17:12:35 CST 2026
-
-> @ccd/web-demo@1.0.38 type-check /Users/cc/MyPorject/ccd/apps/web-demo
-> vue-tsc -p tsconfig.json --noEmit

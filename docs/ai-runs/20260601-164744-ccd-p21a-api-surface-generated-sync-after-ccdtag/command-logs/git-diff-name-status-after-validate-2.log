@@ -1,3 +1,0 @@
-$ git diff --name-status -- docs/generated/api-surface-report.md docs/generated/api-surface-report.json
-M	docs/generated/api-surface-report.json
-M	docs/generated/api-surface-report.md

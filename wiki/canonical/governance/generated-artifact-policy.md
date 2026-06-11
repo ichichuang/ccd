@@ -21,9 +21,9 @@ source_langs:
 source_paths:
   - README.en.md
   - .ai/README.md
-  - docs/README.md
-  - docs/documentation-system.md
-  - docs/generated/**
+  - README.md
+  - wiki/**
+  - wiki/generated/**
   - .ai/generated/**
   - .ai/governance/api-snapshots/**
   - scripts/normalize-generated-output.mjs
@@ -37,7 +37,7 @@ Generated outputs are source evidence views and drift checks. They must not be m
 
 ## Do not hand edit
 
-- `docs/generated/**`
+- `wiki/generated/**`
 - `.ai/generated/**`
 - `.ai/governance/api-snapshots/**`
 
@@ -60,9 +60,9 @@ This page is compiled from the following repository evidence paths:
 
 - `README.en.md`
 - `.ai/README.md`
-- `docs/README.md`
-- `docs/documentation-system.md`
-- `docs/generated/**`
+- `README.md`
+- `wiki/**`
+- `wiki/generated/**`
 - `.ai/generated/**`
 - `.ai/governance/api-snapshots/**`
 - `scripts/normalize-generated-output.mjs`

@@ -19,8 +19,8 @@ source_langs:
   - en
   - zh
 source_paths:
-  - docs/project-control-center.md
-  - docs/zh/04-project-control-center.md
+  - wiki/**
+  - wiki/**
   - package.json
   - scripts/project-config.mjs
   - scripts/validate-workspace.mjs
@@ -35,13 +35,13 @@ The project control center is the operational entry for repository health, comma
 ## Current command surface
 
 - `pnpm project:doctor` checks project metadata and governed configuration.
-- `pnpm docs:commands` validates documented `pnpm` command references against root `package.json`.
-- `pnpm wiki:validate` validates wiki frontmatter, wikilinks, source provenance, and the `/docs` migration inventory.
+- `pnpm wiki:commands` validates documented `pnpm` command references against root `package.json`.
+- `pnpm wiki:validate` validates wiki frontmatter, wikilinks, source provenance, and current wiki source provenance.
 - `pnpm check` is the fast local feedback gate.
 - `pnpm validate` is the full local validation gate.
 - `pnpm build:ci` is the CI Core Quality parity gate.
 
-Before documenting any command, confirm it exists in `package.json`. Generated facts under `docs/generated/**`, `.ai/generated/**`, and `.ai/governance/api-snapshots/**` must be refreshed through their owning scripts, not hand-edited.
+Before documenting any command, confirm it exists in `package.json`. Generated facts under `wiki/generated/**`, `.ai/generated/**`, and `.ai/governance/api-snapshots/**` must be refreshed through their owning scripts, not hand-edited.
 
 ## Boundary
 
@@ -49,8 +49,8 @@ The control center is a navigation and governance concept. It must not become an
 
 ## Evidence paths
 
-- `docs/project-control-center.md`
-- `docs/zh/04-project-control-center.md`
+- `wiki/**`
+- `wiki/**`
 - `package.json`
 - `scripts/project-config.mjs`
 - `scripts/validate-workspace.mjs`
@@ -60,4 +60,3 @@ The control center is a navigation and governance concept. It must not become an
 - [[command-surface]]
 - [[validation-gates]]
 - [[generated-artifact-policy]]
-- [[docs-deletion-readiness]]

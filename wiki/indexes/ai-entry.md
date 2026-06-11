@@ -19,7 +19,7 @@ source_langs:
 source_paths:
   - README.en.md
   - .ai/README.md
-  - docs/en/ai-entry.md
+  - wiki/**
   - wiki/canonical/**
 last_reviewed: '2026-06-11'
 wiki_owner: LLM-maintained CCD architecture wiki
@@ -36,7 +36,6 @@ This is the wiki entry for AI maintainers. Read in order:
 5. [[validation-gates]]
 6. [[ai-governance-control-plane]]
 7. [[strategic-guardrails]]
-8. [[docs-deletion-readiness]]
 
 ## Non-negotiables
 

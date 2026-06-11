@@ -1,5 +1,0 @@
-command: rg warning/no-output scan over M1-T3 logs
-timestamp_start: 2026-05-29T07:36:37+0800
-docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M1-T3-20260529-073637-turbo-output-warning-scan.log:1:command: rg warning/no-output scan over M1-T3 logs
-timestamp_end: 2026-05-29T07:36:37+0800
-exit_code: 0

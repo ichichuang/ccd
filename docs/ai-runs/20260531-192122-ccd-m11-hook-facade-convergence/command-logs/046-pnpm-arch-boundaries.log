@@ -1,8 +1,0 @@
-
-> ccd@1.0.38 arch:boundaries /Users/cc/MyPorject/ccd
-> depcruise --config .dependency-cruiser.cjs apps packages && node scripts/architecture/validate-boundaries.mjs
-
-
-✔ no dependency violations found (776 modules, 1659 dependencies cruised)
-
-Architecture boundary validation passed.

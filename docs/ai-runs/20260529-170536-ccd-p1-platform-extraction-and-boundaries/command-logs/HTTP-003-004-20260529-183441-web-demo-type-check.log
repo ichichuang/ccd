@@ -1,8 +1,0 @@
-
-> @ccd/web-demo@1.0.38 type-check /Users/cc/MyPorject/ccd/apps/web-demo
-> vue-tsc -p tsconfig.json --noEmit
-
-src/utils/http/methods.ts(2,1): error TS6133: 'appLogger' is declared but its value is never read.
-/Users/cc/MyPorject/ccd/apps/web-demo:
- ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @ccd/web-demo@1.0.38 type-check: `vue-tsc -p tsconfig.json --noEmit`
-Exit status 2

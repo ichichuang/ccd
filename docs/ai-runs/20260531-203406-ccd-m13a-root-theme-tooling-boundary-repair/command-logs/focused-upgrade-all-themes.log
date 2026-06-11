@@ -1,4 +1,0 @@
-$ node scripts/upgrade-all-themes.mjs
-Theme upgrade validation passed for 10 presets.
-
-[exit 0]

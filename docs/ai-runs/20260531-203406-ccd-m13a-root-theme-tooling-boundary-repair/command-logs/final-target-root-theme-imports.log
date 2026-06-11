@@ -1,3 +1,0 @@
-$ bash -lc grep -R "apps/web-demo/src/utils/theme\|@/utils/theme\|src/utils/theme" scripts/upgrade-all-themes.mjs scripts/validate-token-contrast.ts || true
-
-[exit 0]

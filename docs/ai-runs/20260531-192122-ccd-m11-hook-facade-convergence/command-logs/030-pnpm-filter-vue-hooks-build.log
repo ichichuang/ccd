@@ -1,4 +1,0 @@
-
-> @ccd/vue-hooks@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-hooks
-> rm -f ../../node_modules/.tmp/packages-vue-hooks.tsbuildinfo && tsc -p tsconfig.json
-

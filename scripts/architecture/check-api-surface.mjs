@@ -8,8 +8,8 @@ import { readPolicies, workspacePackages } from '../governance/policy-utils.mjs'
 
 const root = process.cwd()
 const { api: apiPolicy, topology } = readPolicies('api', 'topology')
-const reportPath = join(root, 'docs/generated/api-surface-report.json')
-const markdownPath = join(root, 'docs/generated/api-surface-report.md')
+const reportPath = join(root, 'wiki/generated/api-surface-report.json')
+const markdownPath = join(root, 'wiki/generated/api-surface-report.md')
 const snapshotDir = join(root, apiPolicy.snapshotDir)
 const findings = []
 
@@ -50,8 +50,8 @@ function formatGeneratedOutputs() {
       'prettier',
       '--write',
       '--no-error-on-unmatched-pattern',
-      'docs/generated/api-surface-report.json',
-      'docs/generated/api-surface-report.md',
+      'wiki/generated/api-surface-report.json',
+      'wiki/generated/api-surface-report.md',
       `${apiPolicy.snapshotDir}/**/*.json`,
     ],
     {
@@ -124,7 +124,30 @@ ensureParent(reportPath)
 writeFileSync(reportPath, `${JSON.stringify({ schemaVersion: 1, generatedBy: 'scripts/architecture/check-api-surface.mjs', packages: report }, null, 2)}\n`)
 writeFileSync(
   markdownPath,
-  `# API Surface Report\n\n${report
+  `---
+title_en: API Surface Report
+title_zh: API 表面报告
+aliases:
+  - API Surface Report
+tags:
+  - generated
+  - api
+tags_zh:
+  - 生成视图
+  - API
+status: published
+confidence: 0.92
+source_langs:
+  - en
+source_paths:
+  - packages/**
+  - .ai/governance/policies/api.json
+  - scripts/architecture/check-api-surface.mjs
+last_reviewed: '2026-06-11'
+wiki_owner: LLM-maintained CCD architecture wiki
+---
+
+# API Surface Report\n\n${report
     .map(item => `## ${item.package}\n\n- Path: \`${item.path}\`\n- Export subpaths: ${item.exports.map(name => `\`${name}\``).join(', ') || 'none'}\n- Root symbols: ${item.rootSymbols.map(name => `\`${name}\``).join(', ') || 'none'}\n`)
     .join('\n')}`.replace(/\n*$/u, '\n')
 )

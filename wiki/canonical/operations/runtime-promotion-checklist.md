@@ -18,11 +18,11 @@ confidence: 0.88
 source_langs:
   - en
 source_paths:
-  - docs/release/runtime-promotion-checklist.md
-  - docs/en/architecture-contract.md
-  - docs/runtime/runtime-isolation.md
-  - docs/adr/ADR-006-approval-gated-architecture-lanes.md
-  - docs/governance/strategic-guardrails.md
+  - wiki/**
+  - wiki/**
+  - wiki/**
+  - wiki/**
+  - wiki/**
 last_reviewed: '2026-06-11'
 wiki_owner: LLM-maintained CCD architecture wiki
 ---
@@ -50,7 +50,7 @@ Runtime promotion means moving a capability from app-local ownership to a govern
 ## Validation commands
 
 ```bash
-pnpm docs:commands
+pnpm wiki:commands
 pnpm arch:runtime
 pnpm arch:boundaries
 pnpm api:report
@@ -61,11 +61,11 @@ pnpm governance:gate
 
 This page is compiled from the following repository evidence paths:
 
-- `docs/release/runtime-promotion-checklist.md`
-- `docs/en/architecture-contract.md`
-- `docs/runtime/runtime-isolation.md`
-- `docs/adr/ADR-006-approval-gated-architecture-lanes.md`
-- `docs/governance/strategic-guardrails.md`
+- `wiki/**`
+- `wiki/**`
+- `wiki/**`
+- `wiki/**`
+- `wiki/**`
 
 ## Related pages
 

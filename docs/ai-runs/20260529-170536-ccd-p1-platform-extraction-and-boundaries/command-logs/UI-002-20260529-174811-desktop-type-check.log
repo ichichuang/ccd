@@ -1,4 +1,0 @@
-Fri May 29 17:48:11 CST 2026
-
-> @ccd/desktop@1.0.38 type-check /Users/cc/MyPorject/ccd/apps/desktop
-> vue-tsc -p tsconfig.json --noEmit

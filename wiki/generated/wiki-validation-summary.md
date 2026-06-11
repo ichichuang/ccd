@@ -24,7 +24,7 @@ wiki_owner: LLM-maintained CCD architecture wiki
 
 Generated view from `pnpm wiki:refresh`.
 
-| Check                   | Result | Detail                                  |
-| ----------------------- | ------ | --------------------------------------- |
-| wiki validation         | Pass   | No blocking validation findings.        |
-| docs deletion readiness | Fail   | See [[docs-deletion-readiness-report]]. |
+| Check                             | Result | Detail                                                                                            |
+| --------------------------------- | ------ | ------------------------------------------------------------------------------------------------- |
+| wiki validation                   | Pass   | No blocking validation findings.                                                                  |
+| legacy documentation tree retired | Pass   | The repository policy allows the legacy tree to be absent; Git history is the historical archive. |

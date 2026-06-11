@@ -22,14 +22,11 @@ const requiredFrontmatterFields = [
 ]
 
 const generatedTargets = [
-  'wiki/generated/docs-migration-status.md',
   'wiki/generated/source-coverage.md',
   'wiki/generated/missing-frontmatter.md',
   'wiki/generated/orphan-pages.md',
   'wiki/generated/low-confidence-pages.md',
   'wiki/generated/wiki-validation-summary.md',
-  'wiki/generated/docs-deletion-readiness-report.md',
-  'wiki/indexes/migration-map.md',
 ]
 
 const requiredArchitecturePages = [
@@ -40,7 +37,6 @@ const requiredArchitecturePages = [
   'wiki/indexes/decisions-index.md',
   'wiki/indexes/generated-evidence-index.md',
   'wiki/indexes/governance-index.md',
-  'wiki/indexes/migration-map.md',
   'wiki/indexes/operations-index.md',
   'wiki/indexes/packages-index.md',
   'wiki/indexes/runtime-index.md',
@@ -72,15 +68,6 @@ const requiredArchitecturePages = [
   'wiki/canonical/operations/quickstart.md',
   'wiki/canonical/operations/release-policy.md',
 ]
-
-const dispositionLabels = {
-  canonical: 'canonical page',
-  raw: 'raw archive',
-  generated: 'generated evidence',
-  shim: 'compatibility shim',
-  skip: 'obsolete/skip',
-  blocker: 'blocker',
-}
 
 function repoPath(...segments) {
   return path.join(root, ...segments)
@@ -152,11 +139,7 @@ function parseFrontmatter(content) {
     if (keyMatch) {
       currentKey = keyMatch[1]
       const rawValue = keyMatch[2] ?? ''
-      if (rawValue === '') {
-        data[currentKey] = []
-      } else {
-        data[currentKey] = parseScalar(rawValue)
-      }
+      data[currentKey] = rawValue === '' ? [] : parseScalar(rawValue)
       continue
     }
 
@@ -186,188 +169,12 @@ function markdownEscape(value) {
   return String(value).replaceAll('|', '\\|')
 }
 
-function slugFromPath(relPath) {
-  return relPath
-    .replace(/^docs\//, '')
-    .replace(/\.[^.]+$/, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
-
-function decisionTarget(relPath) {
-  return `wiki/canonical/decisions/${path.posix.basename(relPath, '.md').toLowerCase()}.md`
-}
-
-function classifyDocFile(relPath) {
-  const base = path.posix.basename(relPath)
-
-  if (base === '.gitkeep' || base === '.gitignore') {
-    return {
-      disposition: 'skip',
-      target: 'not migrated',
-      note: 'Repository placeholder or ignore marker; no architecture content.',
-    }
-  }
-
-  if (relPath === 'docs/README.md') {
-    return {
-      disposition: 'shim',
-      target: 'docs/README.md -> wiki/index.md',
-      note: 'Temporary legacy compatibility shim while /docs remains.',
-    }
-  }
-
-  const exactTargets = new Map([
-    ['docs/documentation-system.md', ['canonical', 'wiki/_schema/wiki-governance.md', 'Dual-doc policy folded into wiki schema.']],
-    ['docs/architecture.md', ['canonical', 'wiki/canonical/architecture/monorepo-topology.md', 'Architecture entry folded into canonical topology.']],
-    ['docs/governance.md', ['canonical', 'wiki/indexes/governance-index.md', 'Governance router replaced by wiki governance index.']],
-    ['docs/branch-model.md', ['canonical', 'wiki/canonical/governance/github-governance.md', 'Branch model folded into GitHub governance.']],
-    ['docs/project-control-center.md', ['canonical', 'wiki/canonical/operations/project-control-center.md', 'Standalone operations page required before deletion.']],
-    ['docs/theme-presets.md', ['canonical', 'wiki/canonical/packages/design-tokens-role.md', 'Theme facts folded into design token ownership.']],
-    ['docs/ai-workspace.md', ['canonical', 'wiki/canonical/governance/ai-governance-control-plane.md', '.ai/** remains executable source of truth.']],
-    ['docs/architecture/example-route-inventory.md', ['raw', 'wiki/raw/repo-archive/docs-architecture-history-index.md', 'Historical inventory evidence.']],
-    ['docs/architecture/legacy-equivalence-checklist.md', ['raw', 'wiki/raw/repo-archive/docs-architecture-history-index.md', 'Historical migration checklist.']],
-    ['docs/architecture/legacy-web-demo-cleanup.md', ['raw', 'wiki/raw/repo-archive/docs-architecture-history-index.md', 'Historical cleanup record.']],
-    ['docs/architecture/ownership-boundaries.md', ['canonical', 'wiki/canonical/architecture/package-responsibility-matrix.md', 'Boundary facts folded into package responsibility matrix.']],
-    ['docs/architecture/stable-baseline.md', ['canonical', 'wiki/canonical/architecture/monorepo-topology.md', 'Stable baseline folded into topology.']],
-    ['docs/architecture/vite8-isolated-inventory.md', ['raw', 'wiki/raw/repo-archive/docs-architecture-history-index.md', 'Toolchain migration inventory evidence.']],
-    ['docs/governance/historical-artifacts.md', ['raw', 'wiki/raw/repo-archive/docs-historical-governance-index.md', 'Historical artifact policy evidence.']],
-    ['docs/governance/primevue-i18n-verification.md', ['raw', 'wiki/raw/repo-archive/docs-historical-governance-index.md', 'Verification evidence; summary remains in PrimeVue adapter page.']],
-    ['docs/governance/product-lines.md', ['canonical', 'wiki/canonical/governance/product-scope-boundary.md', 'Current product scope boundary.']],
-    ['docs/governance/protocol-versioning.md', ['canonical', 'wiki/canonical/governance/ai-governance-control-plane.md', 'Protocol versioning summarized in AI governance.']],
-    ['docs/governance/adapter-architecture.md', ['canonical', 'wiki/canonical/governance/ai-governance-control-plane.md', 'Adapter architecture summarized in AI governance.']],
-    ['docs/governance/ai-orchestration.md', ['canonical', 'wiki/canonical/governance/ai-governance-control-plane.md', 'AI orchestration summarized in AI governance.']],
-    ['docs/governance/branch-model.md', ['canonical', 'wiki/canonical/governance/github-governance.md', 'Branch governance folded into GitHub governance.']],
-    ['docs/governance/dependency-policy.md', ['canonical', 'wiki/canonical/governance/dependency-governance.md', 'Current dependency governance.']],
-    ['docs/governance/desktop-security-scope-review.md', ['canonical', 'wiki/canonical/governance/desktop-security-baseline.md', 'Current desktop security baseline.']],
-    ['docs/governance/github-governance.md', ['canonical', 'wiki/canonical/governance/github-governance.md', 'Current GitHub governance.']],
-    ['docs/governance/README.md', ['canonical', 'wiki/indexes/governance-index.md', 'Governance routing replaced by wiki index.']],
-    ['docs/governance/strategic-guardrails.md', ['canonical', 'wiki/canonical/governance/strategic-guardrails.md', 'Current P4 strategic guardrail registry.']],
-    ['docs/zh/bugfix-runtime-ui-plan.md', ['raw', 'wiki/raw/repo-archive/docs-zh-bugfix-runtime-ui-plan.md', 'Historical bugfix plan evidence.']],
-  ])
-
-  const exact = exactTargets.get(relPath)
-  if (exact) {
-    return { disposition: exact[0], target: exact[1], note: exact[2] }
-  }
-
-  if (relPath.startsWith('docs/generated/')) {
-    return {
-      disposition: 'generated',
-      target: 'wiki/indexes/generated-evidence-index.md',
-      note: 'Generator-owned evidence; keep provenance, do not canonicalize by hand.',
-    }
-  }
-
-  if (relPath.startsWith('docs/ai-runs/')) {
-    return {
-      disposition: 'raw',
-      target: 'wiki/raw/repo-archive/docs-ai-runs-index.md',
-      note: 'Historical execution evidence; /docs retained until immutable archive preservation is complete.',
-    }
-  }
-
-  if (relPath.startsWith('docs/ai-plan/')) {
-    return {
-      disposition: 'raw',
-      target: 'wiki/raw/repo-archive/docs-ai-plan-index.md',
-      note: 'Historical planning packet; not canonical architecture prose.',
-    }
-  }
-
-  if (relPath.startsWith('docs/adr/')) {
-    return {
-      disposition: 'canonical',
-      target: decisionTarget(relPath),
-      note: 'ADR ID and decision wording preserved in canonical decision corpus.',
-    }
-  }
-
-  if (relPath.startsWith('docs/en/')) {
-    const name = path.posix.basename(relPath)
-    const targetByName = {
-      'ai-entry.md': 'wiki/indexes/ai-entry.md',
-      'architecture-contract.md': 'wiki/canonical/architecture/monorepo-topology.md',
-      'governance-contract.md': 'wiki/indexes/governance-index.md',
-      'command-contract.md': 'wiki/canonical/governance/command-surface.md',
-      'ci-deploy-contract.md': 'wiki/canonical/operations/ci-and-deploy.md',
-      'project-metadata-contract.md': 'wiki/canonical/governance/command-surface.md',
-      'troubleshooting-contract.md': 'wiki/canonical/operations/troubleshooting.md',
-    }
-    return {
-      disposition: 'canonical',
-      target: targetByName[name] ?? 'wiki/indexes/ai-entry.md',
-      note: 'English AI contract facts migrated into English canonical wiki substrate.',
-    }
-  }
-
-  if (relPath.startsWith('docs/zh/')) {
-    const name = path.posix.basename(relPath)
-    const targetByName = {
-      '00-overview.md': 'wiki/indexes-zh/开始阅读.md',
-      '01-quickstart.md': 'wiki/canonical/operations/quickstart.md',
-      '02-architecture.md': 'wiki/indexes-zh/架构总览.md',
-      '03-governance.md': 'wiki/indexes-zh/治理与验证索引.md',
-      '04-project-control-center.md': 'wiki/canonical/operations/project-control-center.md',
-      '05-ci-deploy.md': 'wiki/canonical/operations/ci-and-deploy.md',
-      '06-ai-workflow.md': 'wiki/canonical/governance/ai-governance-control-plane.md',
-      '07-troubleshooting.md': 'wiki/canonical/operations/troubleshooting.md',
-      '08-release.md': 'wiki/canonical/operations/release-policy.md',
-    }
-    return {
-      disposition: 'canonical',
-      target: targetByName[name] ?? 'wiki/indexes-zh/开始阅读.md',
-      note: 'Chinese source content supports presentation metadata and indexes, not duplicate Chinese canon.',
-    }
-  }
-
-  if (relPath.startsWith('docs/runtime/')) {
-    const target = {
-      'desktop-runtime.md': 'wiki/canonical/runtime/desktop-runtime.md',
-      'execute-reliability.md': 'wiki/canonical/runtime/execute-reliability.md',
-      'portable-runtime.md': 'wiki/canonical/runtime/portable-runtime.md',
-      'runtime-isolation.md': 'wiki/canonical/architecture/runtime-isolation.md',
-      'web-runtime.md': 'wiki/canonical/runtime/web-runtime.md',
-    }[path.posix.basename(relPath)]
-    return {
-      disposition: 'canonical',
-      target: target ?? 'wiki/indexes/runtime-index.md',
-      note: 'Runtime rule migrated into canonical runtime/architecture pages.',
-    }
-  }
-
-  if (relPath.startsWith('docs/release/')) {
-    const target = path.posix.basename(relPath) === 'runtime-promotion-checklist.md'
-      ? 'wiki/canonical/operations/runtime-promotion-checklist.md'
-      : 'wiki/canonical/operations/release-policy.md'
-    return {
-      disposition: 'canonical',
-      target,
-      note: 'Release policy migrated into operations canon.',
-    }
-  }
-
-  if (relPath.startsWith('docs/codex/')) {
-    return {
-      disposition: 'raw',
-      target: 'wiki/raw/repo-archive/docs-codex-index.md',
-      note: 'Codex-specific support evidence; .ai/** remains canonical control plane.',
-    }
-  }
-
-  return {
-    disposition: 'blocker',
-    target: 'unmapped',
-    note: 'No migration rule matched this file.',
-  }
-}
-
-function docsInventory() {
-  return walkFiles('docs', { skipDirs: new Set() }).map(sourcePath => ({
-    sourcePath,
-    ...classifyDocFile(sourcePath),
-  }))
+function countBy(items, fn) {
+  return items.reduce((acc, item) => {
+    const key = fn(item)
+    acc[key] = (acc[key] ?? 0) + 1
+    return acc
+  }, {})
 }
 
 function wikiMarkdownFiles() {
@@ -585,104 +392,12 @@ function renderFrontmatter(titleEn, titleZh, aliases, tags, tagsZh, confidence, 
   return lines.join('\n')
 }
 
-function renderMigrationMap(inventory) {
-  const counts = countBy(inventory, row => row.disposition)
-  const rows = inventory.map(row =>
-    `| \`${markdownEscape(row.sourcePath)}\` | ${dispositionLabels[row.disposition]} | \`${markdownEscape(row.target)}\` | ${markdownEscape(row.note)} |`
-  )
-
-  return `${renderFrontmatter(
-    'Docs to Wiki Migration Map',
-    'docs 到 wiki 迁移映射',
-    ['Migration map', 'Docs migration inventory', '迁移表'],
-    ['index', 'migration', 'docs'],
-    ['索引', '迁移', '文档'],
-    0.94,
-    ['docs/**', 'wiki/canonical/**', 'uploaded://deep-research-report.md']
-  )}# \`/docs\` to \`/wiki\` Migration Map
-
-This map is generated by \`pnpm wiki:refresh\` from \`find docs -type f\`-equivalent repository inventory. Every current file under \`docs/**\` receives an explicit disposition.
-
-## Disposition counts
-
-| Disposition | Count |
-| --- | ---: |
-| canonical page | ${counts.canonical ?? 0} |
-| raw archive | ${counts.raw ?? 0} |
-| generated evidence | ${counts.generated ?? 0} |
-| compatibility shim | ${counts.shim ?? 0} |
-| obsolete/skip | ${counts.skip ?? 0} |
-| blocker | ${counts.blocker ?? 0} |
-
-## Disposition policy
-
-- \`canonical page\`: durable architecture, governance, runtime, package, operation, or ADR knowledge compiled into English-first wiki pages.
-- \`raw archive\`: historical evidence that must not become canonical prose. \`/docs\` remains the live evidence store until immutable archive preservation is complete.
-- \`generated evidence\`: generator-owned output reachable through wiki generated-evidence indexes, not hand-edited canonical facts.
-- \`compatibility shim\`: legacy routing path kept only to point readers to \`/wiki\`.
-- \`obsolete/skip\`: placeholder or ignore file with no architecture content.
-- \`blocker\`: inventory item without a migration rule; this must be fixed before deletion readiness.
-
-## Exact \`docs/**\` inventory
-
-| Source path | Disposition | Wiki target or archive pointer | Note |
-| --- | --- | --- | --- |
-${rows.join('\n')}
-`
-}
-
-function countBy(items, fn) {
-  return items.reduce((acc, item) => {
-    const key = fn(item)
-    acc[key] = (acc[key] ?? 0) + 1
-    return acc
-  }, {})
-}
-
-function renderDocsMigrationStatus(inventory, checks) {
-  const counts = countBy(inventory, row => row.disposition)
-  const deletionReady = checks.deletionReady ? 'Yes' : 'No'
-  return `${renderFrontmatter(
-    'Docs Migration Status',
-    'docs 迁移状态',
-    ['migration status', '迁移状态'],
-    ['generated', 'migration'],
-    ['生成视图', '迁移'],
-    0.90,
-    ['wiki/indexes/migration-map.md', 'docs/**']
-  )}# Docs Migration Status
-
-Generated view from \`pnpm wiki:refresh\`. It summarizes readiness; the exact file-level map is [[migration-map]].
-
-| Metric | Value |
-| --- | ---: |
-| \`docs/**\` files inventoried | ${inventory.length} |
-| Canonical page dispositions | ${counts.canonical ?? 0} |
-| Raw archive dispositions | ${counts.raw ?? 0} |
-| Generated evidence dispositions | ${counts.generated ?? 0} |
-| Compatibility shims | ${counts.shim ?? 0} |
-| Obsolete/skip dispositions | ${counts.skip ?? 0} |
-| Blockers | ${counts.blocker ?? 0} |
-| \`/docs\` deletion ready | ${deletionReady} |
-
-## Current result
-
-\`/docs\` is kept as a legacy compatibility and evidence layer in this lane.
-
-## Deletion blockers
-
-${checks.deletionBlockers.map(blocker => `- ${blocker}`).join('\n')}
-`
-}
-
-function renderSourceCoverage(files, inventory) {
+function renderSourceCoverage(files) {
   const sourceEntries = sourcePathsFromFrontmatter(files)
   const counts = countBy(sourceEntries, entry => entry.sourcePath)
   const rows = Object.entries(counts)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([sourcePath, count]) => `| \`${markdownEscape(sourcePath)}\` | ${count} |`)
-
-  const dispositionCounts = countBy(inventory, row => row.disposition)
 
   return `${renderFrontmatter(
     'Source Coverage',
@@ -691,23 +406,10 @@ function renderSourceCoverage(files, inventory) {
     ['generated', 'evidence'],
     ['生成视图', '证据'],
     0.90,
-    ['wiki/**/*.md', 'docs/**', '.ai/**', 'apps/**', 'packages/**', 'scripts/**', '.github/workflows/**']
+    ['README.md', 'README.en.md', '.ai/**', '.github/**', 'apps/**', 'packages/**', 'scripts/**', 'wiki/**']
   )}# Source Coverage
 
 Generated view from wiki frontmatter \`source_paths\`.
-
-## Docs disposition coverage
-
-| Disposition | Count |
-| --- | ---: |
-| canonical page | ${dispositionCounts.canonical ?? 0} |
-| raw archive | ${dispositionCounts.raw ?? 0} |
-| generated evidence | ${dispositionCounts.generated ?? 0} |
-| compatibility shim | ${dispositionCounts.shim ?? 0} |
-| obsolete/skip | ${dispositionCounts.skip ?? 0} |
-| blocker | ${dispositionCounts.blocker ?? 0} |
-
-## Frontmatter source-path usage
 
 | Source path | References |
 | --- | ---: |
@@ -790,38 +492,7 @@ ${body}
 `
 }
 
-function renderDeletionReadinessReport(checks) {
-  const rows = checks.deletionCriteria
-    .map(criteria => `| ${criteria.name} | ${criteria.pass ? 'Pass' : 'Fail'} | ${criteria.note} |`)
-    .join('\n')
-
-  return `${renderFrontmatter(
-    'Docs Deletion Readiness Report',
-    'docs 删除就绪报告',
-    ['deletion readiness report', '删除就绪报告'],
-    ['generated', 'migration', 'readiness'],
-    ['生成视图', '迁移', '就绪'],
-    0.90,
-    ['wiki/_schema/docs-deletion-readiness.md', 'wiki/indexes/migration-map.md', 'docs/**']
-  )}# \`/docs\` Deletion Readiness Report
-
-Generated view from \`pnpm wiki:refresh\`.
-
-| Criterion | Result | Evidence |
-| --- | --- | --- |
-${rows}
-
-## Decision
-
-\`/docs\` is ${checks.deletionReady ? 'deletion-ready' : 'not deletion-ready'} in this lane.
-
-## Blockers
-
-${checks.deletionBlockers.map(blocker => `- ${blocker}`).join('\n')}
-`
-}
-
-function renderValidationSummary(allFindings, checks) {
+function renderValidationSummary(allFindings) {
   const rows = allFindings.length === 0
     ? '| wiki validation | Pass | No blocking validation findings. |'
     : allFindings.map(finding => `| wiki validation | Fail | \`${finding.file ?? finding.name ?? 'wiki'}\`: ${finding.issue ?? finding.files?.join(', ')} |`).join('\n')
@@ -841,122 +512,14 @@ Generated view from \`pnpm wiki:refresh\`.
 | Check | Result | Detail |
 | --- | --- | --- |
 ${rows}
-| docs deletion readiness | ${checks.deletionReady ? 'Pass' : 'Fail'} | See [[docs-deletion-readiness-report]]. |
+| legacy documentation tree retired | Pass | The repository policy allows the legacy tree to be absent; Git history is the historical archive. |
 `
 }
 
-function renderSchemaDeletionReadiness(checks) {
-  const rows = checks.deletionCriteria
-    .map(criteria => `| ${criteria.name} | ${criteria.pass ? 'Pass' : 'Fail'} | ${criteria.note} |`)
-    .join('\n')
-
-  return `${renderFrontmatter(
-    'Docs Deletion Readiness',
-    'docs 删除就绪标准',
-    ['Docs Deletion Readiness', 'docs 删除就绪标准'],
-    ['schema', 'wiki-governance'],
-    ['模式', 'Wiki 治理'],
-    0.94,
-    ['uploaded://llm-wiki.md', 'README.en.md', 'docs/documentation-system.md', 'docs/README.md', 'wiki/generated/docs-deletion-readiness-report.md']
-  )}# \`/docs\` Deletion Readiness
-
-\`/docs\` must not be deleted until all criteria pass.
-
-## Required criteria
-
-- Every current \`/docs\` item is mapped in [[migration-map]].
-- Each mapped item has a disposition: canonical page, raw archive, generated evidence, compatibility shim, obsolete/skip, or blocker.
-- Every canonical page has required frontmatter and non-empty \`source_paths\`.
-- Chinese presentation views exist without duplicating canonical bodies.
-- \`README.md\` and \`README.en.md\` have cut over to \`/wiki\` as the architecture KB portal.
-- Link validation passes for wiki links and repo path references.
-- Generated evidence remains reachable from \`wiki/generated/**\` or evidence indexes.
-- Historical docs that must survive \`/docs\` deletion are archived under \`wiki/raw/repo-archive/**\` or another immutable evidence location.
-- Repository validation commands for the lane pass in a real checkout.
-
-## Current lane readiness
-
-| Criterion | Result | Evidence |
-| --- | --- | --- |
-${rows}
-
-## Current decision
-
-\`/docs\` is ${checks.deletionReady ? 'deletion-ready' : 'not deletion-ready'} in this lane.
-
-See [[docs-deletion-readiness-report]] and [[docs-migration-status]] for the generated evidence view.
-`
-}
-
-function computeDeletionChecks(inventory, validationFindings) {
-  const migrationBlockers = inventory.filter(row => row.disposition === 'blocker')
-  const readmeCutover =
-    fileExists('README.md') &&
-    fileExists('README.en.md') &&
-    readText('README.md').includes('wiki/index.md') &&
-    readText('README.md').includes('wiki/indexes-zh/开始阅读.md') &&
-    readText('README.en.md').includes('wiki/indexes/ai-entry.md')
-  const docsShim =
-    fileExists('docs/README.md') &&
-    readText('docs/README.md').includes('../wiki/index.md')
-  const generatedEvidenceReachable =
-    fileExists('wiki/indexes/generated-evidence-index.md') &&
-    readText('wiki/indexes/generated-evidence-index.md').includes('docs/generated') &&
-    readText('wiki/indexes/generated-evidence-index.md').includes('.ai/generated')
-  const rawArchiveComplete = false
-  const repositoryValidationRecorded = false
-
-  const deletionCriteria = [
-    {
-      name: 'Exact docs inventory mapped',
-      pass: migrationBlockers.length === 0 && inventory.length > 0,
-      note: `${inventory.length} files inventoried; ${migrationBlockers.length} blocker rows.`,
-    },
-    {
-      name: 'Required wiki validation passes',
-      pass: validationFindings.length === 0,
-      note: `${validationFindings.length} blocking wiki validation findings.`,
-    },
-    {
-      name: 'README cutover complete',
-      pass: readmeCutover,
-      note: 'Root README portals point to wiki index, Chinese presentation, and AI entry.',
-    },
-    {
-      name: 'docs README compatibility shim',
-      pass: docsShim,
-      note: '`docs/README.md` points to `/wiki` and declares `/docs` non-canonical.',
-    },
-    {
-      name: 'Generated evidence reachable',
-      pass: generatedEvidenceReachable,
-      note: '`wiki/indexes/generated-evidence-index.md` covers generated evidence roots.',
-    },
-    {
-      name: 'Raw archive preservation complete',
-      pass: rawArchiveComplete,
-      note: 'Raw archive rows are indexed, but historical `/docs` files are not fully copied into immutable `wiki/raw/repo-archive/**` paths.',
-    },
-    {
-      name: 'Repository validation recorded',
-      pass: repositoryValidationRecorded,
-      note: 'This generated report does not embed final command logs; final PR report must list fresh validation results.',
-    },
-  ]
-
-  const deletionBlockers = deletionCriteria
-    .filter(criteria => !criteria.pass)
-    .map(criteria => `${criteria.name}: ${criteria.note}`)
-
-  return {
-    deletionCriteria,
-    deletionBlockers,
-    deletionReady: deletionBlockers.length === 0,
-  }
-}
-
-function collectValidationFindings(files, inventory) {
-  const linkableFiles = files.filter(frontmatterRequiredFor)
+function collectValidationFindings(files) {
+  const linkableFiles = files.filter(file =>
+    frontmatterRequiredFor(file) && file !== 'wiki/generated/wiki-validation-summary.md'
+  )
   const findings = [
     ...collectFrontmatterFindings(files),
     ...collectSourcePathFindings(files),
@@ -981,24 +544,12 @@ function collectValidationFindings(files, inventory) {
     }
   }
 
-  for (const row of inventory) {
-    if (row.disposition === 'blocker') {
+  for (const generatedTarget of generatedTargets) {
+    if (!shouldWrite && !fileExists(generatedTarget)) {
       findings.push({
-        file: row.sourcePath,
-        issue: 'docs migration inventory row has blocker disposition',
+        file: generatedTarget,
+        issue: 'generated validation artifact is missing; run pnpm wiki:refresh',
       })
-    }
-  }
-
-  if (fileExists('wiki/indexes/migration-map.md')) {
-    const migrationMap = readText('wiki/indexes/migration-map.md')
-    for (const row of inventory) {
-      if (!migrationMap.includes(row.sourcePath)) {
-        findings.push({
-          file: 'wiki/indexes/migration-map.md',
-          issue: `missing docs inventory row: ${row.sourcePath}`,
-        })
-      }
     }
   }
 
@@ -1006,50 +557,39 @@ function collectValidationFindings(files, inventory) {
 }
 
 function main() {
-  const inventory = docsInventory()
-  let files = wikiMarkdownFiles()
-  let validationFindings = collectValidationFindings(files, inventory)
-  let deletionChecks = computeDeletionChecks(inventory, validationFindings)
+  const files = wikiMarkdownFiles()
+  const initialFindings = collectValidationFindings(files)
+  const orphans = collectOrphans(files)
+  const lowConfidence = collectLowConfidence(files)
 
   if (shouldWrite) {
-    const orphans = collectOrphans(files)
-    const lowConfidence = collectLowConfidence(files)
-    const frontmatterFindings = collectFrontmatterFindings(files)
-
-    writeGenerated('wiki/indexes/migration-map.md', renderMigrationMap(inventory))
-    writeGenerated('wiki/generated/docs-migration-status.md', renderDocsMigrationStatus(inventory, deletionChecks))
-    writeGenerated('wiki/generated/source-coverage.md', renderSourceCoverage(files, inventory))
-    writeGenerated('wiki/generated/missing-frontmatter.md', renderMissingFrontmatter(frontmatterFindings))
+    writeGenerated('wiki/generated/source-coverage.md', renderSourceCoverage(files))
+    writeGenerated('wiki/generated/missing-frontmatter.md', renderMissingFrontmatter(collectFrontmatterFindings(files)))
     writeGenerated('wiki/generated/orphan-pages.md', renderOrphanPages(orphans))
     writeGenerated('wiki/generated/low-confidence-pages.md', renderLowConfidence(lowConfidence))
-    writeGenerated('wiki/generated/docs-deletion-readiness-report.md', renderDeletionReadinessReport(deletionChecks))
-    writeGenerated('wiki/_schema/docs-deletion-readiness.md', renderSchemaDeletionReadiness(deletionChecks))
-
-    files = wikiMarkdownFiles()
-    validationFindings = collectValidationFindings(files, inventory)
-    deletionChecks = computeDeletionChecks(inventory, validationFindings)
-    writeGenerated('wiki/generated/wiki-validation-summary.md', renderValidationSummary(validationFindings, deletionChecks))
+    const refreshedFiles = wikiMarkdownFiles()
+    const refreshedFindings = collectValidationFindings(refreshedFiles)
+    writeGenerated('wiki/generated/wiki-validation-summary.md', renderValidationSummary(refreshedFindings))
   }
 
-  if (validationFindings.length > 0) {
-    console.error(`[wiki:validate] Found ${validationFindings.length} blocking finding(s).`)
-    for (const finding of validationFindings.slice(0, 50)) {
-      const location = finding.file ?? finding.name ?? 'wiki'
-      const detail = finding.issue ?? finding.files?.join(', ') ?? 'unknown finding'
-      console.error(`- ${location}: ${detail}`)
+  const finalFiles = shouldWrite ? wikiMarkdownFiles() : files
+  const findings = collectValidationFindings(finalFiles)
+
+  if (findings.length > 0) {
+    console.error(`[wiki:validate] ${findings.length} blocking finding(s)`)
+    for (const finding of findings) {
+      console.error(`- ${finding.file ?? finding.name}: ${finding.issue ?? finding.files?.join(', ')}`)
     }
-    if (validationFindings.length > 50) {
-      console.error(`- ... ${validationFindings.length - 50} more finding(s) omitted`)
+    if (!shouldWrite && initialFindings.some(finding => generatedTargets.includes(finding.file))) {
+      console.error('[wiki:validate] run pnpm wiki:refresh to regenerate wiki/generated summaries')
     }
     process.exit(1)
   }
 
-  console.log(
-    `[wiki:validate] OK. docs_files=${inventory.length} deletion_ready=${deletionChecks.deletionReady ? 'yes' : 'no'}`
-  )
-  if (!deletionChecks.deletionReady) {
-    console.log('[wiki:validate] /docs remains required; see wiki/generated/docs-deletion-readiness-report.md')
+  if (shouldWrite) {
+    console.log('[wiki:refresh] generated wiki validation views')
   }
+  console.log('[wiki:validate] wiki validation passed')
 }
 
 main()

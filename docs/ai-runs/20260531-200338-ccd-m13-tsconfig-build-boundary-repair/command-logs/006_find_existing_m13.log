@@ -1,2 +1,0 @@
-$ find docs/ai-runs -maxdepth 2 -iname "*m13*" -o -iname "*tsconfig-build-boundary*"
-docs/ai-runs/20260531-200338-ccd-m13-tsconfig-build-boundary-repair

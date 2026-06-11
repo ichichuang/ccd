@@ -97,10 +97,10 @@ Governance docs/runtime:
 - `.ai/runtime/remaining-91-final-report.md`
 - `.ai/runtime/dependency-scan-summary.json`
 - `.ai/manifests/rule-index.json`
-- `docs/governance/dependency-policy.md`
-- `docs/governance/README.md`
+- `wiki/canonical/governance/dependency-policy.md`
+- `wiki/canonical/governance/README.md`
 - `docs/zh/03-governance.md`
-- `docs/generated/sbom.json`
+- `wiki/generated/sbom.json`
 
 ## 8. Validation Matrix
 
@@ -115,7 +115,7 @@ Governance docs/runtime:
 | `pnpm env:doctor`                                                                | pass with warning  | Existing mise PATH precedence warning.                                                                        |
 | `pnpm env:doctor:strict`                                                         | pass with warning  | Same PATH precedence warning.                                                                                 |
 | `pnpm project:doctor`                                                            | pass               | Project metadata aligned.                                                                                     |
-| `pnpm docs:commands`                                                             | pass               | 412 files scanned.                                                                                            |
+| `pnpm wiki:commands`                                                             | pass               | 412 files scanned.                                                                                            |
 | `pnpm ci:clean-artifacts`                                                        | pass               | Workspace build artifacts cleaned.                                                                            |
 | `pnpm ci:prepare-internal`                                                       | pass               | Internal packages built.                                                                                      |
 | `pnpm ci:smoke:packages`                                                         | pass               | Package resolution checks passed.                                                                             |
@@ -133,7 +133,7 @@ Governance docs/runtime:
 | `pnpm desktop:security`                                                          | pass               | Desktop security validation passed.                                                                           |
 | `pnpm build:web-demo`                                                            | pass               | Web build passed; Vite static/dynamic import warning remains warning-only.                                    |
 | `pnpm build:desktop`                                                             | pass               | Desktop Vite build passed.                                                                                    |
-| `pnpm build:ci`                                                                  | pass after refresh | First run failed on stale `docs/generated/sbom.json`; `pnpm governance:gate` refreshed it, second run passed. |
+| `pnpm build:ci`                                                                  | pass after refresh | First run failed on stale `wiki/generated/sbom.json`; `pnpm governance:gate` refreshed it, second run passed. |
 | `pnpm e2e:smoke`                                                                 | pass               | 10 Playwright tests passed.                                                                                   |
 | `pnpm governance:refresh`                                                        | pass               | API, supply, report, graphs, normalize completed.                                                             |
 | `pnpm generated:normalize`                                                       | pass               | 0 files changed.                                                                                              |

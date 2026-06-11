@@ -18,8 +18,8 @@ confidence: 0.96
 source_langs:
   - en
 source_paths:
-  - docs/runtime/desktop-runtime.md
-  - docs/governance/desktop-security-scope-review.md
+  - wiki/**
+  - wiki/**
   - apps/desktop/src/adapters/index.ts
   - apps/desktop/src-tauri/**
 last_reviewed: '2026-06-11'
@@ -55,8 +55,8 @@ cargo check --locked --manifest-path apps/desktop/src-tauri/Cargo.toml
 
 This page is compiled from the following repository evidence paths:
 
-- `docs/runtime/desktop-runtime.md`
-- `docs/governance/desktop-security-scope-review.md`
+- `wiki/**`
+- `wiki/**`
 - `apps/desktop/src/adapters/index.ts`
 - `apps/desktop/src-tauri/**`
 

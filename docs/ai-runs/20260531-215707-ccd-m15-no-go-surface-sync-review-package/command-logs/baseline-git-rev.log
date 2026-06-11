@@ -1,4 +1,0 @@
-$ git rev-parse --short HEAD
-cc255d1a
-
-exit_code=0

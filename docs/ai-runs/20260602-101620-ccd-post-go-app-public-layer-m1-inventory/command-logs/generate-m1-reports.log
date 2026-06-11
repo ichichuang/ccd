@@ -1,5 +1,0 @@
-$ node generate M1 reports
-wrote 448 inventory rows
-candidate rows: 17
-reports: docs/ai-runs/20260602-101620-ccd-post-go-app-public-layer-m1-inventory/reports
-exit_code=0

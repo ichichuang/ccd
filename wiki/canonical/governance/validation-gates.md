@@ -21,8 +21,8 @@ source_langs:
 source_paths:
   - package.json
   - .ai/README.md
-  - docs/en/governance-contract.md
-  - docs/adr/ADR-003-governance-pipeline.md
+  - wiki/**
+  - wiki/**
   - .github/workflows/ci.yml
 last_reviewed: '2026-06-11'
 wiki_owner: LLM-maintained CCD architecture wiki
@@ -35,7 +35,7 @@ The authoritative architecture gate is `pnpm governance:gate`. It orchestrates g
 ## Common gates
 
 ```bash
-pnpm docs:commands
+pnpm wiki:commands
 pnpm arch:runtime
 pnpm arch:boundaries
 pnpm api:report
@@ -67,8 +67,8 @@ This page is compiled from the following repository evidence paths:
 
 - `package.json`
 - `.ai/README.md`
-- `docs/en/governance-contract.md`
-- `docs/adr/ADR-003-governance-pipeline.md`
+- `wiki/**`
+- `wiki/**`
 - `.github/workflows/ci.yml`
 
 ## Related pages

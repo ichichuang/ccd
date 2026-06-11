@@ -1,3 +1,0 @@
-$ git rev-parse --short HEAD
-1d691428
-exit_code=0

@@ -21,7 +21,7 @@ source_langs:
 source_paths:
   - README.md
   - README.en.md
-  - docs/zh/01-quickstart.md
+  - wiki/**
   - package.json
   - mise.toml
 last_reviewed: '2026-06-11'
@@ -52,7 +52,7 @@ pnpm dev:web-demo
 ## Safe first validation
 
 ```bash
-pnpm docs:commands
+pnpm wiki:commands
 pnpm project:doctor
 pnpm arch:runtime
 pnpm arch:boundaries
@@ -64,7 +64,7 @@ This page is compiled from the following repository evidence paths:
 
 - `README.md`
 - `README.en.md`
-- `docs/zh/01-quickstart.md`
+- `wiki/**`
 - `package.json`
 - `mise.toml`
 

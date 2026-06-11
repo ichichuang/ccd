@@ -18,8 +18,8 @@ confidence: 0.86
 source_langs:
   - en
 source_paths:
-  - docs/generated/api-surface-report.md
-  - docs/en/architecture-contract.md
+  - wiki/generated/**
+  - wiki/**
   - packages/vue-charts/**
 last_reviewed: '2026-06-11'
 wiki_owner: LLM-maintained CCD architecture wiki
@@ -62,6 +62,6 @@ pnpm type-check
 
 This page is compiled from the following repository evidence paths:
 
-- `docs/generated/api-surface-report.md`
-- `docs/en/architecture-contract.md`
+- `wiki/generated/api-surface-report.md`
+- `wiki/**`
 - `packages/vue-charts/**`

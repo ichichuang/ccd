@@ -22,7 +22,7 @@ source_langs:
 source_paths:
   - README.md
   - .ai/README.md
-  - docs/governance/github-governance.md
+  - wiki/**
   - .github/workflows/ci.yml
   - .github/workflows/deploy.yml
   - .github/CODEOWNERS
@@ -61,7 +61,7 @@ This page is compiled from the following repository evidence paths:
 
 - `README.md`
 - `.ai/README.md`
-- `docs/governance/github-governance.md`
+- `wiki/**`
 - `.github/workflows/ci.yml`
 - `.github/workflows/deploy.yml`
 - `.github/CODEOWNERS`

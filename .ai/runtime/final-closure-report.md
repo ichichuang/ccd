@@ -5,7 +5,7 @@
 - Closure timestamp: `2026-06-08T05:29:35+08:00`
 - Baseline command: `git status --short`
 - Baseline captured before edits at approximately `2026-06-08 05:10:47 CST`.
-- Baseline state: repository was already heavily dirty before this closure pass. Existing dirty surfaces included `.ai/**` governance/rule/runtime files, `.env*`, `.github/workflows/ci.yml`, docs/README files, generated governance artifacts, app/package source files, package manifests, `pnpm-lock.yaml`, scripts, `turbo.json`, many deleted `ccd-public-layer-repair-plan-package/**` files, and many untracked runtime reports/specs/adapters/contracts.
+- Baseline state: repository was already heavily dirty before this closure pass. Existing dirty surfaces included `.ai/**` governance/rule/runtime files, `.env*`, `.github/workflows/ci.yml`, README files, generated governance artifacts, app/package source files, package manifests, `pnpm-lock.yaml`, scripts, `turbo.json`, many deleted `ccd-public-layer-repair-plan-package/**` files, and many untracked runtime reports/specs/adapters/contracts.
 - Worktree discipline: no reset, clean, checkout, commit, push, pull, rebase, remote mutation, package publication, dependency upgrade, lockfile migration, Vite/Tauri major migration, HTTP runtime promotion, or safeStorage shared-runtime promotion was performed.
 
 ## 2. Files Changed by This Closure Pass
@@ -19,16 +19,16 @@
 Command-owned generated outputs retained:
 
 - `.ai/generated/governance-report.json`
-- `docs/generated/api-surface-report.json`
-- `docs/generated/api-surface-report.md`
-- `docs/generated/diagrams/runtime-topology.mmd`
-- `docs/generated/governance-report.md`
-- `docs/generated/graphs/README.md`
-- `docs/generated/graphs/dependency-graph.json`
-- `docs/generated/graphs/package-dependency-graph.mmd`
-- `docs/generated/graphs/runtime-boundary-graph.mmd`
-- `docs/generated/graphs/turbo-task-graph.mmd`
-- `docs/generated/sbom.json`
+- `wiki/generated/api-surface-report.json`
+- `wiki/generated/api-surface-report.md`
+- `wiki/generated/diagrams/runtime-topology.mmd`
+- `wiki/generated/governance-report.md`
+- `wiki/generated/graphs/README.md`
+- `wiki/generated/graphs/dependency-graph.json`
+- `wiki/generated/graphs/package-dependency-graph.mmd`
+- `wiki/generated/graphs/runtime-boundary-graph.mmd`
+- `wiki/generated/graphs/turbo-task-graph.mmd`
+- `wiki/generated/sbom.json`
 
 ## 3. Ledger Count Summary
 
@@ -48,7 +48,7 @@ Reproduction:
 
 - `pnpm build:ci` initially failed inside embedded `pnpm validate:governance` / `pnpm governance:gate`.
 - Gate reported generated governance artifact sync failure.
-- Hash checks isolated direct toggles to generator formatting, first `docs/generated/graphs/dependency-graph.json`, then `.ai/generated/governance-report.json` when `arch:report` was run standalone.
+- Hash checks isolated direct toggles to generator formatting, first `wiki/generated/graphs/dependency-graph.json`, then `.ai/generated/governance-report.json` when `arch:report` was run standalone.
 
 Fix:
 
@@ -114,7 +114,7 @@ Drift remaining: none found in generated governance normalization checks. Existi
 | `pnpm env:doctor`                                                                | pass   | environment doctor passed with 1 warning                          |
 | `pnpm env:doctor:strict`                                                         | pass   | environment doctor passed with 1 warning                          |
 | `pnpm project:doctor`                                                            | pass   | project metadata ok                                               |
-| `pnpm docs:commands`                                                             | pass   | 412 files scanned, all command references valid                   |
+| `pnpm wiki:commands`                                                             | pass   | 412 files scanned, all command references valid                   |
 | `pnpm ci:clean-artifacts`                                                        | pass   | workspace build artifacts cleaned                                 |
 | `pnpm ci:prepare-internal`                                                       | pass   | 10 package build tasks successful                                 |
 | `pnpm ci:smoke:packages`                                                         | pass   | all package resolution checks passed                              |

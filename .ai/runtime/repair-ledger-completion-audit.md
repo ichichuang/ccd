@@ -171,7 +171,7 @@ Full matrix execution summary:
 | `pnpm env:doctor`                                                                | pass with 1 warning: Node PATH resolves through the mise shim before the install path. |
 | `pnpm env:doctor:strict`                                                         | pass with the same warning                                                             |
 | `pnpm project:doctor`                                                            | pass                                                                                   |
-| `pnpm docs:commands`                                                             | pass; 412 files scanned                                                                |
+| `pnpm wiki:commands`                                                             | pass; 412 files scanned                                                                |
 | `pnpm ci:clean-artifacts`                                                        | pass                                                                                   |
 | `pnpm ci:prepare-internal`                                                       | pass                                                                                   |
 | `pnpm ci:smoke:packages`                                                         | pass                                                                                   |
@@ -226,7 +226,7 @@ Procedure executed twice:
 3. `pnpm arch:report`
 4. `pnpm arch:graphs`
 5. `pnpm governance:gate`
-6. Hash generated surfaces: `docs/generated/**`, `.ai/generated/**`, `.ai/governance/api-snapshots/**`, `.ai/manifests/**`
+6. Hash generated surfaces: `wiki/generated/**`, `.ai/generated/**`, `.ai/governance/api-snapshots/**`, `.ai/manifests/**`
 
 | Pass | Hash                                                               | Files | Result |
 | ---- | ------------------------------------------------------------------ | ----: | ------ |

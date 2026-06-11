@@ -21,8 +21,8 @@ source_langs:
   - zh
 source_paths:
   - README.md
-  - docs/en/architecture-contract.md
-  - docs/runtime/runtime-isolation.md
+  - wiki/**
+  - wiki/**
 last_reviewed: '2026-06-11'
 wiki_owner: LLM-maintained CCD architecture wiki
 ---
@@ -56,8 +56,8 @@ Do not move these paths as a batch. A future lane must prove the destination, al
 This page is compiled from the following repository evidence paths:
 
 - `README.md`
-- `docs/en/architecture-contract.md`
-- `docs/runtime/runtime-isolation.md`
+- `wiki/**`
+- `wiki/**`
 
 ## Related pages
 

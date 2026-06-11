@@ -1,7 +1,0 @@
-$ git status --short --untracked-files=all
-?? .codex-p21a-run-dir
-?? docs/ai-runs/20260601-164744-ccd-p21a-api-surface-generated-sync-after-ccdtag/command-logs/git-branch-show-current.log
-?? docs/ai-runs/20260601-164744-ccd-p21a-api-surface-generated-sync-after-ccdtag/command-logs/git-fetch-origin-main.log
-?? docs/ai-runs/20260601-164744-ccd-p21a-api-surface-generated-sync-after-ccdtag/command-logs/git-rev-parse-head.log
-?? docs/ai-runs/20260601-164744-ccd-p21a-api-surface-generated-sync-after-ccdtag/command-logs/git-rev-parse-origin-main.log
-?? docs/ai-runs/20260601-164744-ccd-p21a-api-surface-generated-sync-after-ccdtag/command-logs/git-status-short.log

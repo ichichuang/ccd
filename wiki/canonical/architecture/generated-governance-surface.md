@@ -21,7 +21,7 @@ source_langs:
 source_paths:
   - README.en.md
   - .ai/README.md
-  - docs/generated/**
+  - wiki/generated/**
   - .ai/generated/**
   - .ai/governance/api-snapshots/**
   - scripts/governance/gate.mjs
@@ -36,13 +36,13 @@ Generated outputs are evidence, not hand-maintained canonical prose. CCD uses ge
 
 ## Generated surfaces
 
-- `docs/generated/**`
+- `wiki/generated/**`
 - `.ai/generated/**`
 - `.ai/governance/api-snapshots/**`
-- `docs/generated/api-surface-report.md`
-- `docs/generated/governance-report.md`
-- `docs/generated/architecture-overview.md`
-- Mermaid diagrams under `docs/generated/diagrams/**`
+- `wiki/generated/api-surface-report.md`
+- `wiki/generated/governance-report.md`
+- `wiki/generated/architecture-overview.md`
+- Mermaid diagrams under `wiki/generated/diagrams/**`
 
 ## Maintenance rule
 
@@ -64,7 +64,7 @@ This page is compiled from the following repository evidence paths:
 
 - `README.en.md`
 - `.ai/README.md`
-- `docs/generated/**`
+- `wiki/generated/**`
 - `.ai/generated/**`
 - `.ai/governance/api-snapshots/**`
 - `scripts/governance/gate.mjs`

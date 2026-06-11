@@ -22,8 +22,8 @@ source_langs:
 source_paths:
   - README.md
   - README.en.md
-  - docs/en/architecture-contract.md
-  - docs/adr/ADR-005-common-platform-layer-terminology.md
+  - wiki/**
+  - wiki/**
 last_reviewed: '2026-06-11'
 wiki_owner: LLM-maintained CCD architecture wiki
 ---
@@ -57,8 +57,8 @@ This page is compiled from the following repository evidence paths:
 
 - `README.md`
 - `README.en.md`
-- `docs/en/architecture-contract.md`
-- `docs/adr/ADR-005-common-platform-layer-terminology.md`
+- `wiki/**`
+- `wiki/**`
 
 ## Related pages
 

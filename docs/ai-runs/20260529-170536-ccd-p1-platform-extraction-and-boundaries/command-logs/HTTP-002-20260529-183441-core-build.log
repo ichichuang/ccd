@@ -1,3 +1,0 @@
-
-> @ccd/core@1.0.38 build /Users/cc/MyPorject/ccd/packages/core
-> rm -rf dist && rm -f ../../node_modules/.tmp/packages-core.tsbuildinfo && tsc -b tsconfig.json --force

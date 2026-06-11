@@ -1,4 +1,0 @@
-$ pnpm --filter @ccd/web-demo exec node -e console.log(process.cwd())
-/Users/cc/MyPorject/ccd/apps/web-demo
-
-[exit=0]

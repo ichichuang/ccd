@@ -1,9 +1,0 @@
-command: pnpm budget:desktop
-timestamp_start: 2026-05-29T07:29:07+0800
-
-> ccd@1.0.38 budget:desktop /Users/cc/MyPorject/ccd
-> node scripts/architecture/check-desktop-size.mjs
-
-Desktop size check passed: 495207 bytes <= 2500000 bytes
-timestamp_end: 2026-05-29T07:29:07+0800
-exit_code: 0

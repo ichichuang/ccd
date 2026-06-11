@@ -1,5 +1,0 @@
-   4 .ai/rules
-   1 apps/desktop
-  94 apps/web-demo
-   8 packages/vue-primevue-adapter
-  60 packages/vue-ui

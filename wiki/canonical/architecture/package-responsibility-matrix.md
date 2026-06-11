@@ -21,9 +21,9 @@ source_langs:
   - zh
 source_paths:
   - README.md
-  - docs/en/architecture-contract.md
-  - docs/generated/api-surface-report.md
-  - docs/architecture/ownership-boundaries.md
+  - wiki/**
+  - wiki/generated/**
+  - wiki/**
   - package.json
 last_reviewed: '2026-06-11'
 wiki_owner: LLM-maintained CCD architecture wiki
@@ -61,9 +61,9 @@ The CCD package matrix is a governance surface, not only a folder list. Each wor
 This page is compiled from the following repository evidence paths:
 
 - `README.md`
-- `docs/en/architecture-contract.md`
-- `docs/generated/api-surface-report.md`
-- `docs/architecture/ownership-boundaries.md`
+- `wiki/**`
+- `wiki/generated/api-surface-report.md`
+- `wiki/**`
 - `package.json`
 
 ## Related pages

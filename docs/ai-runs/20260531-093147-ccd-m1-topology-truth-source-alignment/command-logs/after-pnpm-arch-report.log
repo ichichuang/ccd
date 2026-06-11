@@ -1,6 +1,0 @@
-
-> ccd@1.0.38 arch:report /Users/cc/MyPorject/ccd
-> node scripts/governance/report.mjs
-
-[GENERATED] .ai/generated/governance-report.json
-[GENERATED] docs/generated/governance-report.md

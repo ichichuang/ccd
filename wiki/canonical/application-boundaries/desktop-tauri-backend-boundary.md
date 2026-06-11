@@ -20,9 +20,9 @@ confidence: 0.96
 source_langs:
   - en
 source_paths:
-  - docs/adr/ADR-008-desktop-backend-ipc-and-updater-policy.md
-  - docs/runtime/desktop-runtime.md
-  - docs/governance/desktop-security-scope-review.md
+  - wiki/**
+  - wiki/**
+  - wiki/**
   - apps/desktop/src/adapters/index.ts
   - apps/desktop/src-tauri/src/main.rs
   - apps/desktop/src-tauri/Cargo.toml
@@ -49,9 +49,9 @@ Real Rust command handlers and structured Rust IPC errors are P4 strategic guard
 
 This page is compiled from the following repository evidence paths:
 
-- `docs/adr/ADR-008-desktop-backend-ipc-and-updater-policy.md`
-- `docs/runtime/desktop-runtime.md`
-- `docs/governance/desktop-security-scope-review.md`
+- `wiki/**`
+- `wiki/**`
+- `wiki/**`
 - `apps/desktop/src/adapters/index.ts`
 - `apps/desktop/src-tauri/src/main.rs`
 - `apps/desktop/src-tauri/Cargo.toml`

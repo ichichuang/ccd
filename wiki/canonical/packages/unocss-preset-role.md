@@ -18,8 +18,8 @@ confidence: 0.88
 source_langs:
   - en
 source_paths:
-  - docs/generated/api-surface-report.md
-  - docs/en/architecture-contract.md
+  - wiki/generated/**
+  - wiki/**
   - package.json
   - packages/unocss-preset/**
 last_reviewed: '2026-06-11'
@@ -64,7 +64,7 @@ pnpm type-check
 
 This page is compiled from the following repository evidence paths:
 
-- `docs/generated/api-surface-report.md`
-- `docs/en/architecture-contract.md`
+- `wiki/generated/api-surface-report.md`
+- `wiki/**`
 - `package.json`
 - `packages/unocss-preset/**`

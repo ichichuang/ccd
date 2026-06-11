@@ -22,7 +22,7 @@ source_langs:
 source_paths:
   - README.md
   - README.en.md
-  - docs/en/architecture-contract.md
+  - wiki/**
   - .ai/README.md
   - pnpm-workspace.yaml
   - package.json
@@ -74,7 +74,7 @@ This page is compiled from the following repository evidence paths:
 
 - `README.md`
 - `README.en.md`
-- `docs/en/architecture-contract.md`
+- `wiki/**`
 - `.ai/README.md`
 - `pnpm-workspace.yaml`
 - `package.json`

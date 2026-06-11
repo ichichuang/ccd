@@ -18,8 +18,8 @@ source_langs:
 source_paths:
   - uploaded://llm-wiki.md
   - README.en.md
-  - docs/documentation-system.md
-  - docs/README.md
+  - wiki/**
+  - README.md
 last_reviewed: '2026-06-11'
 wiki_owner: LLM-maintained CCD architecture wiki
 ---

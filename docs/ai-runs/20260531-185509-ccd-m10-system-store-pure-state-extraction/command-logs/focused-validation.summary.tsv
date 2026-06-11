@@ -1,7 +1,0 @@
-command	exit
-pnpm --filter @ccd/shared-utils test	0
-pnpm --filter @ccd/vue-app-platform test	0
-pnpm exec vitest run apps/web-demo/src/stores/modules/system/layout.spec.ts	0
-pnpm exec vitest run apps/web-demo/src/stores/modules/system/size.spec.ts	0
-pnpm exec vitest run apps/web-demo/src/stores/modules/system/device.spec.ts	0
-pnpm --filter @ccd/web-demo test	0

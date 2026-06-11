@@ -1,9 +1,0 @@
-$ pnpm arch:runtime
-
-> ccd@1.0.38 arch:runtime /Users/cc/MyPorject/ccd
-> node scripts/architecture/check-runtime-leaks.mjs && node scripts/architecture/check-root-runtime-decommissioned.mjs
-
-Runtime surface validation passed. findings=387, exact_exceptions=297
-[root-runtime] root runtime decommission guard passed
-
-[exit:0]

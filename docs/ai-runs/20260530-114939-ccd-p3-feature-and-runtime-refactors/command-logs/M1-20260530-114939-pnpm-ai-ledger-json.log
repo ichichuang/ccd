@@ -1,5 +1,0 @@
-
-> ccd@1.0.38 ai:ledger:json /Users/cc/MyPorject/ccd
-> node scripts/migrate-ledger.mjs
-
-[LEDGER] .ai/runtime/repair-ledger.json (156 tasks)

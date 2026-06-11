@@ -1,5 +1,0 @@
-
-> ccd@1.0.38 drift-check /Users/cc/MyPorject/ccd
-> node scripts/drift-check.mjs
-
-✅ Drift Check 通过: 所有 data-archetype 与 page.state.ts 一致，无 Style Drift

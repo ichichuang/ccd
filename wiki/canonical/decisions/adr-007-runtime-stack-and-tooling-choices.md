@@ -18,8 +18,8 @@ confidence: 0.93
 source_langs:
   - en
 source_paths:
-  - docs/adr/ADR-007-runtime-stack-and-tooling-choices.md
-  - docs/governance/strategic-guardrails.md
+  - wiki/**
+  - wiki/**
   - README.en.md
 last_reviewed: '2026-06-11'
 wiki_owner: LLM-maintained CCD architecture wiki
@@ -33,7 +33,7 @@ CCD keeps Vue 3 + TypeScript + Composition API, Vite, UnoCSS, PrimeVue v4, Tauri
 
 ## Wiki treatment
 
-This page preserves the ADR identifier exactly and links the decision into the Obsidian wiki graph. The original ADR file remains the durable decision evidence until `/docs` deletion readiness is proven and archival preservation is complete.
+This page preserves the ADR identifier exactly and links the decision into the Obsidian wiki graph. Git history retains the retired source file history.
 
 ## Current impact
 
@@ -45,8 +45,8 @@ This page preserves the ADR identifier exactly and links the decision into the O
 
 This page is compiled from the following repository evidence paths:
 
-- `docs/adr/ADR-007-runtime-stack-and-tooling-choices.md`
-- `docs/governance/strategic-guardrails.md`
+- `wiki/**`
+- `wiki/**`
 - `README.en.md`
 
 ## Related pages

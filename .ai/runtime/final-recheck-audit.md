@@ -21,8 +21,8 @@
  M .github/workflows/ci.yml
  M apps/web-demo/src/router/modules/example.spec.ts
  M apps/web-demo/src/router/modules/example.ts
- M docs/generated/api-surface-report.json
- M docs/generated/governance-report.md
+ M wiki/generated/api-surface-report.json
+ M wiki/generated/governance-report.md
  M package.json
  M pnpm-lock.yaml
  D ccd-public-layer-repair-plan-package/README.md
@@ -43,7 +43,7 @@ Authored by this recheck:
 Command-generated/touched during validation:
 
 - `pnpm ai:sync` regenerated AI adapters/indexes and `.ai/runtime/repair-ledger.json`; local `.ai/runtime/repair_list.md` was preserved.
-- `pnpm governance:gate` and `pnpm governance:refresh` regenerated generator-owned outputs under `.ai/generated/**` and `docs/generated/**`.
+- `pnpm governance:gate` and `pnpm governance:refresh` regenerated generator-owned outputs under `.ai/generated/**` and `wiki/generated/**`.
 - The generated files were not hand-edited. The same generated artifact status remained after two identical generation passes.
 
 ## 3. Ledger Consistency Summary
@@ -90,7 +90,7 @@ One matrix detail: the first `pnpm build:ci` run failed because generated govern
 | P1 capability/UI/HTTP/safeStorage/desktop security | `pnpm arch:runtime`, `pnpm arch:boundaries`, `pnpm api:report`, `pnpm desktop:security`, PrimeVue boundary classifier violations `0`, direct HTTP router/store imports `0`                                | Pass   |
 | P2 build/orchestration/governance                  | `pnpm ci:prepare-internal`, `pnpm ci:smoke:packages`, `pnpm build:web-demo`, `pnpm build:desktop`, rerun `pnpm build:ci`, `pnpm governance:gate`                                                          | Pass   |
 | P2 dependency/Vite/GitHub lanes                    | Open tasks remain owner/operator deferred per `.ai/runtime/owner_decisions.md`; no prohibited upgrade, lockfile migration, `.github` mutation, or remote mutation performed                               | Pass   |
-| P3 documentation/desktop/tooling                   | Completed docs/tooling tasks backed by docs, scripts, `pnpm docs:commands`, `pnpm project:doctor`, `pnpm e2e:smoke`                                                                                       | Pass   |
+| P3 documentation/desktop/tooling                   | Completed docs/tooling tasks backed by docs, scripts, `pnpm wiki:commands`, `pnpm project:doctor`, `pnpm e2e:smoke`                                                                                       | Pass   |
 | P3 Login Diorama                                   | All Login Diorama refactor tasks remain open owner-deferred; none are falsely marked complete                                                                                                             | Pass   |
 | P4 strategic/blocked work                          | HTTP runtime promotion and safeStorage shared-runtime promotion remain blocked by owner decisions; strategic repo/design-system/starter/UI-query lanes remain deferred                                    | Pass   |
 
@@ -203,7 +203,7 @@ One matrix detail: the first `pnpm build:ci` run failed because generated govern
 | `pnpm env:doctor`                                                                | pass                                 | Environment doctor passed with `1` warning                                                                                                        |
 | `pnpm env:doctor:strict`                                                         | pass                                 | Strict environment doctor passed with `1` warning                                                                                                 |
 | `pnpm project:doctor`                                                            | pass                                 | Project metadata all `ok`                                                                                                                         |
-| `pnpm docs:commands`                                                             | pass                                 | `412` documentation files scanned; command refs valid                                                                                             |
+| `pnpm wiki:commands`                                                             | pass                                 | `412` documentation files scanned; command refs valid                                                                                             |
 | `pnpm ci:clean-artifacts`                                                        | pass                                 | Workspace build artifacts cleaned                                                                                                                 |
 | `pnpm ci:prepare-internal`                                                       | pass                                 | `10` internal package builds successful                                                                                                           |
 | `pnpm ci:smoke:packages`                                                         | pass                                 | All package resolution checks passed                                                                                                              |

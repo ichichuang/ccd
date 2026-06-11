@@ -9,13 +9,13 @@ import process from 'node:process'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, '..')
 const ROOTS = [
-  join(ROOT, 'docs/generated'),
+  join(ROOT, 'wiki/generated'),
   join(ROOT, '.ai/generated'),
   join(ROOT, '.ai/governance/api-snapshots'),
 ]
 const FORMAT_GLOBS = [
-  'docs/generated/**/*.json',
-  'docs/generated/**/*.md',
+  'wiki/generated/**/*.json',
+  'wiki/generated/**/*.md',
   '.ai/generated/**/*.json',
   '.ai/generated/**/*.md',
   '.ai/governance/api-snapshots/**/*.json',

@@ -1,7 +1,0 @@
-$ pnpm --filter @ccd/vue-hooks type-check
-
-> @ccd/vue-hooks@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/vue-hooks
-> tsc -p tsconfig.json --noEmit
-
-
-[exit_code] 0

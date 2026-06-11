@@ -18,9 +18,9 @@ confidence: 0.91
 source_langs:
   - en
 source_paths:
-  - docs/generated/api-surface-report.md
-  - docs/en/architecture-contract.md
-  - docs/runtime/runtime-isolation.md
+  - wiki/generated/**
+  - wiki/**
+  - wiki/**
   - packages/design-tokens/**
 last_reviewed: '2026-06-11'
 wiki_owner: LLM-maintained CCD architecture wiki
@@ -66,7 +66,7 @@ pnpm validate:tokens
 
 This page is compiled from the following repository evidence paths:
 
-- `docs/generated/api-surface-report.md`
-- `docs/en/architecture-contract.md`
-- `docs/runtime/runtime-isolation.md`
+- `wiki/generated/api-surface-report.md`
+- `wiki/**`
+- `wiki/**`
 - `packages/design-tokens/**`

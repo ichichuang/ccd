@@ -1,3 +1,0 @@
-
-> @ccd/contracts@1.0.38 build /Users/cc/MyPorject/ccd/packages/contracts
-> rm -rf dist && rm -f ../../node_modules/.tmp/packages-contracts.tsbuildinfo && tsc -b tsconfig.json --force

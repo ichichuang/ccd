@@ -1,4 +1,0 @@
-     167 docs/ai-runs/20260530-180011-ccd-deps-004-primevue-review/command-logs/01-direct-import-inventory.log
-      24 docs/ai-runs/20260530-180011-ccd-deps-004-primevue-review/command-logs/03-vue-h-usage-inventory.log
-      53 docs/ai-runs/20260530-180011-ccd-deps-004-primevue-review/command-logs/04-e2e-primevue-coverage-inventory.log
-     244 total

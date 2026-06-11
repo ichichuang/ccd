@@ -18,8 +18,8 @@ confidence: 0.89
 source_langs:
   - en
 source_paths:
-  - docs/runtime/execute-reliability.md
-  - docs/adr/ADR-004-runtime-environment-policy.md
+  - wiki/**
+  - wiki/**
   - package.json
   - scripts/env.sh
   - scripts/exec.sh
@@ -55,8 +55,8 @@ pnpm validate
 
 This page is compiled from the following repository evidence paths:
 
-- `docs/runtime/execute-reliability.md`
-- `docs/adr/ADR-004-runtime-environment-policy.md`
+- `wiki/**`
+- `wiki/**`
 - `package.json`
 - `scripts/env.sh`
 - `scripts/exec.sh`

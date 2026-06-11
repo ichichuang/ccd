@@ -14,7 +14,7 @@ confidence: 0.70
 source_langs:
   - en
 source_paths:
-  - docs/governance/strategic-guardrails.md
+  - wiki/**
 last_reviewed: YYYY-MM-DD
 wiki_owner: LLM-maintained CCD architecture wiki
 ---

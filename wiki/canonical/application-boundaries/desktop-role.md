@@ -20,8 +20,8 @@ source_langs:
 source_paths:
   - README.md
   - README.en.md
-  - docs/runtime/desktop-runtime.md
-  - docs/governance/desktop-security-scope-review.md
+  - wiki/**
+  - wiki/**
   - apps/desktop/**
 last_reviewed: '2026-06-11'
 wiki_owner: LLM-maintained CCD architecture wiki
@@ -62,8 +62,8 @@ This page is compiled from the following repository evidence paths:
 
 - `README.md`
 - `README.en.md`
-- `docs/runtime/desktop-runtime.md`
-- `docs/governance/desktop-security-scope-review.md`
+- `wiki/**`
+- `wiki/**`
 - `apps/desktop/**`
 
 ## Related pages
