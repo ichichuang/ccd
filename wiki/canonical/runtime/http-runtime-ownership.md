@@ -22,8 +22,8 @@ source_langs:
   - en
 source_paths:
   - README.en.md
-  - docs/en/architecture-contract.md
-  - docs/governance/strategic-guardrails.md
+  - wiki/**
+  - wiki/**
   - .ai/runtime/repair_list.md
   - apps/web-demo/src/utils/http/**
   - packages/contracts/src/http/**
@@ -59,8 +59,8 @@ pnpm type-check
 This page is compiled from the following repository evidence paths:
 
 - `README.en.md`
-- `docs/en/architecture-contract.md`
-- `docs/governance/strategic-guardrails.md`
+- `wiki/**`
+- `wiki/**`
 - `.ai/runtime/repair_list.md`
 - `apps/web-demo/src/utils/http/**`
 - `packages/contracts/src/http/**`

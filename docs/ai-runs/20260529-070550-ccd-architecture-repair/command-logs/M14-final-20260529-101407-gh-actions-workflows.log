@@ -1,6 +1,0 @@
-258463452	Build Desktop (Windows)	.github/workflows/build-desktop-windows.yml	disabled_manually
-242757719	CI Guardian	.github/workflows/ci.yml	active
-258312263	Deploy to GitHub Pages	.github/workflows/deploy.yml	active
-261585932	Release Desktop	.github/workflows/release-desktop.yml	disabled_manually
-261585911	Smoke Desktop	.github/workflows/smoke-desktop.yml	disabled_manually
-256648240	Dependabot Updates	dynamic/dependabot/dependabot-updates	active

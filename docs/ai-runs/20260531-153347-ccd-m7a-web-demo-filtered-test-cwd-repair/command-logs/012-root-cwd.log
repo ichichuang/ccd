@@ -1,4 +1,0 @@
-$ node -e console.log(process.cwd())
-/Users/cc/MyPorject/ccd
-
-[exit=0]

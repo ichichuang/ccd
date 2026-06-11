@@ -60,7 +60,7 @@ for (const packageInfo of governedPackages) {
   }
 }
 
-const sbomPath = join(root, 'docs/generated/sbom.json')
+const sbomPath = join(root, 'wiki/generated/sbom.json')
 const sbom = {
   schemaVersion: 1,
   generatedBy: 'scripts/architecture/check-supply-chain.mjs',

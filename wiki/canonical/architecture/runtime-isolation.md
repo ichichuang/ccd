@@ -19,8 +19,8 @@ confidence: 0.96
 source_langs:
   - en
 source_paths:
-  - docs/runtime/runtime-isolation.md
-  - docs/en/architecture-contract.md
+  - wiki/**
+  - wiki/**
   - .ai/governance/policies/runtime.json
   - scripts/architecture/check-runtime-leaks.mjs
   - scripts/architecture/check-root-runtime-decommissioned.mjs
@@ -62,8 +62,8 @@ pnpm governance:gate
 
 This page is compiled from the following repository evidence paths:
 
-- `docs/runtime/runtime-isolation.md`
-- `docs/en/architecture-contract.md`
+- `wiki/**`
+- `wiki/**`
 - `.ai/governance/policies/runtime.json`
 - `scripts/architecture/check-runtime-leaks.mjs`
 - `scripts/architecture/check-root-runtime-decommissioned.mjs`

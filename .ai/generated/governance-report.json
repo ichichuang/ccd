@@ -30,7 +30,7 @@
   "ruleCount": 38,
   "routedSkillCount": 10,
   "orphanChecks": {
-    "docsGeneratedExists": true,
+    "wikiGeneratedExists": true,
     "orchestrationManifestExists": true,
     "protocolVersionExists": true
   },

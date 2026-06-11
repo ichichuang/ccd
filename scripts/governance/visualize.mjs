@@ -11,7 +11,29 @@ const governanceGraph = `graph TD\n  AI[.ai/**] --> Protocol[protocol]\n  AI -->
 
 const adapterGraph = `graph TD\n  Manifest[adapter-manifest.json] --> Codex[Codex adapter]\n  Manifest --> Claude[Claude adapter]\n  Manifest --> Versions[adapter version ${protocolVersion.adapterVersion}]\n  ${Object.keys(adapterManifest.adapterGuides).map(name => `${name}[${name}]`).join('\n  ')}\n`
 
-writeText('docs/generated/diagrams/runtime-topology.mmd', runtimeGraph)
-writeText('docs/generated/diagrams/governance-topology.mmd', governanceGraph)
-writeText('docs/generated/diagrams/adapter-topology.mmd', adapterGraph)
-writeText('docs/generated/architecture-overview.md', `# Architecture Overview\n\n## Generated diagrams\n\n- [Runtime topology](./diagrams/runtime-topology.mmd)\n- [Governance topology](./diagrams/governance-topology.mmd)\n- [Adapter topology](./diagrams/adapter-topology.mmd)\n`)
+writeText('wiki/generated/diagrams/runtime-topology.mmd', runtimeGraph)
+writeText('wiki/generated/diagrams/governance-topology.mmd', governanceGraph)
+writeText('wiki/generated/diagrams/adapter-topology.mmd', adapterGraph)
+writeText('wiki/generated/architecture-overview.md', `---
+title_en: Architecture Overview
+title_zh: 架构概览
+aliases:
+  - Architecture Overview
+tags:
+  - generated
+  - architecture
+tags_zh:
+  - 生成视图
+  - 架构
+status: published
+confidence: 0.90
+source_langs:
+  - en
+source_paths:
+  - .ai/**
+  - scripts/governance/visualize.mjs
+last_reviewed: '2026-06-11'
+wiki_owner: LLM-maintained CCD architecture wiki
+---
+
+# Architecture Overview\n\n## Generated diagrams\n\n- [Runtime topology](./diagrams/runtime-topology.mmd)\n- [Governance topology](./diagrams/governance-topology.mmd)\n- [Adapter topology](./diagrams/adapter-topology.mmd)\n`)

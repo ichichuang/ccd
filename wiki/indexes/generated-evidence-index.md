@@ -17,7 +17,7 @@ confidence: 0.9
 source_langs:
   - en
 source_paths:
-  - docs/generated/**
+  - wiki/generated/**
   - .ai/generated/**
   - .ai/governance/api-snapshots/**
   - wiki/generated/**
@@ -31,10 +31,10 @@ Generated evidence is not canonical prose. Use these paths as evidence views and
 
 | Evidence surface                          | Treatment                                         |
 | ----------------------------------------- | ------------------------------------------------- |
-| `docs/generated/api-surface-report.md`    | Public API evidence.                              |
-| `docs/generated/governance-report.md`     | Governance output evidence.                       |
-| `docs/generated/architecture-overview.md` | Generated diagram index.                          |
-| `docs/generated/diagrams/**`              | Generated Mermaid architecture diagrams.          |
+| `wiki/generated/api-surface-report.md`    | Public API evidence.                              |
+| `wiki/generated/governance-report.md`     | Governance output evidence.                       |
+| `wiki/generated/architecture-overview.md` | Generated diagram index.                          |
+| `wiki/generated/diagrams/**`              | Generated Mermaid architecture diagrams.          |
 | `.ai/generated/**`                        | AI governance generated reports.                  |
 | `.ai/governance/api-snapshots/**`         | Public API immutability snapshots.                |
 | `wiki/generated/**`                       | Wiki-generated coverage and migration views only. |

@@ -1,9 +1,0 @@
-command: pnpm docs:commands
-started_at: 2026-05-30T11:29:42Z
-
-> ccd@1.0.38 docs:commands /Users/cc/MyPorject/ccd
-> node scripts/governance/check-doc-commands.mjs
-
-[doc-commands] All pnpm command references in documentation are valid. (142 files scanned)
-finished_at: 2026-05-30T11:29:43Z
-exit_code: 0

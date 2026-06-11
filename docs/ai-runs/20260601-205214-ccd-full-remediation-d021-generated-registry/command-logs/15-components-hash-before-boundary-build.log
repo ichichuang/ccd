@@ -1,4 +1,0 @@
-$ shasum -a 256 apps/web-demo/src/types/components.d.ts
-267ca63692c4e94bf2c747bec08163f32ac6217a23a559bc5f1bfa53e0c975f3  apps/web-demo/src/types/components.d.ts
-
-[exit:0]

@@ -6,7 +6,7 @@ import { spawnSync } from 'node:child_process'
 import process from 'node:process'
 
 const root = process.cwd()
-const outputDir = join(root, 'docs/generated/release')
+const outputDir = join(root, 'wiki/generated/release')
 mkdirSync(outputDir, { recursive: true })
 const run = (command, args) => spawnSync(command, args, { cwd: root, encoding: 'utf8', stdio: 'pipe' })
 const commandLine = (command, args) => [command, ...args].join(' ')
@@ -47,10 +47,32 @@ const report = {
   checks,
 }
 writeFileSync(join(outputDir, 'release-audit-report.json'), `${JSON.stringify(report, null, 2)}\n`)
-writeFileSync(join(outputDir, 'release-audit-report.md'), `# Release Audit Report\n\n- Source: \`${report.releaseSource}\`\n- Artifact path: \`${report.artifactPath}\`\n- Artifact count: ${report.artifactCount}\n- Artifact checksum: \`${report.artifactChecksum ?? 'not-built'}\`\n- Root runtime source forbidden: ${report.rootRuntimeSourceForbidden}\n\n## Checks\n\n${checks.map(check => `- \`${check.command}\`: ${check.status === 0 ? 'pass' : 'fail'}`).join('\n')}\n`)
+writeFileSync(join(outputDir, 'release-audit-report.md'), `---
+title_en: Release Audit Report
+title_zh: 发布审计报告
+aliases:
+  - Release Audit Report
+tags:
+  - generated
+  - release
+tags_zh:
+  - 生成视图
+  - 发布
+status: published
+confidence: 0.90
+source_langs:
+  - en
+source_paths:
+  - apps/web-demo/dist
+  - scripts/architecture/release-audit.mjs
+last_reviewed: '2026-06-11'
+wiki_owner: LLM-maintained CCD architecture wiki
+---
+
+# Release Audit Report\n\n- Source: \`${report.releaseSource}\`\n- Artifact path: \`${report.artifactPath}\`\n- Artifact count: ${report.artifactCount}\n- Artifact checksum: \`${report.artifactChecksum ?? 'not-built'}\`\n- Root runtime source forbidden: ${report.rootRuntimeSourceForbidden}\n\n## Checks\n\n${checks.map(check => `- \`${check.command}\`: ${check.status === 0 ? 'pass' : 'fail'}`).join('\n')}\n`)
 const failed = checks.some(check => check.status !== 0)
 if (failed) {
-  console.error('Release audit failed. See docs/generated/release/release-audit-report.json')
+  console.error('Release audit failed. See wiki/generated/release/release-audit-report.json')
   process.exit(1)
 }
-console.log('Release audit report generated: docs/generated/release/release-audit-report.json')
+console.log('Release audit report generated: wiki/generated/release/release-audit-report.json')

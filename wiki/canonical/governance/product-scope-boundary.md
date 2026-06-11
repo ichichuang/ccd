@@ -21,8 +21,8 @@ source_langs:
 source_paths:
   - README.en.md
   - README.md
-  - docs/governance/product-lines.md
-  - docs/governance/strategic-guardrails.md
+  - wiki/**
+  - wiki/**
   - .ai/runtime/repair_list.md
 last_reviewed: '2026-06-11'
 wiki_owner: LLM-maintained CCD architecture wiki
@@ -51,8 +51,8 @@ This page is compiled from the following repository evidence paths:
 
 - `README.en.md`
 - `README.md`
-- `docs/governance/product-lines.md`
-- `docs/governance/strategic-guardrails.md`
+- `wiki/**`
+- `wiki/**`
 - `.ai/runtime/repair_list.md`
 
 ## Related pages

@@ -4,8 +4,8 @@ import { spawnSync } from 'node:child_process'
 import process from 'node:process'
 
 const COMMANDS = new Set(['doctor', 'fix', 'ship', 'ci'])
-const GENERATED_PREFIXES = ['docs/generated/', '.ai/generated/', '.ai/governance/api-snapshots/']
-const GENERATED_EXACT = new Set(['docs/generated/sbom.json'])
+const GENERATED_PREFIXES = ['wiki/generated/', '.ai/generated/', '.ai/governance/api-snapshots/']
+const GENERATED_EXACT = new Set(['wiki/generated/sbom.json'])
 const MANAGED_FORMAT_FILES = [
   'project.config.json',
   'package.json',
@@ -14,12 +14,12 @@ const MANAGED_FORMAT_FILES = [
   'apps/web-demo/src/constants/brand.ts',
   'apps/desktop/src-tauri/tauri.conf.json',
   '.ai/governance/policies/version.json',
-  'docs/project-control-center.md',
+  'wiki/canonical/operations/project-control-center.md',
   'README.md',
 ]
 const GENERATED_FORMAT_FILES = [
-  'docs/generated/**/*.json',
-  'docs/generated/**/*.md',
+  'wiki/generated/**/*.json',
+  'wiki/generated/**/*.md',
   '.ai/generated/**/*.json',
   '.ai/generated/**/*.md',
 ]
@@ -90,7 +90,7 @@ function generatedFiles() {
     file =>
       GENERATED_EXACT.has(file) ||
       GENERATED_PREFIXES.some(prefix => file.startsWith(prefix)) ||
-      /^docs\/generated\/(api-surface-report|graphs\/)/.test(file)
+      /^wiki\/generated\/(api-surface-report|graphs\/)/.test(file)
   )
 }
 
@@ -248,7 +248,7 @@ function formatGenerated() {
     'pnpm',
     ['exec', 'prettier', '--write', '--no-error-on-unmatched-pattern', ...GENERATED_FORMAT_FILES],
     'generated report formatting failed.',
-    'pnpm exec prettier --write "docs/generated/**/*.json" "docs/generated/**/*.md"'
+    'pnpm exec prettier --write "wiki/generated/**/*.json" "wiki/generated/**/*.md"'
   )
 }
 

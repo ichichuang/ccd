@@ -1,7 +1,0 @@
-cwd: /Users/cc/MyPorject/ccd
-command: pnpm exec prettier --write apps/web-demo/src/types/auto-imports.d.ts
-started_at: 2026-06-01T22:44:32+08:00
---- output ---
-apps/web-demo/src/types/auto-imports.d.ts 41ms
---- exit_code: 0 ---
-finished_at: 2026-06-01T22:44:32+08:00

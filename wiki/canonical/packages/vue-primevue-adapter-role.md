@@ -18,9 +18,9 @@ confidence: 0.93
 source_langs:
   - en
 source_paths:
-  - docs/generated/api-surface-report.md
-  - docs/en/architecture-contract.md
-  - docs/governance/primevue-i18n-verification.md
+  - wiki/generated/**
+  - wiki/**
+  - wiki/**
   - packages/vue-primevue-adapter/**
 last_reviewed: '2026-06-11'
 wiki_owner: LLM-maintained CCD architecture wiki
@@ -65,7 +65,7 @@ pnpm governance:gate
 
 This page is compiled from the following repository evidence paths:
 
-- `docs/generated/api-surface-report.md`
-- `docs/en/architecture-contract.md`
-- `docs/governance/primevue-i18n-verification.md`
+- `wiki/generated/api-surface-report.md`
+- `wiki/**`
+- `wiki/**`
 - `packages/vue-primevue-adapter/**`

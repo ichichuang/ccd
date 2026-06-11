@@ -19,8 +19,8 @@ source_langs:
   - en
   - zh
 source_paths:
-  - docs/release/release-policy.md
-  - docs/zh/08-release.md
+  - wiki/**
+  - wiki/**
   - package.json
   - scripts/architecture/check-release-governance.mjs
   - scripts/architecture/release-audit.mjs
@@ -53,8 +53,8 @@ pnpm governance:gate
 
 This page is compiled from the following repository evidence paths:
 
-- `docs/release/release-policy.md`
-- `docs/zh/08-release.md`
+- `wiki/**`
+- `wiki/**`
 - `package.json`
 - `scripts/architecture/check-release-governance.mjs`
 - `scripts/architecture/release-audit.mjs`

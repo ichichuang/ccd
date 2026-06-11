@@ -12,7 +12,7 @@ confidence: 0.70
 source_langs:
   - en
 source_paths:
-  - docs/runtime/<source>.md
+  - wiki/**
 last_reviewed: YYYY-MM-DD
 wiki_owner: LLM-maintained CCD architecture wiki
 ---

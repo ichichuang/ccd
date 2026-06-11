@@ -26,7 +26,7 @@ source_paths:
   - .ai/governance/policies/**
   - .ai/runtime/repair_list.md
   - README.en.md
-  - docs/en/ai-entry.md
+  - wiki/**
 last_reviewed: '2026-06-11'
 wiki_owner: LLM-maintained CCD architecture wiki
 ---
@@ -65,7 +65,7 @@ This page is compiled from the following repository evidence paths:
 - `.ai/governance/policies/**`
 - `.ai/runtime/repair_list.md`
 - `README.en.md`
-- `docs/en/ai-entry.md`
+- `wiki/**`
 
 ## Related pages
 

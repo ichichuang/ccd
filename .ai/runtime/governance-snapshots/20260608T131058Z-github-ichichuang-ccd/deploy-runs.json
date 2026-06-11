@@ -949,7 +949,7 @@
       "head_commit": {
         "id": "692875dd84c0882c96d024913aba506a56b77ddd",
         "tree_id": "7e0a778d27318bdd5c3fb9695a61df76346ff561",
-        "message": "fix(desktop): 统一桌面 HTML 元数据入口\n\n目的：将桌面 HTML 元数据统一纳入项目配置治理。\n范围：desktop index.html 不再硬编码标题、描述、作者。\n范围：从 project.config.json 注入桌面 HTML 元数据。\n范围：desktop tsconfig 纳入 build 插件类型检查。\n范围：project:doctor 检查桌面模板占位符。\n范围：文档同步说明桌面 HTML 模板契约。\n验证：governance:gate、validate:governance 均通过。\n验证：project:sync、project:doctor、desktop type-check 通过。\n验证：build:desktop、budget:desktop、cargo check 通过。\n验证：tauri build、docs:commands、ai:doctor 通过。\n验证：dist/index.html 已注入产品名、描述、作者。\n风险：未修改 packages/* 公共 API。\n风险：未改 Tauri 权限、图标、bundle.active、签名。\n风险：未修改 Rust 入口、CI 配置或 pnpm-lock.yaml。\n备注：如有治理产物变化，仅由 governance:gate 刷新。\n备注：本次无需要保留的治理生成文件变更。",
+        "message": "fix(desktop): 统一桌面 HTML 元数据入口\n\n目的：将桌面 HTML 元数据统一纳入项目配置治理。\n范围：desktop index.html 不再硬编码标题、描述、作者。\n范围：从 project.config.json 注入桌面 HTML 元数据。\n范围：desktop tsconfig 纳入 build 插件类型检查。\n范围：project:doctor 检查桌面模板占位符。\n范围：文档同步说明桌面 HTML 模板契约。\n验证：governance:gate、validate:governance 均通过。\n验证：project:sync、project:doctor、desktop type-check 通过。\n验证：build:desktop、budget:desktop、cargo check 通过。\n验证：tauri build、wiki:commands、ai:doctor 通过。\n验证：dist/index.html 已注入产品名、描述、作者。\n风险：未修改 packages/* 公共 API。\n风险：未改 Tauri 权限、图标、bundle.active、签名。\n风险：未修改 Rust 入口、CI 配置或 pnpm-lock.yaml。\n备注：如有治理产物变化，仅由 governance:gate 刷新。\n备注：本次无需要保留的治理生成文件变更。",
         "timestamp": "2026-06-04T17:55:01Z",
         "author": { "name": "ichichuang", "email": "chichuang134@gmail.com" },
         "committer": { "name": "ichichuang", "email": "chichuang134@gmail.com" }

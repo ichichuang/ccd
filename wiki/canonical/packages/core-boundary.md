@@ -19,9 +19,9 @@ source_langs:
   - en
 source_paths:
   - packages/core/src/index.ts
-  - docs/generated/api-surface-report.md
+  - wiki/generated/**
   - README.en.md
-  - docs/en/architecture-contract.md
+  - wiki/**
 last_reviewed: '2026-06-11'
 wiki_owner: LLM-maintained CCD architecture wiki
 ---
@@ -67,6 +67,6 @@ pnpm type-check
 This page is compiled from the following repository evidence paths:
 
 - `packages/core/src/index.ts`
-- `docs/generated/api-surface-report.md`
+- `wiki/generated/api-surface-report.md`
 - `README.en.md`
-- `docs/en/architecture-contract.md`
+- `wiki/**`

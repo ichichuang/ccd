@@ -43,7 +43,7 @@ declare global {
   /** 构建时注入的应用信息（vite.config define，对象或 JSON 字符串，仅含 pkg.name/version 与 lastBuildTime） */
   const __APP_INFO__: string | { pkg?: { name?: string; version?: string }; lastBuildTime?: string }
 
-  // 非组件环境全局 API（见 docs/ai-specs/TOAST_AND_MESSAGE.md）
+  // 非组件环境全局 API（见 wiki/canonical/governance/ai-governance-control-plane.md）
   interface Window {
     $message?: {
       success: (message: string, title?: string) => void

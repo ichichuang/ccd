@@ -1,6 +1,0 @@
-cwd: /Users/cc/MyPorject/ccd
-command: git diff --check
-started_at: 2026-06-01T22:42:58+08:00
---- output ---
---- exit_code: 0 ---
-finished_at: 2026-06-01T22:42:58+08:00

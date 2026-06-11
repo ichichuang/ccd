@@ -21,9 +21,9 @@ source_langs:
   - en
 source_paths:
   - README.en.md
-  - docs/en/architecture-contract.md
-  - docs/runtime/runtime-isolation.md
-  - docs/governance/strategic-guardrails.md
+  - wiki/**
+  - wiki/**
+  - wiki/**
   - .ai/runtime/repair_list.md
   - apps/web-demo/src/utils/safeStorage/**
   - packages/contracts/src/storage.ts
@@ -60,9 +60,9 @@ pnpm type-check
 This page is compiled from the following repository evidence paths:
 
 - `README.en.md`
-- `docs/en/architecture-contract.md`
-- `docs/runtime/runtime-isolation.md`
-- `docs/governance/strategic-guardrails.md`
+- `wiki/**`
+- `wiki/**`
+- `wiki/**`
 - `.ai/runtime/repair_list.md`
 - `apps/web-demo/src/utils/safeStorage/**`
 - `packages/contracts/src/storage.ts`

@@ -1,8 +1,0 @@
-
-> @ccd/desktop@1.0.38 type-check /Users/cc/MyPorject/ccd/apps/desktop
-> vue-tsc -p tsconfig.json --noEmit
-
-src/theme/index.ts(8,3): error TS2305: Module '"@ccd/design-tokens"' has no exported member 'generateThemeVars'.
-/Users/cc/MyPorject/ccd/apps/desktop:
- ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @ccd/desktop@1.0.38 type-check: `vue-tsc -p tsconfig.json --noEmit`
-Exit status 2

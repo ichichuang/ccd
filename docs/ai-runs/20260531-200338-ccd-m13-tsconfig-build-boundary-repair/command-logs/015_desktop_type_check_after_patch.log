@@ -1,5 +1,0 @@
-$ pnpm --filter @ccd/desktop type-check
-
-> @ccd/desktop@1.0.38 type-check /Users/cc/MyPorject/ccd/apps/desktop
-> vue-tsc -p tsconfig.json --noEmit
-

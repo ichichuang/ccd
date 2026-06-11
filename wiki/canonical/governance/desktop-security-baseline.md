@@ -20,7 +20,7 @@ confidence: 0.97
 source_langs:
   - en
 source_paths:
-  - docs/governance/desktop-security-scope-review.md
+  - wiki/**
   - apps/desktop/src-tauri/tauri.conf.json
   - apps/desktop/src-tauri/capabilities/default.json
   - apps/desktop/src-tauri/security-scopes.json
@@ -64,7 +64,7 @@ Rust command handlers, structured Rust-side IPC errors, updater, and deep-link s
 
 This page is compiled from the following repository evidence paths:
 
-- `docs/governance/desktop-security-scope-review.md`
+- `wiki/**`
 - `apps/desktop/src-tauri/tauri.conf.json`
 - `apps/desktop/src-tauri/capabilities/default.json`
 - `apps/desktop/src-tauri/security-scopes.json`

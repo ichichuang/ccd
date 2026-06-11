@@ -32,7 +32,6 @@ This is the Obsidian-native architecture knowledge base for CCD. It is a compile
 
 - Chinese reader entry: [[开始阅读]]
 - AI maintainer entry: [[ai-entry]]
-- Migration map: [[migration-map]]
 - Source coverage: [[source-coverage]]
 - Wiki governance: [[wiki-governance]]
 - Append-only log: [[log]]
@@ -64,4 +63,4 @@ This is the Obsidian-native architecture knowledge base for CCD. It is a compile
 
 ## Governance warning
 
-Do not delete `/docs` from the repository until [[docs-deletion-readiness]] passes and the migration map proves full coverage, source-path provenance, link validation, README cutover, and validation command success.
+The maintained knowledge base is `wiki/**`; retired documentation history is retained in Git history.

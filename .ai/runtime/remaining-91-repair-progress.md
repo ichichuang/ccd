@@ -33,7 +33,7 @@
 - pnpm catalog syntax was checked against official pnpm documentation: `catalog` entries live in `pnpm-workspace.yaml` and package manifests may reference them using `catalog:`.
 - Implemented local dependency governance only: centralized external ranges through the default pnpm catalog, preserved `workspace:*` package links, removed stale `vite-plugin-progress`, added `pnpm deps:catalog:check`, and wired catalog validation into `pnpm supply:check`.
 - Added `pnpm deps:scan`, which writes `.ai/runtime/dependency-scan-summary.json` without upgrading packages. Current scan status: 71 outdated packages, pnpm audit advisories found, Cargo dependency inventory generated.
-- Existing local GitHub governance evidence was validated without remote mutation: `.github/workflows/ci.yml`, `.github/workflows/deploy.yml`, `.github/CODEOWNERS`, PR template, and issue templates are present; `pnpm governance:github-workflows` and `pnpm docs:commands` passed.
+- Existing local GitHub governance evidence was validated without remote mutation: `.github/workflows/ci.yml`, `.github/workflows/deploy.yml`, `.github/CODEOWNERS`, PR template, and issue templates are present; `pnpm governance:github-workflows` and `pnpm wiki:commands` passed.
 - Fixed the web-demo Vite build banner after catalog adoption so it prints resolved catalog ranges for Vue and UnoCSS instead of literal `catalog:` specifiers.
 - Static scans completed:
   - No active `web-dom`, `apps/web-dom`, or `@ccd/web-dom` references outside excluded residue.
@@ -44,8 +44,8 @@
   - Production mock/demo defaults remain off: `.env` and `.env.production` set `VITE_PUBLIC_DEMO_ENABLED=false` and `VITE_DEMO_MOCK_ENABLED=false`; `.env.analyze` is the explicit public-demo opt-in path.
   - Raw runtime scan still reports existing app/UI-owned browser surfaces such as web-demo storage/theme/http paths and PrimeVue imports in `@ccd/vue-ui`; repo architecture guards pass with these existing allowlisted/application-owned surfaces.
   - No implementation `any` usages found in ProForm, ProTable, bridge/adapters, contracts, core, or shared-utils after excluding specs.
-  - Generated artifact scan found no `/Users/cc` absolute paths, ISO timestamp churn, `generatedAt`, `timestamp`, or `lastBuildTime` markers in `.ai/generated`, `docs/generated`, `.ai/manifests`, or `repair-ledger.json`.
+  - Generated artifact scan found no `/Users/cc` absolute paths, ISO timestamp churn, `generatedAt`, `timestamp`, or `lastBuildTime` markers in `.ai/generated`, `wiki/generated`, `.ai/manifests`, or `repair-ledger.json`.
   - Vite warning remains warning-only: `apps/web-demo/src/router/modules/core.ts` is both statically and dynamically imported by `apps/web-demo/src/router/index.ts`; builds exit 0 and this belongs to the deferred Vite 8 chunking lane if it becomes actionable.
 - Validation notes:
-  - `pnpm build:ci` initially failed because `docs/generated/sbom.json` changed during governance artifact sync. Rerunning `pnpm governance:gate` refreshed the artifact and passed; a second `pnpm build:ci` passed, confirming freshness rather than repeated nondeterminism.
+  - `pnpm build:ci` initially failed because `wiki/generated/sbom.json` changed during governance artifact sync. Rerunning `pnpm governance:gate` refreshed the artifact and passed; a second `pnpm build:ci` passed, confirming freshness rather than repeated nondeterminism.
   - `pnpm env:doctor` and `pnpm env:doctor:strict` passed with the existing PATH precedence warning for the mise shim.

@@ -1,2 +1,0 @@
-$ git rev-parse --short origin/main
-9cbdd5cc

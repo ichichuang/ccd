@@ -17,8 +17,8 @@ source_langs:
   - en
   - zh
 source_paths:
-  - docs/en/troubleshooting-contract.md
-  - docs/zh/07-troubleshooting.md
+  - wiki/**
+  - wiki/**
   - README.en.md
   - package.json
   - .github/workflows/ci.yml
@@ -33,7 +33,7 @@ Troubleshooting starts from the smallest failing command and escalates only as n
 ## Common first checks
 
 ```bash
-pnpm docs:commands
+pnpm wiki:commands
 pnpm project:doctor
 pnpm arch:runtime
 pnpm arch:boundaries
@@ -57,8 +57,8 @@ Use `pnpm governance:gate` when a change touches architecture, governance, publi
 
 This page is compiled from the following repository evidence paths:
 
-- `docs/en/troubleshooting-contract.md`
-- `docs/zh/07-troubleshooting.md`
+- `wiki/**`
+- `wiki/**`
 - `README.en.md`
 - `package.json`
 - `.github/workflows/ci.yml`

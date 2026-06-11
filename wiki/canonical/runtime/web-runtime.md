@@ -18,9 +18,9 @@ confidence: 0.88
 source_langs:
   - en
 source_paths:
-  - docs/runtime/web-runtime.md
-  - docs/runtime/runtime-isolation.md
-  - docs/en/architecture-contract.md
+  - wiki/**
+  - wiki/**
+  - wiki/**
   - apps/web-demo/**
 last_reviewed: '2026-06-11'
 wiki_owner: LLM-maintained CCD architecture wiki
@@ -54,9 +54,9 @@ pnpm e2e:qa
 
 This page is compiled from the following repository evidence paths:
 
-- `docs/runtime/web-runtime.md`
-- `docs/runtime/runtime-isolation.md`
-- `docs/en/architecture-contract.md`
+- `wiki/**`
+- `wiki/**`
+- `wiki/**`
 - `apps/web-demo/**`
 
 ## Related pages

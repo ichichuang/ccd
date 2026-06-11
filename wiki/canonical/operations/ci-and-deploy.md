@@ -22,8 +22,8 @@ source_paths:
   - .github/workflows/ci.yml
   - .github/workflows/deploy.yml
   - README.en.md
-  - docs/en/ci-deploy-contract.md
-  - docs/zh/05-ci-deploy.md
+  - wiki/**
+  - wiki/**
   - package.json
 last_reviewed: '2026-06-11'
 wiki_owner: LLM-maintained CCD architecture wiki
@@ -62,8 +62,8 @@ This page is compiled from the following repository evidence paths:
 - `.github/workflows/ci.yml`
 - `.github/workflows/deploy.yml`
 - `README.en.md`
-- `docs/en/ci-deploy-contract.md`
-- `docs/zh/05-ci-deploy.md`
+- `wiki/**`
+- `wiki/**`
 - `package.json`
 
 ## Related pages

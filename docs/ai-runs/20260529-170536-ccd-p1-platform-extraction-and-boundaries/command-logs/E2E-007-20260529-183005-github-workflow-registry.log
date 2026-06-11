@@ -1,5 +1,0 @@
-
-> ccd@1.0.38 governance:github-workflows /Users/cc/MyPorject/ccd
-> node scripts/governance/check-github-workflow-registry.mjs
-
-GitHub workflow registry hygiene passed.

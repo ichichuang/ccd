@@ -4,7 +4,7 @@
     {
       "id": "architect-governance",
       "name": "Architecture Governance Agent",
-      "scope": [".ai/**", "docs/**", "scripts/**", "package.json"],
+      "scope": [".ai/**", "wiki/**", "scripts/**", "package.json"],
       "permissions": ["generate", "validate", "report", "repair"],
       "routes": ["ai-protocol", "runtime-isolation", "governance-automation"]
     },
@@ -18,7 +18,7 @@
     {
       "id": "desktop-runtime",
       "name": "Desktop Runtime Agent",
-      "scope": ["src-tauri/**", "scripts/sync-desktop-config.mjs", "docs/runtime/**"],
+      "scope": ["src-tauri/**", "scripts/sync-desktop-config.mjs", "wiki/canonical/runtime/**"],
       "permissions": ["implement", "validate", "repair"],
       "routes": ["desktop-tauri"]
     }

@@ -125,14 +125,14 @@ Captured before repair edits with `git status --short --untracked-files=all`.
  M docs/en/architecture-contract.md
  M docs/en/ci-deploy-contract.md
  M docs/en/project-metadata-contract.md
- M docs/generated/diagrams/runtime-topology.mmd
- M docs/generated/governance-report.md
- M docs/generated/graphs/README.md
- M docs/generated/graphs/dependency-graph.json
- M docs/generated/graphs/package-dependency-graph.mmd
- M docs/generated/graphs/runtime-boundary-graph.mmd
- M docs/generated/sbom.json
- M docs/governance/product-lines.md
+ M wiki/generated/diagrams/runtime-topology.mmd
+ M wiki/generated/governance-report.md
+ M wiki/generated/graphs/README.md
+ M wiki/generated/graphs/dependency-graph.json
+ M wiki/generated/graphs/package-dependency-graph.mmd
+ M wiki/generated/graphs/runtime-boundary-graph.mmd
+ M wiki/generated/sbom.json
+ M wiki/canonical/governance/product-lines.md
  M docs/release/release-policy.md
  M docs/release/runtime-promotion-checklist.md
  M docs/runtime/desktop-runtime.md
@@ -681,7 +681,7 @@ Implementation:
 
 Validation:
 
-- `pnpm docs:commands`: passed.
+- `pnpm wiki:commands`: passed.
 - `pnpm ai:guard`: passed.
 - `git diff --check`: passed.
 - `pnpm ai:doctor`: passed.
@@ -714,7 +714,7 @@ Implementation:
 
 Validation:
 
-- `pnpm docs:commands`: passed.
+- `pnpm wiki:commands`: passed.
 - `pnpm ai:guard`: passed.
 - `rg` stale assertion check: passed for the rule file; remaining stale assertion text appears only in the resolved matrix note.
 - `git diff --check`: passed.
@@ -747,7 +747,7 @@ Implementation:
 
 Validation:
 
-- `pnpm docs:commands`: passed.
+- `pnpm wiki:commands`: passed.
 - `pnpm ai:guard`: passed.
 - `pnpm ai:scaffold:view-route -- --segment p1/scaffold-archetype-check --title-key router.p1.scaffoldArchetypeCheck --kind detail --dry-run`: passed and wrote no files.
 - `git diff --check`: passed.
@@ -784,7 +784,7 @@ Implementation:
 
 Validation:
 
-- `pnpm docs:commands`: passed.
+- `pnpm wiki:commands`: passed.
 - `pnpm ai:guard`: passed.
 - `pnpm validate:tokens`: passed with existing decorative token advisories.
 - `git diff --check`: passed.
@@ -815,7 +815,7 @@ Implementation:
 
 Validation:
 
-- `pnpm docs:commands`: passed.
+- `pnpm wiki:commands`: passed.
 - `git diff --check`: passed.
 - `pnpm ai:sync`: passed and regenerated `.ai/runtime/repair-ledger.json`.
 - `pnpm ai:doctor`: passed.
@@ -845,7 +845,7 @@ Implementation:
 
 Validation:
 
-- `pnpm docs:commands`: passed.
+- `pnpm wiki:commands`: passed.
 - `git diff --check`: passed.
 - `pnpm ai:sync`: passed and regenerated `.ai/runtime/repair-ledger.json`.
 - `pnpm ai:doctor`: passed.
@@ -875,7 +875,7 @@ Implementation:
 
 Validation:
 
-- `pnpm docs:commands`: passed.
+- `pnpm wiki:commands`: passed.
 - `git diff --check`: passed.
 - `pnpm ai:sync`: passed and regenerated `.ai/runtime/repair-ledger.json`.
 - `pnpm ai:doctor`: passed.
@@ -905,7 +905,7 @@ Implementation:
 
 Validation:
 
-- `pnpm docs:commands`: passed.
+- `pnpm wiki:commands`: passed.
 - `git diff --check`: passed.
 - `pnpm ai:sync`: passed and regenerated `.ai/runtime/repair-ledger.json`.
 - `pnpm ai:doctor`: passed.
@@ -935,7 +935,7 @@ Implementation:
 
 Validation:
 
-- `pnpm docs:commands`: passed.
+- `pnpm wiki:commands`: passed.
 - `git diff --check`: passed.
 - `pnpm ai:sync`: passed and regenerated `.ai/runtime/repair-ledger.json`.
 - `pnpm ai:doctor`: passed.
@@ -965,7 +965,7 @@ Implementation:
 
 Validation:
 
-- `pnpm docs:commands`: passed.
+- `pnpm wiki:commands`: passed.
 - `git diff --check`: passed.
 - `pnpm ai:sync`: passed and regenerated `.ai/runtime/repair-ledger.json`.
 - `pnpm ai:doctor`: passed.
@@ -995,7 +995,7 @@ Implementation:
 
 Validation:
 
-- `pnpm docs:commands`: passed.
+- `pnpm wiki:commands`: passed.
 - `git diff --check`: passed.
 - `pnpm ai:sync`: passed and regenerated `.ai/runtime/repair-ledger.json`.
 - `pnpm ai:doctor`: passed.
@@ -1024,7 +1024,7 @@ Implementation:
 
 Validation:
 
-- `pnpm docs:commands`: passed.
+- `pnpm wiki:commands`: passed.
 - `git diff --check`: passed.
 - `pnpm ai:sync`: passed and regenerated `.ai/runtime/repair-ledger.json`.
 - `pnpm ai:doctor`: passed.
@@ -1121,7 +1121,7 @@ Implementation:
 
 Validation:
 
-- `pnpm docs:commands`: passed.
+- `pnpm wiki:commands`: passed.
 - `pnpm ai:doctor`: passed, with existing decorative token contrast advisories.
 - `pnpm codex:preflight`: passed, with existing decorative token contrast advisories.
 - `pnpm governance:gate`: passed.
@@ -2368,7 +2368,7 @@ Validation:
 - `pnpm project:doctor`: passed before sync.
 - `pnpm project:sync`: passed, synced metadata to `1.0.38`.
 - `pnpm project:doctor`: passed after sync.
-- `pnpm docs:commands`: passed.
+- `pnpm wiki:commands`: passed.
 - `pnpm ai:doctor --open`: passed and listed remaining open tasks.
 - `pnpm codex:preflight`: passed.
 - `pnpm --filter @ccd/web-demo type-check`: passed.
@@ -2408,7 +2408,7 @@ Validation:
 - `pnpm project:doctor`: passed.
 - `pnpm sync:version`: passed.
 - `pnpm sync:desktop-config`: passed.
-- `pnpm docs:commands`: passed.
+- `pnpm wiki:commands`: passed.
 - `pnpm governance:gate`: passed.
 - `pnpm codex:preflight`: passed.
 - `pnpm ai:doctor --open`: passed and listed remaining open tasks.
@@ -3626,12 +3626,12 @@ Changed files:
 Implementation:
 
 - Confirmed this task is a generated-artifact discipline check, not a manual generated-file edit.
-- Did not hand-edit `docs/generated/**`, `.ai/generated/**`, or `.ai/governance/api-snapshots/**`.
+- Did not hand-edit `wiki/generated/**`, `.ai/generated/**`, or `.ai/governance/api-snapshots/**`.
 - Noted that currently dirty generated outputs remain command-owned and are handled by the following `P2-Governance-Refresh` task.
 
 Validation:
 
-- `git status --short docs/generated .ai/generated .ai/governance/api-snapshots ...`: completed; generated outputs are dirty but were not manually edited for this task.
+- `git status --short wiki/generated .ai/generated .ai/governance/api-snapshots ...`: completed; generated outputs are dirty but were not manually edited for this task.
 
 Completion decision: marked `[P2-Governance-Generated]` complete.
 
@@ -3646,10 +3646,10 @@ Start status: open.
 Changed files:
 
 - `.ai/generated/governance-report.json`
-- `docs/generated/api-surface-report.json`
-- `docs/generated/api-surface-report.md`
-- `docs/generated/governance-report.md`
-- `docs/generated/graphs/**`
+- `wiki/generated/api-surface-report.json`
+- `wiki/generated/api-surface-report.md`
+- `wiki/generated/governance-report.md`
+- `wiki/generated/graphs/**`
 - `.ai/runtime/repair_list.md`
 - `.ai/runtime/autonomous-repair-progress.md`
 
@@ -3675,9 +3675,9 @@ Start status: open.
 Changed files:
 
 - `.ai/generated/governance-report.json`
-- `docs/generated/api-surface-report.json`
-- `docs/generated/governance-report.md`
-- `docs/generated/graphs/**`
+- `wiki/generated/api-surface-report.json`
+- `wiki/generated/governance-report.md`
+- `wiki/generated/graphs/**`
 - `.ai/runtime/repair_list.md`
 - `.ai/runtime/autonomous-repair-progress.md`
 
@@ -3711,7 +3711,7 @@ Implementation:
 
 Validation:
 
-- `pnpm docs:commands`: passed, 407 files scanned.
+- `pnpm wiki:commands`: passed, 407 files scanned.
 
 Completion decision: marked `[P2-Governance-DocsCommands]` complete.
 
@@ -4031,7 +4031,7 @@ Implementation:
 
 Validation:
 
-- `pnpm docs:commands`: passed, 407 files scanned.
+- `pnpm wiki:commands`: passed, 407 files scanned.
 
 Completion decision: marked `[P3-Docs-ArchitectureMap]` complete.
 
@@ -4056,7 +4056,7 @@ Implementation:
 
 Validation:
 
-- `pnpm docs:commands`: passed, 407 files scanned.
+- `pnpm wiki:commands`: passed, 407 files scanned.
 
 Completion decision: marked `[P3-Docs-PackageResponsibilities]` complete.
 
@@ -4085,7 +4085,7 @@ Validation:
 
 - `pnpm --filter @ccd/web-demo test -- src/router/modules/example.spec.ts`: failed initially because Vitest loaded Vite config without required env values.
 - `VITE_API_BASE_URL=http://localhost:3003 VITE_PINIA_PERSIST_KEY_PREFIX=app-template-storage-test VITE_ROOT_REDIRECT=/dashboard pnpm --filter @ccd/web-demo test -- src/router/modules/example.spec.ts`: passed; 54 files and 363 tests, including `src/router/modules/example.spec.ts`.
-- `pnpm docs:commands`: passed, 408 files scanned.
+- `pnpm wiki:commands`: passed, 408 files scanned.
 
 Completion decision: marked `[P3-Docs-RouteInventory]` complete.
 
@@ -4111,7 +4111,7 @@ Implementation:
 
 Validation:
 
-- `pnpm docs:commands`: passed, 408 files scanned.
+- `pnpm wiki:commands`: passed, 408 files scanned.
 
 Completion decision: marked `[P3-Docs-DevCommands]` complete.
 
@@ -4144,7 +4144,7 @@ Implementation:
 Validation:
 
 - `rg -n "app-template|template's design system|template-storage" .env .env.analyze .env.development .env.production apps/web-demo playwright.config.ts --glob '!**/dist/**' --glob '!**/node_modules/**'`: passed with no matches.
-- `pnpm docs:commands`: passed, 408 files scanned.
+- `pnpm wiki:commands`: passed, 408 files scanned.
 - `pnpm project:doctor`: passed.
 - `pnpm env:doctor`: passed with the known mise node PATH precedence warning.
 - `pnpm --filter @ccd/web-demo type-check`: passed.
@@ -4176,7 +4176,7 @@ Implementation:
 
 Validation:
 
-- `pnpm docs:commands`: passed, 408 files scanned.
+- `pnpm wiki:commands`: passed, 408 files scanned.
 - `pnpm ai:doctor`: passed with existing decorative token contrast advisories.
 - `pnpm codex:preflight`: passed with existing decorative token contrast advisories.
 - `pnpm governance:gate`: passed.
@@ -4486,7 +4486,7 @@ Changed files:
 - `packages/vue-hooks/package.json`
 - `packages/vue-primevue-adapter/package.json`
 - `packages/vue-ui/package.json`
-- Generated governance outputs under `.ai/generated/**` and `docs/generated/**` regenerated by `pnpm governance:gate`
+- Generated governance outputs under `.ai/generated/**` and `wiki/generated/**` regenerated by `pnpm governance:gate`
 - `.ai/runtime/repair_list.md`
 - `.ai/runtime/autonomous-repair-progress.md`
 
@@ -4657,8 +4657,8 @@ Start status: open.
 
 Changed files:
 
-- `docs/governance/github-governance.md`
-- `docs/governance/README.md`
+- `wiki/canonical/governance/github-governance.md`
+- `wiki/canonical/governance/README.md`
 - `.ai/runtime/repair_list.md`
 - `.ai/runtime/autonomous-repair-progress.md`
 
@@ -4669,7 +4669,7 @@ Implementation:
 
 Validation:
 
-- Consolidated documentation/governance validation passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `pnpm docs:commands`, `pnpm ai:doctor`, `pnpm codex:preflight`, `pnpm desktop:security`, `pnpm governance:gate`, and `pnpm ai:doctor --open`.
+- Consolidated documentation/governance validation passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `pnpm wiki:commands`, `pnpm ai:doctor`, `pnpm codex:preflight`, `pnpm desktop:security`, `pnpm governance:gate`, and `pnpm ai:doctor --open`.
 
 Completion decision: marked `[P2-GitHub-BranchProtection]` complete.
 
@@ -4683,7 +4683,7 @@ Start status: open.
 
 Changed files:
 
-- `docs/governance/github-governance.md`
+- `wiki/canonical/governance/github-governance.md`
 - `.ai/runtime/repair_list.md`
 - `.ai/runtime/autonomous-repair-progress.md`
 
@@ -4694,7 +4694,7 @@ Implementation:
 
 Validation:
 
-- Consolidated documentation/governance validation passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `pnpm docs:commands`, `pnpm ai:doctor`, `pnpm codex:preflight`, `pnpm desktop:security`, `pnpm governance:gate`, and `pnpm ai:doctor --open`.
+- Consolidated documentation/governance validation passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `pnpm wiki:commands`, `pnpm ai:doctor`, `pnpm codex:preflight`, `pnpm desktop:security`, `pnpm governance:gate`, and `pnpm ai:doctor --open`.
 
 Completion decision: marked `[P2-GitHub-RequiredChecks]` complete.
 
@@ -4708,8 +4708,8 @@ Start status: open.
 
 Changed files:
 
-- `docs/governance/dependency-policy.md`
-- `docs/governance/README.md`
+- `wiki/canonical/governance/dependency-policy.md`
+- `wiki/canonical/governance/README.md`
 - `.ai/runtime/repair_list.md`
 - `.ai/runtime/autonomous-repair-progress.md`
 
@@ -4720,7 +4720,7 @@ Implementation:
 
 Validation:
 
-- Consolidated documentation/governance validation passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `pnpm docs:commands`, `pnpm ai:doctor`, `pnpm codex:preflight`, `pnpm desktop:security`, `pnpm governance:gate`, and `pnpm ai:doctor --open`.
+- Consolidated documentation/governance validation passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `pnpm wiki:commands`, `pnpm ai:doctor`, `pnpm codex:preflight`, `pnpm desktop:security`, `pnpm governance:gate`, and `pnpm ai:doctor --open`.
 
 Completion decision: marked `[P2-GitHub-Dependencies]` complete.
 
@@ -4745,7 +4745,7 @@ Implementation:
 
 Validation:
 
-- Consolidated documentation/governance validation passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `pnpm docs:commands`, `pnpm ai:doctor`, `pnpm codex:preflight`, `pnpm desktop:security`, `pnpm governance:gate`, and `pnpm ai:doctor --open`.
+- Consolidated documentation/governance validation passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `pnpm wiki:commands`, `pnpm ai:doctor`, `pnpm codex:preflight`, `pnpm desktop:security`, `pnpm governance:gate`, and `pnpm ai:doctor --open`.
 
 Completion decision:
 
@@ -4762,7 +4762,7 @@ Start status: open.
 Changed files:
 
 - `docs/adr/ADR-007-runtime-stack-and-tooling-choices.md`
-- `docs/governance/README.md`
+- `wiki/canonical/governance/README.md`
 - `.ai/runtime/repair_list.md`
 - `.ai/runtime/autonomous-repair-progress.md`
 
@@ -4772,7 +4772,7 @@ Implementation:
 
 Validation:
 
-- Consolidated documentation/governance validation passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `pnpm docs:commands`, `pnpm ai:doctor`, `pnpm codex:preflight`, `pnpm desktop:security`, `pnpm governance:gate`, and `pnpm ai:doctor --open`.
+- Consolidated documentation/governance validation passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `pnpm wiki:commands`, `pnpm ai:doctor`, `pnpm codex:preflight`, `pnpm desktop:security`, `pnpm governance:gate`, and `pnpm ai:doctor --open`.
 
 Completion decision: marked `[P4-ADR-Stack]` complete.
 
@@ -4798,7 +4798,7 @@ Implementation:
 
 Validation:
 
-- Consolidated documentation/governance validation passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `pnpm docs:commands`, `pnpm ai:doctor`, `pnpm codex:preflight`, `pnpm desktop:security`, `pnpm governance:gate`, and `pnpm ai:doctor --open`.
+- Consolidated documentation/governance validation passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `pnpm wiki:commands`, `pnpm ai:doctor`, `pnpm codex:preflight`, `pnpm desktop:security`, `pnpm governance:gate`, and `pnpm ai:doctor --open`.
 
 Completion decision: marked `[P4-Desktop-RustCommands]` complete.
 
@@ -4823,7 +4823,7 @@ Implementation:
 
 Validation:
 
-- Consolidated documentation/governance validation passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `pnpm docs:commands`, `pnpm ai:doctor`, `pnpm codex:preflight`, `pnpm desktop:security`, `pnpm governance:gate`, and `pnpm ai:doctor --open`.
+- Consolidated documentation/governance validation passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `pnpm wiki:commands`, `pnpm ai:doctor`, `pnpm codex:preflight`, `pnpm desktop:security`, `pnpm governance:gate`, and `pnpm ai:doctor --open`.
 
 Completion decision: marked `[P4-Desktop-RustErrors]` complete.
 
@@ -4848,7 +4848,7 @@ Implementation:
 
 Validation:
 
-- Consolidated documentation/governance validation passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `pnpm docs:commands`, `pnpm ai:doctor`, `pnpm codex:preflight`, `pnpm desktop:security`, `pnpm governance:gate`, and `pnpm ai:doctor --open`.
+- Consolidated documentation/governance validation passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `pnpm wiki:commands`, `pnpm ai:doctor`, `pnpm codex:preflight`, `pnpm desktop:security`, `pnpm governance:gate`, and `pnpm ai:doctor --open`.
 
 Completion decision: marked `[P4-Desktop-Updater]` complete.
 
@@ -4862,7 +4862,7 @@ Start status: open.
 
 Changed files:
 
-- `docs/governance/dependency-policy.md`
+- `wiki/canonical/governance/dependency-policy.md`
 - `.ai/runtime/repair_list.md`
 - `.ai/runtime/autonomous-repair-progress.md`
 
@@ -4872,7 +4872,7 @@ Implementation:
 
 Validation:
 
-- Consolidated documentation/governance validation passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `pnpm docs:commands`, `pnpm ai:doctor`, `pnpm codex:preflight`, `pnpm desktop:security`, `pnpm governance:gate`, and `pnpm ai:doctor --open`.
+- Consolidated documentation/governance validation passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `pnpm wiki:commands`, `pnpm ai:doctor`, `pnpm codex:preflight`, `pnpm desktop:security`, `pnpm governance:gate`, and `pnpm ai:doctor --open`.
 
 Completion decision: marked `[P4-Deps-WorkspacePlacement]` complete.
 
@@ -4886,7 +4886,7 @@ Start status: open.
 
 Changed files:
 
-- `docs/governance/dependency-policy.md`
+- `wiki/canonical/governance/dependency-policy.md`
 - `.ai/runtime/repair_list.md`
 - `.ai/runtime/autonomous-repair-progress.md`
 
@@ -4896,7 +4896,7 @@ Implementation:
 
 Validation:
 
-- Consolidated documentation/governance validation passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `pnpm docs:commands`, `pnpm ai:doctor`, `pnpm codex:preflight`, `pnpm desktop:security`, `pnpm governance:gate`, and `pnpm ai:doctor --open`.
+- Consolidated documentation/governance validation passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `pnpm wiki:commands`, `pnpm ai:doctor`, `pnpm codex:preflight`, `pnpm desktop:security`, `pnpm governance:gate`, and `pnpm ai:doctor --open`.
 
 Completion decision: marked `[P4-Deps-OverridesPolicy]` complete.
 
@@ -4920,7 +4920,7 @@ Implementation:
 
 Validation:
 
-- Consolidated documentation/governance validation passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `pnpm docs:commands`, `pnpm ai:doctor`, `pnpm codex:preflight`, `pnpm desktop:security`, `pnpm governance:gate`, and `pnpm ai:doctor --open`.
+- Consolidated documentation/governance validation passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `pnpm wiki:commands`, `pnpm ai:doctor`, `pnpm codex:preflight`, `pnpm desktop:security`, `pnpm governance:gate`, and `pnpm ai:doctor --open`.
 
 Completion decision: marked `[P4-Release-Changesets]` complete.
 
@@ -4952,9 +4952,9 @@ Date: 2026-06-08
 
 ### Changed Files By Task
 
-- `P2-GitHub-BranchProtection`, `P2-GitHub-RequiredChecks`: `docs/governance/github-governance.md`, `docs/governance/README.md`, `.ai/runtime/repair_list.md`, `.ai/runtime/autonomous-repair-progress.md`.
-- `P2-GitHub-Dependencies`, `P4-Deps-WorkspacePlacement`, `P4-Deps-OverridesPolicy`: `docs/governance/dependency-policy.md`, `docs/governance/README.md`, `.ai/runtime/repair_list.md`, `.ai/runtime/autonomous-repair-progress.md`.
-- `P4-ADR-Stack`: `docs/adr/ADR-007-runtime-stack-and-tooling-choices.md`, `docs/governance/README.md`, `.ai/runtime/repair_list.md`, `.ai/runtime/autonomous-repair-progress.md`.
+- `P2-GitHub-BranchProtection`, `P2-GitHub-RequiredChecks`: `wiki/canonical/governance/github-governance.md`, `wiki/canonical/governance/README.md`, `.ai/runtime/repair_list.md`, `.ai/runtime/autonomous-repair-progress.md`.
+- `P2-GitHub-Dependencies`, `P4-Deps-WorkspacePlacement`, `P4-Deps-OverridesPolicy`: `wiki/canonical/governance/dependency-policy.md`, `wiki/canonical/governance/README.md`, `.ai/runtime/repair_list.md`, `.ai/runtime/autonomous-repair-progress.md`.
+- `P4-ADR-Stack`: `docs/adr/ADR-007-runtime-stack-and-tooling-choices.md`, `wiki/canonical/governance/README.md`, `.ai/runtime/repair_list.md`, `.ai/runtime/autonomous-repair-progress.md`.
 - `P4-Desktop-RustCommands`, `P4-Desktop-RustErrors`, `P4-Desktop-Updater`: `docs/adr/ADR-008-desktop-backend-ipc-and-updater-policy.md`, `docs/runtime/desktop-runtime.md`, `.ai/runtime/repair_list.md`, `.ai/runtime/autonomous-repair-progress.md`.
 - `P4-Release-Changesets`: `docs/release/release-policy.md`, `.ai/runtime/repair_list.md`, `.ai/runtime/autonomous-repair-progress.md`.
 - P4 deferred/blocked ledger notes: `.ai/runtime/repair_list.md`, `.ai/runtime/autonomous-repair-progress.md`.
@@ -4964,7 +4964,7 @@ Date: 2026-06-08
 
 - `pnpm ai:sync`: passed; `.ai/runtime/repair-ledger.json` regenerated with 226 tasks.
 - `node scripts/migrate-ledger.mjs`: passed; ledger parseable.
-- `pnpm docs:commands`: passed; 412 documentation files scanned.
+- `pnpm wiki:commands`: passed; 412 documentation files scanned.
 - `pnpm ai:doctor`: passed; only existing decorative token contrast advisories appeared.
 - `pnpm ai:doctor --open`: passed; 91 open tasks listed as legitimate deferred/blocked backlog.
 - `pnpm codex:preflight`: passed; only existing decorative token contrast advisories appeared.
@@ -4995,6 +4995,6 @@ Implementation:
 
 Validation:
 
-- Final matrix passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `node scripts/migrate-ledger.mjs --self-check`, `pnpm ai:doctor`, `pnpm ai:doctor --open`, `pnpm codex:preflight`, `pnpm env:doctor`, `pnpm env:doctor:strict`, `pnpm project:doctor`, `pnpm docs:commands`, `pnpm ci:clean-artifacts`, `pnpm ci:prepare-internal`, `pnpm ci:smoke:packages`, `pnpm --filter @ccd/vue-ui build`, bare route smoke spec, app type-checks, `pnpm type-check`, `pnpm lint:check`, `pnpm check`, `pnpm arch:runtime`, `pnpm arch:boundaries`, `pnpm api:report`, `pnpm supply:check`, `pnpm build:web-demo`, `pnpm build:desktop`, `pnpm governance:refresh`, `pnpm generated:normalize`, `pnpm arch:report`, `pnpm arch:graphs`, `pnpm check:drift`, `pnpm build:ci`, `pnpm e2e:smoke`, `pnpm governance:gate`, and `pnpm validate`.
+- Final matrix passed: `pnpm ai:sync`, `node scripts/migrate-ledger.mjs`, `node scripts/migrate-ledger.mjs --self-check`, `pnpm ai:doctor`, `pnpm ai:doctor --open`, `pnpm codex:preflight`, `pnpm env:doctor`, `pnpm env:doctor:strict`, `pnpm project:doctor`, `pnpm wiki:commands`, `pnpm ci:clean-artifacts`, `pnpm ci:prepare-internal`, `pnpm ci:smoke:packages`, `pnpm --filter @ccd/vue-ui build`, bare route smoke spec, app type-checks, `pnpm type-check`, `pnpm lint:check`, `pnpm check`, `pnpm arch:runtime`, `pnpm arch:boundaries`, `pnpm api:report`, `pnpm supply:check`, `pnpm build:web-demo`, `pnpm build:desktop`, `pnpm governance:refresh`, `pnpm generated:normalize`, `pnpm arch:report`, `pnpm arch:graphs`, `pnpm check:drift`, `pnpm build:ci`, `pnpm e2e:smoke`, `pnpm governance:gate`, and `pnpm validate`.
 
 Final verdict: `complete-with-deferred-items`.

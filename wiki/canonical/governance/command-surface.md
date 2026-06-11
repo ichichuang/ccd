@@ -20,7 +20,7 @@ source_langs:
 source_paths:
   - package.json
   - README.en.md
-  - docs/en/command-contract.md
+  - wiki/**
   - .ai/README.md
 last_reviewed: '2026-06-11'
 wiki_owner: LLM-maintained CCD architecture wiki
@@ -35,7 +35,7 @@ wiki_owner: LLM-maintained CCD architecture wiki
 | Group             | Commands                                                                                                                     |
 | ----------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | Project health    | `pnpm project:doctor`, `pnpm ccd:doctor`, `pnpm ccd:fix`, `pnpm validate`                                                    |
-| Governance        | `pnpm governance:refresh`, `pnpm governance:gate`, `pnpm governance:github-workflows`, `pnpm docs:commands`                  |
+| Governance        | `pnpm governance:refresh`, `pnpm governance:gate`, `pnpm governance:github-workflows`, `pnpm wiki:commands`                  |
 | Architecture      | `pnpm arch:boundaries`, `pnpm arch:runtime`, `pnpm api:report`, `pnpm arch:graphs`                                           |
 | Build             | `pnpm ci:prepare-internal`, `pnpm build:web-demo`, `pnpm build:desktop`, `pnpm build:ci`, `pnpm vercel:build`                |
 | Desktop           | `pnpm desktop:security`, `pnpm desktop:smoke`, `pnpm desktop:smoke:dev`, `pnpm desktop:smoke:release`, `pnpm budget:desktop` |
@@ -45,7 +45,7 @@ wiki_owner: LLM-maintained CCD architecture wiki
 
 ## Documentation rule
 
-Run or at least validate `pnpm docs:commands` before merging documentation changes that mention commands.
+Run or at least validate `pnpm wiki:commands` before merging documentation changes that mention commands.
 
 ## Evidence paths
 
@@ -53,7 +53,7 @@ This page is compiled from the following repository evidence paths:
 
 - `package.json`
 - `README.en.md`
-- `docs/en/command-contract.md`
+- `wiki/**`
 - `.ai/README.md`
 
 ## Related pages

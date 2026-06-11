@@ -1,9 +1,0 @@
-Fri May 29 17:26:11 CST 2026
-
-> @ccd/web-demo@1.0.38 type-check /Users/cc/MyPorject/ccd/apps/web-demo
-> vue-tsc -p tsconfig.json --noEmit
-
-src/components/ProTable/engine/types/column.ts(2,15): error TS2305: Module '"@ccd/vue-ui"' has no exported member 'SelectOption'.
-/Users/cc/MyPorject/ccd/apps/web-demo:
- ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @ccd/web-demo@1.0.38 type-check: `vue-tsc -p tsconfig.json --noEmit`
-Exit status 2

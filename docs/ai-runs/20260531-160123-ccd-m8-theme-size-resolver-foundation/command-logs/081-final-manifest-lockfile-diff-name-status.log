@@ -1,3 +1,0 @@
-$ git diff --name-status manifest/lockfile pathspec
-
-[exit:0]

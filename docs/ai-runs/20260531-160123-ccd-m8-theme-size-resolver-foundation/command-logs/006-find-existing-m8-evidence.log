@@ -1,4 +1,0 @@
-$ find docs/ai-runs -maxdepth 2 \( -iname "*m8*" -o -iname "*theme-size-resolver*" \) -print | sort
-docs/ai-runs/20260531-160123-ccd-m8-theme-size-resolver-foundation
-
-[exit:0]

@@ -58,18 +58,18 @@ const checks = [
     command: ['bash', 'scripts/exec.sh', 'pnpm', 'arch:graphs'],
   },
   {
-    name: 'documentation command validation',
-    command: ['node', 'scripts/governance/check-doc-commands.mjs'],
+    name: 'wiki command validation',
+    command: ['node', 'scripts/wiki/check-wiki-commands.mjs'],
     failure:
       'Documentation references nonexistent package.json scripts. Fix the source documentation, generator source, or policy source — do NOT manually edit generated files.',
   },
 ]
 
-const generatedArtifactPaths = ['docs/generated', '.ai/generated', '.ai/governance/api-snapshots']
+const generatedArtifactPaths = ['wiki/generated', '.ai/generated', '.ai/governance/api-snapshots']
 
 const generatedFormatGlobs = [
-  'docs/generated/**/*.json',
-  'docs/generated/**/*.md',
+  'wiki/generated/**/*.json',
+  'wiki/generated/**/*.md',
   '.ai/generated/**/*.json',
   '.ai/generated/**/*.md',
   '.ai/governance/api-snapshots/**/*.json',
@@ -127,7 +127,7 @@ if (ok) {
   if (generatedBefore !== generatedAfter) {
     console.error('\n[gate:fail] governance artifact sync')
     console.error(
-      'Generated governance artifacts changed during the gate. Run pnpm governance:gate locally and commit updated docs/generated, .ai/generated, and .ai/governance/api-snapshots outputs.'
+      'Generated governance artifacts changed during the gate. Run pnpm governance:gate locally and commit updated wiki/generated, .ai/generated, and .ai/governance/api-snapshots outputs.'
     )
     const nameOnly = spawnSync('git', ['diff', '--name-only', '--', ...generatedArtifactPaths], {
       cwd: process.cwd(),

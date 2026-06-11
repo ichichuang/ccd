@@ -19,7 +19,7 @@ confidence: 0.94
 source_langs:
   - en
 source_paths:
-  - docs/governance/dependency-policy.md
+  - wiki/**
   - package.json
   - pnpm-workspace.yaml
   - pnpm-lock.yaml
@@ -57,7 +57,7 @@ pnpm governance:gate
 
 This page is compiled from the following repository evidence paths:
 
-- `docs/governance/dependency-policy.md`
+- `wiki/**`
 - `package.json`
 - `pnpm-workspace.yaml`
 - `pnpm-lock.yaml`

@@ -22,9 +22,9 @@ source_langs:
 source_paths:
   - .ai/runtime/repair_list.md
   - .ai/runtime/owner_decisions.md
-  - docs/governance/strategic-guardrails.md
-  - docs/adr/ADR-006-approval-gated-architecture-lanes.md
-  - docs/adr/ADR-008-desktop-backend-ipc-and-updater-policy.md
+  - wiki/**
+  - wiki/**
+  - wiki/**
 last_reviewed: '2026-06-11'
 wiki_owner: LLM-maintained CCD architecture wiki
 ---
@@ -57,9 +57,9 @@ Each future lane must preserve the current architecture unless the owner explici
 
 - `.ai/runtime/repair_list.md`
 - `.ai/runtime/owner_decisions.md`
-- `docs/governance/strategic-guardrails.md`
-- `docs/adr/ADR-006-approval-gated-architecture-lanes.md`
-- `docs/adr/ADR-008-desktop-backend-ipc-and-updater-policy.md`
+- `wiki/**`
+- `wiki/**`
+- `wiki/**`
 
 ## Related pages
 

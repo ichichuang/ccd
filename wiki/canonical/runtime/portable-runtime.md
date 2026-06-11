@@ -18,8 +18,8 @@ confidence: 0.84
 source_langs:
   - en
 source_paths:
-  - docs/runtime/portable-runtime.md
-  - docs/runtime/runtime-isolation.md
+  - wiki/**
+  - wiki/**
   - README.en.md
   - packages/contracts/src/index.ts
   - packages/core/src/index.ts
@@ -54,8 +54,8 @@ pnpm type-check
 
 This page is compiled from the following repository evidence paths:
 
-- `docs/runtime/portable-runtime.md`
-- `docs/runtime/runtime-isolation.md`
+- `wiki/**`
+- `wiki/**`
 - `README.en.md`
 - `packages/contracts/src/index.ts`
 - `packages/core/src/index.ts`

@@ -17,7 +17,7 @@ This ledger is the AI-readable open repair surface for CCD after the final P4 st
 
 P0, P1, P2, and P3 repair work is closed for the current architecture program. The only unchecked entries that remain are non-actionable P4 strategic guardrails. They stay visible to `pnpm ai:doctor --open` because current repository policy uses the open ledger as the durable warning surface for deferred strategic or blocked work.
 
-Durable item details live in `wiki/canonical/governance/strategic-guardrails.md`. The legacy `docs/governance/strategic-guardrails.md` file remains historical evidence while `/docs` is retained as a compatibility layer. This file intentionally keeps only parseable open task lines plus the minimum policy context required by AI workflows.
+Durable item details live in `wiki/canonical/governance/strategic-guardrails.md`. Legacy documentation history is retained in Git history only. This file intentionally keeps only parseable open task lines plus the minimum policy context required by AI workflows.
 
 ## 1. Ledger Format Contract
 
@@ -62,15 +62,14 @@ No open P0, P1, P2, or P3 tasks remain in this runtime ledger.
 
 Completed evidence is recorded in the relevant governance and ADR documents:
 
-- `docs/governance/README.md`
-- `docs/governance/historical-artifacts.md`
-- `docs/governance/github-governance.md`
-- `docs/governance/dependency-policy.md`
-- `docs/governance/desktop-security-scope-review.md`
-- `docs/governance/primevue-i18n-verification.md`
-- `docs/adr/ADR-004-runtime-environment-policy.md`
-- `docs/adr/ADR-007-runtime-stack-and-tooling-choices.md`
-- `docs/adr/ADR-008-desktop-backend-ipc-and-updater-policy.md`
+- `wiki/indexes/governance-index.md`
+- `wiki/canonical/governance/github-governance.md`
+- `wiki/canonical/governance/dependency-governance.md`
+- `wiki/canonical/governance/desktop-security-baseline.md`
+- `wiki/canonical/governance/strategic-guardrails.md`
+- `wiki/canonical/decisions/adr-004-runtime-environment-policy.md`
+- `wiki/canonical/decisions/adr-007-runtime-stack-and-tooling-choices.md`
+- `wiki/canonical/decisions/adr-008-desktop-backend-ipc-and-updater-policy.md`
 
 ## 5. P4 Strategic Guardrails
 
@@ -100,8 +99,8 @@ Use the smallest valid validation set first, then escalate.
 | Change type | Minimum validation | Full validation |
 | ----------- | ------------------ | --------------- |
 | Ledger Markdown change | `pnpm ai:sync`, `pnpm ai:doctor --open`, `pnpm codex:preflight` | `pnpm governance:gate` |
-| Strategic guardrail registry | `pnpm docs:commands`, `pnpm ai:doctor --open` | `pnpm validate` |
-| Generated/docs artifacts | `pnpm docs:commands`, `pnpm governance:gate` | `pnpm validate` |
+| Strategic guardrail registry | `pnpm wiki:commands`, `pnpm ai:doctor --open` | `pnpm validate` |
+| Generated/wiki artifacts | `pnpm wiki:commands`, `pnpm governance:gate` | `pnpm validate` |
 | Runtime boundaries | `pnpm arch:runtime`, `pnpm arch:boundaries` | `pnpm validate` |
 | Package/public API | `pnpm api:report`, package build | `pnpm build:ci`, `pnpm validate` |
 | Desktop security | `pnpm desktop:security`, desktop smoke | `pnpm build:desktop`, cargo desktop check, `pnpm validate` |

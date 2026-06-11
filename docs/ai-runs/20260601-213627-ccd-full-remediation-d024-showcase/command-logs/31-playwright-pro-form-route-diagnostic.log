@@ -1,7 +1,0 @@
-{
-  "url": "http://127.0.0.1:8088/#/example/primevue-collection/pro-form/advanced",
-  "textSample": "CCD\nPlatform\n仪表盘\n系统配置\n组件合集\nPrimeVue 合集\nPrimeVue 概览\n消息提示 (Toast)\n二次封装弹窗\nProForm 超级表单\n全量能力总览\n基础用法\n布局、分组与向导\n校验管线与持久化\n动态联动 (DAG)\n声明式联动 (Reactions)\n动态数组与高级扩展\n插件与底层 Hooks\nAPI 与事件观测\nProTable 超级表格\n图标大全 (Icons)\nECharts 图表\n自定义滚动条\n空状态提示\n动画包装器\nHooks 引擎\nUtils 工具链\nCommon 规范\n架构级演示\n组件合集\nPrimeVue 合集\nProForm 超级表单\n动态数组与高级扩展\n仪表盘\n动态数组与高级扩展\nProForm 高级用法\nPRO-FORM\n演示 useFieldArray 动态字段列表（append / remove / move）与 persistKey + autoSave 草稿自动保存。覆盖能力：useFieldArray、具名插槽字段接管、persistKey + autoSave 草稿恢复。\nUSEFIELDARRAY — 动态字段数组\n\n通过 append / remove / move 动态管理联系方式列表。字段渲染通过 #field-contacts 具名插槽实现。\n\n* 联系人姓名\n联系方式\n邮箱\n+ 添加联系方式\n用户列表（useFieldArray 演示）\n删除\n+ 添加用户\n提交数据\nPERSISTKEY + AUTOSAVE — 草稿自动保存\n已保存 21:50:35 (1次)\n\n变更自动写入 localStorage 。刷新页面后草稿自愈。\n\n标题\n正文\n分类\n优先级\n低\n中\n高\n重置并清除\n提交并清除草稿\nCCD\n·\nv1.0.38\n·\nSelf-protecting deterministic multi-runtime platform architecture.",
-  "inputs": 4,
-  "buttons": 9,
-  "selects": 2
-}

@@ -19,7 +19,7 @@ confidence: 0.97
 source_langs:
   - en
 source_paths:
-  - docs/governance/strategic-guardrails.md
+  - wiki/**
   - .ai/runtime/repair_list.md
   - README.en.md
   - README.md
@@ -54,7 +54,7 @@ When a future request mentions any guardrail, treat it as blocked or deferred by
 
 This page is compiled from the following repository evidence paths:
 
-- `docs/governance/strategic-guardrails.md`
+- `wiki/**`
 - `.ai/runtime/repair_list.md`
 - `README.en.md`
 - `README.md`
