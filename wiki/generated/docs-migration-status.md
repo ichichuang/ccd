@@ -11,7 +11,7 @@ tags_zh:
   - 生成视图
   - 迁移
 status: published
-confidence: 0.85
+confidence: 0.90
 source_langs:
   - en
 source_paths:
@@ -23,16 +23,24 @@ wiki_owner: LLM-maintained CCD architecture wiki
 
 # Docs Migration Status
 
-Generated-view style page. It summarizes migration readiness and does not replace `wiki/indexes/migration-map.md`.
+Generated view from `pnpm wiki:refresh`. It summarizes readiness; the exact file-level map is [[migration-map]].
 
-| Metric                       | Value |
-| ---------------------------- | ----: |
-| Migration map rows           |    58 |
-| Canonical pages generated    |    47 |
-| Chinese presentation indexes |     8 |
-| Raw archive pointer files    |     6 |
-| `/docs` deletion ready       |    No |
+| Metric                          | Value |
+| ------------------------------- | ----: |
+| `docs/**` files inventoried     |  2618 |
+| Canonical page dispositions     |    50 |
+| Raw archive dispositions        |  2537 |
+| Generated evidence dispositions |    19 |
+| Compatibility shims             |     1 |
+| Obsolete/skip dispositions      |    11 |
+| Blockers                        |     0 |
+| `/docs` deletion ready          |    No |
 
-## Current status
+## Current result
 
-The wiki package prepares a reviewable `/wiki` directory. `/docs` must remain in place until README cutover, raw archive preservation, source-path provenance validation, link validation, and repository validation commands pass in a real checkout.
+`/docs` is kept as a legacy compatibility and evidence layer in this lane.
+
+## Deletion blockers
+
+- Raw archive preservation complete: Raw archive rows are indexed, but historical `/docs` files are not fully copied into immutable `wiki/raw/repo-archive/**` paths.
+- Repository validation recorded: This generated report does not embed final command logs; final PR report must list fresh validation results.

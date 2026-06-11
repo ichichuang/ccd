@@ -6,11 +6,11 @@ aliases:
   - Tauri desktop shell
   - 桌面运行时外壳
 tags:
-  - apps
+  - application-boundaries
   - desktop
   - tauri
 tags_zh:
-  - 应用
+  - 应用边界
   - 桌面端
   - Tauri
 status: verified

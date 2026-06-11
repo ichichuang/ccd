@@ -4,9 +4,9 @@ title_zh: <应用职责>
 aliases:
   - apps/<name>
 tags:
-  - apps
+  - application-boundaries
 tags_zh:
-  - 应用
+  - 应用边界
 status: draft
 confidence: 0.70
 source_langs:

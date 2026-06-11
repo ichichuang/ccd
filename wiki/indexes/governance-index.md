@@ -32,6 +32,7 @@ Governance, guardrail, validation, dependency, and generated-artifact pages.
 | [[command-surface]]             | 命令表面       | `verified` |       0.95 |
 | [[dependency-governance]]       | 依赖治理       | `verified` |       0.94 |
 | [[desktop-security-baseline]]   | 桌面端安全基线 | `verified` |       0.97 |
+| [[future-owner-approved-lanes]] | 未来批准车道   | `verified` |       0.93 |
 | [[generated-artifact-policy]]   | 生成物策略     | `verified` |       0.95 |
 | [[github-governance]]           | GitHub 治理    | `verified` |       0.90 |
 | [[product-scope-boundary]]      | 产品范围边界   | `verified` |       0.90 |

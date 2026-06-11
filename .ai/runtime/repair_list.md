@@ -3,7 +3,7 @@
 - Target path: `.ai/runtime/repair_list.md`
 - Template source: `.ai/runtime/repair_list.template.md`
 - Owner decisions: `.ai/runtime/owner_decisions.md`
-- Strategic guardrails: `docs/governance/strategic-guardrails.md`
+- Strategic guardrails: `wiki/canonical/governance/strategic-guardrails.md`
 - Rule coverage: `.ai/runtime/rule_coverage_matrix.md`
 - Generated JSON target: `.ai/runtime/repair-ledger.json`
 - Runtime state policy: `.ai/runtime/repair_list.md` is local runtime state; `pnpm ai:sync` may create it from `.ai/runtime/repair_list.template.md` when missing, but must not overwrite it once it exists.
@@ -17,7 +17,7 @@ This ledger is the AI-readable open repair surface for CCD after the final P4 st
 
 P0, P1, P2, and P3 repair work is closed for the current architecture program. The only unchecked entries that remain are non-actionable P4 strategic guardrails. They stay visible to `pnpm ai:doctor --open` because current repository policy uses the open ledger as the durable warning surface for deferred strategic or blocked work.
 
-Durable item details live in `docs/governance/strategic-guardrails.md`. This file intentionally keeps only parseable open task lines plus the minimum policy context required by AI workflows.
+Durable item details live in `wiki/canonical/governance/strategic-guardrails.md`. The legacy `docs/governance/strategic-guardrails.md` file remains historical evidence while `/docs` is retained as a compatibility layer. This file intentionally keeps only parseable open task lines plus the minimum policy context required by AI workflows.
 
 ## 1. Ledger Format Contract
 
@@ -78,7 +78,7 @@ These entries are non-actionable strategic guardrails. Do not implement them in 
 
 Detailed status, reason, prerequisites, owner approval requirement, allowed future lane, and validation guardrail for every item are recorded in:
 
-- `docs/governance/strategic-guardrails.md`
+- `wiki/canonical/governance/strategic-guardrails.md`
 
 ### Tasks
 

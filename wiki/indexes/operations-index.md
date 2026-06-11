@@ -29,6 +29,7 @@ Operational pages for onboarding, CI, release, troubleshooting, and runtime prom
 | Page                            | 中文标题         |     Status | Confidence |
 | ------------------------------- | ---------------- | ---------: | ---------: |
 | [[ci-and-deploy]]               | CI 与部署        | `verified` |       0.91 |
+| [[project-control-center]]      | 项目主控中心     | `verified` |       0.91 |
 | [[quickstart]]                  | 快速开始         | `verified` |       0.88 |
 | [[release-policy]]              | 发布策略         | `verified` |       0.86 |
 | [[runtime-promotion-checklist]] | 运行时提升检查表 | `verified` |       0.88 |

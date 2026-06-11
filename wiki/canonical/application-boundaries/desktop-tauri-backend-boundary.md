@@ -6,12 +6,12 @@ aliases:
   - Tauri backend
   - 桌面后端边界
 tags:
-  - apps
+  - application-boundaries
   - desktop
   - tauri
   - ipc
 tags_zh:
-  - 应用
+  - 应用边界
   - 桌面端
   - Tauri
   - IPC

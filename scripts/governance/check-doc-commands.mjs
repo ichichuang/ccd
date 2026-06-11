@@ -11,6 +11,7 @@ const scanPaths = [
   'AGENTS.md',
   'CLAUDE.md',
   'docs',
+  'wiki',
   '.ai/README.md',
   '.ai/protocol',
 ]

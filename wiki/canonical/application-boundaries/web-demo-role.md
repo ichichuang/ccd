@@ -6,11 +6,11 @@ aliases:
   - Browser app shell
   - 浏览器应用外壳
 tags:
-  - apps
+  - application-boundaries
   - web-demo
   - runtime
 tags_zh:
-  - 应用
+  - 应用边界
   - Web Demo
   - 运行时
 status: verified
