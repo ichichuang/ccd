@@ -31,8 +31,57 @@ function runGh(args) {
   })
 }
 
+function runGit(args) {
+  return spawnSync('git', args, {
+    cwd: root,
+    encoding: 'utf8',
+    stdio: 'pipe',
+  })
+}
+
 function warn(message) {
   console.warn(`[WARN] ${message}`)
+}
+
+function commandOutput(result) {
+  return [result.stderr, result.stdout]
+    .map(output => output?.trim())
+    .filter(Boolean)
+    .join('\n')
+    .replace(/gh[o,p,s,u,r]_[A-Za-z0-9_]+/g, '<redacted>')
+}
+
+function normalizeRepoName(value) {
+  const raw = value?.trim()
+  if (!raw) return ''
+  const repo = raw
+    .replace(/^https:\/\/github\.com\//, '')
+    .replace(/^git@github\.com:/, '')
+    .replace(/\.git$/, '')
+    .replace(/^\/+/, '')
+  return /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repo) ? repo : ''
+}
+
+function resolveRepoName() {
+  const envRepo = normalizeRepoName(process.env.GITHUB_REPOSITORY) || normalizeRepoName(process.env.GH_REPO)
+  if (envRepo) return { name: envRepo, source: 'environment' }
+
+  const viewedRepo = runGh(['repo', 'view', '--json', 'nameWithOwner', '--jq', '.nameWithOwner'])
+  const viewedName = normalizeRepoName(viewedRepo.stdout)
+  if (viewedRepo.status === 0 && viewedName) return { name: viewedName, source: 'gh repo view' }
+
+  const remote = runGit(['config', '--get', 'remote.origin.url'])
+  const remoteName = normalizeRepoName(remote.stdout)
+  if (remote.status === 0 && remoteName) return { name: remoteName, source: 'remote.origin.url' }
+
+  return {
+    name: '',
+    source: 'unresolved',
+    detail: [
+      `gh repo view: ${commandOutput(viewedRepo) || `exit ${viewedRepo.status ?? 'unknown'}`}`,
+      `git remote.origin.url: ${commandOutput(remote) || `exit ${remote.status ?? 'unknown'}`}`,
+    ].join('\n'),
+  }
 }
 
 const expected = [...registryPolicy.allowedActiveWorkflowFiles].sort()
@@ -52,10 +101,25 @@ for (const file of expected) {
   }
 }
 
-const auth = runGh(['auth', 'status'])
-if (auth.status !== 0) {
-  if (registryPolicy.mode === 'warn-without-token') {
-    warn('GitHub registry query skipped because gh is not authenticated.')
+const repo = resolveRepoName()
+if (!repo.name) {
+  console.error('GitHub workflow registry validation failed: unable to resolve repo.')
+  if (repo.detail) console.error(repo.detail)
+  process.exit(1)
+}
+
+const workflows = runGh([
+  'api',
+  `repos/${repo.name}/actions/workflows`,
+  '--jq',
+  '.workflows[] | [.id,.name,.path,.state] | @tsv',
+])
+
+if (workflows.status !== 0) {
+  const auth = runGh(['auth', 'status'])
+  if (auth.status !== 0 && registryPolicy.mode === 'warn-without-token') {
+    warn(`GitHub registry query skipped for ${repo.name} because gh could not list workflows.`)
+    warn(commandOutput(auth) || 'gh auth status failed without diagnostic output.')
     if (findings.length > 0) {
       console.error('GitHub workflow registry local policy validation failed:')
       findings.forEach(finding => console.error(`- ${finding}`))
@@ -63,25 +127,11 @@ if (auth.status !== 0) {
     }
     process.exit(0)
   }
-  console.error('GitHub workflow registry validation failed: gh is not authenticated.')
-  process.exit(1)
-}
 
-const repo = runGh(['repo', 'view', '--json', 'nameWithOwner', '--jq', '.nameWithOwner'])
-if (repo.status !== 0 || !repo.stdout.trim()) {
-  console.error('GitHub workflow registry validation failed: unable to resolve repo.')
-  process.exit(1)
-}
-
-const workflows = runGh([
-  'api',
-  `repos/${repo.stdout.trim()}/actions/workflows`,
-  '--jq',
-  '.workflows[] | [.id,.name,.path,.state] | @tsv',
-])
-
-if (workflows.status !== 0) {
   console.error('GitHub workflow registry validation failed: unable to list workflows.')
+  console.error(`repo: ${repo.name} (${repo.source})`)
+  const output = commandOutput(workflows)
+  if (output) console.error(output)
   process.exit(1)
 }
 
@@ -90,7 +140,7 @@ for (const line of workflows.stdout.split('\n').filter(Boolean)) {
   if (state !== 'active') continue
   if (allowedRemote.has(path)) continue
   findings.push(
-    `${name} (${id}): active remote workflow "${path}" is not declared in release policy; disable it with: gh api -X PUT repos/${repo.stdout.trim()}/actions/workflows/${id}/disable`
+    `${name} (${id}): active remote workflow "${path}" is not declared in release policy; disable it with: gh api -X PUT repos/${repo.name}/actions/workflows/${id}/disable`
   )
 }
 
