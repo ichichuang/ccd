@@ -100,12 +100,13 @@ Before editing any documentation:
 
 1. Read `package.json` and confirm every documented command exists in `scripts`.
 2. Run `pnpm docs:commands` to validate command references.
-3. Do not invent command names.
-4. Do not manually edit `docs/generated/**`, `.ai/generated/**`, or `.ai/governance/api-snapshots/**`.
+3. Run `pnpm wiki:validate` when touching `wiki/**`, `README.md`, `README.en.md`, or `/docs` migration routing.
+4. Do not invent command names.
+5. Do not manually edit `docs/generated/**`, `.ai/generated/**`, or `.ai/governance/api-snapshots/**`.
 
 Before changing architecture:
 
-1. Read `docs/en/architecture-contract.md`.
+1. Read `wiki/indexes/ai-entry.md`.
 2. Read `.ai/protocol/AGENTS.core.md`.
 3. Confirm runtime neutrality is preserved.
 
@@ -144,7 +145,8 @@ Remote workflow registry state is part of governance:
 ## Reference Docs
 
 - [Platform README](../README.md)
-- [Documentation Index](../docs/README.md)
-- [Governance](../docs/governance.md)
-- [AI Workspace](../docs/ai-workspace.md)
-- [Codex Quickstart](../docs/codex/quickstart.md)
+- [Architecture Wiki](../wiki/index.md)
+- [AI Wiki Entry](../wiki/indexes/ai-entry.md)
+- [Governance Index](../wiki/indexes/governance-index.md)
+- [Command Surface](../wiki/canonical/governance/command-surface.md)
+- [Docs Migration Status](../wiki/generated/docs-migration-status.md)

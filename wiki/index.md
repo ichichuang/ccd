@@ -41,7 +41,7 @@ This is the Obsidian-native architecture knowledge base for CCD. It is a compile
 
 - Architecture: [[architecture-index]]
 - Packages: [[packages-index]]
-- Apps: [[apps-index]]
+- Application boundaries: [[application-boundaries-index]]
 - Runtime: [[runtime-index]]
 - Governance: [[governance-index]]
 - Operations: [[operations-index]]

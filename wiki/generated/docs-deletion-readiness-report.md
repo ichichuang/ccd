@@ -1,46 +1,32 @@
 ---
-title_en: Docs Deletion Readiness
-title_zh: docs 删除就绪标准
+title_en: Docs Deletion Readiness Report
+title_zh: docs 删除就绪报告
 aliases:
-  - Docs Deletion Readiness
-  - docs 删除就绪标准
+  - deletion readiness report
+  - 删除就绪报告
 tags:
-  - schema
-  - wiki-governance
+  - generated
+  - migration
+  - readiness
 tags_zh:
-  - 模式
-  - Wiki 治理
+  - 生成视图
+  - 迁移
+  - 就绪
 status: published
-confidence: 0.94
+confidence: 0.90
 source_langs:
   - en
 source_paths:
-  - uploaded://llm-wiki.md
-  - README.en.md
-  - docs/documentation-system.md
-  - docs/README.md
-  - wiki/generated/docs-deletion-readiness-report.md
+  - wiki/_schema/docs-deletion-readiness.md
+  - wiki/indexes/migration-map.md
+  - docs/**
 last_reviewed: '2026-06-11'
 wiki_owner: LLM-maintained CCD architecture wiki
 ---
 
-# `/docs` Deletion Readiness
+# `/docs` Deletion Readiness Report
 
-`/docs` must not be deleted until all criteria pass.
-
-## Required criteria
-
-- Every current `/docs` item is mapped in [[migration-map]].
-- Each mapped item has a disposition: canonical page, raw archive, generated evidence, compatibility shim, obsolete/skip, or blocker.
-- Every canonical page has required frontmatter and non-empty `source_paths`.
-- Chinese presentation views exist without duplicating canonical bodies.
-- `README.md` and `README.en.md` have cut over to `/wiki` as the architecture KB portal.
-- Link validation passes for wiki links and repo path references.
-- Generated evidence remains reachable from `wiki/generated/**` or evidence indexes.
-- Historical docs that must survive `/docs` deletion are archived under `wiki/raw/repo-archive/**` or another immutable evidence location.
-- Repository validation commands for the lane pass in a real checkout.
-
-## Current lane readiness
+Generated view from `pnpm wiki:refresh`.
 
 | Criterion                         | Result | Evidence                                                                                                                         |
 | --------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------- |
@@ -52,8 +38,11 @@ wiki_owner: LLM-maintained CCD architecture wiki
 | Raw archive preservation complete | Fail   | Raw archive rows are indexed, but historical `/docs` files are not fully copied into immutable `wiki/raw/repo-archive/**` paths. |
 | Repository validation recorded    | Fail   | This generated report does not embed final command logs; final PR report must list fresh validation results.                     |
 
-## Current decision
+## Decision
 
 `/docs` is not deletion-ready in this lane.
 
-See [[docs-deletion-readiness-report]] and [[docs-migration-status]] for the generated evidence view.
+## Blockers
+
+- Raw archive preservation complete: Raw archive rows are indexed, but historical `/docs` files are not fully copied into immutable `wiki/raw/repo-archive/**` paths.
+- Repository validation recorded: This generated report does not embed final command logs; final PR report must list fresh validation results.

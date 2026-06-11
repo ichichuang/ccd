@@ -11,11 +11,11 @@ tags_zh:
   - 生成视图
   - 检查
 status: published
-confidence: 0.84
+confidence: 0.88
 source_langs:
   - en
 source_paths:
-  - wiki/canonical/**
+  - wiki/**/*.md
   - wiki/_schema/status-confidence-policy.md
 last_reviewed: '2026-06-11'
 wiki_owner: LLM-maintained CCD architecture wiki
@@ -23,12 +23,12 @@ wiki_owner: LLM-maintained CCD architecture wiki
 
 # Low-confidence Pages
 
-Generated-view style page.
+Generated view from `pnpm wiki:refresh`.
 
 ## Policy
 
 Pages below `0.75` confidence should not appear in reader-facing published views by default.
 
-## Current result
+## Result
 
-No canonical page in this package was generated below `0.75` confidence. Pages that need future source review are marked by lower confidence values within the verified band or by migration-map notes.
+No required wiki page is below `0.75` confidence.
