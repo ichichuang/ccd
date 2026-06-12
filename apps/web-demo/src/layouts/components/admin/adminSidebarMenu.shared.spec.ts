@@ -17,21 +17,21 @@ function toRoute(route: MockRoute) {
 describe('adminSidebarMenu.shared route sync helpers', () => {
   it('builds expanded keys from parentPaths and keeps only latest root when multiple is disabled', () => {
     const route = toRoute({
-      path: '/example/hooks/layout-menu-visuals',
-      fullPath: '/example/hooks/layout-menu-visuals',
+      path: '/architecture/governance',
+      fullPath: '/architecture/governance',
       meta: {
-        parentPaths: ['/example', '/example/hooks'],
+        parentPaths: ['/architecture', '/architecture/governance'],
       },
     })
 
-    expect(buildExpandedKeysForRoute(route, true, ['/example', '/dashboard'])).toEqual({
-      '/example': true,
-      '/example/hooks': true,
+    expect(buildExpandedKeysForRoute(route, true, ['/architecture', '/dashboard'])).toEqual({
+      '/architecture': true,
+      '/architecture/governance': true,
     })
 
-    expect(buildExpandedKeysForRoute(route, false, ['/example', '/dashboard'])).toEqual({
-      '/example': true,
-      '/example/hooks': true,
+    expect(buildExpandedKeysForRoute(route, false, ['/architecture', '/dashboard'])).toEqual({
+      '/architecture': true,
+      '/architecture/governance': true,
       '/dashboard': false,
     })
   })

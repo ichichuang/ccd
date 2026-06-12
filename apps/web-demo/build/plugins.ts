@@ -1,13 +1,11 @@
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
-import fs from 'node:fs'
-import { createRequire } from 'node:module'
 import path from 'node:path'
 import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import type { PluginOption, ViteDevServer } from 'vite'
-import { getCustomIconClasses, invalidateIconCaches } from '@ccd/unocss-preset'
+import { invalidateIconCaches } from '@ccd/unocss-preset'
 import type { ViteEnv } from './utils'
 import { createPrimeVueComponentResolver } from './resolvers/primevue'
 
@@ -16,8 +14,6 @@ import { configCompressPlugin } from './compress'
 import { configHtmlPlugin } from './html'
 import { viteBuildInfo } from './info'
 import { viteBuildPerformancePlugin } from './performance'
-
-const require = createRequire(import.meta.url)
 
 export const BUILD_PLUGIN_COMPATIBILITY_NOTES = [
   {
@@ -49,14 +45,6 @@ export const BUILD_PLUGIN_COMPATIBILITY_NOTES = [
     owner: 'web-demo build',
     value: 'Owns HTML brand injection and API origin resource hints.',
     vite8Risk: 'Medium; revalidate transformIndexHtml behavior during Vite major migration.',
-  },
-  {
-    id: 'generateIconListsPlugin',
-    keep: true,
-    owner: 'web-demo examples',
-    value:
-      'Generates icon showcase inventory without parsing large Iconify JSON files into memory.',
-    vite8Risk: 'Low; filesystem-only config hook, but generated output discipline still applies.',
   },
   {
     id: 'configCompressPlugin',
@@ -112,9 +100,6 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
 
     // ✅ HTML 注入品牌配置 + API 域名资源提示（VITE_API_BASE_URL）
     configHtmlPlugin(env),
-
-    // 图标示例页列表：从 @iconify-json 与 src/assets/icons 动态生成
-    generateIconListsPlugin(),
 
     // 图标变更监听（仅开发环境启用）
     isDev && createIconsWatcherPlugin(),
@@ -221,185 +206,6 @@ function sharedArchitectureComponentResolver() {
     if (from) return { name, from }
     if (name === 'UseEcharts') return { name: 'default', from: '@/adapters/charts/UseEcharts.vue' }
     return undefined
-  }
-}
-
-/**
- * 图标示例页列表生成插件
- *
- * 约定：
- * - 默认（UNO_DEMO=false）：仅生成精简子集，避免开发模式加载过多图标导致卡顿
- * - demo 模式（UNO_DEMO=true）：生成更完整的图标列表，供 icons 示例页“加载更多”使用
- */
-function generateIconListsPlugin(): PluginOption {
-  const cwd = process.cwd()
-  const generatedPath = path.resolve(
-    cwd,
-    'src/views/example/components/icons/configs/iconLists.generated.ts'
-  )
-
-  /**
-   * 从 @iconify-json/<collection>/icons.json 中提取前 N 个图标名
-   *
-   * 关键点：不能 JSON.parse（某些集合 icons.json 很大，会导致 dev:demo OOM）。
-   * 这里用增量扫描 + 简单状态机，只在 "icons": { ... } 的顶层抓取 key：
-   * depth === 1 时的 "name": 视为图标名，其余嵌套字段（body/width/height 等）忽略。
-   */
-  const readIconifyCollectionNames = (collection: string, limit: number): string[] => {
-    try {
-      const packagePath = require.resolve(`@iconify-json/${collection}/icons.json`, {
-        paths: [cwd, path.resolve(cwd, '../..')],
-      })
-      const filePath = fs.realpathSync(packagePath)
-      if (!fs.existsSync(filePath)) return []
-
-      const fd = fs.openSync(filePath, 'r')
-      try {
-        const bufferSize = 256 * 1024
-        const buffer = Buffer.allocUnsafe(bufferSize)
-        const names: string[] = []
-        let bytesRead = 0
-        let position = 0
-        let carry = ''
-        let inIconsObject = false
-        let depth = 0
-        let i = 0
-
-        while ((bytesRead = fs.readSync(fd, buffer, 0, bufferSize, position)) > 0) {
-          position += bytesRead
-          const chunk = carry + buffer.toString('utf-8', 0, bytesRead)
-          // 只保留末尾一小段以覆盖边界截断
-          carry = chunk.slice(-1024)
-
-          const len = chunk.length
-          i = 0
-
-          while (i < len) {
-            if (!inIconsObject) {
-              // 查找 "icons":{
-              const idx = chunk.indexOf('"icons"', i)
-              if (idx === -1) break
-              let j = idx + '"icons"'.length
-              while (j < len && /\s|:/.test(chunk[j])) j++
-              if (chunk[j] === '{') {
-                inIconsObject = true
-                depth = 1
-                i = j + 1
-                continue
-              }
-              i = j
-              continue
-            }
-
-            const ch = chunk[i]
-
-            if (ch === '{') {
-              depth++
-              i++
-              continue
-            }
-            if (ch === '}') {
-              depth--
-              if (depth === 0) {
-                // 结束 icons 对象
-                return names
-              }
-              i++
-              continue
-            }
-
-            // 仅在 depth === 1 时采集 key，避免抓到内部字段 body/width/height 等
-            // 性能关键：禁止逐字符拼接字符串（会导致大量临时对象与 OOM）
-            if (depth === 1 && ch === '"') {
-              const j = chunk.indexOf('"', i + 1)
-              if (j === -1) break
-              const key = chunk.slice(i + 1, j)
-
-              // 跳过紧随其后的空白，确保是 "key":（不要求后面立刻是 {，但会进入深层后被 depth 保护）
-              let k = j + 1
-              while (k < len && /\s/.test(chunk[k])) k++
-              if (chunk[k] === ':') {
-                // 简单过滤合法 icon 名（与 preset-icons 约定一致）
-                if (/^[a-z0-9_-]+$/.test(key)) {
-                  names.push(key)
-                  if (names.length >= limit) return names
-                }
-                i = k + 1
-              } else {
-                i = j + 1
-              }
-              continue
-            }
-
-            i++
-          }
-        }
-
-        return names
-      } finally {
-        fs.closeSync(fd)
-      }
-    } catch {
-      return []
-    }
-  }
-
-  const toUnoIconClasses = (collection: string, names: string[], limit?: number): string[] => {
-    const sliced = typeof limit === 'number' ? names.slice(0, Math.max(0, limit)) : names
-    return sliced.map(n => `i-${collection}-${n}`)
-  }
-
-  const unique = <T>(items: readonly T[]): T[] => Array.from(new Set(items))
-
-  return {
-    name: 'generate-icon-lists',
-    config() {
-      const isDemo = process.env.UNO_DEMO === 'true'
-
-      // Lite 模式只取少量子集；Demo 模式尽可能完整（仍保留上限避免极端 OOM）
-      const liteLimit = 120
-      // ⚠️ 注意：demo 模式下图标类会被 UnoCSS 扫描并触发 preset-icons 生成 SVG/CSS。
-      // 若每库数量过大（例如 800×4），dev 启动期容易出现内存爆炸（OOM）。
-      // 因此按集合分级限制数量：Lucide 相对轻；Solar/Logos 更重。
-      const demoLimits = {
-        lucide: 260,
-        solar: 80,
-        ph: 160,
-        logos: 120,
-      } as const
-
-      const lucideNames = unique(
-        readIconifyCollectionNames('lucide', isDemo ? demoLimits.lucide : liteLimit)
-      )
-      const solarNames = unique(
-        readIconifyCollectionNames('solar', isDemo ? demoLimits.solar : liteLimit)
-      )
-      const phNames = unique(readIconifyCollectionNames('ph', isDemo ? demoLimits.ph : liteLimit))
-      const logosNames = unique(
-        readIconifyCollectionNames('logos', isDemo ? demoLimits.logos : liteLimit)
-      )
-
-      const LUCIDE_ICONS = unique(toUnoIconClasses('lucide', lucideNames))
-      const SOLAR_ICONS = unique(toUnoIconClasses('solar', solarNames))
-      const PH_ICONS = unique(toUnoIconClasses('ph', phNames))
-      const LOGOS_ICONS = unique(toUnoIconClasses('logos', logosNames))
-      const CUSTOM_ICONS = unique(getCustomIconClasses())
-
-      const content =
-        `/** 由 build/plugins.ts generateIconListsPlugin 在构建时生成，请勿手改 */\n\n` +
-        `export const LUCIDE_ICONS: string[] = ${JSON.stringify(LUCIDE_ICONS)}\n` +
-        `export const SOLAR_ICONS: string[] = ${JSON.stringify(SOLAR_ICONS)}\n` +
-        `export const PH_ICONS: string[] = ${JSON.stringify(PH_ICONS)}\n` +
-        `export const LOGOS_ICONS: string[] = ${JSON.stringify(LOGOS_ICONS)}\n` +
-        `export const CUSTOM_ICONS: string[] = ${JSON.stringify(CUSTOM_ICONS)}\n` +
-        `export const IS_LITE_MODE: boolean = ${JSON.stringify(!isDemo)}\n`
-
-      fs.mkdirSync(path.dirname(generatedPath), { recursive: true })
-      fs.writeFileSync(generatedPath, content, 'utf-8')
-
-      // 自定义图标缓存可能依赖文件系统状态，生成期刷新一次以保持一致
-      invalidateIconCaches('custom')
-    },
   }
 }
 

@@ -38,7 +38,7 @@ const enUSCore = {
       login: 'Login',
     },
     dashboard: {
-      dashboard: 'Dashboard',
+      dashboard: 'Architecture Control Center',
     },
     error: {
       title: 'Error',

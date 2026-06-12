@@ -37,7 +37,7 @@ const zhCNCore = {
       login: '登录',
     },
     dashboard: {
-      dashboard: '仪表盘',
+      dashboard: '架构控制台',
     },
     error: {
       title: '错误',

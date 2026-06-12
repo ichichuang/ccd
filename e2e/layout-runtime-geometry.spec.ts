@@ -872,10 +872,10 @@ test.describe('layout loading and route title stabilization', () => {
     }
   })
 
-  test('ProTable basic route keeps a non-zero table geometry', async ({ page }) => {
+  test('ProTable console route keeps a non-zero table geometry', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 })
     await loginAsAdmin(page)
-    await page.goto(withVisualMode('/example/primevue-collection/pro-table/basic'), {
+    await page.goto(withVisualMode('/ui/pro-table'), {
       waitUntil: 'domcontentloaded',
     })
     await waitForAppReady(page)
@@ -926,16 +926,16 @@ test.describe('layout loading and route title stabilization', () => {
 
     const overlayLocator = page.locator('.page-loading-overlay-content')
     const observation = await observeRoutePageLoadingOutlet(page, {
-      targetHash: '#/example/system-states',
-      routeHeading: 'System States',
+      targetHash: '#/runtime/state',
+      routeHeading: 'State Ownership And Utilities',
     })
 
     expect(observation.sawLocalOverlayVisible).toBe(true)
     expect(observation.sawLoadingContentVisible).toBe(true)
     expect(observation.sawRuntimeOverlayVisible).toBe(false)
     expect(observation.sawLocalPureCssLoaderVisible).toBe(false)
-    await expect(page).toHaveURL(/#\/example\/system-states$/)
-    await expect(page.getByRole('heading', { name: 'System States' })).toBeVisible()
+    await expect(page).toHaveURL(/#\/runtime\/state$/)
+    await expect(page.getByRole('heading', { name: 'State Ownership And Utilities' })).toBeVisible()
     await expect(page.locator('#runtime-loading-overlay')).toBeHidden()
     await waitForRuntimeLoadingIdle(page)
     await expect(overlayLocator).toBeHidden({ timeout: 5000 })

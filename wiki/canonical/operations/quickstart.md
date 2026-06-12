@@ -24,7 +24,8 @@ source_paths:
   - wiki/**
   - package.json
   - mise.toml
-last_reviewed: '2026-06-11'
+  - apps/web-demo/src/router/modules/dashboard.ts
+last_reviewed: '2026-06-12'
 wiki_owner: LLM-maintained CCD architecture wiki
 ---
 
@@ -39,6 +40,8 @@ pnpm install --frozen-lockfile
 pnpm dev:web-demo
 ```
 
+The browser app opens into the web-demo Architecture Console. The primary route is `/dashboard`, with architecture evidence under `/architecture`, `/runtime`, `/ui`, `/system`, and `/desktop`.
+
 ## First reading path
 
 1. `wiki/index.md`
@@ -48,6 +51,7 @@ pnpm dev:web-demo
 5. [[runtime-isolation]]
 6. [[command-surface]]
 7. [[validation-gates]]
+8. [[web-demo-architecture-console]]
 
 ## Safe first validation
 
@@ -67,9 +71,11 @@ This page is compiled from the following repository evidence paths:
 - `wiki/**`
 - `package.json`
 - `mise.toml`
+- `apps/web-demo/src/router/modules/dashboard.ts`
 
 ## Related pages
 
 - [[monorepo-topology]]
 - [[command-surface]]
 - [[validation-gates]]
+- [[web-demo-architecture-console]]

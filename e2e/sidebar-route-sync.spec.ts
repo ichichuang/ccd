@@ -46,18 +46,18 @@ const dashboardHeaderContentSelector =
   '[data-layout-sidebar="true"] .p-panelmenu-header-content:has(a.admin-sidebar-menu__item[href$="#/dashboard"])'
 const dashboardHeaderItemSelector =
   '[data-layout-header="true"] a[href$="#/dashboard"][data-menu-state]'
-const primeVueOverviewSidebarItemSelector =
-  '[data-layout-sidebar="true"] a.admin-sidebar-menu__item[href*="/example/primevue-collection/overview"]'
-const primeVueOverviewRowSelector =
-  '[data-layout-sidebar="true"] .admin-sidebar-menu__visual-row:has(a.admin-sidebar-menu__item[href*="/example/primevue-collection/overview"])'
-const primeVueOverviewContentSelector =
-  '[data-layout-sidebar="true"] .p-panelmenu-item-content:has(a.admin-sidebar-menu__item[href*="/example/primevue-collection/overview"])'
+const primeVueAdapterSidebarItemSelector =
+  '[data-layout-sidebar="true"] a.admin-sidebar-menu__item[href*="/ui/primevue-adapter"]'
+const primeVueAdapterRowSelector =
+  '[data-layout-sidebar="true"] .admin-sidebar-menu__visual-row:has(a.admin-sidebar-menu__item[href*="/ui/primevue-adapter"])'
+const primeVueAdapterContentSelector =
+  '[data-layout-sidebar="true"] .p-panelmenu-item-content:has(a.admin-sidebar-menu__item[href*="/ui/primevue-adapter"])'
 const systemConfigurationHeaderSelector =
-  '[data-layout-sidebar="true"] .p-panelmenu-header-content:has-text("系统配置")'
+  '[data-layout-sidebar="true"] .p-panelmenu-header-content:has-text("系统")'
 const systemConfigurationRowSelector =
-  '[data-layout-sidebar="true"] .admin-sidebar-menu__visual-row--root:has-text("系统配置")'
-const collectionRootRowSelector =
-  '[data-layout-sidebar="true"] .admin-sidebar-menu__visual-row--root:has-text("组件合集")'
+  '[data-layout-sidebar="true"] .admin-sidebar-menu__visual-row--root:has-text("系统")'
+const uiRootRowSelector =
+  '[data-layout-sidebar="true"] .admin-sidebar-menu__visual-row--root:has-text("UI")'
 const TRANSPARENT_BACKGROUND = 'rgba(0, 0, 0, 0)'
 const INACTIVE_TEXT_COLOR = 'rgb(51, 51, 51)'
 const WIDTH_EPSILON = 3
@@ -249,23 +249,23 @@ async function expectHoverSurface(
 test.describe('sidebar route/menu first-paint synchronization', () => {
   test.use({ storageState: AUTH_STORAGE_STATE_PATH })
 
-  test('direct first load /#/example/primevue-collection/overview keeps route-owned and project active markers aligned', async ({
+  test('direct first load /#/ui/primevue-adapter keeps route-owned and project active markers aligned', async ({
     browser,
   }) => {
     const directContext = await browser.newContext({ storageState: AUTH_STORAGE_STATE_PATH })
     const directPage = await directContext.newPage()
-    await directPage.goto('/?e2e=visual#/example/primevue-collection/overview', {
+    await directPage.goto('/?e2e=visual#/ui/primevue-adapter', {
       waitUntil: 'domcontentloaded',
     })
     await waitForAppReady(directPage)
     await waitForRuntimeLoadingIdle(directPage)
-    await expect(directPage).toHaveURL(/#\/example\/primevue-collection\/overview$/)
+    await expect(directPage).toHaveURL(/#\/ui\/primevue-adapter$/)
 
     const sidebar = directPage.locator('[data-layout-sidebar="true"]')
     await expect(sidebar).toBeVisible()
 
-    const overviewItem = directPage.locator(primeVueOverviewSidebarItemSelector)
-    const overviewRow = directPage.locator(primeVueOverviewRowSelector)
+    const overviewItem = directPage.locator(primeVueAdapterSidebarItemSelector)
+    const overviewRow = directPage.locator(primeVueAdapterRowSelector)
     await expect(overviewItem).toBeVisible()
     await expect(overviewRow).toBeVisible()
     await expect(overviewItem).toHaveAttribute('aria-current', 'page')
@@ -278,25 +278,25 @@ test.describe('sidebar route/menu first-paint synchronization', () => {
     await expect(overviewRow).not.toHaveCSS('background-color', TRANSPARENT_BACKGROUND)
     await expectRowWidthAligned(
       directPage,
-      primeVueOverviewRowSelector,
-      primeVueOverviewContentSelector,
-      primeVueOverviewSidebarItemSelector
+      primeVueAdapterRowSelector,
+      primeVueAdapterContentSelector,
+      primeVueAdapterSidebarItemSelector
     )
 
-    const collectionRootRow = directPage.locator(collectionRootRowSelector)
-    await expect(collectionRootRow).toHaveAttribute('data-menu-row-state', 'ancestor')
-    await expect(collectionRootRow).not.toHaveCSS('background-color', TRANSPARENT_BACKGROUND)
+    const uiRootRow = directPage.locator(uiRootRowSelector)
+    await expect(uiRootRow).toHaveAttribute('data-menu-row-state', 'ancestor')
+    await expect(uiRootRow).not.toHaveCSS('background-color', TRANSPARENT_BACKGROUND)
 
-    const collectionAncestor = sidebar
+    const uiAncestor = sidebar
       .locator('.admin-sidebar-menu__item[data-menu-state="ancestor"]')
-      .filter({ hasText: '组件合集' })
+      .filter({ hasText: 'UI' })
       .first()
     const primeVueAncestor = sidebar
       .locator('.admin-sidebar-menu__item[data-menu-state="ancestor"]')
       .filter({ hasText: 'PrimeVue' })
       .first()
 
-    await expect(collectionAncestor).toBeVisible()
+    await expect(uiAncestor).toBeVisible()
     await expect(primeVueAncestor).toBeVisible()
 
     const systemConfigurationRow = directPage.locator(systemConfigurationRowSelector)
@@ -412,10 +412,10 @@ test.describe('sidebar route/menu first-paint synchronization', () => {
     await waitForRuntimeLoadingIdle(page)
     await expect(page.locator('#dashboard-page')).toBeVisible()
 
-    await page.goto('/?e2e=visual#/example/system-states', { waitUntil: 'domcontentloaded' })
+    await page.goto('/?e2e=visual#/runtime/state', { waitUntil: 'domcontentloaded' })
     await waitForAppReady(page)
     await waitForRuntimeLoadingIdle(page)
-    await expect(page).toHaveURL(/#\/example\/system-states$/)
+    await expect(page).toHaveURL(/#\/runtime\/state$/)
 
     const dashboardItem = page.locator(dashboardSidebarItemSelector)
     await expect(dashboardItem).toBeVisible()

@@ -288,14 +288,14 @@ test.describe('QA full regression repair matrix', () => {
   }) => {
     const networkCollector = createNetworkFailureCollector(page)
     await page.setViewportSize({ width: 1280, height: 720 })
-    await gotoVisual(page, '/login?redirect=/example/hooks/layout/admin-tabs')
+    await gotoVisual(page, '/login?redirect=/architecture/governance')
     await waitForAppReady(page)
     await waitForRuntimeLoadingIdle(page)
     await expect(page.locator('#username')).toBeVisible({ timeout: 15000 })
     await page.locator('#username').fill('admin')
     await page.locator('#password').fill('123456')
     await page.locator('#login-submit').click()
-    await expect(page).toHaveURL(/#\/example\/hooks\/layout\/admin-tabs$/)
+    await expect(page).toHaveURL(/#\/architecture\/governance$/)
     await waitForAppReady(page)
     await waitForRuntimeLoadingIdle(page)
 
@@ -312,7 +312,7 @@ test.describe('QA full regression repair matrix', () => {
     await expect(page.locator('[data-admin-tabs-context-menu="true"]')).toHaveCount(0)
 
     const activeTab = page.locator(
-      '[data-admin-tabs-bar="true"] [data-path="/example/hooks/layout/admin-tabs"]'
+      '[data-admin-tabs-bar="true"] [data-path="/architecture/governance"]'
     )
     await activeTab.dispatchEvent('contextmenu', {
       button: 2,
@@ -331,7 +331,7 @@ test.describe('QA full regression repair matrix', () => {
     await expect(dashboardTab).toBeVisible()
     await expect(page).toHaveURL(/#\/dashboard$/)
 
-    await page.goto(withVisualMode('/example/hooks/layout/admin-tabs'), {
+    await page.goto(withVisualMode('/architecture/governance'), {
       waitUntil: 'domcontentloaded',
     })
     await waitForAppReady(page)

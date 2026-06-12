@@ -39,8 +39,8 @@ async function switchTheme(page: Page, targetMode: 'light' | 'dark'): Promise<vo
   await expect(settings).toBeHidden()
 }
 
-async function openPrimeVueOverview(page: Page): Promise<void> {
-  await gotoVisual(page, '/example/primevue-collection/overview')
+async function openPrimeVueAdapter(page: Page): Promise<void> {
+  await gotoVisual(page, '/ui/primevue-adapter')
   await waitForAppReady(page)
   await waitForRuntimeLoadingIdle(page)
   await expect(page.getByRole('heading', { name: 'Button Family' })).toBeVisible()
@@ -124,7 +124,7 @@ test.describe('theme switch interaction', () => {
   test('PrimeVue raised buttons stay visibly elevated in dark mode', async ({ page }) => {
     await loginAsAdmin(page)
     await switchTheme(page, 'dark')
-    await openPrimeVueOverview(page)
+    await openPrimeVueAdapter(page)
 
     const visuals = await readRaisedButtonVisuals(page)
     expect(visuals.length).toBeGreaterThanOrEqual(8)

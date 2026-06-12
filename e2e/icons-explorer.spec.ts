@@ -2,83 +2,20 @@ import { expect, test } from '@playwright/test'
 import { gotoVisual, waitForAppReady, waitForRuntimeLoadingIdle } from './helpers/app'
 import { AUTH_STORAGE_STATE_PATH } from './helpers/authState'
 
-test.describe('icons explorer', () => {
+test.describe('feedback console', () => {
   test.use({ storageState: AUTH_STORAGE_STATE_PATH })
 
   test.beforeEach(async ({ page }) => {
-    await gotoVisual(page, '/example/components/icons')
+    await gotoVisual(page, '/ui/feedback')
     await waitForAppReady(page)
     await waitForRuntimeLoadingIdle(page)
   })
 
-  test('renders icons, applies controls, and keeps panes independently scrollable', async ({
-    page,
-  }) => {
-    const pageRoot = page.getByTestId('icons-explorer-page')
-    const iconCards = page.getByTestId('icon-card')
-    const previewIcon = page.getByTestId('preview-icon')
-    const previewIconRendered = page.getByTestId('preview-icon-rendered')
-    const gridIcon = page.getByTestId('grid-icon').first()
-    const gridIconRendered = page.getByTestId('grid-icon-rendered').first()
-    const count = page.getByTestId('icons-count')
-
-    await expect(pageRoot).toBeVisible()
-    await expect(count).not.toContainText('共 0 个图标')
-    await expect(iconCards.first()).toBeVisible()
-    await expect(previewIcon).toBeVisible()
-    await expect(gridIcon).toBeVisible()
-    expect(await iconCards.count()).toBeGreaterThan(0)
-
-    const secondIconName = await iconCards.nth(1).getAttribute('data-icon-name')
-    await iconCards.nth(1).click()
-    await expect(page.getByTestId('icons-preview')).toContainText(secondIconName ?? '')
-
-    await page.getByTestId('icon-size-5xl').click()
-    await expect(previewIconRendered).toHaveClass(/text-5xl/)
-    await expect(gridIconRendered).toHaveClass(/text-5xl/)
-
-    await page.getByTestId('icon-color-primary').click()
-    await expect(previewIconRendered).toHaveCSS('color', /rgb\(/)
-    await expect(gridIconRendered).toHaveCSS('color', /rgb\(/)
-
-    await page.getByTestId('icon-rotate-input').fill('90')
-    await expect(previewIconRendered).toHaveCSS('transform', /matrix/)
-    await expect(gridIconRendered).toHaveCSS('transform', /matrix/)
-
-    await page.getByTestId('icon-scale-input').fill('1.5')
-    await expect(previewIconRendered).toHaveCSS('transform', /matrix/)
-    await expect(gridIconRendered).toHaveCSS('transform', /matrix/)
-
-    const bodyScrollBefore = await page.evaluate(() => document.scrollingElement?.scrollTop ?? 0)
-    await expect(pageRoot).toHaveCSS('overflow', 'hidden')
-
-    const gridScrollTop = await page
-      .locator('[data-testid="icons-grid-scroll"] .c-scrollbar-native')
-      .evaluate(el => {
-        el.scrollTop = 120
-        el.dispatchEvent(new Event('scroll'))
-        return el.scrollTop
-      })
-    const settingsScrollTopBefore = await page
-      .locator('[data-testid="icons-settings-scroll"] .c-scrollbar-native')
-      .evaluate(el => el.scrollTop)
-
-    expect(gridScrollTop).toBeGreaterThan(0)
-
-    const settingsScrollTop = await page
-      .locator('[data-testid="icons-settings-scroll"] .c-scrollbar-native')
-      .evaluate(el => {
-        el.scrollTop += 120
-        el.dispatchEvent(new Event('scroll'))
-        return el.scrollTop
-      })
-    const gridScrollTopAfter = await page
-      .locator('[data-testid="icons-grid-scroll"] .c-scrollbar-native')
-      .evaluate(el => el.scrollTop)
-    const bodyScrollAfter = await page.evaluate(() => document.scrollingElement?.scrollTop ?? 0)
-
-    expect(settingsScrollTop).toBeGreaterThan(settingsScrollTopBefore)
-    expect(gridScrollTopAfter).toBe(gridScrollTop)
-    expect(bodyScrollAfter).toBe(bodyScrollBefore)
+  test('renders merged icon, dialog, toast, and empty-state evidence', async ({ page }) => {
+    await expect(page.getByTestId('architecture-console-page')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Feedback Primitives' })).toBeVisible()
+    await expect(page.getByText('No stale example routes')).toBeVisible()
+    await expect(page.locator('span.i-lucide-message-circle')).toBeVisible()
+    await expect(page.locator('span.i-lucide-circle-dashed')).toBeVisible()
   })
 })

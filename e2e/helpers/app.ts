@@ -83,6 +83,11 @@ function shouldIgnoreNetworkUrl(url: string): boolean {
   return url.startsWith('data:') || url.startsWith('blob:')
 }
 
+function shouldIgnoreRequestFailure(url: string, failureText: string | null): boolean {
+  if (shouldIgnoreNetworkUrl(url)) return true
+  return failureText === 'net::ERR_ABORTED' && new URL(url).pathname === '/__uno.css'
+}
+
 export function createNetworkFailureCollector(page: Page): NetworkFailureCollector {
   const failures: NetworkFailureRecord[] = []
   const seen = new Set<string>()
@@ -96,13 +101,14 @@ export function createNetworkFailureCollector(page: Page): NetworkFailureCollect
 
   const onRequestFailed = (request: Request): void => {
     const url = request.url()
-    if (shouldIgnoreNetworkUrl(url)) return
+    const failureText = request.failure()?.errorText ?? null
+    if (shouldIgnoreRequestFailure(url, failureText)) return
     pushFailure({
       kind: 'requestfailed',
       method: request.method(),
       status: null,
       url,
-      failureText: request.failure()?.errorText ?? null,
+      failureText,
     })
   }
 

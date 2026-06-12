@@ -55,6 +55,7 @@ This is the Obsidian-native architecture knowledge base for CCD. It is a compile
 - [[contracts-boundary]]
 - [[core-boundary]]
 - [[web-demo-role]]
+- [[web-demo-architecture-console]]
 - [[desktop-role]]
 - [[desktop-security-baseline]]
 - [[http-runtime-ownership]]

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { scrollbarMemoryProviderKey } from '@ccd/vue-ui'
+import { CScrollbar, scrollbarMemoryProviderKey } from '@ccd/vue-ui'
 import AnimateRouterView from '@&/AnimateRouterView.vue'
 import Loading from '@&/Loading.vue'
 import { useLayoutStore } from '@/stores/modules/system'

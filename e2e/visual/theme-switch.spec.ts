@@ -17,27 +17,33 @@ test.describe('theme switching visual regression', () => {
     await expect(page.locator('#dashboard-page')).toHaveScreenshot('dashboard-ready.png')
   })
 
-  test('theme switch example reaches stable dark and light states', async ({ page }) => {
+  test('system theme console reaches stable dark and light states', async ({ page }) => {
     await page.addInitScript(() => {
       window.localStorage.setItem('ccd-e2e-mode', 'visual')
     })
 
     await loginAsAdmin(page)
-    await gotoVisual(page, '/example/hooks/composables/use-theme-switch')
+    await gotoVisual(page, '/system/theme')
     await waitForAppReady(page)
     await waitForRuntimeLoadingIdle(page)
 
-    const pageRoot = page.locator('#use-theme-switch-page')
+    const pageRoot = page.getByTestId('architecture-console-page')
 
-    await expect(pageRoot).toHaveScreenshot('use-theme-switch-light.png')
+    await expect(pageRoot).toHaveScreenshot('system-theme-light.png')
 
-    await page.locator('#theme-mode-dark-animated').click()
+    await page.locator('#user-entry-trigger').click()
+    await page.locator('#user-open-global-settings').click()
+    await page.locator('#global-settings-content').getByRole('button', { name: '深色' }).click()
     await waitForThemeTransitionEnd(page)
-    await expect(pageRoot).toHaveScreenshot('use-theme-switch-dark.png')
+    await page.keyboard.press('Escape')
+    await expect(pageRoot).toHaveScreenshot('system-theme-dark.png')
 
-    await page.locator('#theme-mode-light-animated').click()
+    await page.locator('#user-entry-trigger').click()
+    await page.locator('#user-open-global-settings').click()
+    await page.locator('#global-settings-content').getByRole('button', { name: '浅色' }).click()
     await waitForThemeTransitionEnd(page)
-    await expect(pageRoot).toHaveScreenshot('use-theme-switch-light-return.png')
+    await page.keyboard.press('Escape')
+    await expect(pageRoot).toHaveScreenshot('system-theme-light-return.png')
   })
 
   test('global settings content renders stable preset controls', async ({ page }) => {
@@ -46,12 +52,12 @@ test.describe('theme switching visual regression', () => {
     })
 
     await loginAsAdmin(page)
-    await gotoVisual(page, '/example/system-configuration/theme')
+    await gotoVisual(page, '/system/theme')
     await waitForAppReady(page)
     await waitForRuntimeLoadingIdle(page)
-    await expect(page.locator('#theme-system-page')).toBeVisible({ timeout: 15000 })
+    await expect(page.getByTestId('architecture-console-page')).toBeVisible({ timeout: 15000 })
 
-    await expect(page).toHaveScreenshot('theme-system-page.png', {
+    await expect(page).toHaveScreenshot('system-theme-page.png', {
       fullPage: true,
     })
   })

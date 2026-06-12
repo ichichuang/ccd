@@ -23,7 +23,7 @@ describe('route window keys', () => {
     expect(
       getRouteWindowKeyFromLocation({
         search: '',
-        hash: '#/example/router-meta/reuse-window?foo=bar&_windowKey=hash-key',
+        hash: '#/architecture/governance?foo=bar&_windowKey=hash-key',
       })
     ).toBe('hash-key')
   })

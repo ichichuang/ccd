@@ -36,6 +36,7 @@ This is the wiki entry for AI maintainers. Read in order:
 5. [[validation-gates]]
 6. [[ai-governance-control-plane]]
 7. [[strategic-guardrails]]
+8. [[web-demo-architecture-console]]
 
 ## Non-negotiables
 
