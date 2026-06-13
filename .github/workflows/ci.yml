@@ -108,6 +108,12 @@ jobs:
       - name: Verify system Chrome for Playwright
         run: google-chrome --version
 
+      - name: Install CJK fonts for visual snapshots
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
+
       - name: Prepare internal workspace packages
         run: bash scripts/exec.sh pnpm ci:prepare-internal
 
