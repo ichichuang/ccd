@@ -72,6 +72,42 @@ async function borderWeight(locator: ReturnType<Page['locator']>): Promise<numbe
   })
 }
 
+interface PrimaryTintSnapshot {
+  backgroundAlpha: number
+  isPrimaryText: boolean
+  isPrimaryTint: boolean
+}
+
+async function primaryTintSnapshot(
+  locator: ReturnType<Page['locator']>
+): Promise<PrimaryTintSnapshot> {
+  return locator.first().evaluate(element => {
+    const readChannels = (value: string): string => {
+      const channels = value.match(/\d+(?:\.\d+)?/g)?.slice(0, 3) ?? []
+      return channels.map(channel => String(Math.round(Number(channel)))).join(' ')
+    }
+
+    const readAlpha = (value: string): number => {
+      const channels = value.match(/\d+(?:\.\d+)?/g) ?? []
+      return channels[3] === undefined ? 1 : Number(channels[3])
+    }
+
+    const style = window.getComputedStyle(element)
+    const rootStyle = window.getComputedStyle(document.documentElement)
+    const primaryChannels = readChannels(rootStyle.getPropertyValue('--primary'))
+    const backgroundChannels = readChannels(style.backgroundColor)
+    const textChannels = readChannels(style.color)
+    const backgroundAlpha = readAlpha(style.backgroundColor)
+
+    return {
+      backgroundAlpha,
+      isPrimaryText: textChannels === primaryChannels,
+      isPrimaryTint:
+        backgroundChannels === primaryChannels && backgroundAlpha > 0 && backgroundAlpha < 1,
+    }
+  })
+}
+
 interface FormControlSnapshot {
   borderColor: string
   boxShadow: string
@@ -182,6 +218,10 @@ test.describe('visual token foundation', () => {
     await expect(idleTab).toBeVisible()
     expectDistinctStyle(await visualSignature(activeTab), await visualSignature(idleTab))
     expectQuietNavigationBorder(await borderWeight(activeTab))
+    const activeTabPrimaryTint = await primaryTintSnapshot(activeTab)
+    expect(activeTabPrimaryTint.isPrimaryText).toBe(true)
+    expect(activeTabPrimaryTint.isPrimaryTint).toBe(true)
+    expect(activeTabPrimaryTint.backgroundAlpha).toBeGreaterThanOrEqual(0.12)
 
     const breadcrumbCurrent = page
       .locator('main [data-menu-state="active"]')
@@ -198,21 +238,21 @@ test.describe('visual token foundation', () => {
 
     const controls = [
       {
-        locator: page.getByPlaceholder('InputText').first(),
+        locator: page.getByTestId('prime-input-text').first(),
         focus: async (): Promise<void> => {
-          await page.getByPlaceholder('InputText').first().focus()
+          await page.getByTestId('prime-input-text').first().focus()
         },
       },
       {
         locator: page.locator('.p-inputnumber').first(),
         focus: async (): Promise<void> => {
-          await page.getByPlaceholder('InputNumber').focus()
+          await page.locator('#primevue-input-number').focus()
         },
       },
       {
         locator: page.locator('.p-password').first(),
         focus: async (): Promise<void> => {
-          await page.getByPlaceholder('Password').focus()
+          await page.locator('.p-password input').first().focus()
         },
       },
       {
@@ -224,13 +264,13 @@ test.describe('visual token foundation', () => {
       {
         locator: page.locator('.p-autocomplete').first(),
         focus: async (): Promise<void> => {
-          await page.getByPlaceholder('AutoComplete').fill('A')
+          await page.locator('.p-autocomplete input').first().fill('架')
         },
       },
       {
         locator: page.locator('.p-datepicker').first(),
         focus: async (): Promise<void> => {
-          await page.getByPlaceholder('DatePicker').click()
+          await page.locator('.p-datepicker input').first().click()
         },
       },
     ]
@@ -241,7 +281,7 @@ test.describe('visual token foundation', () => {
     await inputControl.locator.hover()
     const inputHoverBorder = await waitForStyleChange(
       page,
-      'input[placeholder="InputText"]',
+      '[data-testid="prime-input-text"]',
       'border-color',
       inputIdle.borderColor
     )
@@ -268,12 +308,13 @@ test.describe('visual token foundation', () => {
     }
 
     const numberInputOutline = await page
-      .getByPlaceholder('InputNumber')
+      .locator('#primevue-input-number')
       .evaluate(element => window.getComputedStyle(element).outlineStyle)
     expect(numberInputOutline).toBe('none')
 
     const dateInputBorder = await page
-      .getByPlaceholder('DatePicker')
+      .locator('.p-datepicker input')
+      .first()
       .evaluate(element => window.getComputedStyle(element).borderWidth)
     expect(dateInputBorder).toBe('0px')
   })

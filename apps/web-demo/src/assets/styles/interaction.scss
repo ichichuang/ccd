@@ -7,6 +7,16 @@
  * - 解决 touch-action 滚动冲突
  * ============================================ */
 
+/* 布局级 loading 遮罩：固定压暗，不使用 backdrop blur，避免暗色发灰和全屏滤镜卡顿。 */
+.page-loading-overlay-surface {
+  background: rgb(var(--card) / 82%) !important;
+  backdrop-filter: none !important;
+}
+
+.dark .page-loading-overlay-surface {
+  background: rgb(0 0 0 / 34%) !important;
+}
+
 // =============================================================================
 // Section A — 触摸设备：UnoCSS Shortcuts hover 幽灵消除 + :active 反馈替换
 // =============================================================================

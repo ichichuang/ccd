@@ -276,20 +276,20 @@ type CachedDialogPt = {
 const dialogPtCache = new WeakMap<DialogOptions, CachedDialogPt>()
 
 /**
- * 默认 Dialog：遮罩磨砂，面板 interactive-card（非 glass-shell）。
+ * 默认 Dialog：遮罩固定压暗，面板使用实体 card，避免全屏或面板 backdrop filter 造成暗色漂白。
  * business 侧 options.pt 覆盖在默认值之上；options.maskClass 追加在默认遮罩类之后以便覆盖。
  */
 const defaultDialogPt: DialogPtValue = {
   root: {
     class:
-      'glass-panel bg-card/82! dark:bg-card/76! border border-border/30 transform-gpu will-change-transform',
+      'ccd-dialog-panel rounded-xl p-md border border-border/35 dark:border-border/45 shadow-xl',
   },
   header: { class: 'bg-transparent px-md py-sm' },
   content: { class: 'bg-transparent overflow-y-auto px-md py-sm' },
   footer: { class: 'bg-transparent px-md py-sm' },
   mask: {
     class:
-      'bg-background/40 backdrop-blur-sm transition-[opacity,backdrop-filter] duration-md opacity-100 [&.p-overlay-mask-leave-active]:opacity-0 [&.p-overlay-mask-leave-active]:backdrop-blur-none',
+      'ccd-dialog-mask transition-opacity duration-md opacity-100 [&.p-overlay-mask-leave-active]:opacity-0',
   },
 }
 
@@ -407,3 +407,28 @@ function getDialogPt(options: DialogOptions): DialogPtValue | undefined {
     </template>
   </Dialog>
 </template>
+
+<style>
+.ccd-dialog-panel {
+  background: rgb(var(--card)) !important;
+  color: rgb(var(--card-foreground)) !important;
+  backdrop-filter: none !important;
+  will-change: auto !important;
+}
+
+.dark .ccd-dialog-panel {
+  box-shadow:
+    0 24px 70px rgb(0 0 0 / 42%),
+    inset 0 1px 0 rgb(var(--foreground) / 6%) !important;
+}
+
+.ccd-dialog-mask {
+  background: rgb(0 0 0 / 18%) !important;
+  backdrop-filter: none !important;
+  will-change: auto !important;
+}
+
+.dark .ccd-dialog-mask {
+  background: rgb(0 0 0 / 48%) !important;
+}
+</style>

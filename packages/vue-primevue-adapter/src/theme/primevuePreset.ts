@@ -1,11 +1,7 @@
 import { definePreset } from '@primeuix/themes'
 import type { ComponentsDesignTokens } from '@primeuix/themes/types'
 import Aura from '@primeuix/themes/aura'
-import {
-  deepMergeStylesAdvanced,
-  deepMergeStylesAdvancedInPlace,
-  deepFindAndReplaceProperty,
-} from './primevueThemeEngine'
+import { deepMergeStylesAdvanced, deepMergeStylesAdvancedInPlace } from './primevueThemeEngine'
 import type { SizeMode } from '@ccd/design-tokens'
 import { createColorAdapter } from './colorAdapter'
 import { buildPrimitiveLayer } from './presetPrimitive'
@@ -132,13 +128,6 @@ export const createCustomPreset = (sizeStore: PrimeVueSizeSource) => {
     'toast',
     'colorpicker',
   ])
-
-  deepFindAndReplaceProperty(
-    resultPreset,
-    'mask',
-    'background',
-    'rgb(var(--muted-foreground) / 0.25)'
-  )
 
   const { sm: rootSm, md: rootMd, lg: rootLg } = getRootSizeTokensByMode(sizeStore.sizeName)
   const components = resultPreset.components as

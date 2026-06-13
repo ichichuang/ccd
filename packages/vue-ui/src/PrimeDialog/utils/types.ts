@@ -70,7 +70,7 @@ export interface DialogOptionsBase {
   hideFooter?: boolean
   hideHeader?: boolean
   hideClose?: boolean
-  /** 遮罩层 Uno 类名（毛玻璃 + 压暗，由 PrimeDialog 合成进 pt.mask，业务侧无需手写 pt） */
+  /** 遮罩层 Uno 类名（默认固定黑色压暗，由 PrimeDialog 合成进 pt.mask，业务侧无需手写 pt） */
   maskClass?: string
   /** 透传 PrimeVue Dialog 的 PT（如玻璃弹窗材质） */
   pt?: PassThrough<DialogPassThroughOptions>

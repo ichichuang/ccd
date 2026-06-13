@@ -169,6 +169,12 @@ describe('installPrimeVueRuntime', () => {
     expect(config.pt).toHaveProperty('drawer')
     expect(config.pt).toHaveProperty('inputtext')
     expect(config.pt).toHaveProperty('menu')
+
+    const passThroughClasses = JSON.stringify(config.pt)
+    expect(passThroughClasses).toContain('[will-change:auto]')
+    expect(passThroughClasses).not.toContain('glass-shell')
+    expect(passThroughClasses).not.toContain('backdrop-blur')
+    expect(passThroughClasses).not.toContain('will-change-transform')
   })
 
   it('installs PrimeVue config before services', async () => {

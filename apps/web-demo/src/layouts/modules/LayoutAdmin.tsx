@@ -1,13 +1,12 @@
 import { defineComponent, Transition } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { CcdDrawer as Drawer } from '@ccd/vue-ui'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import AppContainer from '@&/AppContainer.vue'
 import { useLayoutStore } from '@/stores/modules/system'
 import { useDateUtils } from '@/hooks/modules/useDateUtils'
 import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
 import ContextMenuProvider from '@/layouts/components/ContextMenuProvider.vue'
-import { useGlobalSettingsDialog } from '@/layouts/components/GlobalSetting/useGlobalSettingsDialog'
 import { refreshCurrentRoute } from '@/router/utils/helper'
 import AdminHeader from '@&/admin/AdminHeader.vue'
 import AdminSidebar from '@&/admin/AdminSidebar.tsx'
@@ -46,10 +45,14 @@ export default defineComponent({
     const layoutStore = useLayoutStore()
     const runtime = useLayoutRuntime()
     const route = useRoute()
+    const router = useRouter()
 
     const { getAvailableTimezones, isInitialized } = useDateUtils()
     const { isDark, isAnimating, toggleThemeWithAnimation } = useThemeSwitch()
-    const { openGlobalSettings } = useGlobalSettingsDialog()
+
+    const openGlobalSettings = () => {
+      void router.push({ name: 'SystemGlobalSettings' })
+    }
 
     // ===== 管理布局右键菜单逻辑 =====
     const contextThemeToggleLabel = computed(() =>

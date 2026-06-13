@@ -872,6 +872,32 @@ test.describe('layout loading and route title stabilization', () => {
     }
   })
 
+  test('dashboard route keeps page-level horizontal overflow disabled', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 })
+    await loginAsAdmin(page)
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+    await expect(page.locator('#dashboard-page')).toBeVisible()
+
+    const metrics = await page.evaluate(() => {
+      const root =
+        document.querySelector<HTMLElement>('[data-console-scroll-root]') ??
+        document.scrollingElement
+      if (!root) {
+        throw new Error('Expected a console scroll root or document scrolling element.')
+      }
+
+      root.scrollTo({ top: root.scrollHeight, behavior: 'auto' })
+
+      return {
+        scrollWidth: root.scrollWidth,
+        clientWidth: root.clientWidth,
+      }
+    })
+
+    expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.clientWidth + 1)
+  })
+
   test('ProTable console route keeps a non-zero table geometry', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 })
     await loginAsAdmin(page)
@@ -927,7 +953,7 @@ test.describe('layout loading and route title stabilization', () => {
     const overlayLocator = page.locator('.page-loading-overlay-content')
     const observation = await observeRoutePageLoadingOutlet(page, {
       targetHash: '#/runtime/state',
-      routeHeading: 'State Ownership And Utilities',
+      routeHeading: '状态归属与工具',
     })
 
     expect(observation.sawLocalOverlayVisible).toBe(true)
@@ -935,7 +961,9 @@ test.describe('layout loading and route title stabilization', () => {
     expect(observation.sawRuntimeOverlayVisible).toBe(false)
     expect(observation.sawLocalPureCssLoaderVisible).toBe(false)
     await expect(page).toHaveURL(/#\/runtime\/state$/)
-    await expect(page.getByRole('heading', { name: 'State Ownership And Utilities' })).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: /状态归属与工具|State Ownership And Utilities/ })
+    ).toBeVisible()
     await expect(page.locator('#runtime-loading-overlay')).toBeHidden()
     await waitForRuntimeLoadingIdle(page)
     await expect(overlayLocator).toBeHidden({ timeout: 5000 })

@@ -44,7 +44,7 @@ watch(
     <Transition name="fade">
       <div
         v-show="isPageLoading"
-        class="page-loading-overlay-fullscreen absolute inset-0 center min-w-0 min-h-0 z-overlay backdrop-blur-sm pointer-events-auto"
+        class="page-loading-overlay-fullscreen page-loading-overlay-surface absolute inset-0 center min-w-0 min-h-0 z-overlay pointer-events-auto"
       >
         <Loading size="xl" />
       </div>

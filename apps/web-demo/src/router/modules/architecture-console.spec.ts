@@ -2,6 +2,14 @@
 
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { messages } from '@/locales'
+import {
+  dashboardEvidenceCards,
+  dashboardStatusCards,
+} from '../../views/architecture-console/data/dashboard'
+import {
+  consolePages,
+  type ConsolePageModel,
+} from '../../views/architecture-console/data/consolePages'
 import { validateRegisteredRouteMetadata } from '../utils/metadata'
 import {
   collectRouteModuleRoutes,
@@ -31,9 +39,9 @@ vi.mock('@/stores/modules/session/permission', () => ({
 
 vi.mock('@/router/utils/guards', () => routerGuardMock)
 
-const EXPECTED_CONSOLE_ROUTE_RECORD_COUNT = 22
-const EXPECTED_STATIC_ROUTE_RECORD_COUNT = 23
-const EXPECTED_REGISTERED_ROUTE_RECORD_COUNT = 29
+const EXPECTED_CONSOLE_ROUTE_RECORD_COUNT = 23
+const EXPECTED_STATIC_ROUTE_RECORD_COUNT = 24
+const EXPECTED_REGISTERED_ROUTE_RECORD_COUNT = 30
 const LAZY_ROUTE_IMPORT_CONCURRENCY = 8
 const ROUTE_SMOKE_IMPORT_TIMEOUT_MS = 20_000
 const EXPECTED_REGISTERED_ROUTE_SIGNATURES = [
@@ -65,7 +73,8 @@ const EXPECTED_REGISTERED_ROUTE_SIGNATURES = [
   '25|/system/size-breakpoints|SystemSizeBreakpoints||lazy',
   '26|/system/layout|SystemLayout||lazy',
   '27|/system/unocss|SystemUnocss||lazy',
-  '28|/desktop|DesktopBoundary||lazy',
+  '28|/system/settings|SystemGlobalSettings||lazy',
+  '29|/desktop|DesktopBoundary||lazy',
 ] as const
 
 const registeredRouteModuleLoaders = defineRouteModuleLoaders(
@@ -73,7 +82,20 @@ const registeredRouteModuleLoaders = defineRouteModuleLoaders(
   { prefix: './' }
 )
 const consoleViewSourceModules = import.meta.glob<string>(
-  ['../../views/architecture-console/**/*.{vue,ts,tsx}', '../../views/dashboard/**/*.{vue,ts,tsx}'],
+  [
+    '../../views/architecture-console/**/*.{vue,ts,tsx}',
+    '../../views/dashboard/**/*.{vue,ts,tsx}',
+    '../../views/system/settings/**/*.{vue,ts,tsx}',
+    '../../hooks/modules/system/useSystemSettingsPage.ts',
+  ],
+  {
+    eager: true,
+    import: 'default',
+    query: '?raw',
+  }
+)
+const consoleDataSourceModules = import.meta.glob<string>(
+  ['../../views/architecture-console/data/**/*.ts'],
   {
     eager: true,
     import: 'default',
@@ -109,7 +131,142 @@ function getRouteSignature(route: RouteConfig, index: number): string {
 }
 
 const PAGE_TRANSLATION_KEY_PATTERN =
-  /['"]((?:chart|common|dialog|emptyState|http|login|proForm|proTable|router|settings)\.[A-Za-z0-9_.-]+)['"]/g
+  /['"]((?:chart|common|console|dialog|emptyState|http|login|proForm|proTable|router|settings)\.[A-Za-z0-9_.-]+)['"]/g
+const CONSOLE_DATA_STRING_LITERAL_PATTERN = /(['"`])((?:\\.|(?!\1).)*)\1/g
+const CONSOLE_DEMO_TRANSLATION_KEYS = [
+  'console.demos.primeVue.title',
+  'console.demos.primeVue.description',
+  'console.demos.primeVue.fields.inputText',
+  'console.demos.primeVue.fields.inputNumber',
+  'console.demos.primeVue.fields.password',
+  'console.demos.primeVue.fields.select',
+  'console.demos.primeVue.fields.autocomplete',
+  'console.demos.primeVue.fields.datePicker',
+  'console.demos.primeVue.buttons.primary',
+  'console.demos.primeVue.buttons.secondary',
+  'console.demos.primeVue.buttons.success',
+  'console.demos.primeVue.buttons.info',
+  'console.demos.primeVue.buttons.warn',
+  'console.demos.primeVue.buttons.help',
+  'console.demos.primeVue.buttons.danger',
+  'console.demos.primeVue.buttons.contrast',
+  'console.demos.primeVue.options.contracts',
+  'console.demos.primeVue.options.core',
+  'console.demos.primeVue.options.appRuntime',
+  'console.demos.primeVue.autocomplete.architecture',
+  'console.demos.primeVue.autocomplete.runtime',
+  'console.demos.primeVue.autocomplete.primevue',
+  'console.demos.primeVue.autocomplete.governance',
+  'console.demos.proForm.title',
+  'console.demos.proForm.description',
+  'console.demos.proForm.submit',
+  'console.demos.proForm.asideLabel',
+  'console.demos.proForm.asideDescription',
+  'console.demos.proForm.groups.basic',
+  'console.demos.proForm.groups.governance',
+  'console.demos.proForm.fields.capability',
+  'console.demos.proForm.fields.owner',
+  'console.demos.proForm.fields.guarded',
+  'console.demos.proForm.fields.command',
+  'console.demos.proForm.fields.notes',
+  'console.demos.proForm.descriptions.owner',
+  'console.demos.proForm.descriptions.guarded',
+  'console.demos.proForm.descriptions.command',
+  'console.demos.proForm.descriptions.notes',
+  'console.demos.proForm.defaults.capability',
+  'console.demos.proForm.defaults.notes',
+  'console.demos.proForm.validation.capabilityRequired',
+  'console.demos.proForm.validation.capabilityLength',
+  'console.demos.proForm.validation.notesRequired',
+  'console.demos.proForm.owners.app',
+  'console.demos.proForm.owners.package',
+  'console.demos.proForm.owners.future',
+  'console.demos.proForm.summary.empty',
+  'console.demos.proForm.summary.submitted',
+  'console.demos.proForm.summary.separator',
+  'console.demos.proForm.summary.valid',
+  'console.demos.proTable.title',
+  'console.demos.proTable.description',
+  'console.demos.proTable.tableTitle',
+  'console.demos.proTable.columns.layer',
+  'console.demos.proTable.columns.owner',
+  'console.demos.proTable.columns.status',
+  'console.demos.proTable.columns.validation',
+  'console.demos.proTable.columns.evidence',
+  'console.demos.proTable.filters.status',
+  'console.demos.proTable.filters.all',
+  'console.demos.proTable.states.loading',
+  'console.demos.proTable.states.empty',
+  'console.demos.proTable.emptyTitle',
+  'console.demos.proTable.emptyDescription',
+  'console.demos.proTable.evidence.title',
+  'console.demos.proTable.evidence.empty',
+  'console.demos.proTable.status.guarded',
+  'console.demos.proTable.status.app',
+  'console.demos.proTable.status.blocked',
+  'console.demos.proTable.rows.contractsOwner',
+  'console.demos.proTable.rows.coreOwner',
+  'console.demos.proTable.rows.httpOwner',
+  'console.demos.proTable.rows.safeStorageOwner',
+  'console.demos.proTable.rows.blockedOwner',
+  'console.demos.proTable.details.contracts',
+  'console.demos.proTable.details.core',
+  'console.demos.proTable.details.http',
+  'console.demos.proTable.details.safeStorage',
+  'console.demos.proTable.details.blocked',
+  'console.demos.chart.title',
+  'console.demos.chart.description',
+  'console.demos.chart.axis.contracts',
+  'console.demos.chart.axis.core',
+  'console.demos.chart.axis.web',
+  'console.demos.chart.axis.desktop',
+  'console.demos.chart.axis.wiki',
+  'console.demos.chart.series.evidenceWeight',
+  'console.demos.chart.series.runtimeRisk',
+  'console.demos.feedback.title',
+  'console.demos.feedback.description',
+  'console.demos.feedback.emptyTitle',
+  'console.demos.feedback.emptyDescription',
+  'console.demos.feedback.facadeTitle',
+  'console.demos.feedback.facadeDescription',
+] as const
+const CONSOLE_SHARED_TRANSLATION_KEYS = [
+  'console.shared.evidence.title',
+  'console.shared.evidence.description',
+  'console.shared.commands.title',
+  'console.shared.commands.description',
+  'console.routeReduction.title',
+  'console.routeReduction.description',
+  'console.routeReduction.before',
+  'console.routeReduction.beforeDetail',
+  'console.routeReduction.after',
+  'console.routeReduction.afterDetail',
+  'console.settingsPage.sizeDescriptions.compact',
+  'console.settingsPage.sizeDescriptions.comfortable',
+  'console.settingsPage.sizeDescriptions.loose',
+  'settings.layoutVertical',
+  'settings.layoutHorizontal',
+  'settings.layoutMix',
+] as const
+const DASHBOARD_TRANSLATION_KEYS = [
+  'console.dashboard.eyebrow',
+  'console.dashboard.title',
+  'console.dashboard.description',
+  'console.dashboard.action',
+  'console.dashboard.evidenceTag',
+  'console.dashboard.routePosture.title',
+  'console.dashboard.routePosture.description',
+  'console.dashboard.routePosture.before',
+  'console.dashboard.routePosture.beforeDetail',
+  'console.dashboard.routePosture.legacy',
+  'console.dashboard.routePosture.legacyDetail',
+  'console.dashboard.routePosture.after',
+  'console.dashboard.routePosture.afterDetail',
+  'console.dashboard.commands.title',
+  'console.dashboard.commands.description',
+  'console.dashboard.dialog.title',
+  'console.dashboard.dialog.message',
+] as const
 
 function hasLazyRouteComponent(route: RouteConfig): route is RouteConfig & {
   component: LazyRouteComponent
@@ -177,6 +334,78 @@ function collectPageTranslationKeys(sourceModules: Record<string, string>): stri
   })
 
   return [...localeKeys].sort()
+}
+
+function collectConsoleModelTranslationKeys(pages: Record<string, ConsolePageModel>): string[] {
+  const localeKeys = new Set<string>([
+    ...CONSOLE_DEMO_TRANSLATION_KEYS,
+    ...CONSOLE_SHARED_TRANSLATION_KEYS,
+  ])
+
+  Object.values(pages).forEach(page => {
+    localeKeys.add(`console.pages.${page.key}.eyebrow`)
+    localeKeys.add(`console.pages.${page.key}.title`)
+    localeKeys.add(`console.pages.${page.key}.description`)
+
+    page.status.forEach(item => {
+      localeKeys.add(`console.status.${item.key}.label`)
+      if (!item.value) localeKeys.add(`console.status.${item.key}.value`)
+    })
+    page.stats.forEach(item => {
+      localeKeys.add(`console.stats.${item.key}.label`)
+      if (!item.value) localeKeys.add(`console.stats.${item.key}.value`)
+      localeKeys.add(`console.stats.${item.key}.detail`)
+    })
+    page.capabilities.forEach(item => {
+      localeKeys.add(`console.capabilities.${item.key}.title`)
+      localeKeys.add(`console.capabilities.${item.key}.description`)
+      localeKeys.add(`console.capabilities.${item.key}.status`)
+      for (let index = 0; index < item.bulletCount; index += 1) {
+        localeKeys.add(`console.capabilities.${item.key}.bullets.${index}`)
+      }
+    })
+    page.evidence.forEach(item => {
+      localeKeys.add(`console.evidence.${item.key}.label`)
+      localeKeys.add(`console.evidence.${item.key}.detail`)
+    })
+    page.commands.forEach(item => {
+      localeKeys.add(`console.commands.${item.key}.description`)
+    })
+  })
+
+  dashboardStatusCards.forEach(card => {
+    localeKeys.add(`console.dashboard.cards.${card.key}.label`)
+    localeKeys.add(`console.dashboard.cards.${card.key}.detail`)
+    localeKeys.add(`console.dashboard.values.${card.valueKey}`)
+  })
+  dashboardEvidenceCards.forEach(item => {
+    localeKeys.add(`console.dashboard.evidence.${item.key}.title`)
+    localeKeys.add(`console.dashboard.evidence.${item.key}.description`)
+  })
+  DASHBOARD_TRANSLATION_KEYS.forEach(key => localeKeys.add(key))
+
+  return [...localeKeys].sort()
+}
+
+function looksLikeLongDisplayText(value: string): boolean {
+  if (!/[A-Za-z]/.test(value)) return false
+  if (value.startsWith('console.')) return false
+  if (value.startsWith('i-')) return false
+  if (value.startsWith('pnpm ')) return false
+  if (value.includes('/') || value.includes('**') || value.includes('->')) return false
+  if (/^[A-Za-z0-9@._:*()-]+$/.test(value)) return false
+  return value.length > 24 && /[A-Za-z]{3,}\s+[A-Za-z]{3,}/.test(value)
+}
+
+function collectLongConsoleDataDisplayText(sourceModules: Record<string, string>): string[] {
+  return Object.entries(sourceModules).flatMap(([path, source]) => {
+    const violations: string[] = []
+    for (const match of source.matchAll(CONSOLE_DATA_STRING_LITERAL_PATTERN)) {
+      const literal = match[2].replace(/\\(['"`])/g, '$1')
+      if (looksLikeLongDisplayText(literal)) violations.push(`${path}: ${literal}`)
+    }
+    return violations
+  })
 }
 
 function findRouteByName(routes: RouteConfig[], name: string): RouteConfig | undefined {
@@ -332,7 +561,10 @@ describe('web-demo architecture console route coverage', () => {
   it('covers registered route titleKeys and console page translation keys in every locale', () => {
     const routeTitleKeys = collectRouteTitleKeys(flatRegisteredRoutes)
     const pageTranslationKeys = collectPageTranslationKeys(consoleViewSourceModules)
-    const coveredLocaleKeys = [...new Set([...routeTitleKeys, ...pageTranslationKeys])].sort()
+    const consoleModelTranslationKeys = collectConsoleModelTranslationKeys(consolePages)
+    const coveredLocaleKeys = [
+      ...new Set([...routeTitleKeys, ...pageTranslationKeys, ...consoleModelTranslationKeys]),
+    ].sort()
 
     expect(routeTitleKeys.length).toBeGreaterThan(0)
 
@@ -343,6 +575,10 @@ describe('web-demo architecture console route coverage', () => {
     })
 
     expect(missingLocaleKeys).toEqual([])
+  })
+
+  it('keeps console data structural instead of storing long display copy', () => {
+    expect(collectLongConsoleDataDisplayText(consoleDataSourceModules)).toEqual([])
   })
 
   it('preserves intentional layout metadata while retiring the example museum', () => {
@@ -358,6 +594,7 @@ describe('web-demo architecture console route coverage', () => {
         '/architecture/topology',
         '/runtime/http',
         '/ui/pro-form',
+        '/system/settings',
         '/system/theme',
         '/desktop',
       ])

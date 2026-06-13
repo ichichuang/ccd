@@ -1,19 +1,25 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
 defineOptions({ name: 'RouteEvidenceTable' })
 
 defineProps<{
   beforeCount: string
   afterCount: string
 }>()
+
+const { t } = useI18n()
 </script>
 
 <template>
-  <section class="material-elevated col-stretch gap-md">
+  <section class="material-elevated col-stretch min-w-0 gap-md">
     <div class="row-between gap-md">
-      <div class="col-stretch gap-xs">
-        <h2 class="text-lg font-semibold text-foreground m-0">Route Reduction</h2>
+      <div class="col-stretch min-w-0 gap-xs">
+        <h2 class="text-lg font-semibold text-foreground m-0">
+          {{ t('console.routeReduction.title') }}
+        </h2>
         <p class="text-sm text-muted-foreground m-0">
-          Legacy route records are replaced with a smaller architecture taxonomy.
+          {{ t('console.routeReduction.description') }}
         </p>
       </div>
       <Icons
@@ -23,19 +29,19 @@ defineProps<{
       />
     </div>
 
-    <div class="grid grid-cols-1 gap-md md:grid-cols-2">
+    <div class="grid min-w-0 grid-cols-1 gap-md md:grid-cols-2">
       <div class="demo-well col-stretch gap-xs">
-        <span class="text-sm text-muted-foreground">Before</span>
+        <span class="text-sm text-muted-foreground">{{ t('console.routeReduction.before') }}</span>
         <strong class="text-2xl text-foreground">{{ beforeCount }}</strong>
         <span class="text-sm text-muted-foreground">
-          registered records with 99 legacy museum entries
+          {{ t('console.routeReduction.beforeDetail') }}
         </span>
       </div>
       <div class="demo-well col-stretch gap-xs">
-        <span class="text-sm text-muted-foreground">After</span>
+        <span class="text-sm text-muted-foreground">{{ t('console.routeReduction.after') }}</span>
         <strong class="text-2xl text-foreground">{{ afterCount }}</strong>
         <span class="text-sm text-muted-foreground">
-          registered records in the console taxonomy
+          {{ t('console.routeReduction.afterDetail') }}
         </span>
       </div>
     </div>

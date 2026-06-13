@@ -17,6 +17,16 @@ const isFullscreen = computed(() => route.meta?.parent === 'fullscreen')
 const routeScrollMemoryKey = computed(
   () => `layout-admin-content:${route.fullPath || String(route.name ?? '')}`
 )
+
+interface ConsoleScrollRootInstance {
+  elements: () => {
+    scrollOffsetElement: HTMLElement
+  }
+}
+
+function markConsoleScrollRoot(instance: ConsoleScrollRootInstance): void {
+  instance.elements().scrollOffsetElement.setAttribute('data-console-scroll-root', '')
+}
 </script>
 
 <template>
@@ -26,6 +36,9 @@ const routeScrollMemoryKey = computed(
       back-to-top
       :back-to-top-threshold="400"
       :memory-key="routeScrollMemoryKey"
+      :options="{ overflow: { x: 'hidden' } }"
+      @initialized="markConsoleScrollRoot"
+      @updated="markConsoleScrollRoot"
     >
       <AnimateRouterView class="layout-full flex-1 min-h-0" />
     </CScrollbar>
@@ -34,7 +47,7 @@ const routeScrollMemoryKey = computed(
     <Transition name="fade">
       <div
         v-show="layoutStore.isPageLoading && !layoutStore.isLoading && !isFullscreen"
-        class="page-loading-overlay-content absolute inset-0 min-w-0 min-h-0 z-content backdrop-blur-sm pointer-events-auto"
+        class="page-loading-overlay-content page-loading-overlay-surface absolute inset-0 min-w-0 min-h-0 z-content pointer-events-auto"
         data-testid="app-container-page-loading"
       >
         <Loading

@@ -12,8 +12,8 @@ defineSlots<{
 </script>
 
 <template>
-  <section class="material-elevated col-stretch gap-md">
-    <div class="col-stretch gap-xs">
+  <section class="material-elevated col-stretch min-w-0 gap-md">
+    <div class="col-stretch min-w-0 gap-xs">
       <h2 class="text-lg font-semibold text-foreground m-0">
         {{ title }}
       </h2>

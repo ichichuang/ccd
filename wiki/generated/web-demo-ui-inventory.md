@@ -49,8 +49,8 @@ Generated Phase 0 inventory for the `apps/web-demo` architecture-console rebuild
 
 | Metric                                           | Count | Evidence                                                                |
 | ------------------------------------------------ | ----: | ----------------------------------------------------------------------- |
-| Static business route records after rebuild      |    23 | `apps/web-demo/src/router/modules/architecture-console.spec.ts`         |
-| Registered route records after rebuild           |    29 | `apps/web-demo/src/router/modules/architecture-console.spec.ts`         |
+| Static business route records after rebuild      |    24 | `apps/web-demo/src/router/modules/architecture-console.spec.ts`         |
+| Registered route records after rebuild           |    30 | `apps/web-demo/src/router/modules/architecture-console.spec.ts`         |
 | Canonical `/example` route records after rebuild |     0 | `apps/web-demo/src/router/modules/architecture-console.spec.ts`         |
 | Architecture Console route families              |     6 | `/dashboard`, `/architecture`, `/runtime`, `/ui`, `/system`, `/desktop` |
 | App-local shell directory                        |     1 | `apps/web-demo/src/views/architecture-console/shared/**`                |

@@ -1,6 +1,7 @@
 import { defineRouteModule } from '@/router/utils/routeModules'
 
 const consolePage = () => import('@/views/architecture-console/ConsolePage.vue')
+const globalSettingsPage = () => import('@/views/system/settings/index.vue')
 
 const systemRoute: RouteConfig = {
   path: '/system',
@@ -50,6 +51,16 @@ const systemRoute: RouteConfig = {
         titleKey: 'router.console.system.unocss',
         icon: 'i-lucide-diamond',
         rank: 4,
+      },
+    },
+    {
+      path: '/system/settings',
+      name: 'SystemGlobalSettings',
+      component: globalSettingsPage,
+      meta: {
+        titleKey: 'router.console.system.globalSettings',
+        icon: 'i-lucide-sliders-horizontal',
+        rank: 5,
       },
     },
   ],

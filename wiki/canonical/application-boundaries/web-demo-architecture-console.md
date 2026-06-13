@@ -52,7 +52,7 @@ wiki_owner: LLM-maintained CCD architecture wiki
 
 ## Retired example surface
 
-The old `/example` showcase was retired as a canonical route surface. Inventory evidence recorded 99 example route records and 106 registered route records before the rebuild. The architecture console registers 23 static business route records and 29 total registered route records, with no canonical `/example` route paths.
+The old `/example` showcase was retired as a canonical route surface. Inventory evidence recorded 99 example route records and 106 registered route records before the rebuild. The architecture console registers 24 static business route records and 30 total registered route records, with no canonical `/example` route paths.
 
 ## App-local shells
 

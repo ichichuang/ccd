@@ -9,6 +9,7 @@ import { semanticShortcuts } from '../shortcuts/semanticShortcuts.js'
 
 /** 布局/设置等处的 Lucide 图标名（非路由 meta 扫描可达时仍需 safelist） */
 const ENGINE_ICON_SAFELIST_CLASSES: readonly string[] = [
+  'i-lucide-arrow-up',
   'i-lucide-circle-dot',
   'i-lucide-panel-left',
   'i-lucide-diamond',

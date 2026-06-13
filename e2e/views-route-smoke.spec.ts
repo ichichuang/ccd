@@ -11,6 +11,26 @@ test.describe('view route smoke coverage', () => {
 
     await loginAsAdmin(page)
     await expect(page.locator('#dashboard-page')).toBeVisible()
+    await expect(page.locator('#dashboard-page')).toContainText('架构控制中心')
+    await expect(page.locator('#dashboard-page')).toContainText('运行时隔离')
+
+    await gotoVisual(page, '/ui/pro-form')
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+    await expect(page.getByTestId('architecture-console-page')).toContainText('ProForm 能力')
+    await expect(page.getByTestId('architecture-console-page')).toContainText('Schema 驱动 ProForm')
+
+    await gotoVisual(page, '/ui/pro-table')
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+    await expect(page.getByTestId('architecture-console-page')).toContainText('ProTable 能力')
+    await expect(page.getByTestId('architecture-console-page')).toContainText('类型化 ProTable')
+
+    await gotoVisual(page, '/system/settings')
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+    await expect(page.getByTestId('global-settings-page')).toContainText('全局设置')
+    await expect(page.getByTestId('global-settings-page')).toContainText('布局模块')
 
     await gotoVisual(page, '/missing-view')
     await waitForAppReady(page)

@@ -17,9 +17,9 @@ defineSlots<{
   <section
     data-testid="architecture-console-page"
     data-archetype="A2-sidebar-inspector"
-    class="col-stretch gap-lg"
+    class="col-stretch min-w-0 gap-md p-xs sm:p-sm md:p-md lg:p-lg"
   >
-    <header class="material-elevated col-stretch gap-md">
+    <header class="material-elevated col-stretch min-w-0 gap-md">
       <div class="row-between gap-md flex-wrap">
         <div class="col-stretch gap-xs min-w-0">
           <span class="text-xs font-semibold text-primary text-no-wrap">{{ eyebrow }}</span>
@@ -36,5 +36,9 @@ defineSlots<{
     </header>
 
     <slot />
+    <div
+      aria-hidden="true"
+      class="shrink-0 h-[calc(var(--footer-height)+var(--spacing-2xl)+var(--safe-bottom))]"
+    />
   </section>
 </template>

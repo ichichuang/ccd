@@ -30,7 +30,7 @@ wiki_owner: LLM-maintained CCD architecture wiki
 - Branch: `ui/web-demo-architecture-console` from `origin/main`.
 - Added [[web-demo-architecture-console]] as the canonical page for the focused web-demo Architecture Console.
 - Documented the route taxonomy `/dashboard`, `/architecture`, `/runtime`, `/ui`, `/system`, and `/desktop`.
-- Recorded route-count evidence: 99 retired `/example` records and 106 registered records before rebuild; 23 static business records and 29 registered records after rebuild.
+- Recorded route-count evidence: 99 retired `/example` records and 106 registered records before rebuild; 24 static business records and 30 registered records after rebuild.
 - Updated web-demo role, app-local shared candidates, quickstart, validation gates, application-boundaries indexes, Chinese presentation indexes, and wiki navigation.
 - Preserved P4 strategic guardrails: no HTTP/core promotion, no safeStorage/shared-utils promotion, no PrimeVue replacement, no desktop/Tauri refactor.
 

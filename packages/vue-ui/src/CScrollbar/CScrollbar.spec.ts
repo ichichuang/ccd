@@ -23,6 +23,14 @@ vi.mock('../Icons/Icons.vue', () => ({
   default: defineComponent({
     name: 'IconsStub',
     props: {
+      name: {
+        type: String,
+        required: true,
+      },
+      size: {
+        type: String,
+        default: '',
+      },
       color: {
         type: String,
         default: '',
@@ -31,6 +39,8 @@ vi.mock('../Icons/Icons.vue', () => ({
     render() {
       return h('span', {
         'data-testid': 'icons-stub',
+        'data-name': this.$props.name,
+        'data-size': this.$props.size,
         'data-color': this.$props.color,
       })
     },
@@ -166,7 +176,7 @@ describe('CScrollbar memory restoration', () => {
 })
 
 describe('CScrollbar back-to-top', () => {
-  it('passes primary foreground token to back-to-top icon', async () => {
+  it('renders an accessible static arrow icon', async () => {
     const wrapper = mount(CScrollbar, {
       props: {
         backToTop: true,
@@ -175,8 +185,13 @@ describe('CScrollbar back-to-top', () => {
 
     await nextTick()
 
-    expect(wrapper.get('[data-testid="icons-stub"]').attributes('data-color')).toBe(
-      'text-primary-foreground'
-    )
+    const shortcut = wrapper.get('[role="button"]')
+    const icon = wrapper.get('[data-testid="icons-stub"]')
+
+    expect(shortcut.attributes('aria-label')).toBe('Scroll Top')
+    expect(shortcut.attributes('title')).toBe('Scroll Top')
+    expect(icon.attributes('data-name')).toBe('i-lucide-arrow-up')
+    expect(icon.attributes('data-size')).toBe('xl')
+    expect(icon.attributes('data-color')).toBe('text-primary-foreground')
   })
 })

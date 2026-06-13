@@ -23,6 +23,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     Select: typeof import('primevue/select')['default']
     Tag: typeof import('primevue/tag')['default']
+    ToggleSwitch: typeof import('primevue/toggleswitch')['default']
     UseEcharts: typeof import('@/adapters/charts/UseEcharts.vue')['default']
   }
 }

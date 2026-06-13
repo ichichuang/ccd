@@ -99,7 +99,7 @@ onBeforeUnmount(() => {
 <template>
   <header
     ref="utilityRootRef"
-    class="login-utility-bar relative row-center gap-2xs rounded-lg border border-solid border-border/35 bg-card/75 p-2xs shadow-sm backdrop-blur-md"
+    class="login-utility-bar relative row-center gap-2xs rounded-lg border border-solid border-border/35 bg-card/75 p-2xs shadow-sm"
   >
     <Button
       severity="secondary"
