@@ -27,23 +27,42 @@ async function waitForThemeState(page: Page, targetMode: 'light' | 'dark'): Prom
   }, targetMode)
 }
 
-async function switchTheme(page: Page, targetMode: 'light' | 'dark'): Promise<void> {
+async function openSettingsPageFromUserMenu(page: Page) {
   await page.locator('#user-entry-trigger').click()
   await page.locator('#user-open-global-settings').click()
 
-  const settings = page.locator('#global-settings-content')
-  await expect(settings).toBeVisible()
-  await settings.getByRole('button', { name: targetMode === 'dark' ? '深色' : '浅色' }).click()
-  await waitForThemeState(page, targetMode)
-  await page.keyboard.press('Escape')
-  await expect(settings).toBeHidden()
-}
-
-async function openPrimeVueOverview(page: Page): Promise<void> {
-  await gotoVisual(page, '/example/primevue-collection/overview')
+  await expect(page).toHaveURL(/#\/system\/settings$/, { timeout: 15000 })
   await waitForAppReady(page)
   await waitForRuntimeLoadingIdle(page)
-  await expect(page.getByRole('heading', { name: 'Button Family' })).toBeVisible()
+
+  const settings = page.getByTestId('global-settings-page')
+  await expect(settings).toBeVisible()
+  await expect(page.getByRole('heading', { name: /全局设置|Global Settings/ })).toBeVisible()
+  await expect(page.locator('#global-settings-content')).toHaveCount(0)
+  await expect(page.getByText('全局配置 (Global Settings)')).toHaveCount(0)
+  await expect(
+    page
+      .locator('[data-route-exact-active="true"]')
+      .filter({ hasText: /全局设置|Global Settings/ })
+      .first()
+  ).toBeVisible()
+
+  return settings
+}
+
+async function switchTheme(page: Page, targetMode: 'light' | 'dark'): Promise<void> {
+  const settings = await openSettingsPageFromUserMenu(page)
+  await settings.getByRole('button', { name: targetMode === 'dark' ? '深色' : '浅色' }).click()
+  await waitForThemeState(page, targetMode)
+}
+
+async function openPrimeVueAdapter(page: Page): Promise<void> {
+  await gotoVisual(page, '/ui/primevue-adapter')
+  await waitForAppReady(page)
+  await waitForRuntimeLoadingIdle(page)
+  await expect(
+    page.getByRole('heading', { name: /按钮与表单控件|Button And Form Controls/ })
+  ).toBeVisible()
 }
 
 type RaisedButtonVisual = {
@@ -96,11 +115,7 @@ test.describe('theme switch interaction', () => {
   }) => {
     await loginAsAdmin(page)
 
-    await page.locator('#user-entry-trigger').click()
-    await page.locator('#user-open-global-settings').click()
-
-    const settings = page.locator('#global-settings-content')
-    await expect(settings).toBeVisible()
+    const settings = await openSettingsPageFromUserMenu(page)
 
     const darkButton = settings.getByRole('button', { name: '深色' })
     const lightButton = settings.getByRole('button', { name: '浅色' })
@@ -124,21 +139,12 @@ test.describe('theme switch interaction', () => {
   test('PrimeVue raised buttons stay visibly elevated in dark mode', async ({ page }) => {
     await loginAsAdmin(page)
     await switchTheme(page, 'dark')
-    await openPrimeVueOverview(page)
+    await openPrimeVueAdapter(page)
 
     const visuals = await readRaisedButtonVisuals(page)
     expect(visuals.length).toBeGreaterThanOrEqual(8)
     expect(visuals.map(visual => visual.text)).toEqual(
-      expect.arrayContaining([
-        'Primary',
-        'Secondary',
-        'Success',
-        'Info',
-        'Warn',
-        'Help',
-        'Danger',
-        'Contrast',
-      ])
+      expect.arrayContaining(['主按钮', '次按钮', '成功', '信息', '警告', '帮助', '危险', '高对比'])
     )
     expect(visuals.every(visual => visual.hasVisibleElevation)).toBe(true)
     expect(visuals.every(visual => visual.boxShadow !== 'none')).toBe(true)

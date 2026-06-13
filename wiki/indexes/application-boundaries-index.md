@@ -32,4 +32,5 @@ Application shell and adapter ownership pages. This domain describes repository 
 | ---------------------------------- | --------------------- | ---------: | ---------: |
 | [[desktop-role]]                   | 桌面端职责            | `verified` |       0.95 |
 | [[desktop-tauri-backend-boundary]] | 桌面端 Tauri 后端边界 | `verified` |       0.96 |
+| [[web-demo-architecture-console]]  | Web Demo 架构控制台   | `verified` |       0.90 |
 | [[web-demo-role]]                  | Web Demo 职责         | `verified` |       0.93 |

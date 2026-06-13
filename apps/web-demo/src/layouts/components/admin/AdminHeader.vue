@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-import { Icons } from '@ccd/vue-ui'
+import { CScrollbar, Icons } from '@ccd/vue-ui'
 import User from '@/layouts/components/User/index.vue'
 import AdminMenuPopup, {
   isAdminMenuPopupExpose,

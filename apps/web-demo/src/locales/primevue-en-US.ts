@@ -105,7 +105,7 @@ export const primevueEnUS = {
     previous: 'Previous',
     next: 'Next',
     navigation: 'Navigation',
-    scrollTop: 'Scroll Top',
+    scrollTop: 'Back to top',
     moveTop: 'Move Top',
     moveUp: 'Move Up',
     moveDown: 'Move Down',

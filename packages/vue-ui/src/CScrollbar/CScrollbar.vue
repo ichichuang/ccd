@@ -47,7 +47,7 @@ const emit = defineEmits<{
 
 const primevue = usePrimeVue()
 const memoryProvider = inject(scrollbarMemoryProviderKey, undefined)
-const backToTopAriaLabel = computed(() => primevue.config.locale?.aria?.scrollTop ?? 'Scroll Top')
+const backToTopAriaLabel = computed(() => primevue.config.locale?.aria?.scrollTop ?? 'Back to top')
 
 const backToTopFabStyle = computed(() => ({
   bottom: `${props.backToTopOffsetBottom}px`,
@@ -494,13 +494,14 @@ defineExpose({
       <div
         role="button"
         tabindex="0"
-        class="center cursor-pointer rounded-full p-sm border border-primary/25 bg-primary text-primary-foreground transition-all duration-md hover:bg-primary-hover active:scale-95"
+        class="center cursor-pointer rounded-full p-sm border border-solid border-primary/25 bg-primary text-primary-foreground transition-all duration-md hover:bg-primary-hover active:scale-95"
         :aria-label="backToTopAriaLabel"
+        :title="backToTopAriaLabel"
         @click="scrollToTop"
         @keydown="onBackToTopKeydown"
       >
         <Icons
-          name="i-lucide-circle-arrow-up"
+          name="i-lucide-arrow-up"
           size="xl"
           color="text-primary-foreground"
         />
@@ -574,6 +575,12 @@ defineExpose({
 .c-scrollbar .os-scrollbar-horizontal {
   height: var(--os-size);
   border-radius: var(--radius-lg);
+}
+
+.c-scrollbar .os-scrollbar-horizontal.os-scrollbar-unusable {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .c-scrollbar .os-scrollbar-vertical {

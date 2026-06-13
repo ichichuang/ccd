@@ -4,7 +4,6 @@ import { CcdButton as Button, CcdPopover as Popover } from '@ccd/vue-ui'
 import { AUTH_ENABLED } from '@/constants/router'
 import { useUserStore } from '@/stores/modules/session'
 import defaultAvatar from '@/assets/images/default-avatar.png'
-import GlobalSetting from '@/layouts/components/GlobalSetting/index.vue'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -30,6 +29,11 @@ const avatarSrc = computed(() => {
 const togglePanel = (event: MouseEvent) => {
   if (!shouldRender.value) return
   popoverRef.value?.toggle(event)
+}
+
+const openGlobalSettings = async () => {
+  popoverRef.value?.hide()
+  await router.push({ name: 'SystemGlobalSettings' })
 }
 
 const onLogout = async () => {
@@ -85,13 +89,12 @@ const onLogout = async () => {
         </div>
         <div v-if="userInfo.email">{{ t('user.email') }}：{{ userInfo.email }}</div>
         <div v-if="userInfo.phone">{{ t('user.phone') }}：{{ userInfo.phone }}</div>
-        <GlobalSetting>
-          <Button
-            id="user-open-global-settings"
-            class="w-full"
-            :label="t('layout.openGlobalSettings')"
-          />
-        </GlobalSetting>
+        <Button
+          id="user-open-global-settings"
+          class="w-full"
+          :label="t('layout.openGlobalSettings')"
+          @click="openGlobalSettings"
+        />
         <Button
           id="user-logout"
           class="w-full"

@@ -11,7 +11,7 @@ defineProps<{
 <template>
   <section
     id="login-shell"
-    class="login-shell relative w-[min(1120px,100%)] overflow-hidden rounded-lg border border-solid border-border/60 bg-card/96 shadow-lg backdrop-blur-md"
+    class="login-shell relative w-[min(1120px,100%)] overflow-hidden rounded-lg border border-solid border-border/60 bg-card/96 shadow-lg"
     :class="{
       'login-shell--mobile': responsive.isMobile,
       'login-shell--tablet': responsive.isTablet,

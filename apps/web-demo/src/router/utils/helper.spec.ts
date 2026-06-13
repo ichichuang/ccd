@@ -74,7 +74,7 @@ describe('goToRoute window reuse', () => {
     routerState.routes = [
       {
         name: 'ReuseDemo',
-        path: '/example/router-meta/reuse-window',
+        path: '/architecture/governance/reuse-window',
         component: vi.fn(),
         meta: { parent: 'fullscreen', reuseWindow: true },
       },
@@ -105,7 +105,7 @@ describe('goToRoute window reuse', () => {
     routerState.routes = [
       {
         name: 'FullscreenDemo',
-        path: '/example/router-meta/fullscreen',
+        path: '/architecture/governance/fullscreen',
         component: vi.fn(),
         meta: { parent: 'fullscreen' },
       },

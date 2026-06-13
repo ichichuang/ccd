@@ -22,8 +22,8 @@ source_langs:
 source_paths:
   - README.md
   - wiki/**
-  - wiki/**
-last_reviewed: '2026-06-11'
+  - apps/web-demo/src/views/architecture-console/**
+last_reviewed: '2026-06-12'
 wiki_owner: LLM-maintained CCD architecture wiki
 ---
 
@@ -40,6 +40,7 @@ The repository identifies several `apps/web-demo` paths as app-local shared cand
 - `apps/web-demo/src/plugins/modules/primevue.ts`
 - `apps/web-demo/src/plugins/modules/proform.ts`
 - `apps/web-demo/src/plugins/modules/protable.ts`
+- `apps/web-demo/src/views/architecture-console/**`
 - `apps/web-demo/src/utils/http/**`
 - `apps/web-demo/src/utils/theme/engine.ts`
 - `apps/web-demo/src/utils/theme/sizeEngine.ts`
@@ -49,7 +50,7 @@ The repository identifies several `apps/web-demo` paths as app-local shared cand
 
 ## Current operating rule
 
-Do not move these paths as a batch. A future lane must prove the destination, allowed paths, forbidden paths, validation, rollback, and owner decision. HTTP/alova and safeStorage concrete runtime behavior remain app-owned under current policy.
+Do not move these paths as a batch. A future lane must prove the destination, allowed paths, forbidden paths, validation, rollback, and owner decision. HTTP/alova, safeStorage concrete runtime behavior, and Architecture Console page-shell composition remain app-owned under current policy.
 
 ## Evidence paths
 
@@ -57,7 +58,7 @@ This page is compiled from the following repository evidence paths:
 
 - `README.md`
 - `wiki/**`
-- `wiki/**`
+- `apps/web-demo/src/views/architecture-console/**`
 
 ## Related pages
 
@@ -65,3 +66,4 @@ This page is compiled from the following repository evidence paths:
 - [[http-runtime-ownership]]
 - [[safe-storage-runtime-ownership]]
 - [[web-demo-role]]
+- [[web-demo-architecture-console]]

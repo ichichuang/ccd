@@ -20,6 +20,7 @@ describe('createCcdUnoEngineConfig', () => {
     const config = createCcdUnoEngineConfig()
 
     expect(config.safelist).toEqual(getEngineSafelist())
+    expect(config.safelist).toContain('i-lucide-arrow-up')
     expect(config.shortcuts).toEqual([semanticShortcuts])
     expect(config.rules).toContainEqual(['safe-top', { 'padding-top': 'var(--safe-top)' }])
 
@@ -96,6 +97,20 @@ describe('CCD UnoCSS theme helpers', () => {
 
     expect(resolvedTheme.transitionTimingFunction).toBe(theme.transitionTimingFunction)
     expect(resolvedTheme.easing).toEqual(theme.transitionTimingFunction)
+  })
+})
+
+describe('semantic glass shortcuts', () => {
+  it('keeps shared glass surfaces free of backdrop blur and forced GPU layers', () => {
+    const glassBase = semanticShortcuts['glass-base']
+
+    expect(glassBase).toContain('[backdrop-filter:none]')
+    expect(glassBase).toContain('[will-change:auto]')
+    expect(glassBase).not.toContain('backdrop-blur')
+    expect(glassBase).not.toContain('transform-gpu')
+    expect(semanticShortcuts['glass-panel']).toContain('glass-base')
+    expect(semanticShortcuts['glass-shell']).toContain('glass-base')
+    expect(semanticShortcuts['glass-card']).toContain('glass-base')
   })
 })
 

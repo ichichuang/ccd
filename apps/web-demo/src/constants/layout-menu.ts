@@ -19,7 +19,7 @@ export const MENU_SIDEBAR_ACTIVE_UNIFIED =
 
 /** 侧栏菜单打开/聚焦/选中态：弱于激活态，强于 hover 态 */
 export const MENU_SIDEBAR_OPEN_UNIFIED =
-  '!bg-primary/10 !text-primary hover:!bg-primary/14 hover:!text-primary' as const
+  'bg-primary/10! text-primary! hover:bg-primary/14! hover:text-primary!' as const
 /** 侧栏菜单 hover 态：低于打开/聚焦态 */
 export const MENU_SIDEBAR_HOVER_UNIFIED = 'hover:bg-primary/10 hover:text-primary' as const
 /** 侧栏菜单祖先态（展开的父级，非当前叶节点）：比叶节点激活态更轻 */
@@ -48,12 +48,12 @@ export const MENU_ADMIN_POPUP_ITEM_UNIFIED =
   'focus:bg-primary/10 focus:text-primary focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 focus-visible:ring-offset-popover' as const
 /** Admin 标签栏激活态：比 hover/focus 更强的底色 + 主色文字 */
 export const MENU_ADMIN_TAB_ACTIVE_UNIFIED =
-  '!bg-primary/10 !text-primary transition-colors' as const
+  'bg-primary/14 text-primary hover:bg-primary/14 hover:text-primary transition-colors' as const
 /** Admin 标签栏关闭按钮：激活时保持可读，hover 时提供独立危险色反馈 */
 export const MENU_ADMIN_TAB_CLOSE_UNIFIED =
   'center rounded-sm p-0.5 duration-md text-current opacity-70 hover:opacity-100 hover:bg-danger/12 hover:text-danger' as const
 /** 面包屑当前项：轻量底色 + 主色文字，不使用完整按钮外观 */
-export const MENU_BREADCRUMB_CURRENT_UNIFIED = '!bg-primary/12 !text-primary' as const
+export const MENU_BREADCRUMB_CURRENT_UNIFIED = 'bg-primary/12! text-primary!' as const
 /** 面包屑 hover 态：比当前项更轻的反馈 */
 export const MENU_BREADCRUMB_HOVER_UNIFIED = 'hover:bg-primary/10 hover:text-primary' as const
 /** Admin 标签栏未激活 hover 态：仅高亮文字/图标，不引入 hover 背景 */

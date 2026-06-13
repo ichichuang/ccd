@@ -345,6 +345,7 @@ declare global {
   const useSwipe: typeof import('@vueuse/core').useSwipe
   const useSwipeAction: typeof import('../hooks/modules/useInteraction/useSwipeAction').useSwipeAction
   const useSystemPreferencesSync: typeof import('../hooks/modules/useSystemPreferencesSync').useSystemPreferencesSync
+  const useSystemSettingsPage: typeof import('../hooks/modules/system/useSystemSettingsPage').useSystemSettingsPage
   const useTableDrawerStore: typeof import('../stores/modules/ui/tableDrawer').useTableDrawerStore
   const useTap: typeof import('../hooks/modules/useInteraction/useTap').useTap
   const useTemplateRef: typeof import('vue').useTemplateRef

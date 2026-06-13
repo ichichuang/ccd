@@ -70,22 +70,22 @@ export const requestSystemAsyncRoutesMock = async (): Promise<SystemAsyncRouteIt
   await new Promise(resolve => setTimeout(resolve, 100))
   const routes: SystemAsyncRouteItem[] = [
     {
-      path: '/example/hooks/use-date-utils',
-      name: 'ExampleHookUseDateUtilsLegacy',
-      redirect: '/example/hooks/composables/use-date-utils',
-      meta: { titleKey: 'router.example.hooks.composables.useDateUtils', showLink: false },
+      path: '/runtime/http-request',
+      name: 'RuntimeHttpRequestAlias',
+      redirect: '/runtime/http',
+      meta: { titleKey: 'router.console.runtime.http', showLink: false },
     },
     {
-      path: '/example/hooks/use-theme-switch',
-      name: 'ExampleHookUseThemeSwitchLegacy',
-      redirect: '/example/hooks/composables/use-theme-switch',
-      meta: { titleKey: 'router.example.hooks.composables.useThemeSwitch', showLink: false },
+      path: '/system/theme-runtime',
+      name: 'SystemThemeRuntimeAlias',
+      redirect: '/system/theme',
+      meta: { titleKey: 'router.console.system.theme', showLink: false },
     },
     {
-      path: '/example/hooks/use-http-request',
-      name: 'ExampleHookUseHttpRequestLegacy',
-      redirect: '/example/hooks/composables/use-http-request',
-      meta: { titleKey: 'router.example.hooks.composables.useHttpRequest', showLink: false },
+      path: '/architecture/governance-metadata',
+      name: 'ArchitectureGovernanceMetadataAlias',
+      redirect: '/architecture/governance',
+      meta: { titleKey: 'router.console.architecture.governance', showLink: false },
     },
   ]
   return parseZodHttpPayload(systemAsyncRouteItemSchema.array(), routes)

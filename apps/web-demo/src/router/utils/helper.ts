@@ -238,7 +238,7 @@ export const goToRoute = (
   if (targetRoutes.length === 0) {
     try {
       // 如果按名称未找到，则尝试直接跳转（可能传的是可解析的路径或路由定位对象）
-      // 加固：纯字符串且不以 '/' 开头时，视为路径片段，强制拼成绝对路径，避免相对路径如 '/example/403'
+      // 加固：纯字符串且不以 '/' 开头时，视为路径片段，强制拼成绝对路径，避免相对路径如 'missing/403'
       if (typeof name === 'string' && !name.startsWith('/')) {
         router.push({ path: `/${name}`, query })
       } else {

@@ -6,7 +6,7 @@
  * 与 wrapper/图标/文字同节奏过渡，覆盖 PrimeVue 默认 transition。
  */
 
-import { OPTION_TRANSITION_CLASS, OVERLAY_GLASS_COMPACT_CLASS } from './formControlsPt'
+import { OPTION_TRANSITION_CLASS, OVERLAY_COMPACT_SURFACE_CLASS } from './formControlsPt'
 
 const MENU_ACTION_BASE =
   'bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent border-none outline-none'
@@ -14,7 +14,7 @@ const MENU_ACTION_BASE =
 export const menuPt = {
   tieredmenu: {
     root: {
-      class: `${OVERLAY_GLASS_COMPACT_CLASS} shadow-md dark:shadow-lg outline-none`,
+      class: `${OVERLAY_COMPACT_SURFACE_CLASS} shadow-md dark:shadow-lg outline-none`,
     },
     menu: {
       class: 'bg-transparent outline-none',
@@ -54,7 +54,7 @@ export const menuPt = {
   },
   menu: {
     root: {
-      class: OVERLAY_GLASS_COMPACT_CLASS,
+      class: OVERLAY_COMPACT_SURFACE_CLASS,
     },
     list: {
       class: 'bg-transparent',

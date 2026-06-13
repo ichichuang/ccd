@@ -3,13 +3,13 @@
  *
  * 结构说明：
  * - core: 业务核心文案（桌面端/主分支共用）
- * - example: 示例文案（桌面端同步时可安全剥离）
+ * - console: web-demo 架构控制台文案
  */
 import enUSCore from '@/locales/lang/core/en-US'
-import enUSExample from '@/locales/lang/example/en-US'
+import enUSConsole from '@/locales/lang/console/en-US'
 import { mergeLocale, type LocaleRecord } from '@/locales/lang/utils/mergeLocale'
 
-const enUS = mergeLocale(enUSCore, enUSExample)
+const enUS = mergeLocale(enUSCore, enUSConsole)
 
 function isLocaleRecord(value: unknown): value is LocaleRecord {
   return typeof value === 'object' && value !== null

@@ -37,7 +37,7 @@ const zhCNCore = {
       login: '登录',
     },
     dashboard: {
-      dashboard: '仪表盘',
+      dashboard: '架构控制台',
     },
     error: {
       title: '错误',
@@ -241,12 +241,12 @@ const zhCNCore = {
     showTabs: '显示 Tabs',
     showFooter: '显示 Footer',
     sidebarAccordion: '侧边栏手风琴模式',
+    openFullSettingsPage: '打开完整设置页',
   },
   layout: {
     sidebar: {},
     reload: '重新载入',
     globalSettings: '全局配置',
-    globalSettingsTitle: '全局配置 (Global Settings)',
     openGlobalSettings: '打开全局配置',
     switchToLight: '切换为浅色模式',
     switchToDark: '切换为深色模式',

@@ -4,8 +4,8 @@ import PrimeVue from 'primevue/config'
 import { createCustomPreset, type PrimeVueSizeSource } from './theme/primevuePreset'
 import {
   formControlsPt,
-  OVERLAY_GLASS_CLASS,
-  OVERLAY_GLASS_COMPACT_CLASS,
+  OVERLAY_COMPACT_SURFACE_CLASS,
+  OVERLAY_SURFACE_CLASS,
 } from './theme/ptPresets/formControlsPt'
 import { menuPt } from './theme/ptPresets/menuPt'
 import { buttonPt } from './theme/ptPresets/buttonPt'
@@ -86,14 +86,16 @@ export type {
   PrimeVueToastSeverity,
 }
 
-const OVERLAY_GLASS_SHELL_CLASS = 'glass-shell transform-gpu will-change-transform'
+const OVERLAY_SHELL_SURFACE_CLASS =
+  '[backdrop-filter:none] [-webkit-backdrop-filter:none] [will-change:auto]'
+const SPLITTER_SURFACE_CLASS = `bg-card text-card-foreground ${OVERLAY_SHELL_SURFACE_CLASS}`
 const BG_TRANSPARENT = 'bg-transparent'
 const BG_TRANSPARENT_IMPORTANT = '!bg-transparent'
 const TEXT_FOREGROUND = 'text-foreground'
 
 export const tabsPt = {
   tabs: {
-    root: { class: OVERLAY_GLASS_SHELL_CLASS },
+    root: { class: OVERLAY_SHELL_SURFACE_CLASS },
   },
   tablist: {
     root: { class: BG_TRANSPARENT_IMPORTANT },
@@ -114,7 +116,7 @@ export const tabsPt = {
 
 export const overlayPt = {
   drawer: {
-    root: { class: OVERLAY_GLASS_CLASS },
+    root: { class: OVERLAY_SURFACE_CLASS },
     header: { class: BG_TRANSPARENT },
     title: { class: BG_TRANSPARENT },
     content: { class: BG_TRANSPARENT },
@@ -122,15 +124,15 @@ export const overlayPt = {
     mask: { class: BG_TRANSPARENT_IMPORTANT },
   },
   popover: {
-    root: { class: OVERLAY_GLASS_COMPACT_CLASS },
+    root: { class: OVERLAY_COMPACT_SURFACE_CLASS },
     content: { class: BG_TRANSPARENT },
   },
   overlaypanel: {
-    root: { class: OVERLAY_GLASS_COMPACT_CLASS },
+    root: { class: OVERLAY_COMPACT_SURFACE_CLASS },
     content: { class: BG_TRANSPARENT },
   },
   confirmpopup: {
-    root: { class: OVERLAY_GLASS_COMPACT_CLASS },
+    root: { class: OVERLAY_COMPACT_SURFACE_CLASS },
     content: { class: BG_TRANSPARENT },
     message: { class: TEXT_FOREGROUND },
     footer: { class: BG_TRANSPARENT },
@@ -139,7 +141,7 @@ export const overlayPt = {
 
 export const splitterPt = {
   splitter: {
-    root: { class: `${OVERLAY_GLASS_SHELL_CLASS} border-border overflow-hidden` },
+    root: { class: `${SPLITTER_SURFACE_CLASS} border border-solid border-border overflow-hidden` },
     handle: { class: BG_TRANSPARENT },
   },
 } as const

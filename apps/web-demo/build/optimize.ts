@@ -18,8 +18,23 @@ export const include = [
 
   // 工具库 (强烈建议保留)
   'dayjs',
+  'dayjs/locale/en.js',
+  'dayjs/locale/zh-cn.js',
+  'dayjs/plugin/dayOfYear.js',
+  'dayjs/plugin/duration.js',
+  'dayjs/plugin/isBetween.js',
+  'dayjs/plugin/isoWeek.js',
+  'dayjs/plugin/isSameOrAfter.js',
+  'dayjs/plugin/isSameOrBefore.js',
+  'dayjs/plugin/quarterOfYear.js',
+  'dayjs/plugin/relativeTime.js',
+  'dayjs/plugin/timezone.js',
+  'dayjs/plugin/utc.js',
+  'dayjs/plugin/weekday.js',
+  'dayjs/plugin/weekOfYear.js',
   'lodash-es', // 关键：lodash-es 文件极多，预构建能显著减少 dev 请求数
   'crypto-es', // AES/SHA/PBKDF2 等子模块较多，预构建减少 dev 模式 ESM 请求数
+  'lz-string', // safeStorage compression adapter is CJS-shaped and must be prebundled
 
   // PrimeVue 表单库
   '@primevue/forms',

@@ -132,7 +132,7 @@
     "build:web-demo": "cross-env CCD_EXEC_PHASE=\"build @ccd/web-demo and workspace dependencies\" CCD_EXEC_HINT=\"Fix the failing package task above, then rerun pnpm build:web-demo.\" bash scripts/exec.sh pnpm exec turbo run build --filter=\"@ccd/web-demo...\"",
     "build:desktop": "cross-env CCD_EXEC_PHASE=\"build @ccd/desktop and workspace dependencies\" CCD_EXEC_HINT=\"Fix the failing package task above, then rerun pnpm build:desktop.\" bash scripts/exec.sh pnpm exec turbo run build --filter=\"@ccd/desktop...\"",
     "arch:boundaries": "depcruise --config .dependency-cruiser.cjs apps packages && node scripts/architecture/validate-boundaries.mjs",
-    "budget:desktop": "pnpm build:desktop && node scripts/architecture/check-desktop-size.mjs",
+    "budget:desktop": "node scripts/clean-artifacts.mjs paths apps/desktop/dist && pnpm build:desktop && node scripts/architecture/check-desktop-size.mjs",
     "desktop:security": "node scripts/architecture/check-desktop-security.mjs",
     "desktop:smoke": "node scripts/architecture/desktop-smoke.mjs all",
     "desktop:smoke:dev": "node scripts/architecture/desktop-smoke.mjs dev",

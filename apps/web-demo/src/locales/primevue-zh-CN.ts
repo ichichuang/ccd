@@ -102,7 +102,7 @@ export const primevueZhCN = {
     previous: 'Previous',
     next: 'Next',
     navigation: 'Navigation',
-    scrollTop: 'Scroll Top',
+    scrollTop: '返回顶部',
     moveTop: 'Move Top',
     moveUp: 'Move Up',
     moveDown: 'Move Down',

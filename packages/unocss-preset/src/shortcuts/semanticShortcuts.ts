@@ -54,8 +54,9 @@ export const semanticShortcuts = {
     'bg-card text-card-foreground rounded-lg border border-solid border-transparent shadow-sm dark:border-border/15 dark:shadow-none',
 
   // INTERNAL - DO NOT USE DIRECTLY
-  // 移动端降低 blur 强度并提升底色不透明度；md+ 恢复完整玻璃模糊。
-  'glass-base': 'backdrop-blur-sm md:backdrop-blur-xl bg-card/12 dark:bg-card/20 transform-gpu',
+  // 半透明 token surface；不使用 backdrop filter 或强制 GPU 层，避免浮层/暗色模式背景被漂白或卡顿。
+  'glass-base':
+    '[backdrop-filter:none] [-webkit-backdrop-filter:none] [will-change:auto] bg-card/88 dark:bg-card/74',
 
   // Glass Panel（浮层面板）
   'glass-panel':

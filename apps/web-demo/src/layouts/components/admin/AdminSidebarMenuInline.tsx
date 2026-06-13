@@ -408,11 +408,10 @@ export default defineComponent({
         'data-menu-state': menuState,
       }
       const isRootRow = level <= 0
-      const resolvedStateClasses = isRootRow ? '' : stateClasses
       const linkClass = [
         baseClasses,
         isRootRow ? 'min-w-0 flex-1 bg-transparent! text-current!' : '',
-        resolvedStateClasses,
+        stateClasses,
       ]
         .filter(Boolean)
         .join(' ')

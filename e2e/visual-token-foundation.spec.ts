@@ -72,6 +72,42 @@ async function borderWeight(locator: ReturnType<Page['locator']>): Promise<numbe
   })
 }
 
+interface PrimaryTintSnapshot {
+  backgroundAlpha: number
+  isPrimaryText: boolean
+  isPrimaryTint: boolean
+}
+
+async function primaryTintSnapshot(
+  locator: ReturnType<Page['locator']>
+): Promise<PrimaryTintSnapshot> {
+  return locator.first().evaluate(element => {
+    const readChannels = (value: string): string => {
+      const channels = value.match(/\d+(?:\.\d+)?/g)?.slice(0, 3) ?? []
+      return channels.map(channel => String(Math.round(Number(channel)))).join(' ')
+    }
+
+    const readAlpha = (value: string): number => {
+      const channels = value.match(/\d+(?:\.\d+)?/g) ?? []
+      return channels[3] === undefined ? 1 : Number(channels[3])
+    }
+
+    const style = window.getComputedStyle(element)
+    const rootStyle = window.getComputedStyle(document.documentElement)
+    const primaryChannels = readChannels(rootStyle.getPropertyValue('--primary'))
+    const backgroundChannels = readChannels(style.backgroundColor)
+    const textChannels = readChannels(style.color)
+    const backgroundAlpha = readAlpha(style.backgroundColor)
+
+    return {
+      backgroundAlpha,
+      isPrimaryText: textChannels === primaryChannels,
+      isPrimaryTint:
+        backgroundChannels === primaryChannels && backgroundAlpha > 0 && backgroundAlpha < 1,
+    }
+  })
+}
+
 interface FormControlSnapshot {
   borderColor: string
   boxShadow: string
@@ -118,7 +154,7 @@ function expectQuietNavigationBorder(weight: number): void {
 test.describe('visual token foundation', () => {
   test('LayoutAdmin active and hover states are visually distinct @visual', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 960 })
-    await openRouteWithMixLayout(page, '/example/primevue-collection/overview')
+    await openRouteWithMixLayout(page, '/ui/primevue-adapter')
 
     const sidebar = page.locator('[data-layout-sidebar="true"]')
     await expect(sidebar).toBeVisible()
@@ -131,7 +167,7 @@ test.describe('visual token foundation', () => {
 
     const sidebarOpenParent = sidebar
       .locator('.admin-sidebar-menu__item[data-menu-state="ancestor"]')
-      .filter({ hasText: /PrimeVue|组件合集/ })
+      .filter({ hasText: /UI|界面|用户界面/ })
       .first()
     await expect(sidebarOpenParent).toBeVisible()
     const parentSignature = await visualSignature(sidebarOpenParent)
@@ -140,7 +176,7 @@ test.describe('visual token foundation', () => {
 
     const sidebarActiveChild = sidebar
       .locator('.admin-sidebar-menu__item[data-menu-state="active"]')
-      .filter({ hasText: 'PrimeVue 概览' })
+      .filter({ hasText: /PrimeVue Adapter|PrimeVue 适配器/ })
       .first()
     await expect(sidebarActiveChild).toBeVisible()
     const childSignature = await visualSignature(sidebarActiveChild)
@@ -162,7 +198,9 @@ test.describe('visual token foundation', () => {
       await topbarParent.click()
       const popupIdleItem = page.locator('.admin-menu-popup__item[data-menu-state="idle"]').first()
       const popupActiveItem = page
-        .locator('.admin-menu-popup__item[data-menu-state="ancestor"]')
+        .locator(
+          '.admin-menu-popup__item[data-menu-state="active"], .admin-menu-popup__item[data-menu-state="ancestor"]'
+        )
         .first()
       await expect(popupIdleItem).toBeVisible()
       await expect(popupActiveItem).toBeVisible()
@@ -180,10 +218,14 @@ test.describe('visual token foundation', () => {
     await expect(idleTab).toBeVisible()
     expectDistinctStyle(await visualSignature(activeTab), await visualSignature(idleTab))
     expectQuietNavigationBorder(await borderWeight(activeTab))
+    const activeTabPrimaryTint = await primaryTintSnapshot(activeTab)
+    expect(activeTabPrimaryTint.isPrimaryText).toBe(true)
+    expect(activeTabPrimaryTint.isPrimaryTint).toBe(true)
+    expect(activeTabPrimaryTint.backgroundAlpha).toBeGreaterThanOrEqual(0.12)
 
     const breadcrumbCurrent = page
       .locator('main [data-menu-state="active"]')
-      .filter({ hasText: 'PrimeVue 概览' })
+      .filter({ hasText: /PrimeVue Adapter|PrimeVue 适配器/ })
       .first()
     await expect(breadcrumbCurrent).toBeVisible()
     expectDistinctStyle(await visualSignature(breadcrumbCurrent), idleSignature)
@@ -192,25 +234,25 @@ test.describe('visual token foundation', () => {
 
   test('PrimeVue form controls expose hover and focus feedback @visual', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 960 })
-    await openRoute(page, '/example/primevue-collection/overview')
+    await openRoute(page, '/ui/primevue-adapter')
 
     const controls = [
       {
-        locator: page.getByPlaceholder('InputText').first(),
+        locator: page.getByTestId('prime-input-text').first(),
         focus: async (): Promise<void> => {
-          await page.getByPlaceholder('InputText').first().focus()
+          await page.getByTestId('prime-input-text').first().focus()
         },
       },
       {
         locator: page.locator('.p-inputnumber').first(),
         focus: async (): Promise<void> => {
-          await page.getByPlaceholder('InputNumber').focus()
+          await page.locator('#primevue-input-number').focus()
         },
       },
       {
         locator: page.locator('.p-password').first(),
         focus: async (): Promise<void> => {
-          await page.getByPlaceholder('Password').focus()
+          await page.locator('.p-password input').first().focus()
         },
       },
       {
@@ -222,13 +264,13 @@ test.describe('visual token foundation', () => {
       {
         locator: page.locator('.p-autocomplete').first(),
         focus: async (): Promise<void> => {
-          await page.getByPlaceholder('AutoComplete').fill('A')
+          await page.locator('.p-autocomplete input').first().fill('架')
         },
       },
       {
         locator: page.locator('.p-datepicker').first(),
         focus: async (): Promise<void> => {
-          await page.getByPlaceholder('DatePicker').click()
+          await page.locator('.p-datepicker input').first().click()
         },
       },
     ]
@@ -239,7 +281,7 @@ test.describe('visual token foundation', () => {
     await inputControl.locator.hover()
     const inputHoverBorder = await waitForStyleChange(
       page,
-      'input[placeholder="InputText"]',
+      '[data-testid="prime-input-text"]',
       'border-color',
       inputIdle.borderColor
     )
@@ -266,36 +308,26 @@ test.describe('visual token foundation', () => {
     }
 
     const numberInputOutline = await page
-      .getByPlaceholder('InputNumber')
+      .locator('#primevue-input-number')
       .evaluate(element => window.getComputedStyle(element).outlineStyle)
     expect(numberInputOutline).toBe('none')
 
     const dateInputBorder = await page
-      .getByPlaceholder('DatePicker')
+      .locator('.p-datepicker input')
+      .first()
       .evaluate(element => window.getComputedStyle(element).borderWidth)
     expect(dateInputBorder).toBe('0px')
   })
 
-  test('Icons color controls use generated semantic classes @visual', async ({ page }) => {
+  test('feedback icons use generated semantic classes @visual', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 960 })
-    await openRoute(page, '/example/components/icons')
+    await openRoute(page, '/ui/feedback')
 
-    const previewIcon = page.locator('.icons-preview span[class*="i-lucide-"]').first()
+    const previewIcon = page.locator('span.i-lucide-message-circle.text-primary').first()
     await expect(previewIcon).toBeVisible()
-    const beforeColor = await previewIcon.evaluate(
-      element => window.getComputedStyle(element).color
-    )
+    const iconColor = await previewIcon.evaluate(element => window.getComputedStyle(element).color)
 
-    await page.getByRole('button', { name: 'danger' }).click()
-    await expect(previewIcon).toHaveClass(/text-danger/)
-    const afterColor = await previewIcon.evaluate(element => window.getComputedStyle(element).color)
-    expect(afterColor).not.toBe(beforeColor)
-
-    const codeText = await page
-      .locator('pre')
-      .filter({ hasText: 'text-danger' })
-      .first()
-      .textContent()
-    expect(codeText).toContain('text-danger')
+    expect(iconColor).toMatch(/rgb\(/)
+    await expect(previewIcon).toHaveClass(/text-primary/)
   })
 })

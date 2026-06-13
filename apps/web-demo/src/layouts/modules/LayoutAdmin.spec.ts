@@ -22,8 +22,8 @@ interface LayoutStateMock {
   runtime: LayoutRuntimeState
   closeTransientNavigation: MockFn
   migrateLegacyVisibilityIfNeeded: MockFn
-  openDialog: MockFn
   refreshCurrentRoute: MockFn
+  routerPush: MockFn
   toggleThemeWithAnimation: MockFn
 }
 
@@ -38,8 +38,8 @@ const layoutState = vi.hoisted<LayoutStateMock>(() => ({
   },
   closeTransientNavigation: vi.fn(),
   migrateLegacyVisibilityIfNeeded: vi.fn(),
-  openDialog: vi.fn(),
   refreshCurrentRoute: vi.fn(),
+  routerPush: vi.fn(),
   toggleThemeWithAnimation: vi.fn(),
 }))
 
@@ -60,6 +60,7 @@ vi.mock('vue-router', async () => {
   const vue = await vi.importActual<typeof import('vue')>('vue')
   return {
     useRoute: () => vue.reactive({ path: '/dashboard' }),
+    useRouter: () => ({ push: layoutState.routerPush }),
   }
 })
 
@@ -107,9 +108,6 @@ vi.mock('@/layouts/components/ContextMenuProvider.vue', () => ({
       return () => h('div', { 'data-testid': 'ContextMenuProvider' }, slots.default?.())
     },
   }),
-}))
-vi.mock('@/layouts/components/GlobalSetting/SettingsContent.vue', () => ({
-  default: stubComponent('SettingsContent'),
 }))
 vi.mock('@&/admin/AdminHeader.vue', () => ({ default: stubComponent('AdminHeader') }))
 vi.mock('@&/admin/AdminSidebar.tsx', () => ({ default: stubComponent('AdminSidebar') }))
@@ -177,10 +175,6 @@ vi.mock('@/hooks/modules/useThemeSwitch', async () => {
     }),
   }
 })
-
-vi.mock('@/hooks/modules/useDialog', () => ({
-  useDialog: () => ({ openDialog: layoutState.openDialog }),
-}))
 
 vi.mock('@/router/utils/helper', () => ({
   refreshCurrentRoute: layoutState.refreshCurrentRoute,
@@ -258,6 +252,7 @@ describe('LayoutAdmin shell contract', () => {
     }
     layoutState.closeTransientNavigation.mockClear()
     layoutState.migrateLegacyVisibilityIfNeeded.mockClear()
+    layoutState.routerPush.mockClear()
   })
 
   it('renders the admin shell with header, sidebar, and content in vertical mode', async () => {

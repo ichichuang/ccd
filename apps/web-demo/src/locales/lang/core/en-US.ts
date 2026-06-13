@@ -38,7 +38,7 @@ const enUSCore = {
       login: 'Login',
     },
     dashboard: {
-      dashboard: 'Dashboard',
+      dashboard: 'Architecture Control Center',
     },
     error: {
       title: 'Error',
@@ -242,12 +242,12 @@ const enUSCore = {
     showTabs: 'Show Tabs',
     showFooter: 'Show Footer',
     sidebarAccordion: 'Sidebar Accordion Mode',
+    openFullSettingsPage: 'Open full settings page',
   },
   layout: {
     sidebar: {},
     reload: 'Reload',
     globalSettings: 'Global Settings',
-    globalSettingsTitle: 'Global Settings',
     openGlobalSettings: 'Open Global Settings',
     switchToLight: 'Switch to light mode',
     switchToDark: 'Switch to dark mode',

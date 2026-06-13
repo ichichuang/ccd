@@ -22,7 +22,8 @@ const FORM_CONTROL_COMPOUND_ROOT = `${FORM_CONTROL_SHELL} ${FORM_CONTROL_FOCUS_W
 const FORM_CONTROL_INNER_INPUT = `w-full !border-0 !shadow-none !rounded-none !bg-transparent !ring-0 !outline-none ${FORM_CONTROL_INNER_FOCUS_RESET}`
 const FORM_CONTROL_ACTION = `!border-0 !rounded-none !bg-transparent !text-muted-foreground !shadow-none !ring-0 !outline-none transition-[background-color,color] duration-md ease-smooth hover:!bg-muted/60 hover:!text-primary ${FORM_CONTROL_INNER_FOCUS_RESET}`
 const FORM_CONTROL_ACTION_ICON = '!text-muted-foreground group-hover:!text-primary'
-const FORM_CONTROL_OVERLAY = 'transform-gpu will-change-transform'
+const FORM_CONTROL_OVERLAY_SURFACE =
+  '[backdrop-filter:none] [-webkit-backdrop-filter:none] [will-change:auto]'
 const FORM_CONTROL_OPTION = 'transition-[background-color,color] duration-md ease-smooth'
 const FORM_CONTROL_INVALID = 'border-danger focus:border-danger focus-visible:ring-danger/30'
 const FORM_CONTROL_DISABLED =
@@ -42,8 +43,10 @@ const FORM_CONTROL_ACTION_STYLE = {
   outline: '0',
 } as const
 
-export const OVERLAY_GLASS_CLASS = FORM_CONTROL_OVERLAY
-export const OVERLAY_GLASS_COMPACT_CLASS = FORM_CONTROL_OVERLAY
+export const OVERLAY_SURFACE_CLASS = FORM_CONTROL_OVERLAY_SURFACE
+export const OVERLAY_COMPACT_SURFACE_CLASS = FORM_CONTROL_OVERLAY_SURFACE
+export const OVERLAY_GLASS_CLASS = OVERLAY_SURFACE_CLASS
+export const OVERLAY_GLASS_COMPACT_CLASS = OVERLAY_COMPACT_SURFACE_CLASS
 export const OPTION_TRANSITION_CLASS = FORM_CONTROL_OPTION
 // Compound controls render nested pcInputText/action parts; only the root may own the visible shell.
 // Nested inputs/buttons are reset here so PrimeVue defaults cannot create split borders or detached chrome.
@@ -89,20 +92,20 @@ export const formControlsPt = {
     dropdownIcon: {
       class: FORM_CONTROL_ACTION_ICON,
     },
-    panel: { class: FORM_CONTROL_OVERLAY },
+    panel: { class: FORM_CONTROL_OVERLAY_SURFACE },
   },
   select: {
     root: { class: FORM_CONTROL_SINGLE_ROOT },
     dropdown: { class: FORM_CONTROL_ACTION },
     dropdownIcon: { class: FORM_CONTROL_ACTION_ICON },
-    overlay: { class: FORM_CONTROL_OVERLAY },
+    overlay: { class: FORM_CONTROL_OVERLAY_SURFACE },
     option: { class: FORM_CONTROL_OPTION },
   },
   multiselect: {
     root: { class: FORM_CONTROL_SINGLE_ROOT },
     dropdown: { class: FORM_CONTROL_ACTION },
     dropdownIcon: { class: FORM_CONTROL_ACTION_ICON },
-    overlay: { class: FORM_CONTROL_OVERLAY },
+    overlay: { class: FORM_CONTROL_OVERLAY_SURFACE },
     option: { class: FORM_CONTROL_OPTION },
   },
   autocomplete: {
@@ -117,15 +120,15 @@ export const formControlsPt = {
     dropdownIcon: {
       class: FORM_CONTROL_ACTION_ICON,
     },
-    overlay: { class: FORM_CONTROL_OVERLAY },
+    overlay: { class: FORM_CONTROL_OVERLAY_SURFACE },
     option: { class: FORM_CONTROL_OPTION },
   },
   treeselect: {
     root: { class: FORM_CONTROL_SINGLE_ROOT },
     dropdown: { class: FORM_CONTROL_ACTION },
     dropdownIcon: { class: FORM_CONTROL_ACTION_ICON },
-    panel: { class: FORM_CONTROL_OVERLAY },
-    overlay: { class: FORM_CONTROL_OVERLAY },
+    panel: { class: FORM_CONTROL_OVERLAY_SURFACE },
+    overlay: { class: FORM_CONTROL_OVERLAY_SURFACE },
     pcTree: {
       nodeContent: { class: FORM_CONTROL_OPTION },
     },
@@ -137,8 +140,8 @@ export const formControlsPt = {
     },
     maskIcon: { class: FORM_CONTROL_ACTION_ICON },
     unmaskIcon: { class: FORM_CONTROL_ACTION_ICON },
-    panel: { class: FORM_CONTROL_OVERLAY },
-    overlay: { class: FORM_CONTROL_OVERLAY },
+    panel: { class: FORM_CONTROL_OVERLAY_SURFACE },
+    overlay: { class: FORM_CONTROL_OVERLAY_SURFACE },
   },
   // 104-anti-flicker-ring-less: no ring/border on hover; use bg for feedback
   selectbutton: {

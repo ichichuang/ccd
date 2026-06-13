@@ -141,15 +141,23 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
       warmup: {
         clientFiles: ['./index.html', './src/{views,components}/*'],
       },
-      hmr: {
-        overlay: isDev,
-        timeout: 30000,
-      },
+      hmr: isAutomatedServer
+        ? false
+        : {
+            overlay: isDev,
+            timeout: 30000,
+          },
       watch: {
         ignored: [
           '**/node_modules/**',
           '**/.git/**',
           '**/dist/**',
+          '**/.playwright/**',
+          '**/playwright-report/**',
+          '**/test-results/**',
+          '**/.eslintrc-auto-import.json',
+          '**/src/types/auto-imports.d.ts',
+          '**/src/types/components.d.ts',
           '**/src-tauri/target/**',
           '**/src-tauri/gen/**',
         ],
@@ -187,13 +195,18 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
           ? VITE_COMPRESSION
           : 'none') as 'none' | 'gzip' | 'brotli' | 'both',
       },
-      command
+      command,
+      {
+        enableIconWatcher: !isAutomatedServer,
+        enableUnoHmrTopLevelAwait: !isAutomatedServer,
+      }
     ),
 
     // 4. 依赖优化 (清理了僵尸依赖后的 clean version)
     optimizeDeps: {
       include,
       exclude,
+      noDiscovery: isAutomatedServer,
       force: false,
       rolldownOptions: {
         output: {

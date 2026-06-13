@@ -22,9 +22,9 @@ source_paths:
   - package.json
   - .ai/README.md
   - wiki/**
-  - wiki/**
   - .github/workflows/ci.yml
-last_reviewed: '2026-06-11'
+  - apps/web-demo/src/router/modules/architecture-console.spec.ts
+last_reviewed: '2026-06-12'
 wiki_owner: LLM-maintained CCD architecture wiki
 ---
 
@@ -48,6 +48,8 @@ pnpm build:ci
 pnpm validate
 ```
 
+For the web-demo Architecture Console lane, route and i18n validation is covered by `apps/web-demo/src/router/modules/architecture-console.spec.ts`, while E2E/visual coverage targets `/dashboard`, `/architecture`, `/runtime`, `/ui`, `/system`, and `/desktop` rather than retired `/example` paths.
+
 ## Desktop gates
 
 ```bash
@@ -68,8 +70,8 @@ This page is compiled from the following repository evidence paths:
 - `package.json`
 - `.ai/README.md`
 - `wiki/**`
-- `wiki/**`
 - `.github/workflows/ci.yml`
+- `apps/web-demo/src/router/modules/architecture-console.spec.ts`
 
 ## Related pages
 
@@ -77,3 +79,4 @@ This page is compiled from the following repository evidence paths:
 - [[generated-artifact-policy]]
 - [[ci-and-deploy]]
 - [[adr-003-governance-pipeline]]
+- [[web-demo-architecture-console]]

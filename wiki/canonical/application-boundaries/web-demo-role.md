@@ -22,15 +22,15 @@ source_paths:
   - README.md
   - README.en.md
   - wiki/**
-  - wiki/**
   - apps/web-demo/**
-last_reviewed: '2026-06-11'
+  - apps/web-demo/src/views/architecture-console/**
+last_reviewed: '2026-06-12'
 wiki_owner: LLM-maintained CCD architecture wiki
 ---
 
 # Web Demo Role
 
-`apps/web-demo` is the browser `web-demo` application shell. It owns browser entry, routes, stores, views, app adapters, app-level plugin wiring, compatibility facades, and app-specific browser runtime integration.
+`apps/web-demo` is the browser `web-demo` application shell. It owns browser entry, routes, stores, views, app adapters, app-level plugin wiring, compatibility facades, app-specific browser runtime integration, and the Architecture Console UI surface.
 
 ## Owned surfaces
 
@@ -40,6 +40,11 @@ wiki_owner: LLM-maintained CCD architecture wiki
 - alova HTTP runtime under app-owned HTTP infrastructure.
 - safeStorage concrete browser runtime facade under app-owned safeStorage paths.
 - PrimeVue app bootstrap through `@ccd/vue-primevue-adapter`.
+- Architecture Console pages and app-local page shells under `apps/web-demo/src/views/architecture-console/**`.
+
+## Architecture console role
+
+The app demonstrates CCD architecture through `/dashboard`, `/architecture`, `/runtime`, `/ui`, `/system`, and `/desktop`. The retired `/example` route museum is not a canonical user-facing surface. Console composition is app-local unless a future owner-approved extraction lane proves package ownership and public API.
 
 ## Not a public package
 
@@ -62,12 +67,13 @@ This page is compiled from the following repository evidence paths:
 - `README.md`
 - `README.en.md`
 - `wiki/**`
-- `wiki/**`
 - `apps/web-demo/**`
+- `apps/web-demo/src/views/architecture-console/**`
 
 ## Related pages
 
 - [[web-runtime]]
+- [[web-demo-architecture-console]]
 - [[http-runtime-ownership]]
 - [[safe-storage-runtime-ownership]]
 - [[app-local-shared-candidates]]

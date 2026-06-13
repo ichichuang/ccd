@@ -794,7 +794,7 @@ defineExpose({
             <!-- Loading overlay — suppressed when infinite-scroll is appending to existing data -->
             <div
               v-if="isLoading && (!infiniteScroll || ctrl.processedRows.value.length === 0)"
-              class="absolute inset-0 center bg-background/70 backdrop-blur-md z-10"
+              class="pro-table-loading-overlay absolute inset-0 center z-10"
             >
               <ProgressSpinner />
             </div>
@@ -877,5 +877,15 @@ defineExpose({
 .pro-table-fetch-error-leave-to {
   opacity: 0;
   max-height: 0;
+}
+
+.pro-table-loading-overlay {
+  background: rgb(var(--card) / 82%) !important;
+  backdrop-filter: none !important;
+}
+
+:global(html.dark .pro-table-loading-overlay),
+:global(.dark .pro-table-loading-overlay) {
+  background: rgb(0 0 0 / 34%) !important;
 }
 </style>
