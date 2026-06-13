@@ -26,7 +26,7 @@ source_paths:
   - .github/workflows/ci.yml
   - .github/workflows/deploy.yml
   - .github/CODEOWNERS
-last_reviewed: '2026-06-11'
+last_reviewed: '2026-06-14'
 wiki_owner: LLM-maintained CCD architecture wiki
 ---
 
@@ -40,10 +40,16 @@ GitHub governance covers branch protection expectations, workflow registry hygie
 - `.github/workflows/deploy.yml` defines GitHub Pages deployment and keeps deployment build separate from CI quality validation.
 - The AI control plane documents active repo workflows as `ci.yml` and `deploy.yml`, with an active remote-managed Dependabot workflow and disabled historical desktop workflows.
 
+## Owner-only direct-main policy
+
+This repository is a personal repository with no collaborators. GitHub work happens directly on `main` unless the owner explicitly requests a branch or PR.
+
+PR review approval is not required for owner-only work. Local validation replaces PR review as the pre-push safety gate, and `CI Guardian` must continue to run `Core Quality` and `E2E QA` on direct pushes to `main`.
+
 ## Operating rules
 
-- Do not mutate remote GitHub settings unless a future remote-governance lane explicitly authorizes the operation.
-- Keep `Core Quality` and `E2E QA` aligned with branch protection requirements.
+- Do not mutate remote GitHub settings unless a fresh owner-approved remote-governance lane explicitly authorizes the operation.
+- Keep `Core Quality` and `E2E QA` aligned with the direct-main safety gate and any active branch protection requirements.
 - Keep `pnpm build:ci` as CI quality parity and `pnpm vercel:build` / Pages build behavior as deployment-specific.
 
 ## Validation commands

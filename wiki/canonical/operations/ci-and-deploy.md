@@ -25,7 +25,7 @@ source_paths:
   - wiki/**
   - wiki/**
   - package.json
-last_reviewed: '2026-06-11'
+last_reviewed: '2026-06-14'
 wiki_owner: LLM-maintained CCD architecture wiki
 ---
 
@@ -35,7 +35,7 @@ GitHub Actions is the quality gate. Vercel and GitHub Pages are deployment build
 
 ## Current workflows
 
-- `.github/workflows/ci.yml` runs `CI Guardian` on `main`, `develop`, and pull requests to `main`. It has `Core Quality` and `E2E QA` jobs.
+- `.github/workflows/ci.yml` runs `CI Guardian` on direct pushes to `main` and `develop`, plus pull requests to `main` when the owner explicitly requests a PR. It has `Core Quality` and `E2E QA` jobs.
 - `.github/workflows/deploy.yml` runs GitHub Pages deployment on pushes to `main` and manual dispatch.
 - CI installs pnpm `10.28.2`, sets up Node.js `24.x`, and runs frozen install through `scripts/exec.sh`.
 
@@ -44,6 +44,7 @@ GitHub Actions is the quality gate. Vercel and GitHub Pages are deployment build
 - `pnpm build:ci` is CI quality parity.
 - `pnpm vercel:build` is the Vercel deployment build.
 - `pnpm build:web-demo` plus Pages artifact upload is GitHub Pages deployment.
+- For owner-only direct-main work, local validation before push and the resulting main-push CI run replace PR review approval as the safety gate.
 
 ## Validation commands
 

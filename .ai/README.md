@@ -132,7 +132,7 @@ pnpm build:desktop && pnpm budget:desktop
 pnpm e2e:qa
 ```
 
-Ownership starts at `.github/CODEOWNERS`; branch protection should require the CI workflow before merge.
+Ownership starts at `.github/CODEOWNERS`. This personal repository defaults to direct `main` work unless the owner explicitly requests a branch or PR; local validation and main-push CI replace PR review approval for owner-only changes.
 
 Remote workflow registry state is part of governance:
 
