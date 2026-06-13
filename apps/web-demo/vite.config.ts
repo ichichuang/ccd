@@ -193,7 +193,11 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
           ? VITE_COMPRESSION
           : 'none') as 'none' | 'gzip' | 'brotli' | 'both',
       },
-      command
+      command,
+      {
+        enableIconWatcher: !isAutomatedServer,
+        enableUnoHmrTopLevelAwait: !isAutomatedServer,
+      }
     ),
 
     // 4. 依赖优化 (清理了僵尸依赖后的 clean version)

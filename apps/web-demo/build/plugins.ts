@@ -63,10 +63,21 @@ export const BUILD_PLUGIN_COMPATIBILITY_NOTES = [
   },
 ] as const
 
-export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): PluginOption[] {
+interface BuildPluginOptions {
+  enableIconWatcher?: boolean
+  enableUnoHmrTopLevelAwait?: boolean
+}
+
+export function getPluginsList(
+  env: ViteEnv,
+  command: 'build' | 'serve',
+  options: BuildPluginOptions = {}
+): PluginOption[] {
   const { VITE_COMPRESSION, VITE_BUILD_ANALYZE } = env
   const isDev = command === 'serve'
   const isBuild = command === 'build'
+  const enableIconWatcher = options.enableIconWatcher ?? true
+  const enableUnoHmrTopLevelAwait = options.enableUnoHmrTopLevelAwait ?? true
 
   const plugins: (PluginOption | false)[] = [
     // ECharts tree-shaking 增强：覆盖 echarts package.json 中 sideEffects 声明，
@@ -102,10 +113,12 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
     configHtmlPlugin(env),
 
     // 图标变更监听（仅开发环境启用）
-    isDev && createIconsWatcherPlugin(),
+    isDev && enableIconWatcher && createIconsWatcherPlugin(),
 
     // UnoCSS 原子化 CSS
-    UnoCSS(),
+    UnoCSS({
+      hmrTopLevelAwait: enableUnoHmrTopLevelAwait,
+    }),
 
     // Vue 核心插件
     vue({
