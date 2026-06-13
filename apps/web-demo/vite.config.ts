@@ -206,6 +206,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
     optimizeDeps: {
       include,
       exclude,
+      noDiscovery: isAutomatedServer,
       force: false,
       rolldownOptions: {
         output: {
