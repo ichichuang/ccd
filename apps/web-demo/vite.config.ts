@@ -141,10 +141,12 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
       warmup: {
         clientFiles: ['./index.html', './src/{views,components}/*'],
       },
-      hmr: {
-        overlay: isDev,
-        timeout: 30000,
-      },
+      hmr: isAutomatedServer
+        ? false
+        : {
+            overlay: isDev,
+            timeout: 30000,
+          },
       watch: {
         ignored: [
           '**/node_modules/**',
