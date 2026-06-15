@@ -35,11 +35,11 @@ const zhCNCore = {
     passwordHide: '隐藏密码',
     rememberMe: '记住我',
     diagram: {
-      contracts: 'CONTRACTS',
-      apps: 'APPS',
-      core: 'CCD CORE',
-      governed: 'GOVERNED',
-      isolated: 'ISOLATED',
+      contracts: 'contracts',
+      apps: 'apps',
+      core: 'core',
+      governed: 'governed',
+      isolated: 'isolated',
     },
   },
   auth: {

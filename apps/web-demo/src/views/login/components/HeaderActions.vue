@@ -184,15 +184,19 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .auth-toolbar {
-  gap: var(--spacing-2xs);
-  padding: var(--spacing-2xs);
-  border: 1px solid rgb(var(--border) / 40%);
-  border-radius: var(--radius-md);
-  background: linear-gradient(180deg, rgb(var(--background) / 60%), rgb(var(--card) / 50%));
-  box-shadow:
-    inset 0 1px 0 rgb(var(--foreground) / 4%),
-    0 var(--spacing-2xs) var(--spacing-md) rgb(var(--background) / 10%);
-  transition: border-color var(--transition-sm) ease-out;
+  gap: var(--spacing-3xs);
+  padding: 3px;
+  border: 1px solid rgb(var(--border) / 50%);
+  border-radius: var(--radius-full);
+  background: rgb(var(--card) / 30%);
+  transition:
+    border-color var(--transition-sm) ease-out,
+    background-color var(--transition-sm) ease-out;
+}
+
+:global(.dark) .auth-toolbar {
+  border-color: rgb(var(--border) / 45%);
+  background: rgb(var(--card) / 20%);
 }
 
 .auth-toolbar:hover {
@@ -201,21 +205,23 @@ onBeforeUnmount(() => {
 
 .auth-toolbar__divider {
   width: 1px;
-  height: 14px;
-  background-color: rgb(var(--border) / 45%);
+  height: 12px;
+  background-color: rgb(var(--border) / 50%);
+  margin: 0 var(--spacing-3xs);
 }
 
 .auth-toolbar__btn {
   height: 28px;
-  border: 0 !important;
-  border-radius: var(--radius-sm) !important;
+  border: 1px solid transparent !important;
+  border-radius: var(--radius-full) !important;
   background: transparent !important;
   color: rgb(var(--muted-foreground)) !important;
   box-shadow: none !important;
   transition:
     background-color var(--transition-sm) ease-out,
     color var(--transition-sm) ease-out,
-    border-color var(--transition-sm) ease-out;
+    border-color var(--transition-sm) ease-out,
+    box-shadow var(--transition-sm) ease-out;
 }
 
 .auth-toolbar__btn--icon {
@@ -224,12 +230,20 @@ onBeforeUnmount(() => {
 }
 
 .auth-toolbar__btn--locale {
-  padding: 0 var(--spacing-xs) !important;
+  padding: 0 var(--spacing-sm) !important;
 }
 
 .auth-toolbar__btn:hover {
-  background: rgb(var(--primary) / 8%) !important;
-  color: rgb(var(--primary)) !important;
+  border-color: rgb(var(--border) / 70%) !important;
+  background: rgb(var(--card)) !important;
+  color: rgb(var(--foreground)) !important;
+  box-shadow: 0 1px 3px rgb(var(--background) / 4%) !important;
+}
+
+:global(.dark) .auth-toolbar__btn:hover {
+  border-color: rgb(var(--border) / 50%) !important;
+  background: rgb(var(--background) / 80%) !important;
+  box-shadow: 0 1px 3px rgb(var(--background) / 30%) !important;
 }
 
 .auth-toolbar__chevron {
@@ -242,22 +256,29 @@ onBeforeUnmount(() => {
 
 /* Locale Dropdown Panel Styling */
 .auth-locale-panel {
-  border: 1px solid rgb(var(--border) / 45%) !important;
+  border: 1px solid rgb(var(--border) / 60%) !important;
   background: rgb(var(--card)) !important;
-  box-shadow: 0 var(--spacing-sm) var(--spacing-xl) rgb(var(--background) / 16%) !important;
-  border-radius: var(--radius-md) !important;
-  padding: var(--spacing-2xs) !important;
+  backdrop-filter: blur(8px);
+  box-shadow:
+    0 4px 6px -1px rgb(var(--background) / 8%),
+    0 10px 15px -3px rgb(var(--background) / 12%) !important;
+  border-radius: var(--radius-lg) !important;
+  padding: 4px !important;
 }
 
 :global(.dark) .auth-locale-panel {
-  border-color: rgb(var(--border) / 30%) !important;
-  background: rgb(var(--background) / 95%) !important;
-  box-shadow: 0 var(--spacing-sm) var(--spacing-xl) rgb(var(--background) / 60%) !important;
+  border-color: rgb(var(--border) / 45%) !important;
+  background: rgb(var(--background) / 90%) !important;
+  box-shadow:
+    0 4px 6px -1px rgb(var(--background) / 40%),
+    0 10px 15px -3px rgb(var(--background) / 60%) !important;
 }
 
 .auth-locale-item {
   height: 32px;
-  border-radius: var(--radius-sm) !important;
+  padding: 0 var(--spacing-sm) !important;
+  border-radius: var(--radius-md) !important;
+  color: rgb(var(--muted-foreground)) !important;
   transition:
     background-color var(--transition-sm) ease-out,
     color var(--transition-sm) ease-out;
@@ -269,7 +290,9 @@ onBeforeUnmount(() => {
 }
 
 .auth-locale-item--active {
-  font-weight: 700;
+  color: rgb(var(--primary)) !important;
+  background: rgb(var(--primary) / 4%) !important;
+  font-weight: 600 !important;
 }
 
 /* Locale panel transition */

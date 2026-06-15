@@ -275,11 +275,11 @@ onMounted(() => emitCharacterState())
   height: calc(var(--spacing-2xl) + var(--spacing-xs));
   overflow: hidden;
   border: 1px solid rgb(var(--border) / 80%);
-  border-radius: var(--radius-md);
-  background: linear-gradient(180deg, rgb(var(--card)), rgb(var(--muted) / 20%));
+  border-radius: var(--radius-lg);
+  background: rgb(var(--card));
   box-shadow:
-    inset 0 1px 0 rgb(var(--foreground) / 4%),
-    0 var(--spacing-xs) var(--spacing-md) rgb(var(--foreground) / 2%);
+    inset 0 1px 0 rgb(var(--foreground) / 2%),
+    0 1px 2px rgb(var(--background) / 2%);
   color: rgb(var(--foreground));
   transition:
     background-color var(--transition-sm) ease-out,
@@ -288,39 +288,42 @@ onMounted(() => emitCharacterState())
 }
 
 .login-field-shell:hover {
-  border-color: rgb(var(--primary) / 60%);
+  border-color: rgb(var(--primary) / 50%);
 }
 
 .login-field-shell:focus-within {
   border-color: rgb(var(--primary));
   background: rgb(var(--card));
   box-shadow:
-    0 0 0 2px rgb(var(--primary) / 14%),
-    0 var(--spacing-sm) var(--spacing-xl) rgb(var(--primary) / 8%);
+    0 0 0 2px rgb(var(--primary) / 10%),
+    0 2px 8px rgb(var(--primary) / 4%);
 }
 
 :global(.dark) .login-field-shell {
-  border-color: rgb(var(--border) / 45%);
-  background: linear-gradient(180deg, rgb(var(--background) / 60%), rgb(var(--card) / 40%));
-  box-shadow:
-    inset 0 1px 0 rgb(var(--foreground) / 4%),
-    0 var(--spacing-xs) var(--spacing-md) rgb(var(--background) / 10%);
+  border-color: rgb(var(--border) / 50%);
+  background: rgb(var(--background) / 40%);
 }
 
 :global(.dark) .login-field-shell:hover {
-  border-color: rgb(var(--primary) / 70%);
+  border-color: rgb(var(--primary) / 60%);
 }
 
 :global(.dark) .login-field-shell:focus-within {
   border-color: rgb(var(--primary));
-  background: rgb(var(--background) / 95%);
+  background: rgb(var(--background) / 75%);
   box-shadow:
-    0 0 0 2px rgb(var(--primary) / 22%),
-    0 var(--spacing-sm) var(--spacing-xl) rgb(var(--primary) / 12%);
+    0 0 0 2px rgb(var(--primary) / 18%),
+    0 2px 8px rgb(var(--primary) / 6%);
 }
 
 .login-field-shell--invalid {
-  border-color: rgb(var(--danger)) !important;
+  border-color: rgb(var(--danger) / 80%) !important;
+  background-color: rgb(var(--danger) / 3%) !important;
+}
+
+:global(.dark) .login-field-shell--invalid {
+  border-color: rgb(var(--danger) / 80%) !important;
+  background-color: rgb(var(--danger) / 5%) !important;
 }
 
 .login-field-input {
@@ -337,23 +340,24 @@ onMounted(() => emitCharacterState())
 }
 
 .login-field-input--password {
-  padding-right: 0 !important;
+  padding-right: var(--spacing-xs) !important;
 }
 
 .login-field-input::placeholder {
-  color: rgb(var(--muted-foreground) / 70%) !important;
-}
-
-:global(.dark) .login-field-input::placeholder {
   color: rgb(var(--muted-foreground) / 60%) !important;
 }
 
+:global(.dark) .login-field-input::placeholder {
+  color: rgb(var(--muted-foreground) / 50%) !important;
+}
+
 .login-password-toggle {
-  width: calc(var(--spacing-2xl) + var(--spacing-2xs));
-  height: 100%;
+  width: 28px;
+  height: 28px;
+  margin-right: var(--spacing-xs);
   flex: 0 0 auto;
   border: 0 !important;
-  border-radius: 0 !important;
+  border-radius: var(--radius-full) !important;
   background: transparent !important;
   color: rgb(var(--muted-foreground)) !important;
   box-shadow: none !important;
@@ -366,6 +370,28 @@ onMounted(() => emitCharacterState())
 .login-password-toggle:hover {
   background: rgb(var(--primary) / 10%) !important;
   color: rgb(var(--primary)) !important;
+}
+
+/* Deep overrides for ProForm labels and errors */
+:deep(label) {
+  font-size: var(--font-size-xs) !important;
+  font-weight: 600 !important;
+  color: rgb(var(--muted-foreground)) !important;
+  margin-bottom: var(--spacing-xs) !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+}
+
+:deep(.text-danger) {
+  color: rgb(var(--danger)) !important;
+  font-size: var(--font-size-xs) !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em !important;
+}
+
+:deep(.text-muted-foreground) {
+  font-size: var(--font-size-xs) !important;
+  color: rgb(var(--muted-foreground) / 80%) !important;
 }
 
 .login-form-footer {
@@ -384,7 +410,7 @@ onMounted(() => emitCharacterState())
   cursor: pointer;
   color: rgb(var(--muted-foreground));
   font-size: var(--font-size-sm);
-  font-weight: 650;
+  font-weight: 550;
   line-height: 1;
 }
 
@@ -396,48 +422,51 @@ onMounted(() => emitCharacterState())
   color: rgb(var(--primary)) !important;
   box-shadow: none !important;
   font-size: var(--font-size-sm) !important;
-  font-weight: 650 !important;
+  font-weight: 550 !important;
   padding: 0 var(--spacing-xs) !important;
   transition: background-color var(--transition-sm) ease-out;
 }
 
 .login-forgot-button:hover {
-  background: rgb(var(--primary) / 10%) !important;
+  background: rgb(var(--primary) / 8%) !important;
 }
 
 .login-submit-button {
   justify-content: center;
   width: 100%;
   border: 0 !important;
-  border-radius: var(--radius-md) !important;
-  background: linear-gradient(90deg, rgb(var(--primary)), rgb(var(--accent) / 78%)) !important;
+  border-radius: var(--radius-lg) !important;
+  background: linear-gradient(90deg, rgb(var(--primary)), rgb(var(--accent) / 85%)) !important;
   color: rgb(var(--primary-foreground)) !important;
   box-shadow:
-    inset 0 1px 0 rgb(var(--foreground) / 12%),
-    0 var(--spacing-sm) var(--spacing-xl) rgb(var(--primary) / 28%) !important;
+    0 4px 12px rgb(var(--primary) / 20%),
+    0 1px 2px rgb(var(--background) / 10%) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
   transition:
     background-color var(--transition-sm) ease-out,
+    opacity var(--transition-sm) ease-out,
     transform var(--transition-sm) ease-out,
     box-shadow var(--transition-sm) ease-out;
 }
 
-.login-submit-button:hover {
+.login-submit-button:hover:not(:disabled) {
   background: linear-gradient(
     90deg,
     rgb(var(--primary-hover)),
-    rgb(var(--accent) / 86%)
+    rgb(var(--accent) / 95%)
   ) !important;
   box-shadow:
-    inset 0 1px 0 rgb(var(--foreground) / 14%),
-    0 var(--spacing-md) var(--spacing-2xl) rgb(var(--primary) / 34%) !important;
+    0 6px 16px rgb(var(--primary) / 25%),
+    0 2px 4px rgb(var(--background) / 15%) !important;
 }
 
-.login-submit-button:active {
-  transform: translateY(1px);
+.login-submit-button:active:not(:disabled) {
+  transform: translateY(0.5px);
 }
 
 .login-submit-button:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 @media (width <= 768px) {

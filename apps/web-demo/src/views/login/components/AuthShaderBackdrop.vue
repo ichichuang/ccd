@@ -24,20 +24,20 @@ defineOptions({ name: 'AuthShaderBackdrop' })
 
 <style scoped>
 .auth-shader-backdrop {
-  --auth-backdrop-primary: 12%;
-  --auth-backdrop-accent: 9%;
-  --auth-backdrop-line: 5%;
-  --auth-backdrop-panel: 22%;
-  --auth-sweep-duration: 25s;
+  --auth-backdrop-primary: 5%;
+  --auth-backdrop-accent: 4%;
+  --auth-backdrop-line: 1.5%;
+  --auth-backdrop-panel: 8%;
+  --auth-sweep-duration: 35s;
 
   background: rgb(var(--background));
 }
 
 :global(.dark) .auth-shader-backdrop {
-  --auth-backdrop-primary: 20%;
-  --auth-backdrop-accent: 15%;
-  --auth-backdrop-line: 6%;
-  --auth-backdrop-panel: 42%;
+  --auth-backdrop-primary: 10%;
+  --auth-backdrop-accent: 8%;
+  --auth-backdrop-line: 2%;
+  --auth-backdrop-panel: 15%;
 }
 
 /* Base gradient fields with subtle low-frequency shimmer */
@@ -53,7 +53,7 @@ defineOptions({ name: 'AuthShaderBackdrop' })
       rgb(var(--accent) / var(--auth-backdrop-accent)),
       transparent 40%
     ),
-    radial-gradient(ellipse at 50% 10%, rgb(var(--info) / 8%), transparent 30%),
+    radial-gradient(ellipse at 50% 10%, rgb(var(--info) / 3%), transparent 30%),
     linear-gradient(
       135deg,
       rgb(var(--background)) 0%,
@@ -65,7 +65,7 @@ defineOptions({ name: 'AuthShaderBackdrop' })
 
 /* Fine grid and subtle diagonal lines */
 .auth-shader-backdrop__grid {
-  opacity: 0.68;
+  opacity: 0.45;
   background-image:
     /* Fine Grid */
     linear-gradient(rgb(var(--foreground) / var(--auth-backdrop-line)) 1px, transparent 1px),
@@ -74,13 +74,13 @@ defineOptions({ name: 'AuthShaderBackdrop' })
     repeating-linear-gradient(
         135deg,
         transparent 0,
-        transparent 32px,
-        rgb(var(--foreground) / 4%) 32px,
-        rgb(var(--foreground) / 4%) 33px
+        transparent 48px,
+        rgb(var(--foreground) / 0.8%) 48px,
+        rgb(var(--foreground) / 0.8%) 49px
       );
   background-size:
-    40px 40px,
-    40px 40px,
+    48px 48px,
+    48px 48px,
     100% 100%;
   mask-image: radial-gradient(
     circle at 50% 50%,
@@ -93,25 +93,25 @@ defineOptions({ name: 'AuthShaderBackdrop' })
 .auth-shader-backdrop__sweep {
   background: linear-gradient(
     135deg,
-    transparent 45%,
-    rgb(var(--primary) / 6%) 48%,
-    rgb(var(--primary) / 14%) 50%,
-    rgb(var(--accent) / 8%) 52%,
-    transparent 55%
+    transparent 46%,
+    rgb(var(--primary) / 4%) 49%,
+    rgb(var(--primary) / 8%) 50%,
+    rgb(var(--accent) / 5%) 51%,
+    transparent 54%
   );
   background-size: 200% 200%;
   animation: auth-sweep var(--auth-sweep-duration) linear infinite;
-  opacity: 0.82;
+  opacity: 0.6;
 }
 
 /* Ambient glow zones */
 .auth-shader-backdrop__glow {
   position: absolute;
   border-radius: var(--radius-full);
-  filter: blur(100px);
+  filter: blur(120px);
   pointer-events: none;
-  opacity: 0.45;
-  animation: auth-glow-pulse 10s ease-in-out infinite alternate;
+  opacity: 0.3;
+  animation: auth-glow-pulse 12s ease-in-out infinite alternate;
 }
 
 .auth-shader-backdrop__glow--primary {
@@ -119,7 +119,7 @@ defineOptions({ name: 'AuthShaderBackdrop' })
   left: 20%;
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, rgb(var(--primary) / 16%), transparent 70%);
+  background: radial-gradient(circle, rgb(var(--primary) / 10%), transparent 70%);
 }
 
 .auth-shader-backdrop__glow--accent {
@@ -127,14 +127,14 @@ defineOptions({ name: 'AuthShaderBackdrop' })
   right: 25%;
   width: 250px;
   height: 250px;
-  background: radial-gradient(circle, rgb(var(--accent) / 12%), transparent 70%);
-  animation-delay: -5s;
+  background: radial-gradient(circle, rgb(var(--accent) / 8%), transparent 70%);
+  animation-delay: -6s;
 }
 
 @keyframes auth-shimmer {
   0%,
   100% {
-    opacity: 0.88;
+    opacity: 0.92;
   }
 
   50% {
@@ -154,13 +154,13 @@ defineOptions({ name: 'AuthShaderBackdrop' })
 
 @keyframes auth-glow-pulse {
   0% {
-    transform: scale(0.95) translate3d(0, 0, 0);
-    opacity: 0.38;
+    transform: scale(0.97) translate3d(0, 0, 0);
+    opacity: 0.25;
   }
 
   100% {
-    transform: scale(1.05) translate3d(5px, -5px, 0);
-    opacity: 0.48;
+    transform: scale(1.03) translate3d(3px, -3px, 0);
+    opacity: 0.35;
   }
 }
 
@@ -173,7 +173,7 @@ defineOptions({ name: 'AuthShaderBackdrop' })
   }
 
   .auth-shader-backdrop__sweep {
-    opacity: 0.3;
+    opacity: 0.2;
     background-position: 50% 50%;
   }
 }

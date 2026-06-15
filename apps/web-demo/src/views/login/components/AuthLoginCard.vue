@@ -49,49 +49,32 @@ const { t } = useI18n({ useScope: 'global' })
 .auth-login-card {
   position: relative;
   isolation: isolate;
-  gap: var(--spacing-2xl);
+  gap: var(--spacing-3xl);
   width: 100%;
-  padding: var(--spacing-3xl);
+  padding: var(--spacing-4xl);
   overflow: hidden;
-  border: 1px solid rgb(var(--border) / 45%);
-  border-radius: var(--radius-xl);
-  background:
-    radial-gradient(ellipse at 12% 0, rgb(var(--primary) / 6%), transparent 45%),
-    radial-gradient(ellipse at 88% 100%, rgb(var(--accent) / 4%), transparent 40%),
-    linear-gradient(180deg, rgb(var(--card)), rgb(var(--card) / 95%));
+  border: 1px solid rgb(var(--border) / 70%);
+  border-radius: var(--radius-2xl);
+  background: rgb(var(--card));
   box-shadow:
-    inset 0 1px 0 rgb(var(--foreground) / 4%),
-    0 var(--spacing-2xl) var(--spacing-5xl) rgb(var(--background) / 20%),
-    0 var(--spacing-xs) var(--spacing-2xl) rgb(var(--primary) / 3%);
+    0 1px 3px rgb(var(--background) / 10%),
+    0 16px 40px -8px rgb(var(--background) / 12%),
+    0 32px 64px -16px rgb(var(--background) / 16%);
 }
 
 .auth-login-card::before {
   position: absolute;
   inset: 0 0 auto;
-  height: 2px;
+  height: 1.5px;
   content: '';
   background: linear-gradient(
     90deg,
     transparent,
-    rgb(var(--primary) / 45%),
-    rgb(var(--accent) / 30%),
+    rgb(var(--primary) / 40%),
+    rgb(var(--accent) / 25%),
     transparent
   );
-  opacity: 0.85;
-}
-
-.auth-login-card::after {
-  position: absolute;
-  inset: var(--spacing-xs);
-  pointer-events: none;
-  content: '';
-  border: 1px solid rgb(var(--border) / 12%);
-  border-radius: calc(var(--radius-xl) - var(--spacing-xs));
-  background-image:
-    linear-gradient(rgb(var(--foreground) / 2%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(var(--foreground) / 2%) 1px, transparent 1px);
-  background-size: 32px 32px;
-  mask-image: linear-gradient(180deg, rgb(var(--foreground)), transparent 65%);
+  opacity: 0.9;
 }
 
 .auth-login-card__header {
@@ -107,10 +90,10 @@ const { t } = useI18n({ useScope: 'global' })
 }
 
 .auth-login-card__eyebrow {
-  color: rgb(var(--primary));
+  color: rgb(var(--primary) / 90%);
   font-size: var(--font-size-xs);
-  font-weight: 750;
-  letter-spacing: 0.05em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   line-height: 1;
   text-transform: uppercase;
 }
@@ -118,8 +101,8 @@ const { t } = useI18n({ useScope: 'global' })
 .auth-login-card__title {
   margin: 0;
   color: rgb(var(--foreground));
-  font-size: var(--font-size-3xl);
-  font-weight: 760;
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
   letter-spacing: -0.015em;
   line-height: 1.15;
 }
@@ -128,8 +111,8 @@ const { t } = useI18n({ useScope: 'global' })
   margin: 0;
   color: rgb(var(--muted-foreground));
   font-size: var(--font-size-sm);
-  font-weight: 500;
-  line-height: 1.5;
+  font-weight: 450;
+  line-height: 1.45;
   word-break: keep-all;
 }
 
@@ -143,20 +126,17 @@ const { t } = useI18n({ useScope: 'global' })
 
 .auth-login-card--compact {
   gap: var(--spacing-md);
-  padding: var(--spacing-lg);
+  padding: var(--spacing-xl);
 }
 
 :global(.dark) .auth-login-card {
-  border-color: rgb(var(--border) / 30%);
-  background:
-    radial-gradient(ellipse at 12% 0, rgb(var(--primary) / 12%), transparent 45%),
-    radial-gradient(ellipse at 88% 100%, rgb(var(--accent) / 8%), transparent 40%),
-    linear-gradient(180deg, rgb(var(--card) / 98%), rgb(var(--background) / 90%));
+  border-color: rgb(var(--border) / 45%);
+  background: linear-gradient(180deg, rgb(var(--card)), rgb(var(--background) / 98%));
   box-shadow:
     inset 0 1px 0 rgb(var(--foreground) / 4%),
-    inset 0 0 0 1px rgb(var(--primary) / 5%),
-    0 var(--spacing-2xl) var(--spacing-5xl) rgb(var(--background) / 50%),
-    0 0 25px rgb(var(--primary) / 4%);
+    0 0 0 1px rgb(var(--primary) / 6%),
+    0 24px 64px rgb(var(--background) / 35%),
+    0 0 30px rgb(var(--primary) / 3%);
 }
 
 @media (width <= 768px) {
@@ -166,7 +146,7 @@ const { t } = useI18n({ useScope: 'global' })
   }
 
   .auth-login-card__title {
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-xl);
   }
 
   .auth-login-card__subtitle {

@@ -13,62 +13,63 @@ defineProps<{
     class="auth-signal-card row-start"
     :class="{ 'auth-signal-card--active': active }"
   >
-    <span class="auth-signal-card__icon center">
-      <Icons
-        :name="icon"
-        size="xs"
-      />
-    </span>
+    <span
+      class="auth-signal-dot"
+      :class="{ 'auth-signal-dot--active': active }"
+    />
     <span class="auth-signal-card__label">{{ label }}</span>
   </article>
 </template>
 
 <style scoped>
 .auth-signal-card {
-  gap: var(--spacing-xs);
+  gap: var(--spacing-sm);
   min-width: 0;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border: 1px solid rgb(var(--border) / 45%);
-  border-radius: var(--radius-md);
-  background: linear-gradient(135deg, rgb(var(--card) / 50%), rgb(var(--background) / 20%));
+  padding: var(--spacing-xs) var(--spacing-md);
+  border: 1px solid rgb(var(--border) / 40%);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgb(var(--card) / 60%), rgb(var(--background) / 20%));
   box-shadow:
     inset 0 1px 0 rgb(var(--foreground) / 4%),
-    0 var(--spacing-2xs) var(--spacing-md) rgb(var(--background) / 6%);
+    0 2px 4px rgb(var(--background) / 4%);
   color: rgb(var(--muted-foreground));
   transition:
     border-color var(--transition-md) ease-out,
     color var(--transition-md) ease-out,
+    background-color var(--transition-md) ease-out,
     box-shadow var(--transition-md) ease-out;
 }
 
 .auth-signal-card--active {
-  border-color: rgb(var(--primary) / 60%);
+  border-color: rgb(var(--primary) / 50%);
   color: rgb(var(--foreground));
-  background: linear-gradient(135deg, rgb(var(--primary) / 8%), rgb(var(--card) / 60%));
+  background: linear-gradient(135deg, rgb(var(--primary) / 4%), rgb(var(--card) / 70%));
   box-shadow:
     inset 0 1px 0 rgb(var(--foreground) / 4%),
-    0 0 12px rgb(var(--primary) / 10%),
-    0 var(--spacing-2xs) var(--spacing-md) rgb(var(--primary) / 4%);
+    0 4px 12px rgb(var(--primary) / 3%);
 }
 
-.auth-signal-card__icon {
-  width: 22px;
-  height: 22px;
+.auth-signal-dot {
+  width: 6px;
+  height: 6px;
   flex: 0 0 auto;
   border-radius: var(--radius-full);
-  background: rgb(var(--primary) / 8%);
-  color: rgb(var(--primary));
-  transition: background-color var(--transition-md) ease-out;
+  background: rgb(var(--border) / 90%);
+  transition:
+    background-color var(--transition-md) ease-out,
+    box-shadow var(--transition-md) ease-out;
 }
 
-.auth-signal-card--active .auth-signal-card__icon {
-  background: rgb(var(--primary) / 15%);
+.auth-signal-dot--active {
+  background: rgb(var(--primary));
+  box-shadow: 0 0 8px rgb(var(--primary));
 }
 
 .auth-signal-card__label {
   min-width: 0;
   font-size: var(--font-size-xs);
-  font-weight: 650;
+  font-weight: 550;
   line-height: 1.25;
+  letter-spacing: 0.02em;
 }
 </style>
