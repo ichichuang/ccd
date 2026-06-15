@@ -31,9 +31,9 @@ const stageStyle = computed<Record<string, string>>(() => ({
   '--auth-apps-opacity': isAppsActive.value ? '1.0' : '0.65',
   '--auth-contracts-stroke': isUsernameActive.value
     ? 'rgb(var(--primary))'
-    : 'rgb(var(--border) / 38%)',
-  '--auth-core-stroke': isPasswordActive.value ? 'rgb(var(--accent))' : 'rgb(var(--border) / 38%)',
-  '--auth-apps-stroke': isAppsActive.value ? 'rgb(var(--success))' : 'rgb(var(--border) / 38%)',
+    : 'rgb(var(--border) / 35%)',
+  '--auth-core-stroke': isPasswordActive.value ? 'rgb(var(--accent))' : 'rgb(var(--border) / 35%)',
+  '--auth-apps-stroke': isAppsActive.value ? 'rgb(var(--success))' : 'rgb(var(--border) / 35%)',
 }))
 </script>
 
@@ -63,33 +63,18 @@ const stageStyle = computed<Record<string, string>>(() => ({
       </p>
     </header>
 
-    <!-- Static architecture blueprint diagram -->
+    <!-- Compact static architecture blueprint diagram -->
     <div
       class="auth-visual-stage__diagram center z-content"
       aria-hidden="true"
     >
       <svg
         class="auth-diagram-svg"
-        viewBox="0 0 400 280"
+        viewBox="0 0 400 240"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <!-- Fine blueprint grid -->
         <defs>
-          <pattern
-            id="blueprint-grid"
-            width="20"
-            height="20"
-            patternUnits="userSpaceOnUse"
-          >
-            <path
-              d="M 20 0 L 0 0 0 20"
-              fill="none"
-              stroke="currentColor"
-              stroke-opacity="0.04"
-              stroke-width="1"
-            />
-          </pattern>
           <linearGradient
             id="flow-gradient"
             x1="0%"
@@ -131,120 +116,92 @@ const stageStyle = computed<Record<string, string>>(() => ({
           </linearGradient>
         </defs>
 
-        <!-- Diagram Background Grid -->
-        <rect
-          width="100%"
-          height="100%"
-          fill="url(#blueprint-grid)"
-          rx="12"
-        />
-
-        <!-- Connection Paths -->
+        <!-- Thin Connection Paths -->
         <!-- Contracts to Core -->
         <path
-          d="M 90 140 L 160 140"
+          d="M 95 120 L 160 120"
           stroke="rgb(var(--border) / 12%)"
-          stroke-width="1.5"
+          stroke-width="1.0"
         />
         <path
-          d="M 90 140 L 160 140"
+          d="M 95 120 L 160 120"
           stroke="url(#flow-gradient)"
-          stroke-width="2"
+          stroke-width="1.5"
           class="auth-flow-path auth-flow-path--1"
         />
 
         <!-- Core to Apps -->
         <path
-          d="M 240 140 L 310 140"
+          d="M 240 120 L 305 120"
           stroke="rgb(var(--border) / 12%)"
-          stroke-width="1.5"
+          stroke-width="1.0"
         />
         <path
-          d="M 240 140 L 310 140"
+          d="M 240 120 L 305 120"
           stroke="url(#flow-gradient)"
-          stroke-width="2"
+          stroke-width="1.5"
           class="auth-flow-path auth-flow-path--2"
-        />
-
-        <!-- Vertical Align reference dashes -->
-        <path
-          d="M 200 70 L 200 210"
-          stroke="rgb(var(--border) / 10%)"
-          stroke-width="1"
-          stroke-dasharray="3 3"
         />
 
         <!-- Contracts Layer Node -->
         <g
           class="auth-diagram-node auth-diagram-node--contracts"
-          transform="translate(20, 115)"
+          transform="translate(20, 95)"
         >
           <rect
-            width="70"
+            width="75"
             height="50"
             rx="6"
-            fill="rgb(var(--card) / 78%)"
+            fill="rgb(var(--card) / 50%)"
             stroke="var(--auth-contracts-stroke)"
-            stroke-width="1.5"
+            stroke-width="1.2"
             class="auth-node-rect"
           />
           <text
-            x="35"
-            y="29"
+            x="37.5"
+            y="29.5"
             fill="rgb(var(--foreground))"
             font-size="9"
             font-weight="700"
             text-anchor="middle"
-            letter-spacing="0.5"
+            letter-spacing="0.8"
           >
             {{ t('login.diagram.contracts') }}
           </text>
-          <circle
-            cx="70"
-            cy="25"
-            r="3"
-            fill="rgb(var(--primary))"
-          />
         </g>
 
         <!-- Apps Layer Node -->
         <g
           class="auth-diagram-node auth-diagram-node--apps"
-          transform="translate(310, 115)"
+          transform="translate(305, 95)"
         >
           <rect
-            width="70"
+            width="75"
             height="50"
             rx="6"
-            fill="rgb(var(--card) / 78%)"
+            fill="rgb(var(--card) / 50%)"
             stroke="var(--auth-apps-stroke)"
-            stroke-width="1.5"
+            stroke-width="1.2"
             class="auth-node-rect"
           />
           <text
-            x="35"
-            y="29"
+            x="37.5"
+            y="29.5"
             fill="rgb(var(--foreground))"
             font-size="9"
             font-weight="700"
             text-anchor="middle"
-            letter-spacing="0.5"
+            letter-spacing="0.8"
           >
             {{ t('login.diagram.apps') }}
           </text>
-          <circle
-            cx="0"
-            cy="25"
-            r="3"
-            fill="rgb(var(--success))"
-          />
         </g>
 
-        <!-- Static Core Node (CCD Core Mark) -->
+        <!-- Static Core Node -->
         <g
           data-testid="auth-static-core"
           class="auth-diagram-node auth-diagram-node--core"
-          transform="translate(160, 100)"
+          transform="translate(160, 80)"
         >
           <!-- Pulsing ambient glow -->
           <circle
@@ -252,38 +209,22 @@ const stageStyle = computed<Record<string, string>>(() => ({
             cy="40"
             r="36"
             fill="url(#core-radial)"
-            opacity="0.05"
+            opacity="0.04"
             class="auth-core-glow"
           />
-          <!-- Hexagonal Casing -->
+          <!-- Outer Hexagon -->
           <polygon
-            points="40,10 66,25 66,55 40,70 14,55 14,25"
-            fill="rgb(var(--card) / 92%)"
+            points="40,12 64,26 64,54 40,68 16,54 16,26"
+            fill="rgb(var(--card) / 80%)"
             stroke="var(--auth-core-stroke)"
-            stroke-width="2"
+            stroke-width="1.5"
           />
-          <!-- Inner dashed hexagon -->
-          <polygon
-            points="40,17 59,28 59,52 40,63 21,52 21,28"
-            fill="none"
-            stroke="rgb(var(--primary) / 30%)"
-            stroke-width="1"
-            stroke-dasharray="2 2"
-          />
-          <!-- Central Crosshair / Dot -->
+          <!-- Clean Core Dot -->
           <circle
             cx="40"
             cy="40"
-            r="10"
-            fill="rgb(var(--primary) / 10%)"
-            stroke="rgb(var(--primary))"
-            stroke-width="1.5"
-          />
-          <path
-            d="M 37 40 L 43 40 M 40 37 L 40 43"
-            stroke="rgb(var(--primary))"
-            stroke-width="1.5"
-            stroke-linecap="round"
+            r="3.5"
+            fill="var(--auth-core-stroke)"
           />
           <!-- Label -->
           <text
@@ -293,69 +234,9 @@ const stageStyle = computed<Record<string, string>>(() => ({
             font-size="8.5"
             font-weight="800"
             text-anchor="middle"
-            letter-spacing="0.8"
+            letter-spacing="1"
           >
             {{ t('login.diagram.core') }}
-          </text>
-        </g>
-
-        <!-- Floating indicators -->
-        <g
-          transform="translate(155, 40)"
-          class="auth-diagram-indicator"
-        >
-          <rect
-            width="90"
-            height="20"
-            rx="10"
-            fill="rgb(var(--card) / 85%)"
-            stroke="rgb(var(--primary) / 24%)"
-            stroke-width="1"
-          />
-          <circle
-            cx="12"
-            cy="10"
-            r="3.5"
-            fill="rgb(var(--primary))"
-          />
-          <text
-            x="24"
-            y="13.5"
-            fill="rgb(var(--muted-foreground))"
-            font-size="8"
-            font-weight="700"
-          >
-            {{ t('login.diagram.governed') }}
-          </text>
-        </g>
-
-        <g
-          transform="translate(155, 220)"
-          class="auth-diagram-indicator"
-        >
-          <rect
-            width="90"
-            height="20"
-            rx="10"
-            fill="rgb(var(--card) / 85%)"
-            stroke="rgb(var(--success) / 24%)"
-            stroke-width="1"
-          />
-          <circle
-            cx="12"
-            cy="10"
-            r="3.5"
-            fill="rgb(var(--success))"
-            class="auth-indicator-dot"
-          />
-          <text
-            x="24"
-            y="13.5"
-            fill="rgb(var(--muted-foreground))"
-            font-size="8"
-            font-weight="700"
-          >
-            {{ t('login.diagram.isolated') }}
           </text>
         </g>
       </svg>
@@ -376,7 +257,7 @@ const stageStyle = computed<Record<string, string>>(() => ({
       <span>apps</span>
     </div>
 
-    <!-- Floating signal chips -->
+    <!-- Floating evidence chips -->
     <div class="auth-visual-stage__signals z-content">
       <AuthSignalCard
         :label="t('login.signals.governanceGate')"
@@ -390,12 +271,12 @@ const stageStyle = computed<Record<string, string>>(() => ({
       />
       <AuthSignalCard
         :label="t('login.signals.safeStorage')"
-        icon="i-lucide-lock-keyhole"
+        icon="i-lucide-lock"
         :active="characterState.showPassword"
       />
       <AuthSignalCard
         :label="t('login.signals.validationPassed')"
-        icon="i-lucide-badge-check"
+        icon="i-lucide-check-circle"
         :active="isAppsActive"
       />
     </div>
@@ -411,13 +292,13 @@ const stageStyle = computed<Record<string, string>>(() => ({
   position: relative;
   min-height: 100%;
   gap: var(--spacing-lg);
-  padding: var(--spacing-xl);
+  padding: var(--spacing-2xl);
   overflow: hidden;
-  border: 1px solid rgb(var(--border) / 58%);
+  border: 1px solid rgb(var(--border) / 45%);
   border-radius: var(--radius-xl);
   background:
-    radial-gradient(ellipse at 18% 16%, rgb(var(--primary) / 14%), transparent 34%),
-    radial-gradient(ellipse at 74% 72%, rgb(var(--accent) / 10%), transparent 36%),
+    radial-gradient(ellipse at 15% 15%, rgb(var(--primary) / 10%), transparent 35%),
+    radial-gradient(ellipse at 75% 75%, rgb(var(--accent) / 8%), transparent 35%),
     linear-gradient(
       140deg,
       rgb(var(--card) / var(--auth-stage-surface)),
@@ -425,9 +306,9 @@ const stageStyle = computed<Record<string, string>>(() => ({
     ),
     rgb(var(--background));
   box-shadow:
-    inset 0 1px 0 rgb(var(--foreground) / 7%),
-    inset 0 0 0 1px rgb(var(--primary) / 6%),
-    0 var(--spacing-xl) var(--spacing-5xl) rgb(var(--background) / 28%);
+    inset 0 1px 0 rgb(var(--foreground) / 6%),
+    inset 0 0 0 1px rgb(var(--primary) / 4%),
+    0 var(--spacing-xl) var(--spacing-5xl) rgb(var(--background) / 20%);
 }
 
 .auth-visual-stage::before {
@@ -438,23 +319,21 @@ const stageStyle = computed<Record<string, string>>(() => ({
   background-image:
     linear-gradient(rgb(var(--foreground) / var(--auth-stage-grid)) 1px, transparent 1px),
     linear-gradient(90deg, rgb(var(--foreground) / var(--auth-stage-grid)) 1px, transparent 1px);
-  background-size:
-    calc(var(--spacing-xl) + var(--spacing-sm)) calc(var(--spacing-xl) + var(--spacing-sm)),
-    calc(var(--spacing-xl) + var(--spacing-sm)) calc(var(--spacing-xl) + var(--spacing-sm));
-  mask-image: linear-gradient(180deg, rgb(var(--foreground) / 74%), transparent 84%);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(180deg, rgb(var(--foreground) / 60%), transparent 80%);
 }
 
 .auth-visual-stage__header {
   position: relative;
-  gap: var(--spacing-xs);
-  max-width: 58%;
+  gap: var(--spacing-2xs);
+  max-width: 60%;
 }
 
 .auth-visual-stage__eyebrow,
 .auth-visual-stage__architecture {
   color: rgb(var(--primary));
   font-size: var(--font-size-xs);
-  font-weight: 700;
+  font-weight: 750;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -462,25 +341,25 @@ const stageStyle = computed<Record<string, string>>(() => ({
 .auth-visual-stage__title {
   margin: 0;
   color: rgb(var(--foreground));
-  font-size: clamp(var(--font-size-4xl), 7vw, var(--font-size-5xl));
-  font-weight: 760;
-  letter-spacing: -0.02em;
+  font-size: clamp(var(--font-size-4xl), 6vw, var(--font-size-5xl));
+  font-weight: 765;
+  letter-spacing: -0.025em;
   line-height: 1;
 }
 
 .auth-visual-stage__subtitle {
-  max-width: 560px;
+  max-width: 500px;
   margin: 0;
   color: rgb(var(--muted-foreground));
   font-size: var(--font-size-sm);
   font-weight: 500;
-  line-height: 1.7;
+  line-height: 1.6;
 }
 
 /* Blueprint Architecture Diagram styles */
 .auth-visual-stage__diagram {
   width: 100%;
-  max-width: 420px;
+  max-width: 380px;
   margin: auto;
 }
 
@@ -512,55 +391,42 @@ const stageStyle = computed<Record<string, string>>(() => ({
     stroke-width var(--transition-md) ease-out;
 }
 
-/* Subtle dash movement for signal paths */
+/* Subtle line sweep - single dot dash effect */
 .auth-flow-path {
-  stroke-dasharray: 6 6;
-  animation: auth-flow-dash 12s linear infinite;
+  stroke-dasharray: 8 90;
+  stroke-dashoffset: 98;
+  animation: auth-flow-dash 5s linear infinite;
 }
 
 .auth-flow-path--1 {
-  animation-duration: 8s;
+  animation-duration: 4.5s;
 }
 
 .auth-flow-path--2 {
-  animation-duration: 10s;
+  animation-duration: 5.5s;
   animation-direction: reverse;
 }
 
 @keyframes auth-flow-dash {
   to {
-    stroke-dashoffset: -24;
+    stroke-dashoffset: 0;
   }
 }
 
 /* Low frequency pulses for ambient indicators */
 .auth-core-glow {
-  animation: auth-core-pulse 8s ease-in-out infinite alternate;
-}
-
-.auth-indicator-dot {
-  animation: auth-dot-pulse 4s ease-in-out infinite alternate;
+  animation: auth-core-pulse 6s ease-in-out infinite alternate;
 }
 
 @keyframes auth-core-pulse {
   0% {
     r: 32;
-    opacity: 0.03;
+    opacity: 0.02;
   }
 
   100% {
     r: 38;
-    opacity: 0.08;
-  }
-}
-
-@keyframes auth-dot-pulse {
-  0% {
-    opacity: 0.5;
-  }
-
-  100% {
-    opacity: 1;
+    opacity: 0.06;
   }
 }
 
@@ -572,12 +438,12 @@ const stageStyle = computed<Record<string, string>>(() => ({
   width: fit-content;
   margin: 0 auto;
   padding: var(--spacing-2xs) var(--spacing-sm);
-  border: 1px solid rgb(var(--primary) / 24%);
+  border: 1px solid rgb(var(--primary) / 20%);
   border-radius: var(--radius-full);
   background:
-    linear-gradient(90deg, rgb(var(--primary) / 12%), rgb(var(--accent) / 8%)),
-    rgb(var(--card) / 38%);
-  box-shadow: 0 var(--spacing-xs) var(--spacing-xl) rgb(var(--primary) / 10%);
+    linear-gradient(90deg, rgb(var(--primary) / 10%), rgb(var(--accent) / 6%)),
+    rgb(var(--card) / 40%);
+  box-shadow: 0 var(--spacing-xs) var(--spacing-lg) rgb(var(--primary) / 4%);
 }
 
 .auth-visual-stage__signals {
@@ -585,7 +451,7 @@ const stageStyle = computed<Record<string, string>>(() => ({
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--spacing-sm);
-  max-width: 72%;
+  max-width: 80%;
   margin-top: auto;
 }
 
@@ -596,24 +462,24 @@ const stageStyle = computed<Record<string, string>>(() => ({
 }
 
 .auth-visual-stage--compact {
-  padding: var(--spacing-lg);
+  padding: var(--spacing-xl);
 }
 
 .auth-visual-stage--compact .auth-visual-stage__signals {
-  max-width: 80%;
+  max-width: 90%;
 }
 
 .auth-visual-stage--tablet {
-  min-height: 380px;
+  min-height: 340px;
 }
 
 .auth-visual-stage--tablet .auth-visual-stage__header,
 .auth-visual-stage--tablet .auth-visual-stage__signals {
-  max-width: 66%;
+  max-width: 70%;
 }
 
 .auth-visual-stage--mobile {
-  min-height: 240px;
+  min-height: 220px;
   padding: var(--spacing-md);
 }
 
@@ -628,15 +494,14 @@ const stageStyle = computed<Record<string, string>>(() => ({
 }
 
 .auth-visual-stage--mobile .auth-visual-stage__diagram {
-  max-width: 320px;
+  max-width: 280px;
   margin-top: var(--spacing-sm);
 }
 
 /* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
   .auth-flow-path,
-  .auth-core-glow,
-  .auth-indicator-dot {
+  .auth-core-glow {
     animation: none !important;
   }
 }

@@ -21,12 +21,8 @@ function handleUserClick(): void {
 
 <template>
   <section class="auth-quick-accounts col-stretch">
-    <div class="auth-quick-accounts__header row-between">
+    <div class="auth-quick-accounts__header row-start">
       <span>{{ t('login.quickAccounts') }}</span>
-      <Icons
-        name="i-lucide-key-round"
-        size="xs"
-      />
     </div>
     <div class="auth-quick-accounts__grid">
       <Button
@@ -55,16 +51,16 @@ function handleUserClick(): void {
 .auth-quick-accounts {
   gap: var(--spacing-xs);
   padding: var(--spacing-xs);
-  border: 1px solid rgb(var(--border) / 54%);
+  border: 1px solid rgb(var(--border) / 45%);
   border-radius: var(--radius-md);
   background:
-    linear-gradient(180deg, rgb(var(--muted) / 34%), rgb(var(--background) / 28%)),
-    linear-gradient(90deg, rgb(var(--primary) / 5%), transparent);
-  box-shadow: inset 0 1px 0 rgb(var(--foreground) / 5%);
+    linear-gradient(180deg, rgb(var(--muted) / 25%), rgb(var(--background) / 20%)),
+    linear-gradient(90deg, rgb(var(--primary) / 4%), transparent);
+  box-shadow: inset 0 1px 0 rgb(var(--foreground) / 4%);
 }
 
 .auth-quick-accounts__header {
-  padding: 0 var(--spacing-xs);
+  padding: 0 var(--spacing-2xs);
   color: rgb(var(--muted-foreground));
   font-size: var(--font-size-xs);
   font-weight: 700;
@@ -80,9 +76,9 @@ function handleUserClick(): void {
 .auth-quick-accounts__chip {
   justify-content: center;
   min-width: 0;
-  border: 1px solid rgb(var(--border) / 48%) !important;
+  border: 1px solid rgb(var(--border) / 40%) !important;
   border-radius: var(--radius-md) !important;
-  background: rgb(var(--background) / 58%) !important;
+  background: rgb(var(--background) / 50%) !important;
   color: rgb(var(--muted-foreground)) !important;
   box-shadow: inset 0 1px 0 rgb(var(--foreground) / 4%) !important;
   font-size: var(--font-size-sm) !important;
@@ -95,8 +91,8 @@ function handleUserClick(): void {
 }
 
 .auth-quick-accounts__chip:hover {
-  border-color: rgb(var(--primary) / 34%) !important;
-  background: rgb(var(--primary) / 10%) !important;
+  border-color: rgb(var(--primary) / 30%) !important;
+  background: rgb(var(--primary) / 8%) !important;
   color: rgb(var(--primary)) !important;
 }
 

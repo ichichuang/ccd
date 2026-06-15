@@ -28,37 +28,41 @@ defineProps<{
   gap: var(--spacing-xs);
   min-width: 0;
   padding: var(--spacing-xs) var(--spacing-sm);
-  border: 1px solid rgb(var(--border) / 58%);
+  border: 1px solid rgb(var(--border) / 45%);
   border-radius: var(--radius-md);
-  background:
-    linear-gradient(135deg, rgb(var(--card) / 72%), rgb(var(--background) / 42%)),
-    linear-gradient(90deg, rgb(var(--primary) / 9%), transparent 52%);
+  background: linear-gradient(135deg, rgb(var(--card) / 50%), rgb(var(--background) / 20%));
   box-shadow:
-    inset 0 1px 0 rgb(var(--foreground) / 6%),
-    0 var(--spacing-xs) var(--spacing-lg) rgb(var(--background) / 18%);
+    inset 0 1px 0 rgb(var(--foreground) / 4%),
+    0 var(--spacing-2xs) var(--spacing-md) rgb(var(--background) / 6%);
   color: rgb(var(--muted-foreground));
   transition:
     border-color var(--transition-md) ease-out,
     color var(--transition-md) ease-out,
-    transform var(--transition-md) ease-out;
+    box-shadow var(--transition-md) ease-out;
 }
 
 .auth-signal-card--active {
-  border-color: rgb(var(--primary) / 52%);
+  border-color: rgb(var(--primary) / 60%);
   color: rgb(var(--foreground));
-  background:
-    linear-gradient(135deg, rgb(var(--primary) / 13%), rgb(var(--card) / 70%)),
-    linear-gradient(90deg, rgb(var(--accent) / 8%), transparent 52%);
-  transform: translateY(calc(var(--spacing-2xs) * -1));
+  background: linear-gradient(135deg, rgb(var(--primary) / 8%), rgb(var(--card) / 60%));
+  box-shadow:
+    inset 0 1px 0 rgb(var(--foreground) / 4%),
+    0 0 12px rgb(var(--primary) / 10%),
+    0 var(--spacing-2xs) var(--spacing-md) rgb(var(--primary) / 4%);
 }
 
 .auth-signal-card__icon {
-  width: var(--spacing-md);
-  height: var(--spacing-md);
+  width: 22px;
+  height: 22px;
   flex: 0 0 auto;
   border-radius: var(--radius-full);
-  background: rgb(var(--primary) / 12%);
+  background: rgb(var(--primary) / 8%);
   color: rgb(var(--primary));
+  transition: background-color var(--transition-md) ease-out;
+}
+
+.auth-signal-card--active .auth-signal-card__icon {
+  background: rgb(var(--primary) / 15%);
 }
 
 .auth-signal-card__label {

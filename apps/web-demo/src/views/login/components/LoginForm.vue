@@ -173,12 +173,6 @@ onMounted(() => emitCharacterState())
           class="login-field-shell row-center"
           :class="{ 'login-field-shell--invalid': state.errors.length > 0 }"
         >
-          <span class="login-field-shell__icon center">
-            <Icons
-              name="i-lucide-user"
-              size="sm"
-            />
-          </span>
           <InputText
             id="username"
             :model-value="getInputValue(state.value)"
@@ -201,12 +195,6 @@ onMounted(() => emitCharacterState())
           class="login-field-shell row-center"
           :class="{ 'login-field-shell--invalid': state.errors.length > 0 }"
         >
-          <span class="login-field-shell__icon center">
-            <Icons
-              name="i-lucide-lock"
-              size="sm"
-            />
-          </span>
           <InputText
             id="password"
             :model-value="getInputValue(state.value)"
@@ -216,7 +204,7 @@ onMounted(() => emitCharacterState())
             size="large"
             :disabled="loading || state.disabled"
             :invalid="state.errors.length > 0"
-            class="login-field-input"
+            class="login-field-input login-field-input--password"
             fluid
             @focus="handleFieldFocus('password', state.value)"
             @blur="handleFieldBlur('password', state.value)"
@@ -332,32 +320,24 @@ onMounted(() => emitCharacterState())
 }
 
 .login-field-shell--invalid {
-  border-color: rgb(var(--danger));
-}
-
-.login-field-shell__icon,
-.login-password-toggle {
-  width: calc(var(--spacing-2xl) + var(--spacing-2xs));
-  height: 100%;
-  flex: 0 0 auto;
-}
-
-.login-field-shell__icon {
-  pointer-events: none;
-  color: rgb(var(--primary) / 78%);
+  border-color: rgb(var(--danger)) !important;
 }
 
 .login-field-input {
   height: 100% !important;
   min-width: 0 !important;
   flex: 1 1 auto !important;
-  padding: 0 !important;
+  padding: 0 var(--spacing-md) !important;
   border: 0 !important;
   border-radius: 0 !important;
   background: transparent !important;
   color: rgb(var(--foreground)) !important;
   box-shadow: none !important;
   outline: none !important;
+}
+
+.login-field-input--password {
+  padding-right: 0 !important;
 }
 
 .login-field-input::placeholder {
@@ -369,6 +349,9 @@ onMounted(() => emitCharacterState())
 }
 
 .login-password-toggle {
+  width: calc(var(--spacing-2xl) + var(--spacing-2xs));
+  height: 100%;
+  flex: 0 0 auto;
   border: 0 !important;
   border-radius: 0 !important;
   background: transparent !important;
