@@ -37,6 +37,7 @@ This is the wiki entry for AI maintainers. Read in order:
 6. [[ai-governance-control-plane]]
 7. [[strategic-guardrails]]
 8. [[web-demo-architecture-console]]
+9. [[ccd-ai-ui-skill-governance]]
 
 ## Non-negotiables
 
@@ -45,6 +46,7 @@ This is the wiki entry for AI maintainers. Read in order:
 - Keep alova HTTP runtime app-owned.
 - Keep safeStorage concrete runtime app-owned.
 - Keep PrimeVue as the UI ecosystem.
+- Load CCD design skills before UI, UX, layout, material, motion, or visual polish work.
 - Do not add global `@ccd/*` TypeScript aliases.
 - Do not implement P4 strategic guardrails without a future owner-approved lane.
 - Do not manually edit generated evidence.

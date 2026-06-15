@@ -5,7 +5,7 @@ import { generateSkillsLock, stringifySkillsLock } from './skill-lock-utils.mjs'
 
 const cwd = process.cwd()
 const targetRoot = path.join(os.homedir(), '.codex', 'skills')
-const sourceRoots = ['.ai/skills/core', '.ai/skills/codex']
+const sourceRoots = ['.ai/skills/core', '.ai/skills/design', '.ai/skills/codex']
 const skillsLockPath = path.join(cwd, '.ai', 'manifests', 'skills-lock.json')
 
 const syncSkill = (sourceRoot, skillName) => {

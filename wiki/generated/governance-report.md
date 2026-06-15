@@ -31,7 +31,7 @@ wiki_owner: LLM-maintained CCD architecture wiki
 - Adapters: Codex, Claude
 - Orchestration roles: architect-governance, frontend-runtime, desktop-runtime
 - Rule count: 38
-- Skill routes: 10
+- Skill routes: 11
 
 ## Dependency Graph
 

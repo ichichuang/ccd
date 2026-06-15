@@ -11,6 +11,77 @@
   },
   "routes": [
     {
+      "id": "ccd-ui-design",
+      "description": "CCD UI, UX, visual design, layout, material, motion, responsive, and page polish work",
+      "keywords": [
+        "ui",
+        "ux",
+        "visual",
+        "design",
+        "layout",
+        "dashboard",
+        "settings",
+        "login",
+        "form",
+        "table",
+        "dialog",
+        "drawer",
+        "navigation",
+        "responsive",
+        "dark mode",
+        "animation",
+        "motion",
+        "material",
+        "glass",
+        "liquid glass",
+        "apple-like",
+        "google-like",
+        "beautiful",
+        "premium",
+        "polish",
+        "beautification",
+        "界面",
+        "视觉",
+        "设计",
+        "布局",
+        "美化",
+        "高级",
+        "液态玻璃",
+        "玻璃",
+        "动效",
+        "动画",
+        "登录页",
+        "设置页",
+        "表格",
+        "表单",
+        "仪表盘",
+        "响应式",
+        "暗色模式"
+      ],
+      "path_globs": [
+        "apps/**/src/**/*.vue",
+        "apps/**/src/**/*.css",
+        "apps/**/src/**/*.scss",
+        "packages/vue-ui/**",
+        "packages/vue-primevue-adapter/**",
+        "packages/unocss-preset/**",
+        ".ai/skills/design/**"
+      ],
+      "skills": [
+        ".ai/skills/design/ccd-product-language",
+        ".ai/skills/design/ccd-page-archetypes",
+        ".ai/skills/design/ccd-material-system",
+        ".ai/skills/design/ccd-motion-system",
+        ".ai/skills/design/ccd-ui-review-gate"
+      ],
+      "prechecks": ["pnpm codex:preflight"],
+      "token_strategy": [
+        "Resolve the CCD visual thesis and UIDesignState mapping before implementation",
+        "Keep design skills subordinate to .ai/rules/**, PrimeVue, UnoCSS, runtime boundaries, and governance gates",
+        "Run the UI review gate before staging UI-heavy changes"
+      ]
+    },
+    {
       "id": "page-route-scaffold",
       "description": "New business pages, route scaffolds, and route/view/hook generation work",
       "keywords": [
@@ -160,12 +231,7 @@
         "设计令牌",
         "快捷类"
       ],
-      "path_globs": [
-        "uno.config.ts",
-        "packages/unocss-preset/**",
-        "src/**/*.css",
-        "src/**/*.scss"
-      ],
+      "path_globs": ["uno.config.ts", "packages/unocss-preset/**", "src/**/*.css", "src/**/*.scss"],
       "skills": [".ai/skills/core/unocss"],
       "prechecks": ["pnpm codex:preflight"],
       "token_strategy": ["Load UnoCSS references only for token, shortcut, utility, or theme work"]

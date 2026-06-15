@@ -4,6 +4,7 @@ import path from 'node:path'
 
 export const SKILL_ROOTS = [
   { root: '.ai/skills/core', layer: 'core', syncTargets: ['codex'] },
+  { root: '.ai/skills/design', layer: 'design', syncTargets: ['codex'] },
   { root: '.ai/skills/codex', layer: 'codex', syncTargets: ['codex'] },
 ]
 

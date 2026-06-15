@@ -28,7 +28,7 @@
   ],
   "orchestrationRoles": ["architect-governance", "frontend-runtime", "desktop-runtime"],
   "ruleCount": 38,
-  "routedSkillCount": 10,
+  "routedSkillCount": 11,
   "orphanChecks": {
     "wikiGeneratedExists": true,
     "orchestrationManifestExists": true,

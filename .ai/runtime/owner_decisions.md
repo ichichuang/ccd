@@ -32,3 +32,12 @@ Pending decisions requiring explicit owner/operator sign-off. This file is an in
 - `FULL_GO_DEFERRED`: explicit decision that the item is not required for current Full GO and needs a future lane if resumed.
 - `APPROVED`: approved with scope, validation, and rollback plan recorded in an ADR.
 - `REJECTED`: rejected with replacement policy recorded.
+
+## Owner Decision: CCD Product Design Skill Layer
+
+- Date: 2026-06-15
+- Decision: Add a CCD-specific product design skill layer under `.ai/skills/design/**`.
+- Reason: Repeated UI iterations showed that architecture, PrimeVue, UnoCSS, and governance compliance alone do not guarantee product-quality UI.
+- Default behavior: AI agents must auto-load CCD design skills when user requests UI, UX, visual, layout, dashboard, settings, login, form, table, dialog, animation, material, glass, Apple-like, Google-like, or beautification work.
+- Visual direction: CCD uses `Architectural Glass`: Apple clarity, Vercel precision, Linear calm, Material state completeness, and CCD architecture governance.
+- Constraint: The design skill layer must not override CCD architecture, runtime boundaries, PrimeVue v4, UnoCSS guardrails, UIDesignState, or governance gates.

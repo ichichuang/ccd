@@ -148,3 +148,27 @@ For UI-critical changes, prefer Playwright CLI plus `.ai/skills/codex/architectu
 - Keep database work schema-first and centralize error handling at API boundaries.
 - Require unit tests plus Playwright E2E coverage for risky user flows.
 - Use Conventional Commits and keep diffs reviewable.
+
+## UI Design Skill Auto-Activation
+
+When a user request touches UI, UX, visual design, page layout, dashboard, settings, login, form, table, dialog, drawer, navigation, responsive behavior, dark mode, animation, motion, material, glass, Apple-like design, Google-like design, or general beautification, automatically load the CCD design skill chain before implementation:
+
+```text
+.ai/skills/design/ccd-product-language/SKILL.md
+.ai/skills/design/ccd-page-archetypes/SKILL.md
+.ai/skills/design/ccd-material-system/SKILL.md
+.ai/skills/design/ccd-motion-system/SKILL.md
+.ai/skills/design/ccd-ui-review-gate/SKILL.md
+```
+
+These skills are subordinate to `.ai/rules/**`, PrimeVue rules, UnoCSS guardrails, UIDesignState, architecture boundaries, and governance gates. They are mandatory design guidance for AI-generated UI quality.
+
+Before writing page-level UI code, resolve the pre-design pass:
+
+```text
+Page job, primary user, primary action, information priority, UIDesignState, visual thesis, signature detail, layout archetype, density plan, typography plan, material plan, motion plan, state plan, accessibility plan, validation plan.
+```
+
+Do not start UI work by adding decoration. Structure and task clarity come first.
+
+If the user asks for Apple-like, Google-like, premium, liquid-glass, or beautiful UI, translate that request into CCD `Architectural Glass`: quiet, structured, premium, architectural, governed, deterministic, token-driven, accessible, and restrained.

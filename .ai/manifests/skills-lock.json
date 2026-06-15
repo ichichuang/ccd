@@ -10,6 +10,51 @@
       ],
       "computedHash": "d06a80c7a816a55c295dad4a1ddb265300527320b83e5adbd7d35add52b0653c"
     },
+    "ccd-material-system": {
+      "source": "repo:.ai/skills/design/ccd-material-system",
+      "sourceType": "local",
+      "layer": "design",
+      "syncTargets": [
+        "codex"
+      ],
+      "computedHash": "ebabeccb168cc5a9b91d36e6f771211ff261e3abe681012cbe0dccab601ca4e5"
+    },
+    "ccd-motion-system": {
+      "source": "repo:.ai/skills/design/ccd-motion-system",
+      "sourceType": "local",
+      "layer": "design",
+      "syncTargets": [
+        "codex"
+      ],
+      "computedHash": "383b7138a94f7728f445eadf6a8735cf0ce03cf000dcd73a05d2d92235e7521b"
+    },
+    "ccd-page-archetypes": {
+      "source": "repo:.ai/skills/design/ccd-page-archetypes",
+      "sourceType": "local",
+      "layer": "design",
+      "syncTargets": [
+        "codex"
+      ],
+      "computedHash": "47df82c6c72b257b07afef08d02edc296b1a89be6a4e2473c0cea3e3eb9d7a2c"
+    },
+    "ccd-product-language": {
+      "source": "repo:.ai/skills/design/ccd-product-language",
+      "sourceType": "local",
+      "layer": "design",
+      "syncTargets": [
+        "codex"
+      ],
+      "computedHash": "74a319c2d8d7fb007903740bb02582be903ebde0e634404eac4086bf05cfd7c3"
+    },
+    "ccd-ui-review-gate": {
+      "source": "repo:.ai/skills/design/ccd-ui-review-gate",
+      "sourceType": "local",
+      "layer": "design",
+      "syncTargets": [
+        "codex"
+      ],
+      "computedHash": "168ed64264416aa78f5f6e21f3725e9e48bd6811c3a07603a579b4ac9b2ebe37"
+    },
     "desktop-tauri-guard": {
       "source": "repo:.ai/skills/codex/desktop-tauri-guard",
       "sourceType": "local",
@@ -32,7 +77,7 @@
       "source": "repo:.ai/manifests/skill-routing.json",
       "sourceType": "local",
       "kind": "manifest",
-      "computedHash": "292bde8712fd5b506eda305f827ef8ba5936f0fd8140e028f6a9b15b95efcef2"
+      "computedHash": "2d8f9b747f9c579f6e170ae696ce9286dab4061fe8c6a831010d8136203188e6"
     },
     "task-orchestrator": {
       "source": "repo:.ai/skills/codex/task-orchestrator",
