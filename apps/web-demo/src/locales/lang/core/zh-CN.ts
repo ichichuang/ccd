@@ -34,6 +34,13 @@ const zhCNCore = {
     passwordShow: '显示密码',
     passwordHide: '隐藏密码',
     rememberMe: '记住我',
+    diagram: {
+      contracts: 'CONTRACTS',
+      apps: 'APPS',
+      core: 'CCD CORE',
+      governed: 'GOVERNED',
+      isolated: 'ISOLATED',
+    },
   },
   auth: {
     restore: {

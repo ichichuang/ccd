@@ -286,14 +286,12 @@ onMounted(() => emitCharacterState())
   width: 100%;
   height: calc(var(--spacing-2xl) + var(--spacing-xs));
   overflow: hidden;
-  border: 1px solid rgb(var(--input) / 92%);
+  border: 1px solid rgb(var(--border) / 80%);
   border-radius: var(--radius-md);
-  background:
-    linear-gradient(180deg, rgb(var(--background) / 96%), rgb(var(--muted) / 36%)),
-    linear-gradient(90deg, rgb(var(--primary) / 8%), transparent 42%);
+  background: linear-gradient(180deg, rgb(var(--card)), rgb(var(--muted) / 20%));
   box-shadow:
-    inset 0 1px 0 rgb(var(--foreground) / 6%),
-    0 var(--spacing-xs) var(--spacing-lg) rgb(var(--background) / 20%);
+    inset 0 1px 0 rgb(var(--foreground) / 4%),
+    0 var(--spacing-xs) var(--spacing-md) rgb(var(--foreground) / 2%);
   color: rgb(var(--foreground));
   transition:
     background-color var(--transition-sm) ease-out,
@@ -302,16 +300,34 @@ onMounted(() => emitCharacterState())
 }
 
 .login-field-shell:hover {
-  border-color: rgb(var(--primary) / 45%);
+  border-color: rgb(var(--primary) / 60%);
 }
 
 .login-field-shell:focus-within {
   border-color: rgb(var(--primary));
-  background:
-    linear-gradient(180deg, rgb(var(--background)), rgb(var(--background) / 88%)),
-    linear-gradient(90deg, rgb(var(--primary) / 12%), transparent 50%);
+  background: rgb(var(--card));
   box-shadow:
-    var(--p-form-field-focus-ring-shadow),
+    0 0 0 2px rgb(var(--primary) / 14%),
+    0 var(--spacing-sm) var(--spacing-xl) rgb(var(--primary) / 8%);
+}
+
+:global(.dark) .login-field-shell {
+  border-color: rgb(var(--border) / 45%);
+  background: linear-gradient(180deg, rgb(var(--background) / 60%), rgb(var(--card) / 40%));
+  box-shadow:
+    inset 0 1px 0 rgb(var(--foreground) / 4%),
+    0 var(--spacing-xs) var(--spacing-md) rgb(var(--background) / 10%);
+}
+
+:global(.dark) .login-field-shell:hover {
+  border-color: rgb(var(--primary) / 70%);
+}
+
+:global(.dark) .login-field-shell:focus-within {
+  border-color: rgb(var(--primary));
+  background: rgb(var(--background) / 95%);
+  box-shadow:
+    0 0 0 2px rgb(var(--primary) / 22%),
     0 var(--spacing-sm) var(--spacing-xl) rgb(var(--primary) / 12%);
 }
 
@@ -342,6 +358,14 @@ onMounted(() => emitCharacterState())
   color: rgb(var(--foreground)) !important;
   box-shadow: none !important;
   outline: none !important;
+}
+
+.login-field-input::placeholder {
+  color: rgb(var(--muted-foreground) / 70%) !important;
+}
+
+:global(.dark) .login-field-input::placeholder {
+  color: rgb(var(--muted-foreground) / 60%) !important;
 }
 
 .login-password-toggle {

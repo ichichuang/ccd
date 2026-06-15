@@ -34,6 +34,13 @@ const enUSCore = {
     passwordShow: 'Show password',
     passwordHide: 'Hide password',
     rememberMe: 'Remember me',
+    diagram: {
+      contracts: 'CONTRACTS',
+      apps: 'APPS',
+      core: 'CCD CORE',
+      governed: 'GOVERNED',
+      isolated: 'ISOLATED',
+    },
   },
   auth: {
     restore: {

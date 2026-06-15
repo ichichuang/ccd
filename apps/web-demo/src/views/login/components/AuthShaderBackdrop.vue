@@ -7,190 +7,174 @@ defineOptions({ name: 'AuthShaderBackdrop' })
     class="auth-shader-backdrop absolute inset-0 z-base pointer-events-none overflow-hidden"
     aria-hidden="true"
   >
+    <!-- Radial gradient field -->
     <div class="auth-shader-backdrop__field absolute inset-0" />
-    <div class="auth-shader-backdrop__volume absolute inset-0" />
-    <div class="auth-shader-backdrop__lines absolute inset-0" />
-    <div class="auth-shader-backdrop__scan absolute inset-0" />
-    <div class="auth-shader-backdrop__noise absolute inset-0" />
-    <div class="auth-shader-backdrop__ripple auth-shader-backdrop__ripple--primary" />
-    <div class="auth-shader-backdrop__ripple auth-shader-backdrop__ripple--accent" />
-    <div class="auth-shader-backdrop__ripple auth-shader-backdrop__ripple--wide" />
+
+    <!-- Fine grid and diagonal shader lines overlay -->
+    <div class="auth-shader-backdrop__grid absolute inset-0" />
+
+    <!-- Subtle slow theme line sweep -->
+    <div class="auth-shader-backdrop__sweep absolute inset-0" />
+
+    <!-- Tokenized ambient glows -->
+    <div class="auth-shader-backdrop__glow auth-shader-backdrop__glow--primary" />
+    <div class="auth-shader-backdrop__glow auth-shader-backdrop__glow--accent" />
   </div>
 </template>
 
 <style scoped>
 .auth-shader-backdrop {
-  --auth-backdrop-primary: 20%;
-  --auth-backdrop-accent: 16%;
-  --auth-backdrop-line: 6%;
-  --auth-backdrop-panel: 34%;
+  --auth-backdrop-primary: 12%;
+  --auth-backdrop-accent: 9%;
+  --auth-backdrop-line: 5%;
+  --auth-backdrop-panel: 22%;
+  --auth-sweep-duration: 25s;
 
   background: rgb(var(--background));
 }
 
+:global(.dark) .auth-shader-backdrop {
+  --auth-backdrop-primary: 20%;
+  --auth-backdrop-accent: 15%;
+  --auth-backdrop-line: 6%;
+  --auth-backdrop-panel: 42%;
+}
+
+/* Base gradient fields with subtle low-frequency shimmer */
 .auth-shader-backdrop__field {
   background:
     radial-gradient(
-      ellipse at 18% 22%,
+      ellipse at 15% 20%,
       rgb(var(--primary) / var(--auth-backdrop-primary)),
-      transparent 32%
+      transparent 38%
     ),
     radial-gradient(
-      ellipse at 74% 68%,
+      ellipse at 80% 75%,
       rgb(var(--accent) / var(--auth-backdrop-accent)),
-      transparent 34%
+      transparent 40%
     ),
-    radial-gradient(ellipse at 52% 8%, rgb(var(--info) / 12%), transparent 28%),
-    radial-gradient(ellipse at 50% 102%, rgb(var(--success) / 12%), transparent 30%),
-    conic-gradient(
-      from 228deg at 48% 48%,
-      rgb(var(--background) / 0%),
-      rgb(var(--primary) / 12%),
-      rgb(var(--accent) / 10%),
-      rgb(var(--info) / 8%),
-      rgb(var(--background) / 0%)
-    ),
+    radial-gradient(ellipse at 50% 10%, rgb(var(--info) / 8%), transparent 30%),
     linear-gradient(
       135deg,
       rgb(var(--background)) 0%,
       rgb(var(--muted) / var(--auth-backdrop-panel)) 50%,
       rgb(var(--background)) 100%
     );
+  animation: auth-shimmer 20s ease-in-out infinite;
 }
 
-.auth-shader-backdrop__volume {
-  opacity: 0.72;
-  background:
-    linear-gradient(90deg, transparent 5%, rgb(var(--primary) / 7%) 6%, transparent 42%),
-    linear-gradient(180deg, transparent 18%, rgb(var(--border) / 18%) 18.2%, transparent 18.4%),
-    linear-gradient(90deg, transparent 53%, rgb(var(--accent) / 8%) 53.2%, transparent 92%);
-  clip-path: polygon(6% 16%, 58% 16%, 58% 25%, 94% 25%, 94% 92%, 52% 92%, 52% 84%, 7% 84%);
-}
-
-.auth-shader-backdrop__lines {
-  opacity: 0.72;
+/* Fine grid and subtle diagonal lines */
+.auth-shader-backdrop__grid {
+  opacity: 0.68;
   background-image:
+    /* Fine Grid */
+    linear-gradient(rgb(var(--foreground) / var(--auth-backdrop-line)) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--foreground) / var(--auth-backdrop-line)) 1px, transparent 1px),
+    /* Subtle Diagonal Shader Lines */
     repeating-linear-gradient(
-      108deg,
-      transparent 0,
-      transparent calc(var(--spacing-xs) * 3),
-      rgb(var(--foreground) / var(--auth-backdrop-line)) calc(var(--spacing-xs) * 3),
-      rgb(var(--foreground) / var(--auth-backdrop-line)) calc((var(--spacing-xs) * 3) + 1px)
-    ),
-    repeating-linear-gradient(
-      12deg,
-      transparent 0,
-      transparent calc(var(--spacing-lg) + var(--spacing-xs)),
-      rgb(var(--primary) / 9%) calc(var(--spacing-lg) + var(--spacing-xs)),
-      rgb(var(--primary) / 9%) calc(var(--spacing-lg) + var(--spacing-xs) + 1px)
-    );
-  mask-image: radial-gradient(circle at 48% 44%, rgb(var(--foreground) / 86%), transparent 72%);
-  animation: auth-lines-drift calc(var(--transition-5xl) * 36) linear infinite;
-}
-
-.auth-shader-backdrop__scan {
-  opacity: 0.22;
-  background-image:
-    linear-gradient(90deg, transparent, rgb(var(--primary) / 22%), transparent),
-    linear-gradient(0deg, transparent, rgb(var(--accent) / 16%), transparent);
+        135deg,
+        transparent 0,
+        transparent 32px,
+        rgb(var(--foreground) / 4%) 32px,
+        rgb(var(--foreground) / 4%) 33px
+      );
   background-size:
-    62% 1px,
-    1px 54%;
-  background-position:
-    18% 32%,
-    72% 48%;
-  background-repeat: no-repeat;
+    40px 40px,
+    40px 40px,
+    100% 100%;
+  mask-image: radial-gradient(
+    circle at 50% 50%,
+    rgb(var(--foreground)) 30%,
+    rgb(var(--foreground) / 20%) 80%
+  );
 }
 
-.auth-shader-backdrop__noise {
-  opacity: 0.24;
-  background-image:
-    radial-gradient(circle at 25% 25%, rgb(var(--foreground) / 8%) 0 1px, transparent 1px),
-    radial-gradient(circle at 75% 55%, rgb(var(--background) / 48%) 0 1px, transparent 1px);
-  background-size:
-    calc(var(--spacing-lg) + var(--spacing-xs)) calc(var(--spacing-lg) + var(--spacing-xs)),
-    calc(var(--spacing-xl) + var(--spacing-sm)) calc(var(--spacing-xl) + var(--spacing-sm));
-  mix-blend-mode: soft-light;
+/* Subtle line sweep - background position sweep */
+.auth-shader-backdrop__sweep {
+  background: linear-gradient(
+    135deg,
+    transparent 45%,
+    rgb(var(--primary) / 6%) 48%,
+    rgb(var(--primary) / 14%) 50%,
+    rgb(var(--accent) / 8%) 52%,
+    transparent 55%
+  );
+  background-size: 200% 200%;
+  animation: auth-sweep var(--auth-sweep-duration) linear infinite;
+  opacity: 0.82;
 }
 
-.auth-shader-backdrop__ripple {
+/* Ambient glow zones */
+.auth-shader-backdrop__glow {
   position: absolute;
-  border: 1px solid rgb(var(--primary) / 18%);
-  border-radius: var(--radius-xl);
-  opacity: 0.62;
-  transform: translate3d(0, 0, 0);
-  animation: auth-ripple calc(var(--transition-5xl) * 18) ease-in-out infinite;
+  border-radius: var(--radius-full);
+  filter: blur(100px);
+  pointer-events: none;
+  opacity: 0.45;
+  animation: auth-glow-pulse 10s ease-in-out infinite alternate;
 }
 
-.auth-shader-backdrop__ripple--primary {
-  inset: 15% 41% 16% 5%;
+.auth-shader-backdrop__glow--primary {
+  top: 15%;
+  left: 20%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgb(var(--primary) / 16%), transparent 70%);
 }
 
-.auth-shader-backdrop__ripple--accent {
-  inset: 24% 6% 7% 52%;
-  border-color: rgb(var(--accent) / 16%);
-  animation-delay: calc(var(--transition-5xl) * -6);
+.auth-shader-backdrop__glow--accent {
+  bottom: 20%;
+  right: 25%;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgb(var(--accent) / 12%), transparent 70%);
+  animation-delay: -5s;
 }
 
-.auth-shader-backdrop__ripple--wide {
-  inset: 8% 10% 11% 12%;
-  border-color: rgb(var(--info) / 10%);
-  border-radius: var(--radius-lg);
-  opacity: 0.36;
-  animation-delay: calc(var(--transition-5xl) * -10);
-}
-
-:global(.dark) .auth-shader-backdrop {
-  --auth-backdrop-primary: 26%;
-  --auth-backdrop-accent: 20%;
-  --auth-backdrop-line: 7%;
-  --auth-backdrop-panel: 58%;
-}
-
-@keyframes auth-lines-drift {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-
-  to {
-    transform: translate3d(calc(var(--spacing-xl) * -1), var(--spacing-xl), 0);
-  }
-}
-
-@keyframes auth-ripple {
+@keyframes auth-shimmer {
   0%,
   100% {
-    opacity: 0.32;
-    transform: scale(0.96);
+    opacity: 0.88;
   }
 
   50% {
-    opacity: 0.72;
-    transform: scale(1.04);
+    opacity: 1;
   }
 }
 
-@media (width <= 768px) {
-  .auth-shader-backdrop__volume,
-  .auth-shader-backdrop__scan,
-  .auth-shader-backdrop__ripple--wide {
-    display: none;
+@keyframes auth-sweep {
+  0% {
+    background-position: 0% 0%;
   }
 
-  .auth-shader-backdrop__lines {
-    opacity: 0.34;
-    animation: none;
-  }
-
-  .auth-shader-backdrop__ripple--accent {
-    display: none;
+  100% {
+    background-position: 200% 200%;
   }
 }
 
+@keyframes auth-glow-pulse {
+  0% {
+    transform: scale(0.95) translate3d(0, 0, 0);
+    opacity: 0.38;
+  }
+
+  100% {
+    transform: scale(1.05) translate3d(5px, -5px, 0);
+    opacity: 0.48;
+  }
+}
+
+/* Media query support for reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .auth-shader-backdrop__lines,
-  .auth-shader-backdrop__ripple {
-    animation: none;
+  .auth-shader-backdrop__field,
+  .auth-shader-backdrop__sweep,
+  .auth-shader-backdrop__glow {
+    animation: none !important;
+  }
+
+  .auth-shader-backdrop__sweep {
+    opacity: 0.3;
+    background-position: 50% 50%;
   }
 }
 </style>
