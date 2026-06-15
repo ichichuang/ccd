@@ -2,10 +2,6 @@
 import { useI18n } from 'vue-i18n'
 import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
 import { useLocale } from '@/hooks/modules/useLocale'
-import {
-  MENU_ADMIN_CONTEXT_ITEM_UNIFIED,
-  MENU_ADMIN_CONTEXT_PANEL_UNIFIED,
-} from '@/constants/layout-menu'
 import type { SupportedLocale } from '@/locales'
 
 interface LocaleOption {
@@ -144,10 +140,7 @@ onBeforeUnmount(() => {
       <div
         v-if="isLocaleOpen"
         :id="localePanelId"
-        :class="[
-          MENU_ADMIN_CONTEXT_PANEL_UNIFIED,
-          'auth-locale-panel absolute left-1/2 top-[calc(100%+8px)] z-popover min-w-[120px] -translate-x-1/2 select-none',
-        ]"
+        class="auth-locale-panel absolute left-1/2 z-popover select-none"
         role="menu"
         :aria-label="t('login.localeSelect')"
       >
@@ -160,19 +153,13 @@ onBeforeUnmount(() => {
             variant="text"
             role="menuitemradio"
             :aria-checked="isLocaleActive(item.key)"
-            :class="[
-              MENU_ADMIN_CONTEXT_ITEM_UNIFIED,
-              'auth-locale-item w-full justify-start border-0! bg-transparent! shadow-none! relative pl-[28px]!',
-              isLocaleActive(item.key)
-                ? 'auth-locale-item--active text-primary!'
-                : 'text-muted-foreground!',
-            ]"
+            class="auth-locale-item w-full justify-start relative"
+            :class="{ 'auth-locale-item--active': isLocaleActive(item.key) }"
             @click="selectLocale(item.key)"
           >
-            <!-- Sleek left accent capsule indicator for selected locale -->
             <span
               v-if="isLocaleActive(item.key)"
-              class="auth-locale-indicator absolute left-[12px] top-1/2 -translate-y-1/2 w-[3px] h-[12px] rounded-full bg-primary"
+              class="auth-locale-indicator absolute"
             />
             <span class="text-sm font-medium">{{ item.label }}</span>
           </Button>
@@ -185,13 +172,15 @@ onBeforeUnmount(() => {
 <style scoped>
 .auth-toolbar {
   gap: var(--spacing-3xs);
-  padding: 3px;
+  padding: var(--spacing-3xs);
   border: 1px solid rgb(var(--border) / 50%);
   border-radius: var(--radius-full);
-  background: rgb(var(--card) / 30%);
+  background: rgb(var(--card) / 42%);
+  box-shadow: inset 0 1px 0 rgb(var(--foreground) / 3%);
   transition:
     border-color var(--transition-sm) ease-out,
-    background-color var(--transition-sm) ease-out;
+    background-color var(--transition-sm) ease-out,
+    box-shadow var(--transition-sm) ease-out;
 }
 
 :global(.dark) .auth-toolbar {
@@ -201,6 +190,9 @@ onBeforeUnmount(() => {
 
 .auth-toolbar:hover {
   border-color: rgb(var(--primary) / 25%);
+  box-shadow:
+    inset 0 1px 0 rgb(var(--foreground) / 4%),
+    0 1px 3px rgb(var(--foreground) / 4%);
 }
 
 .auth-toolbar__divider {
@@ -254,31 +246,35 @@ onBeforeUnmount(() => {
   transform: rotate(180deg);
 }
 
-/* Locale Dropdown Panel Styling */
 .auth-locale-panel {
+  top: calc(100% + var(--spacing-sm));
+  min-width: 128px;
+  transform: translateX(-50%);
   border: 1px solid rgb(var(--border) / 60%) !important;
   background: rgb(var(--card)) !important;
-  backdrop-filter: blur(8px);
   box-shadow:
-    0 4px 6px -1px rgb(var(--background) / 8%),
-    0 10px 15px -3px rgb(var(--background) / 12%) !important;
+    0 1px 2px rgb(var(--foreground) / 4%),
+    0 var(--spacing-md) var(--spacing-xl) rgb(var(--foreground) / 10%) !important;
   border-radius: var(--radius-lg) !important;
-  padding: 4px !important;
+  padding: var(--spacing-xs) !important;
 }
 
 :global(.dark) .auth-locale-panel {
   border-color: rgb(var(--border) / 45%) !important;
   background: rgb(var(--background) / 90%) !important;
   box-shadow:
-    0 4px 6px -1px rgb(var(--background) / 40%),
-    0 10px 15px -3px rgb(var(--background) / 60%) !important;
+    inset 0 1px 0 rgb(var(--foreground) / 5%),
+    0 var(--spacing-md) var(--spacing-xl) rgb(var(--background) / 45%) !important;
 }
 
 .auth-locale-item {
   height: 32px;
-  padding: 0 var(--spacing-sm) !important;
+  padding: 0 var(--spacing-sm) 0 var(--spacing-xl) !important;
+  border: 0 !important;
   border-radius: var(--radius-md) !important;
+  background: transparent !important;
   color: rgb(var(--muted-foreground)) !important;
+  box-shadow: none !important;
   transition:
     background-color var(--transition-sm) ease-out,
     color var(--transition-sm) ease-out;
@@ -295,7 +291,16 @@ onBeforeUnmount(() => {
   font-weight: 600 !important;
 }
 
-/* Locale panel transition */
+.auth-locale-indicator {
+  left: var(--spacing-sm);
+  top: 50%;
+  width: calc(var(--spacing-xs) - var(--spacing-3xs));
+  height: var(--spacing-md);
+  border-radius: var(--radius-full);
+  background: rgb(var(--primary));
+  transform: translateY(-50%);
+}
+
 .auth-locale-fade-enter-active,
 .auth-locale-fade-leave-active {
   transition:

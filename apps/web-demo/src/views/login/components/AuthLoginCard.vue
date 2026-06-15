@@ -49,17 +49,18 @@ const { t } = useI18n({ useScope: 'global' })
 .auth-login-card {
   position: relative;
   isolation: isolate;
-  gap: var(--spacing-3xl);
+  gap: var(--spacing-2xl);
   width: 100%;
-  padding: var(--spacing-4xl);
+  max-width: 500px;
+  padding: var(--spacing-3xl);
   overflow: hidden;
   border: 1px solid rgb(var(--border) / 70%);
   border-radius: var(--radius-2xl);
   background: rgb(var(--card));
   box-shadow:
-    0 1px 3px rgb(var(--background) / 10%),
-    0 16px 40px -8px rgb(var(--background) / 12%),
-    0 32px 64px -16px rgb(var(--background) / 16%);
+    0 1px 3px rgb(var(--foreground) / 4%),
+    0 var(--spacing-2xl) var(--spacing-5xl) rgb(var(--foreground) / 8%),
+    0 var(--spacing-4xl) var(--spacing-5xl) rgb(var(--primary) / 5%);
 }
 
 .auth-login-card::before {
@@ -70,7 +71,7 @@ const { t } = useI18n({ useScope: 'global' })
   background: linear-gradient(
     90deg,
     transparent,
-    rgb(var(--primary) / 40%),
+    rgb(var(--primary) / 48%),
     rgb(var(--accent) / 25%),
     transparent
   );
@@ -93,9 +94,8 @@ const { t } = useI18n({ useScope: 'global' })
   color: rgb(var(--primary) / 90%);
   font-size: var(--font-size-xs);
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0;
   line-height: 1;
-  text-transform: uppercase;
 }
 
 .auth-login-card__title {
@@ -103,7 +103,7 @@ const { t } = useI18n({ useScope: 'global' })
   color: rgb(var(--foreground));
   font-size: var(--font-size-2xl);
   font-weight: 800;
-  letter-spacing: -0.015em;
+  letter-spacing: 0;
   line-height: 1.15;
 }
 
@@ -133,16 +133,16 @@ const { t } = useI18n({ useScope: 'global' })
   border-color: rgb(var(--border) / 45%);
   background: linear-gradient(180deg, rgb(var(--card)), rgb(var(--background) / 98%));
   box-shadow:
-    inset 0 1px 0 rgb(var(--foreground) / 4%),
-    0 0 0 1px rgb(var(--primary) / 6%),
-    0 24px 64px rgb(var(--background) / 35%),
-    0 0 30px rgb(var(--primary) / 3%);
+    inset 0 1px 0 rgb(var(--foreground) / 5%),
+    0 0 0 1px rgb(var(--primary) / 7%),
+    0 var(--spacing-2xl) var(--spacing-5xl) rgb(var(--background) / 38%),
+    0 0 var(--spacing-3xl) rgb(var(--primary) / 4%);
 }
 
 @media (width <= 768px) {
   .auth-login-card {
-    padding: var(--spacing-md);
-    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    gap: var(--spacing-lg);
   }
 
   .auth-login-card__title {
@@ -153,14 +153,14 @@ const { t } = useI18n({ useScope: 'global' })
     max-width: 98%;
   }
 
-  .auth-login-card__header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--spacing-sm);
-  }
-
   .auth-login-card__actions {
     align-self: flex-start;
+  }
+}
+
+@media (width <= 390px) {
+  .auth-login-card {
+    padding: var(--spacing-md);
   }
 }
 </style>

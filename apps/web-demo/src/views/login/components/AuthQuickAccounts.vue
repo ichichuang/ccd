@@ -3,6 +3,10 @@ import { useI18n } from 'vue-i18n'
 
 defineOptions({ name: 'AuthQuickAccounts' })
 
+defineProps<{
+  selected?: 'admin' | 'user' | null
+}>()
+
 const emit = defineEmits<{
   'fill-admin': []
   'fill-user': []
@@ -31,6 +35,8 @@ function handleUserClick(): void {
         severity="secondary"
         variant="text"
         class="auth-quick-accounts__chip ring-focus-focus"
+        :class="{ 'auth-quick-accounts__chip--active': selected === 'admin' }"
+        :aria-pressed="selected === 'admin'"
         :label="t('login.quickAdmin')"
         @click="handleAdminClick"
       />
@@ -40,6 +46,8 @@ function handleUserClick(): void {
         severity="secondary"
         variant="text"
         class="auth-quick-accounts__chip ring-focus-focus"
+        :class="{ 'auth-quick-accounts__chip--active': selected === 'user' }"
+        :aria-pressed="selected === 'user'"
         :label="t('login.quickUser')"
         @click="handleUserClick"
       />
@@ -50,7 +58,7 @@ function handleUserClick(): void {
 <style scoped>
 .auth-quick-accounts {
   gap: var(--spacing-sm);
-  padding: var(--spacing-sm);
+  padding: var(--spacing-md);
   border: 1px solid rgb(var(--border) / 40%);
   border-radius: var(--radius-lg);
   background: linear-gradient(180deg, rgb(var(--muted) / 10%), rgb(var(--background) / 50%));
@@ -62,8 +70,7 @@ function handleUserClick(): void {
   font-size: var(--font-size-xs);
   font-weight: 600;
   line-height: 1;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  letter-spacing: 0;
 }
 
 .auth-quick-accounts__grid {
@@ -81,7 +88,7 @@ function handleUserClick(): void {
   color: rgb(var(--muted-foreground)) !important;
   font-size: var(--font-size-xs) !important;
   font-weight: 600 !important;
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   transition:
     background-color var(--transition-sm) ease-out,
     border-color var(--transition-sm) ease-out,
@@ -92,6 +99,12 @@ function handleUserClick(): void {
 .auth-quick-accounts__chip:hover {
   border-color: rgb(var(--primary) / 40%) !important;
   background: rgb(var(--primary) / 6%) !important;
+  color: rgb(var(--primary)) !important;
+}
+
+.auth-quick-accounts__chip--active {
+  border-color: rgb(var(--primary) / 60%) !important;
+  background: rgb(var(--primary) / 8%) !important;
   color: rgb(var(--primary)) !important;
 }
 

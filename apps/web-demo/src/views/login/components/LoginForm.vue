@@ -11,6 +11,7 @@ import type { LoginCharacterState, LoginFieldName, LoginResponsiveState } from '
 defineOptions({ name: 'LoginForm' })
 
 type LoginFormValues = LoginParams
+type QuickAccountKind = 'admin' | 'user'
 
 const props = defineProps<{
   responsive: LoginResponsiveState
@@ -26,6 +27,7 @@ const formRef = ref<ProFormExpose | null>(null)
 const isPasswordVisible = ref<boolean>(false)
 const rememberMe = ref<boolean>(false)
 const activeField = ref<LoginFieldName | null>(null)
+const selectedQuickAccount = ref<QuickAccountKind | null>(null)
 const fieldDraft = reactive<Record<LoginFieldName, string>>({
   username: '',
   password: '',
@@ -101,6 +103,7 @@ function commitInputValue(
   value: unknown
 ): void {
   const normalizedValue = typeof value === 'string' ? value : ''
+  selectedQuickAccount.value = null
   fieldDraft[field] = normalizedValue
   activeField.value = field
   onUpdate(normalizedValue)
@@ -124,7 +127,8 @@ function togglePasswordVisibility(): void {
   emitCharacterState()
 }
 
-function fillPreset(values: LoginFormValues): void {
+function fillPreset(kind: QuickAccountKind, values: LoginFormValues): void {
+  selectedQuickAccount.value = kind
   formRef.value?.form.setFieldsValue(values)
   fieldDraft.username = values.username
   fieldDraft.password = values.password
@@ -140,6 +144,7 @@ async function handleLoginSubmit(): Promise<void> {
 
   await submitLogin(instance.getFormState().values, () => {
     instance.form.setFieldsValue({ password: '' })
+    selectedQuickAccount.value = null
     fieldDraft.password = ''
     activeField.value = 'password'
     emitCharacterState()
@@ -260,8 +265,9 @@ onMounted(() => emitCharacterState())
           />
 
           <AuthQuickAccounts
-            @fill-admin="fillPreset(ADMIN_PRESET)"
-            @fill-user="fillPreset(USER_PRESET)"
+            :selected="selectedQuickAccount"
+            @fill-admin="fillPreset('admin', ADMIN_PRESET)"
+            @fill-user="fillPreset('user', USER_PRESET)"
           />
         </div>
       </template>
@@ -272,14 +278,14 @@ onMounted(() => emitCharacterState())
 <style scoped>
 .login-field-shell {
   width: 100%;
-  height: calc(var(--spacing-2xl) + var(--spacing-xs));
+  height: calc(var(--spacing-3xl) + var(--spacing-xs));
   overflow: hidden;
   border: 1px solid rgb(var(--border) / 80%);
   border-radius: var(--radius-lg);
   background: rgb(var(--card));
   box-shadow:
-    inset 0 1px 0 rgb(var(--foreground) / 2%),
-    0 1px 2px rgb(var(--background) / 2%);
+    inset 0 1px 0 rgb(var(--foreground) / 3%),
+    0 1px 2px rgb(var(--foreground) / 2%);
   color: rgb(var(--foreground));
   transition:
     background-color var(--transition-sm) ease-out,
@@ -295,8 +301,8 @@ onMounted(() => emitCharacterState())
   border-color: rgb(var(--primary));
   background: rgb(var(--card));
   box-shadow:
-    0 0 0 2px rgb(var(--primary) / 10%),
-    0 2px 8px rgb(var(--primary) / 4%);
+    0 0 0 2px rgb(var(--primary) / 14%),
+    0 2px 8px rgb(var(--primary) / 5%);
 }
 
 :global(.dark) .login-field-shell {
@@ -313,7 +319,7 @@ onMounted(() => emitCharacterState())
   background: rgb(var(--background) / 75%);
   box-shadow:
     0 0 0 2px rgb(var(--primary) / 18%),
-    0 2px 8px rgb(var(--primary) / 6%);
+    inset 0 1px 0 rgb(var(--foreground) / 4%);
 }
 
 .login-field-shell--invalid {
@@ -378,15 +384,14 @@ onMounted(() => emitCharacterState())
   font-weight: 600 !important;
   color: rgb(var(--muted-foreground)) !important;
   margin-bottom: var(--spacing-xs) !important;
-  letter-spacing: 0.05em !important;
-  text-transform: uppercase !important;
+  letter-spacing: 0 !important;
 }
 
 :deep(.text-danger) {
   color: rgb(var(--danger)) !important;
   font-size: var(--font-size-xs) !important;
   font-weight: 500 !important;
-  letter-spacing: 0.01em !important;
+  letter-spacing: 0 !important;
 }
 
 :deep(.text-muted-foreground) {
@@ -396,7 +401,7 @@ onMounted(() => emitCharacterState())
 
 .login-form-footer {
   gap: var(--spacing-md);
-  padding-top: var(--spacing-xs);
+  padding-top: var(--spacing-sm);
 }
 
 .login-form-options {
@@ -428,7 +433,7 @@ onMounted(() => emitCharacterState())
 }
 
 .login-forgot-button:hover {
-  background: rgb(var(--primary) / 8%) !important;
+  background: rgb(var(--primary) / 7%) !important;
 }
 
 .login-submit-button {
@@ -439,10 +444,10 @@ onMounted(() => emitCharacterState())
   background: linear-gradient(90deg, rgb(var(--primary)), rgb(var(--accent) / 85%)) !important;
   color: rgb(var(--primary-foreground)) !important;
   box-shadow:
-    0 4px 12px rgb(var(--primary) / 20%),
-    0 1px 2px rgb(var(--background) / 10%) !important;
+    0 var(--spacing-xs) var(--spacing-lg) rgb(var(--primary) / 20%),
+    0 1px 2px rgb(var(--foreground) / 8%) !important;
   font-weight: 600 !important;
-  letter-spacing: 0.02em !important;
+  letter-spacing: 0 !important;
   transition:
     background-color var(--transition-sm) ease-out,
     opacity var(--transition-sm) ease-out,
@@ -457,8 +462,8 @@ onMounted(() => emitCharacterState())
     rgb(var(--accent) / 95%)
   ) !important;
   box-shadow:
-    0 6px 16px rgb(var(--primary) / 25%),
-    0 2px 4px rgb(var(--background) / 15%) !important;
+    0 var(--spacing-sm) var(--spacing-xl) rgb(var(--primary) / 24%),
+    0 2px 4px rgb(var(--foreground) / 10%) !important;
 }
 
 .login-submit-button:active:not(:disabled) {
