@@ -180,10 +180,14 @@ onBeforeUnmount(() => {
 .login-utility-bar {
   gap: var(--spacing-2xs);
   padding: var(--spacing-2xs);
-  border: 1px solid rgb(var(--border) / 42%);
-  border-radius: var(--radius-lg);
-  background: rgb(var(--background) / 46%);
-  box-shadow: inset 0 1px 0 rgb(var(--foreground) / 5%);
+  border: 1px solid rgb(var(--border) / 50%);
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(180deg, rgb(var(--background) / 72%), rgb(var(--muted) / 34%)),
+    rgb(var(--card) / 46%);
+  box-shadow:
+    inset 0 1px 0 rgb(var(--foreground) / 6%),
+    0 var(--spacing-xs) var(--spacing-lg) rgb(var(--background) / 16%);
 }
 
 .login-utility-bar__button {
@@ -208,7 +212,7 @@ onBeforeUnmount(() => {
 }
 
 .login-utility-bar__button:hover {
-  background: rgb(var(--primary) / 10%) !important;
+  background: rgb(var(--primary) / 12%) !important;
   color: rgb(var(--primary)) !important;
 }
 

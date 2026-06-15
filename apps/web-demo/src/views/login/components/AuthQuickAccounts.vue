@@ -55,9 +55,12 @@ function handleUserClick(): void {
 .auth-quick-accounts {
   gap: var(--spacing-xs);
   padding: var(--spacing-xs);
-  border: 1px solid rgb(var(--border) / 48%);
-  border-radius: var(--radius-lg);
-  background: rgb(var(--muted) / 28%);
+  border: 1px solid rgb(var(--border) / 54%);
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(180deg, rgb(var(--muted) / 34%), rgb(var(--background) / 28%)),
+    linear-gradient(90deg, rgb(var(--primary) / 5%), transparent);
+  box-shadow: inset 0 1px 0 rgb(var(--foreground) / 5%);
 }
 
 .auth-quick-accounts__header {
@@ -77,11 +80,11 @@ function handleUserClick(): void {
 .auth-quick-accounts__chip {
   justify-content: center;
   min-width: 0;
-  border: 1px solid rgb(var(--border) / 38%) !important;
+  border: 1px solid rgb(var(--border) / 48%) !important;
   border-radius: var(--radius-md) !important;
-  background: rgb(var(--background) / 42%) !important;
+  background: rgb(var(--background) / 58%) !important;
   color: rgb(var(--muted-foreground)) !important;
-  box-shadow: none !important;
+  box-shadow: inset 0 1px 0 rgb(var(--foreground) / 4%) !important;
   font-size: var(--font-size-sm) !important;
   font-weight: 700 !important;
   transition:

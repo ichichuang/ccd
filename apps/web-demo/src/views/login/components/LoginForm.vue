@@ -284,16 +284,16 @@ onMounted(() => emitCharacterState())
 <style scoped>
 .login-field-shell {
   width: 100%;
-  height: var(--spacing-2xl);
+  height: calc(var(--spacing-2xl) + var(--spacing-xs));
   overflow: hidden;
-  border: 1px solid rgb(var(--input));
-  border-radius: var(--radius-lg);
+  border: 1px solid rgb(var(--input) / 92%);
+  border-radius: var(--radius-md);
   background:
-    linear-gradient(180deg, rgb(var(--background) / 92%), rgb(var(--background) / 78%)),
-    linear-gradient(90deg, rgb(var(--primary) / 7%), transparent);
+    linear-gradient(180deg, rgb(var(--background) / 96%), rgb(var(--muted) / 36%)),
+    linear-gradient(90deg, rgb(var(--primary) / 8%), transparent 42%);
   box-shadow:
-    inset 0 1px 0 rgb(var(--foreground) / 5%),
-    0 var(--spacing-xs) var(--spacing-lg) rgb(var(--background) / 18%);
+    inset 0 1px 0 rgb(var(--foreground) / 6%),
+    0 var(--spacing-xs) var(--spacing-lg) rgb(var(--background) / 20%);
   color: rgb(var(--foreground));
   transition:
     background-color var(--transition-sm) ease-out,
@@ -307,8 +307,12 @@ onMounted(() => emitCharacterState())
 
 .login-field-shell:focus-within {
   border-color: rgb(var(--primary));
-  background: rgb(var(--background));
-  box-shadow: var(--p-form-field-focus-ring-shadow);
+  background:
+    linear-gradient(180deg, rgb(var(--background)), rgb(var(--background) / 88%)),
+    linear-gradient(90deg, rgb(var(--primary) / 12%), transparent 50%);
+  box-shadow:
+    var(--p-form-field-focus-ring-shadow),
+    0 var(--spacing-sm) var(--spacing-xl) rgb(var(--primary) / 12%);
 }
 
 .login-field-shell--invalid {
@@ -317,7 +321,7 @@ onMounted(() => emitCharacterState())
 
 .login-field-shell__icon,
 .login-password-toggle {
-  width: var(--spacing-2xl);
+  width: calc(var(--spacing-2xl) + var(--spacing-2xs));
   height: 100%;
   flex: 0 0 auto;
 }
@@ -358,7 +362,7 @@ onMounted(() => emitCharacterState())
 }
 
 .login-form-footer {
-  gap: var(--spacing-sm);
+  gap: var(--spacing-md);
   padding-top: var(--spacing-xs);
 }
 
@@ -398,12 +402,12 @@ onMounted(() => emitCharacterState())
   justify-content: center;
   width: 100%;
   border: 0 !important;
-  border-radius: var(--radius-lg) !important;
-  background: rgb(var(--primary)) !important;
+  border-radius: var(--radius-md) !important;
+  background: linear-gradient(90deg, rgb(var(--primary)), rgb(var(--accent) / 78%)) !important;
   color: rgb(var(--primary-foreground)) !important;
   box-shadow:
     inset 0 1px 0 rgb(var(--foreground) / 12%),
-    0 var(--spacing-sm) var(--spacing-xl) rgb(var(--primary) / 24%) !important;
+    0 var(--spacing-sm) var(--spacing-xl) rgb(var(--primary) / 28%) !important;
   transition:
     background-color var(--transition-sm) ease-out,
     transform var(--transition-sm) ease-out,
@@ -411,7 +415,14 @@ onMounted(() => emitCharacterState())
 }
 
 .login-submit-button:hover {
-  background: rgb(var(--primary-hover)) !important;
+  background: linear-gradient(
+    90deg,
+    rgb(var(--primary-hover)),
+    rgb(var(--accent) / 86%)
+  ) !important;
+  box-shadow:
+    inset 0 1px 0 rgb(var(--foreground) / 14%),
+    0 var(--spacing-md) var(--spacing-2xl) rgb(var(--primary) / 34%) !important;
 }
 
 .login-submit-button:active {

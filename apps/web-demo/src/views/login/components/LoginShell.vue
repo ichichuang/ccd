@@ -11,7 +11,7 @@ defineProps<{
 <template>
   <section
     id="login-shell"
-    class="login-shell relative w-[min(1220px,100%)]"
+    class="login-shell relative"
     :class="{
       'login-shell--mobile': responsive.isMobile,
       'login-shell--tablet': responsive.isTablet,
@@ -35,9 +35,13 @@ defineProps<{
 <style scoped>
 .login-shell__inner {
   align-items: stretch;
-  grid-template-columns: minmax(0, 1fr) minmax(380px, 460px);
-  gap: var(--spacing-xl);
-  min-height: min(700px, calc(100vh - var(--safe-top) - var(--safe-bottom) - var(--spacing-3xl)));
+  grid-template-columns: minmax(0, 1.12fr) minmax(430px, 500px);
+  gap: clamp(var(--spacing-lg), 4vw, var(--spacing-4xl));
+  min-height: min(760px, calc(100dvh - var(--safe-top) - var(--safe-bottom) - var(--spacing-3xl)));
+}
+
+.login-shell {
+  width: min(1480px, 100%);
 }
 
 .login-shell__form {
@@ -55,7 +59,7 @@ defineProps<{
 }
 
 .login-shell--tablet {
-  max-width: 860px;
+  max-width: 900px;
 }
 
 .login-shell--tablet .login-shell__inner,

@@ -28,14 +28,14 @@ defineProps<{
   gap: var(--spacing-xs);
   min-width: 0;
   padding: var(--spacing-xs) var(--spacing-sm);
-  border: 1px solid rgb(var(--border) / 62%);
-  border-radius: var(--radius-lg);
+  border: 1px solid rgb(var(--border) / 58%);
+  border-radius: var(--radius-md);
   background:
-    linear-gradient(135deg, rgb(var(--card) / 76%), rgb(var(--background) / 36%)),
-    linear-gradient(90deg, rgb(var(--primary) / 8%), transparent);
+    linear-gradient(135deg, rgb(var(--card) / 72%), rgb(var(--background) / 42%)),
+    linear-gradient(90deg, rgb(var(--primary) / 9%), transparent 52%);
   box-shadow:
-    inset 0 1px 0 rgb(var(--foreground) / 5%),
-    0 var(--spacing-sm) var(--spacing-xl) rgb(var(--background) / 22%);
+    inset 0 1px 0 rgb(var(--foreground) / 6%),
+    0 var(--spacing-xs) var(--spacing-lg) rgb(var(--background) / 18%);
   color: rgb(var(--muted-foreground));
   transition:
     border-color var(--transition-md) ease-out,
@@ -44,8 +44,11 @@ defineProps<{
 }
 
 .auth-signal-card--active {
-  border-color: rgb(var(--primary) / 44%);
+  border-color: rgb(var(--primary) / 52%);
   color: rgb(var(--foreground));
+  background:
+    linear-gradient(135deg, rgb(var(--primary) / 13%), rgb(var(--card) / 70%)),
+    linear-gradient(90deg, rgb(var(--accent) / 8%), transparent 52%);
   transform: translateY(calc(var(--spacing-2xs) * -1));
 }
 

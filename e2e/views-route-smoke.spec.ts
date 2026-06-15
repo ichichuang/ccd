@@ -1,5 +1,72 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 import { gotoVisual, loginAsAdmin, waitForAppReady, waitForRuntimeLoadingIdle } from './helpers/app'
+
+type AuthMotionSnapshot = {
+  animationCount: number
+  animationName: string
+  currentTime: number
+  instance: string | null
+  marker: string | null
+  sameAnimation: boolean
+  username: string
+  password: string
+}
+
+async function waitForLoginThemeState(page: Page, targetMode: 'light' | 'dark'): Promise<void> {
+  await page.waitForFunction(mode => {
+    const isDark = document.documentElement.classList.contains('dark')
+    const datasetMode = document.documentElement.dataset.themeMode
+    const modeMatches = datasetMode === mode || (mode === 'light' && !datasetMode)
+    return (
+      modeMatches &&
+      document.documentElement.dataset.themeTransitioning !== 'true' &&
+      (mode === 'dark' ? isDark : !isDark)
+    )
+  }, targetMode)
+}
+
+async function readAuthMotionSnapshot(
+  page: Page,
+  options: { mark?: boolean } = {}
+): Promise<AuthMotionSnapshot> {
+  return page.evaluate(shouldMark => {
+    type AuthMotionProbeElement = HTMLElement & {
+      ccdMotionAnimation?: Animation | null
+      ccdMotionProbe?: string
+    }
+
+    const core = document.querySelector<HTMLElement>('[data-auth-motion-core="true"]')
+    if (!core) throw new Error('Expected auth motion core to be mounted.')
+
+    const probe = core as AuthMotionProbeElement
+    const activeAnimation =
+      core.getAnimations().find(animation => animation.playState === 'running') ??
+      core.getAnimations()[0] ??
+      null
+
+    if (shouldMark) {
+      probe.ccdMotionProbe = 'auth-motion-same-node'
+      probe.ccdMotionAnimation = activeAnimation
+    }
+
+    const rawCurrentTime = activeAnimation?.currentTime
+    const currentTime =
+      typeof rawCurrentTime === 'number' ? rawCurrentTime : Number(rawCurrentTime ?? 0)
+    const username = document.querySelector<HTMLInputElement>('#username')?.value ?? ''
+    const password = document.querySelector<HTMLInputElement>('#password')?.value ?? ''
+
+    return {
+      animationCount: core.getAnimations().length,
+      animationName: getComputedStyle(core).animationName,
+      currentTime,
+      instance: core.dataset.motionInstance ?? null,
+      marker: probe.ccdMotionProbe ?? null,
+      sameAnimation: probe.ccdMotionAnimation === activeAnimation,
+      username,
+      password,
+    }
+  }, options.mark === true)
+}
 
 test.describe('view route smoke coverage', () => {
   test('login gateway preserves quick fill, failure clearing, locale, and theme controls', async ({
@@ -81,6 +148,43 @@ test.describe('view route smoke coverage', () => {
         document.documentElement.dataset.themeTransitioning === 'false' &&
         document.documentElement.classList.contains('dark')
     )
+  })
+
+  test('login gateway keeps shader motion and form state stable across theme toggle', async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      window.localStorage.clear()
+      window.localStorage.setItem('theme-mode', 'light')
+    })
+
+    await page.goto('/#/login?redirect=/system/settings')
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+    await expect(page.locator('#login-submit')).toBeVisible()
+
+    await page.locator('#username').fill('admin')
+    await page.locator('#password').fill('123456')
+    await expect(page.locator('[data-auth-motion-core="true"]')).toBeVisible()
+    await page.waitForTimeout(120)
+
+    const beforeToggle = await readAuthMotionSnapshot(page, { mark: true })
+    expect(beforeToggle.animationCount).toBeGreaterThan(0)
+    expect(beforeToggle.animationName).not.toBe('none')
+    expect(beforeToggle.sameAnimation).toBe(true)
+
+    await page.getByRole('button', { name: '切换主题' }).click()
+    await waitForLoginThemeState(page, 'dark')
+    await page.waitForTimeout(120)
+
+    const afterToggle = await readAuthMotionSnapshot(page)
+    expect(afterToggle.marker).toBe('auth-motion-same-node')
+    expect(afterToggle.sameAnimation).toBe(true)
+    expect(afterToggle.instance).toBe(beforeToggle.instance)
+    expect(afterToggle.animationName).toBe(beforeToggle.animationName)
+    expect(afterToggle.currentTime).toBeGreaterThan(beforeToggle.currentTime)
+    expect(afterToggle.username).toBe('admin')
+    expect(afterToggle.password).toBe('123456')
   })
 
   test('login gateway keeps mobile layout inside the viewport', async ({ page }) => {
