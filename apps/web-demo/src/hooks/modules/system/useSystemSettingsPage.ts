@@ -1,10 +1,13 @@
 import {
   SIZE_PRESETS,
   THEME_PRESETS,
+  TRANSITION_DURATION_OPTIONS,
   getPresetPrimaryColor,
   type CompleteThemePreset,
   type SizeMode,
   type ThemeMode,
+  type ThemeTransitionDuration,
+  type ThemeTransitionMode,
 } from '@ccd/design-tokens'
 import type { LayoutModuleVisibilityKey } from '@ccd/vue-app-platform'
 import type { SupportedLocale } from '@/locales'
@@ -19,6 +22,10 @@ type SettingOption<TValue extends string | number> = {
 type PreviewItem = {
   label: string
   value: string
+}
+
+type TransitionModeOption = SettingOption<ThemeTransitionMode> & {
+  icon: string
 }
 
 interface SizeStoreSettingsBridge {
@@ -49,13 +56,21 @@ interface UseSystemSettingsPageReturn {
   onLocaleChange: (value: unknown) => void
   onModuleToggle: (key: LayoutModuleVisibilityKey, value: unknown) => void
   onSizeChange: (value: unknown) => void
+  onTransitionDurationChange: (value: unknown) => void
+  onTransitionModeChange: (value: unknown) => void
   onThemeModeChange: (value: unknown) => void
   onThemePresetChange: (name: string) => void
   previewItems: ComputedRef<PreviewItem[]>
   selectedSizeDescription: ComputedRef<string>
   selectedThemeName: ComputedRef<string>
+  selectedTransitionEffectIcon: ComputedRef<string>
+  selectedTransitionEffectLabel: ComputedRef<string>
   sizeOptions: ComputedRef<SettingOption<SizeMode>[]>
   sizeStore: SizeStoreSettingsBridge
+  transitionDuration: ComputedRef<ThemeTransitionDuration>
+  transitionDurationOptions: ComputedRef<SettingOption<ThemeTransitionDuration>[]>
+  transitionMode: ComputedRef<ThemeTransitionMode>
+  transitionModeOptions: ComputedRef<TransitionModeOption[]>
   themeModeOptions: ComputedRef<SettingOption<ThemeMode>[]>
   themePresets: readonly CompleteThemePreset[]
   visibleLayoutModuleSwitches: ComputedRef<
@@ -75,6 +90,24 @@ const layoutModeLabelKeys: Record<AdminLayoutMode, string> = {
   mix: 'settings.layoutMix',
 }
 
+const transitionModeMeta: Record<ThemeTransitionMode, { labelKey: string; icon: string }> = {
+  curtain: { labelKey: 'settings.transitionCurtain', icon: 'i-lucide-panel-left' },
+  circle: { labelKey: 'settings.transitionCircle', icon: 'i-lucide-circle-dot' },
+  diamond: { labelKey: 'settings.transitionDiamond', icon: 'i-lucide-diamond' },
+  fade: { labelKey: 'settings.transitionFade', icon: 'i-lucide-sparkles' },
+  implosion: { labelKey: 'settings.transitionImplosion', icon: 'i-lucide-minimize-2' },
+  glitch: { labelKey: 'settings.transitionGlitch', icon: 'i-lucide-sun-moon' },
+}
+
+const transitionModeValues: ThemeTransitionMode[] = [
+  'curtain',
+  'circle',
+  'diamond',
+  'fade',
+  'implosion',
+  'glitch',
+]
+
 const layoutModuleSwitches: Array<{ key: LayoutModuleVisibilityKey; labelKey: string }> = [
   { key: 'showHeader', labelKey: 'settings.showHeader' },
   { key: 'showMenu', labelKey: 'settings.showMenu' },
@@ -92,6 +125,21 @@ function isThemeMode(value: unknown): value is ThemeMode {
 
 function isSizeMode(value: unknown): value is SizeMode {
   return value === 'compact' || value === 'comfortable' || value === 'loose'
+}
+
+function isThemeTransitionMode(value: unknown): value is ThemeTransitionMode {
+  return (
+    value === 'curtain' ||
+    value === 'circle' ||
+    value === 'diamond' ||
+    value === 'fade' ||
+    value === 'implosion' ||
+    value === 'glitch'
+  )
+}
+
+function isThemeTransitionDuration(value: unknown): value is ThemeTransitionDuration {
+  return value === 400 || value === 600 || value === 800 || value === 1200 || value === 1600
 }
 
 function isLayoutMode(value: unknown): value is AdminLayoutMode {
@@ -132,6 +180,24 @@ export function useSystemSettingsPage(): UseSystemSettingsPageReturn {
     { value: 'horizontal', label: t('settings.layoutHorizontal') },
     { value: 'mix', label: t('settings.layoutMix') },
   ])
+
+  const transitionMode = computed(() => themeStore.transitionMode)
+  const transitionDuration = computed(() => themeStore.transitionDuration)
+
+  const transitionModeOptions = computed<TransitionModeOption[]>(() =>
+    transitionModeValues.map(value => ({
+      value,
+      label: t(transitionModeMeta[value].labelKey),
+      icon: transitionModeMeta[value].icon,
+    }))
+  )
+
+  const transitionDurationOptions = computed<SettingOption<ThemeTransitionDuration>[]>(() =>
+    TRANSITION_DURATION_OPTIONS.map(option => ({
+      value: option.value,
+      label: t(option.labelKey),
+    }))
+  )
 
   const currentVisibilitySettings = computed(
     () => layoutStore.visibilitySettings[layoutStore.preferredMode]
@@ -200,6 +266,12 @@ export function useSystemSettingsPage(): UseSystemSettingsPageReturn {
   const selectedSizeDescription = computed(() =>
     t(`console.settingsPage.sizeDescriptions.${sizeStore.sizeName}`)
   )
+  const selectedTransitionEffectLabel = computed(() =>
+    t(transitionModeMeta[themeStore.transitionMode].labelKey)
+  )
+  const selectedTransitionEffectIcon = computed(
+    () => transitionModeMeta[themeStore.transitionMode].icon
+  )
 
   function isLayoutModuleSwitchDisabled(key: LayoutModuleVisibilityKey): boolean {
     if (!currentVisibilitySettings.value.showHeader && (key === 'showMenu' || key === 'showLogo')) {
@@ -217,6 +289,14 @@ export function useSystemSettingsPage(): UseSystemSettingsPageReturn {
 
   function onSizeChange(value: unknown): void {
     if (isSizeMode(value)) sizeStore.setSize(value)
+  }
+
+  function onTransitionModeChange(value: unknown): void {
+    if (isThemeTransitionMode(value)) themeStore.setTransitionMode(value)
+  }
+
+  function onTransitionDurationChange(value: unknown): void {
+    if (isThemeTransitionDuration(value)) themeStore.setTransitionDuration(value)
   }
 
   function onLocaleChange(value: unknown): void {
@@ -255,13 +335,21 @@ export function useSystemSettingsPage(): UseSystemSettingsPageReturn {
     onLocaleChange,
     onModuleToggle,
     onSizeChange,
+    onTransitionDurationChange,
+    onTransitionModeChange,
     onThemeModeChange,
     onThemePresetChange,
     previewItems,
     selectedSizeDescription,
     selectedThemeName,
+    selectedTransitionEffectIcon,
+    selectedTransitionEffectLabel,
     sizeOptions,
     sizeStore,
+    transitionDuration,
+    transitionDurationOptions,
+    transitionMode,
+    transitionModeOptions,
     themeModeOptions,
     themePresets: THEME_PRESETS,
     visibleLayoutModuleSwitches,

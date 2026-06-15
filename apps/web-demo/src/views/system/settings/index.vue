@@ -19,13 +19,21 @@ const {
   onLocaleChange,
   onModuleToggle,
   onSizeChange,
+  onTransitionDurationChange,
+  onTransitionModeChange,
   onThemeModeChange,
   onThemePresetChange,
   previewItems,
   selectedSizeDescription,
   selectedThemeName,
+  selectedTransitionEffectIcon,
+  selectedTransitionEffectLabel,
   sizeOptions,
   sizeStore,
+  transitionDuration,
+  transitionDurationOptions,
+  transitionMode,
+  transitionModeOptions,
   themeModeOptions,
   themePresets,
   visibleLayoutModuleSwitches,
@@ -74,7 +82,7 @@ const {
     </header>
 
     <div class="grid min-w-0 grid-cols-1 gap-md xl:grid-cols-12">
-      <section class="material-elevated col-stretch min-w-0 gap-md xl:col-span-7">
+      <section class="material-elevated col-stretch min-w-0 gap-md xl:col-span-12">
         <header class="row-between gap-md flex-wrap">
           <div class="col-stretch gap-xs min-w-0">
             <span class="text-xs font-semibold text-primary text-no-wrap">
@@ -93,11 +101,14 @@ const {
           />
         </header>
 
-        <div class="grid min-w-0 grid-cols-1 gap-md lg:grid-cols-[minmax(0,46%)_minmax(0,1fr)]">
-          <section class="demo-well col-stretch min-w-0 gap-sm">
-            <span class="text-xs font-medium text-muted-foreground text-ellipsis-1">
-              {{ t('settings.themeMode') }}
-            </span>
+        <div class="grid min-w-0 grid-cols-1 gap-md xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+          <section class="demo-well col-stretch min-w-0 gap-md">
+            <div class="col-stretch min-w-0 gap-xs">
+              <span class="text-xs font-medium text-muted-foreground text-ellipsis-1">
+                {{ t('settings.themeMode') }}
+              </span>
+            </div>
+
             <SelectButton
               :model-value="mode"
               :options="themeModeOptions"
@@ -107,32 +118,119 @@ const {
               fluid
               @update:model-value="onThemeModeChange"
             />
+
+            <div class="col-stretch min-w-0 gap-sm pt-sm">
+              <span class="text-xs font-medium text-muted-foreground text-ellipsis-1">
+                {{ t('settings.themePreset') }}
+              </span>
+              <div class="row-start flex-wrap gap-sm">
+                <button
+                  v-for="preset in themePresets"
+                  :key="preset.name"
+                  type="button"
+                  class="theme-preset-swatch"
+                  :aria-pressed="selectedThemeName === preset.name"
+                  :aria-label="preset.name"
+                  :style="{ backgroundColor: getThemePresetColor(preset.name) }"
+                  @click="onThemePresetChange(preset.name)"
+                >
+                  <Icons
+                    v-if="selectedThemeName === preset.name"
+                    name="i-lucide-check"
+                    size="sm"
+                    class="text-primary-foreground drop-shadow-md"
+                  />
+                </button>
+              </div>
+            </div>
           </section>
 
-          <section class="demo-well col-stretch min-w-0 gap-sm">
-            <span class="text-xs font-medium text-muted-foreground text-ellipsis-1">
-              {{ t('settings.themePreset') }}
-            </span>
-            <div class="row-start flex-wrap gap-sm">
-              <Button
-                v-for="preset in themePresets"
-                :key="preset.name"
+          <section class="demo-well col-stretch min-w-0 gap-md">
+            <div class="row-between min-w-0 gap-md">
+              <div class="col-stretch min-w-0 gap-xs">
+                <span class="text-xs font-medium text-muted-foreground text-ellipsis-1">
+                  {{ t('settings.transitionEffect') }}
+                </span>
+                <strong class="text-sm text-foreground text-ellipsis-1">
+                  {{ selectedTransitionEffectLabel }}
+                </strong>
+              </div>
+              <Tag
+                severity="info"
+                :value="`${transitionDuration}ms`"
+              />
+            </div>
+
+            <div class="grid min-w-0 grid-cols-2 gap-sm lg:grid-cols-3">
+              <button
+                v-for="option in transitionModeOptions"
+                :key="option.value"
                 type="button"
-                text
-                rounded
-                :aria-pressed="selectedThemeName === preset.name"
-                :aria-label="preset.name"
-                :style="{ backgroundColor: getThemePresetColor(preset.name) }"
-                class="interaction-shrink w-[var(--spacing-xl)] h-[var(--spacing-xl)] !p-0 !rounded-md border border-solid border-transparent"
-                @click="onThemePresetChange(preset.name)"
+                class="transition-effect-option"
+                :aria-pressed="transitionMode === option.value"
+                :aria-label="option.label"
+                @click="onTransitionModeChange(option.value)"
               >
                 <Icons
-                  v-if="selectedThemeName === preset.name"
+                  :name="option.icon"
+                  size="sm"
+                  color="text-current"
+                  class="transition-effect-icon"
+                />
+                <span class="transition-effect-label">
+                  {{ option.label }}
+                </span>
+                <Icons
+                  v-if="transitionMode === option.value"
                   name="i-lucide-check"
                   size="sm"
-                  class="text-primary-foreground drop-shadow-md"
+                  class="transition-effect-check"
                 />
-              </Button>
+              </button>
+            </div>
+
+            <div class="grid min-w-0 grid-cols-1 gap-md">
+              <div
+                aria-hidden="true"
+                class="demo-stage grid min-w-0 grid-cols-3 gap-xs p-sm"
+              >
+                <div class="surface-warn col-center min-w-0 gap-xs rounded-md p-sm">
+                  <Icons
+                    name="i-lucide-sun"
+                    size="lg"
+                  />
+                </div>
+                <div class="surface-primary col-center min-w-0 gap-xs rounded-md p-sm">
+                  <Icons
+                    :name="selectedTransitionEffectIcon"
+                    size="lg"
+                  />
+                  <span class="text-xs font-medium text-ellipsis-1">
+                    {{ selectedTransitionEffectLabel }}
+                  </span>
+                </div>
+                <div class="surface-info col-center min-w-0 gap-xs rounded-md p-sm">
+                  <Icons
+                    name="i-lucide-moon"
+                    size="lg"
+                  />
+                </div>
+              </div>
+
+              <div class="col-stretch min-w-0 gap-sm">
+                <span class="text-xs font-medium text-muted-foreground text-ellipsis-1">
+                  {{ t('settings.transitionDuration') }}
+                </span>
+                <SelectButton
+                  :model-value="transitionDuration"
+                  :options="transitionDurationOptions"
+                  option-value="value"
+                  option-label="label"
+                  :allow-empty="false"
+                  fluid
+                  @update:model-value="onTransitionDurationChange"
+                />
+              </div>
             </div>
           </section>
         </div>
@@ -327,3 +425,85 @@ const {
     />
   </section>
 </template>
+
+<style scoped>
+.theme-preset-swatch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--spacing-xl);
+  height: var(--spacing-xl);
+  appearance: none;
+  padding: 0;
+  border: thin solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition-property: border-color, outline-color, transform;
+  transition-duration: var(--transition-sm);
+}
+
+.theme-preset-swatch:hover,
+.theme-preset-swatch[aria-pressed='true'] {
+  border-color: rgb(var(--primary-foreground) / 72%);
+}
+
+.theme-preset-swatch:active {
+  transform: scale(0.96);
+}
+
+.theme-preset-swatch:focus-visible,
+.transition-effect-option:focus-visible {
+  outline: thin solid rgb(var(--primary));
+  outline-offset: calc(var(--spacing-xs) / 2);
+}
+
+.transition-effect-option {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 0;
+  min-height: var(--control-height-sm);
+  appearance: none;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: thin solid rgb(var(--border));
+  border-radius: var(--radius-md);
+  background-color: rgb(var(--background) / 42%);
+  color: rgb(var(--foreground));
+  text-align: left;
+  cursor: pointer;
+  transition-property: background-color, border-color, color;
+  transition-duration: var(--transition-sm);
+}
+
+.transition-effect-option:hover {
+  background-color: rgb(var(--primary) / 8%);
+  border-color: rgb(var(--primary) / 28%);
+  color: rgb(var(--primary));
+}
+
+.transition-effect-option[aria-pressed='true'] {
+  background-color: rgb(var(--primary) / 14%);
+  border-color: rgb(var(--primary) / 42%);
+  color: rgb(var(--primary));
+}
+
+.transition-effect-icon,
+.transition-effect-check {
+  flex-shrink: 0;
+}
+
+.transition-effect-check {
+  margin-left: auto;
+}
+
+.transition-effect-label {
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+</style>
