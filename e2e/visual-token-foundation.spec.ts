@@ -185,10 +185,12 @@ test.describe('visual token foundation', () => {
 
     const hoverItem = sidebar.locator('.admin-sidebar-menu__item[data-menu-state="idle"]').nth(1)
     await expect(hoverItem).toBeVisible()
-    const hoverSignatureBefore = await visualSignature(hoverItem)
-    await hoverItem.hover()
+    const hoverItemContent = hoverItem.locator('.admin-sidebar-menu__item-content').first()
+    await expect(hoverItemContent).toBeVisible()
+    const hoverSignatureBefore = await visualSignature(hoverItemContent)
+    await hoverItemContent.hover()
     await page.waitForTimeout(250)
-    const hoverSignatureAfter = await visualSignature(hoverItem)
+    const hoverSignatureAfter = await visualSignature(hoverItemContent)
     expectDistinctStyle(hoverSignatureAfter, hoverSignatureBefore)
 
     const topbarParent = page
