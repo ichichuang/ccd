@@ -2,6 +2,9 @@
 import { useI18n } from 'vue-i18n'
 import type { LoginParams } from '@/types/dto/auth.dto'
 import type { FormSchema, ProFormExpose } from '@ccd/vue-ui'
+import AuthLoginCard from './AuthLoginCard.vue'
+import AuthQuickAccounts from './AuthQuickAccounts.vue'
+import HeaderActions from './HeaderActions.vue'
 import { useLoginSubmit } from '../composables/useLoginSubmit'
 import type { LoginCharacterState, LoginFieldName, LoginResponsiveState } from '../types'
 
@@ -151,7 +154,11 @@ onMounted(() => emitCharacterState())
 </script>
 
 <template>
-  <section class="col-stretch gap-sm">
+  <AuthLoginCard :compact="responsive.isCompact">
+    <template #actions>
+      <HeaderActions />
+    </template>
+
     <ProForm
       :key="locale"
       ref="formRef"
@@ -163,12 +170,10 @@ onMounted(() => emitCharacterState())
     >
       <template #field-username="{ state, onUpdate }">
         <div
-          class="login-field-shell row-center h-[var(--spacing-2xl)] w-full overflow-hidden rounded-md border border-solid border-input bg-background/88 text-foreground shadow-sm transition-[border-color,box-shadow,background-color] duration-sm hover:border-primary/45 focus-within:!border-primary focus-within:!bg-background focus-within:[box-shadow:var(--p-form-field-focus-ring-shadow)]"
-          :class="state.errors.length > 0 ? '!border-danger' : ''"
+          class="login-field-shell row-center"
+          :class="{ 'login-field-shell--invalid': state.errors.length > 0 }"
         >
-          <span
-            class="pointer-events-none center h-full w-[var(--spacing-2xl)] shrink-0 text-primary/75"
-          >
+          <span class="login-field-shell__icon center">
             <Icons
               name="i-lucide-user"
               size="sm"
@@ -182,7 +187,7 @@ onMounted(() => emitCharacterState())
             size="large"
             :disabled="loading || state.disabled"
             :invalid="state.errors.length > 0"
-            class="login-field-input h-full! min-w-0! flex-1! rounded-none! border-0! bg-transparent! px-0! text-foreground! shadow-none! outline-none! ring-0!"
+            class="login-field-input"
             fluid
             @focus="handleFieldFocus('username', state.value)"
             @blur="handleFieldBlur('username', state.value)"
@@ -193,12 +198,10 @@ onMounted(() => emitCharacterState())
 
       <template #field-password="{ state, onUpdate }">
         <div
-          class="login-field-shell row-center h-[var(--spacing-2xl)] w-full overflow-hidden rounded-md border border-solid border-input bg-background/88 text-foreground shadow-sm transition-[border-color,box-shadow,background-color] duration-sm hover:border-primary/45 focus-within:!border-primary focus-within:!bg-background focus-within:[box-shadow:var(--p-form-field-focus-ring-shadow)]"
-          :class="state.errors.length > 0 ? '!border-danger' : ''"
+          class="login-field-shell row-center"
+          :class="{ 'login-field-shell--invalid': state.errors.length > 0 }"
         >
-          <span
-            class="pointer-events-none center h-full w-[var(--spacing-2xl)] shrink-0 text-primary/75"
-          >
+          <span class="login-field-shell__icon center">
             <Icons
               name="i-lucide-lock"
               size="sm"
@@ -213,7 +216,7 @@ onMounted(() => emitCharacterState())
             size="large"
             :disabled="loading || state.disabled"
             :invalid="state.errors.length > 0"
-            class="login-field-input h-full! min-w-0! flex-1! rounded-none! border-0! bg-transparent! px-0! text-foreground! shadow-none! outline-none! ring-0!"
+            class="login-field-input"
             fluid
             @focus="handleFieldFocus('password', state.value)"
             @blur="handleFieldBlur('password', state.value)"
@@ -223,7 +226,7 @@ onMounted(() => emitCharacterState())
             type="button"
             severity="secondary"
             variant="text"
-            class="h-full! w-[var(--spacing-2xl)] shrink-0 rounded-none! border-0! bg-transparent! p-0! text-muted-foreground! shadow-none! transition-colors duration-sm hover:!bg-primary/8 hover:!text-primary ring-focus-focus"
+            class="login-password-toggle ring-focus-focus"
             :aria-label="isPasswordVisible ? t('login.passwordHide') : t('login.passwordShow')"
             :aria-pressed="isPasswordVisible"
             :disabled="loading || state.disabled"
@@ -238,11 +241,9 @@ onMounted(() => emitCharacterState())
       </template>
 
       <template #footer="{ formState }">
-        <div class="col-stretch gap-xs pt-xs">
-          <div class="row-between h-[var(--spacing-2xl)] gap-sm px-xs">
-            <label
-              class="row-center cursor-pointer gap-xs text-sm font-medium text-muted-foreground"
-            >
+        <div class="login-form-footer col-stretch">
+          <div class="login-form-options row-between">
+            <label class="login-remember-option row-center">
               <Checkbox
                 v-model="rememberMe"
                 binary
@@ -250,50 +251,180 @@ onMounted(() => emitCharacterState())
                 class="shrink-0 leading-none"
                 :pt="{ root: { class: 'center' }, box: { class: 'shrink-0' } }"
               />
-              <span class="leading-none">{{ t('login.rememberMe') }}</span>
+              <span>{{ t('login.rememberMe') }}</span>
             </label>
             <Button
               type="button"
               severity="secondary"
               variant="text"
-              class="h-[var(--spacing-lg)] rounded-md border-0 bg-transparent px-xs! py-0! text-sm! font-medium! text-primary! shadow-none! transition-colors duration-sm hover:!bg-primary/8 ring-focus-focus"
+              class="login-forgot-button ring-focus-focus"
               :label="t('login.forgotPassword')"
             />
           </div>
 
           <Button
             id="login-submit"
-            class="w-full justify-center rounded-lg! bg-primary! [color:rgb(var(--primary-foreground))]! shadow-sm transition-colors duration-sm hover:bg-primary-hover! ring-focus-focus disabled:opacity-70"
+            class="login-submit-button ring-focus-focus"
             :label="t('login.submit')"
             :loading="formState.submitting || loading"
             size="large"
             @click="handleLoginSubmit"
           />
 
-          <div
-            class="grid grid-cols-2 gap-0 overflow-hidden rounded-lg border border-solid border-border/45 bg-muted/30 p-2xs"
-          >
-            <Button
-              id="login-fill-admin"
-              type="button"
-              severity="secondary"
-              variant="text"
-              class="justify-center rounded-md! border-0! bg-transparent! px-sm! py-xs! text-sm! font-medium! text-muted-foreground! shadow-none! transition-colors duration-sm hover:!bg-background/75 hover:!text-foreground ring-focus-focus"
-              :label="t('login.quickAdmin')"
-              @click="fillPreset(ADMIN_PRESET)"
-            />
-            <Button
-              id="login-fill-user"
-              type="button"
-              severity="secondary"
-              variant="text"
-              class="justify-center rounded-md! border-0! bg-transparent! px-sm! py-xs! text-sm! font-medium! text-muted-foreground! shadow-none! transition-colors duration-sm hover:!bg-background/75 hover:!text-foreground ring-focus-focus"
-              :label="t('login.quickUser')"
-              @click="fillPreset(USER_PRESET)"
-            />
-          </div>
+          <AuthQuickAccounts
+            @fill-admin="fillPreset(ADMIN_PRESET)"
+            @fill-user="fillPreset(USER_PRESET)"
+          />
         </div>
       </template>
     </ProForm>
-  </section>
+  </AuthLoginCard>
 </template>
+
+<style scoped>
+.login-field-shell {
+  width: 100%;
+  height: var(--spacing-2xl);
+  overflow: hidden;
+  border: 1px solid rgb(var(--input));
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(180deg, rgb(var(--background) / 92%), rgb(var(--background) / 78%)),
+    linear-gradient(90deg, rgb(var(--primary) / 7%), transparent);
+  box-shadow:
+    inset 0 1px 0 rgb(var(--foreground) / 5%),
+    0 var(--spacing-xs) var(--spacing-lg) rgb(var(--background) / 18%);
+  color: rgb(var(--foreground));
+  transition:
+    background-color var(--transition-sm) ease-out,
+    border-color var(--transition-sm) ease-out,
+    box-shadow var(--transition-sm) ease-out;
+}
+
+.login-field-shell:hover {
+  border-color: rgb(var(--primary) / 45%);
+}
+
+.login-field-shell:focus-within {
+  border-color: rgb(var(--primary));
+  background: rgb(var(--background));
+  box-shadow: var(--p-form-field-focus-ring-shadow);
+}
+
+.login-field-shell--invalid {
+  border-color: rgb(var(--danger));
+}
+
+.login-field-shell__icon,
+.login-password-toggle {
+  width: var(--spacing-2xl);
+  height: 100%;
+  flex: 0 0 auto;
+}
+
+.login-field-shell__icon {
+  pointer-events: none;
+  color: rgb(var(--primary) / 78%);
+}
+
+.login-field-input {
+  height: 100% !important;
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: rgb(var(--foreground)) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.login-password-toggle {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: rgb(var(--muted-foreground)) !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  transition:
+    background-color var(--transition-sm) ease-out,
+    color var(--transition-sm) ease-out;
+}
+
+.login-password-toggle:hover {
+  background: rgb(var(--primary) / 10%) !important;
+  color: rgb(var(--primary)) !important;
+}
+
+.login-form-footer {
+  gap: var(--spacing-sm);
+  padding-top: var(--spacing-xs);
+}
+
+.login-form-options {
+  min-height: var(--spacing-2xl);
+  gap: var(--spacing-sm);
+  padding: 0 var(--spacing-xs);
+}
+
+.login-remember-option {
+  gap: var(--spacing-xs);
+  cursor: pointer;
+  color: rgb(var(--muted-foreground));
+  font-size: var(--font-size-sm);
+  font-weight: 650;
+  line-height: 1;
+}
+
+.login-forgot-button {
+  height: var(--spacing-lg);
+  border: 0 !important;
+  border-radius: var(--radius-md) !important;
+  background: transparent !important;
+  color: rgb(var(--primary)) !important;
+  box-shadow: none !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: 650 !important;
+  padding: 0 var(--spacing-xs) !important;
+  transition: background-color var(--transition-sm) ease-out;
+}
+
+.login-forgot-button:hover {
+  background: rgb(var(--primary) / 10%) !important;
+}
+
+.login-submit-button {
+  justify-content: center;
+  width: 100%;
+  border: 0 !important;
+  border-radius: var(--radius-lg) !important;
+  background: rgb(var(--primary)) !important;
+  color: rgb(var(--primary-foreground)) !important;
+  box-shadow:
+    inset 0 1px 0 rgb(var(--foreground) / 12%),
+    0 var(--spacing-sm) var(--spacing-xl) rgb(var(--primary) / 24%) !important;
+  transition:
+    background-color var(--transition-sm) ease-out,
+    transform var(--transition-sm) ease-out,
+    box-shadow var(--transition-sm) ease-out;
+}
+
+.login-submit-button:hover {
+  background: rgb(var(--primary-hover)) !important;
+}
+
+.login-submit-button:active {
+  transform: translateY(1px);
+}
+
+.login-submit-button:disabled {
+  opacity: 0.7;
+}
+
+@media (width <= 768px) {
+  .login-form-options {
+    padding: 0;
+  }
+}
+</style>

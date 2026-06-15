@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { BREAKPOINTS } from '@ccd/design-tokens'
 import { useDeviceStore } from '@/stores/modules/system'
-import HeaderActions from './components/HeaderActions.vue'
-import BrandPanel from './components/BrandPanel.vue'
-import AnimatedCharacters from './components/animated-characters/Index.vue'
+import AuthShaderBackdrop from './components/AuthShaderBackdrop.vue'
+import AuthVisualStage from './components/AuthVisualStage.vue'
 import LoginForm from './components/LoginForm.vue'
 import LoginShell from './components/LoginShell.vue'
 import type { LoginCharacterState, LoginResponsiveState } from './types'
@@ -46,86 +45,36 @@ function preventDecorativeSelection(event: Event): void {
     class="layout-screen relative isolate select-none bg-background text-foreground"
     @selectstart="preventDecorativeSelection"
   >
-    <div class="login-page__backdrop absolute inset-0 z-base pointer-events-none overflow-hidden">
-      <div class="login-page__texture absolute inset-0" />
-    </div>
+    <AuthShaderBackdrop />
 
     <div class="login-page__content relative z-content layout-full center">
-      <div class="col-center w-full gap-sm">
-        <LoginShell :responsive="responsiveState">
-          <template #visual>
-            <div class="login-visual-pane col-stretch h-full gap-md">
-              <BrandPanel :responsive="responsiveState" />
-              <div
-                id="login-character-stage"
-                class="login-character-stage relative min-h-[300px] flex-1"
-              >
-                <AnimatedCharacters
-                  :active-field="characterState.activeField"
-                  :username-length="characterState.usernameLength"
-                  :password-length="characterState.passwordLength"
-                  :show-password="characterState.showPassword"
-                />
-              </div>
-            </div>
-          </template>
-
-          <LoginForm
+      <LoginShell :responsive="responsiveState">
+        <template #visual>
+          <AuthVisualStage
             :responsive="responsiveState"
-            @character-state-change="handleCharacterStateChange"
+            :character-state="characterState"
           />
-        </LoginShell>
-        <HeaderActions />
-      </div>
+        </template>
+
+        <LoginForm
+          :responsive="responsiveState"
+          @character-state-change="handleCharacterStateChange"
+        />
+      </LoginShell>
     </div>
   </main>
 </template>
 
 <style scoped>
-.login-page__backdrop {
-  background:
-    linear-gradient(
-      135deg,
-      rgb(var(--background) / 100%) 0%,
-      rgb(var(--muted) / 38%) 52%,
-      rgb(var(--background) / 100%) 100%
-    ),
-    linear-gradient(90deg, rgb(var(--primary) / 7%) 0%, rgb(var(--accent) / 7%) 100%);
-}
-
-.login-page__texture {
-  background-image:
-    linear-gradient(rgb(var(--foreground) / 4%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(var(--foreground) / 4%) 1px, transparent 1px);
-  background-size:
-    44px 44px,
-    44px 44px;
-  mask-image: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgb(var(--foreground) / 74%) 16%,
-    rgb(var(--foreground) / 56%) 84%,
-    transparent 100%
-  );
-}
-
 .login-page__content {
-  padding: calc(var(--safe-top) + var(--spacing-lg)) calc(var(--safe-right) + var(--spacing-lg))
-    calc(var(--safe-bottom) + var(--spacing-lg)) calc(var(--safe-left) + var(--spacing-lg));
-}
-
-.login-character-stage {
-  min-height: clamp(260px, 34vh, 386px);
+  padding: calc(var(--safe-top) + var(--spacing-xl)) calc(var(--safe-right) + var(--spacing-xl))
+    calc(var(--safe-bottom) + var(--spacing-xl)) calc(var(--safe-left) + var(--spacing-xl));
 }
 
 @media (width <= 1024px) {
   .login-page__content {
     padding: calc(var(--safe-top) + var(--spacing-md)) calc(var(--safe-right) + var(--spacing-md))
       calc(var(--safe-bottom) + var(--spacing-md)) calc(var(--safe-left) + var(--spacing-md));
-  }
-
-  .login-character-stage {
-    min-height: 232px;
   }
 }
 
@@ -134,10 +83,6 @@ function preventDecorativeSelection(event: Event): void {
     align-items: flex-start;
     padding: calc(var(--safe-top) + var(--spacing-sm)) calc(var(--safe-right) + var(--spacing-sm))
       calc(var(--safe-bottom) + var(--spacing-sm)) calc(var(--safe-left) + var(--spacing-sm));
-  }
-
-  .login-character-stage {
-    min-height: 188px;
   }
 }
 </style>

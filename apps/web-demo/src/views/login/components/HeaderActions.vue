@@ -99,12 +99,12 @@ onBeforeUnmount(() => {
 <template>
   <header
     ref="utilityRootRef"
-    class="login-utility-bar relative row-center gap-2xs rounded-lg border border-solid border-border/35 bg-card/75 p-2xs shadow-sm"
+    class="login-utility-bar relative row-center"
   >
     <Button
       severity="secondary"
       variant="text"
-      class="h-[var(--spacing-lg)] w-[var(--spacing-lg)] rounded-md border-0 bg-transparent p-0! text-muted-foreground shadow-none transition-colors duration-sm hover:bg-primary/8 hover:text-primary ring-focus-focus"
+      class="login-utility-bar__button login-utility-bar__button--icon ring-focus-focus"
       :aria-label="t('login.themeToggle')"
       :aria-pressed="isDark"
       @click="handleThemeToggle"
@@ -118,7 +118,7 @@ onBeforeUnmount(() => {
     <Button
       severity="secondary"
       variant="text"
-      class="h-[var(--spacing-lg)] rounded-md border-0 bg-transparent px-xs! py-0! text-muted-foreground shadow-none transition-colors duration-sm hover:bg-primary/8 hover:text-primary ring-focus-focus"
+      class="login-utility-bar__button login-utility-bar__button--locale ring-focus-focus"
       :aria-label="t('login.localeSelect')"
       aria-haspopup="menu"
       :aria-expanded="isLocaleOpen"
@@ -177,6 +177,41 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.login-utility-bar {
+  gap: var(--spacing-2xs);
+  padding: var(--spacing-2xs);
+  border: 1px solid rgb(var(--border) / 42%);
+  border-radius: var(--radius-lg);
+  background: rgb(var(--background) / 46%);
+  box-shadow: inset 0 1px 0 rgb(var(--foreground) / 5%);
+}
+
+.login-utility-bar__button {
+  height: var(--spacing-lg);
+  border: 0 !important;
+  border-radius: var(--radius-md) !important;
+  background: transparent !important;
+  color: rgb(var(--muted-foreground)) !important;
+  box-shadow: none !important;
+  transition:
+    background-color var(--transition-sm) ease-out,
+    color var(--transition-sm) ease-out;
+}
+
+.login-utility-bar__button--icon {
+  width: var(--spacing-lg);
+  padding: 0 !important;
+}
+
+.login-utility-bar__button--locale {
+  padding: 0 var(--spacing-xs) !important;
+}
+
+.login-utility-bar__button:hover {
+  background: rgb(var(--primary) / 10%) !important;
+  color: rgb(var(--primary)) !important;
+}
+
 .login-locale-popup-enter-active,
 .login-locale-popup-leave-active {
   transition:

@@ -2,6 +2,75 @@ import { expect, test } from '@playwright/test'
 import { gotoVisual, loginAsAdmin, waitForAppReady, waitForRuntimeLoadingIdle } from './helpers/app'
 
 test.describe('view route smoke coverage', () => {
+  test('login gateway preserves quick fill, failure clearing, locale, and theme controls', async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      window.localStorage.clear()
+      window.localStorage.setItem('theme-mode', 'light')
+      window.localStorage.setItem('ccd-e2e-mode', 'visual')
+    })
+
+    await gotoVisual(page, '/login')
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+    await expect(page.locator('#login-submit')).toBeVisible()
+
+    await page.locator('#login-fill-admin').click()
+    await expect(page.locator('#username')).toHaveValue('admin')
+    await expect(page.locator('#password')).toHaveValue('123456')
+
+    await page.locator('#login-fill-user').click()
+    await expect(page.locator('#username')).toHaveValue('user')
+    await expect(page.locator('#password')).toHaveValue('123456')
+
+    await page.locator('#login-fill-admin').click()
+    await page.locator('#password').fill('badpass')
+    await page.locator('#login-submit').click()
+    await expect(page.locator('.p-toast.p-toast-top-center')).toBeVisible()
+    await expect(page.locator('.p-toast.p-toast-top-center')).toContainText('登录失败')
+    await expect(page.locator('#password')).toHaveValue('')
+
+    await page.getByRole('button', { name: '切换语言' }).click()
+    await page.getByRole('menuitemradio', { name: 'English' }).click()
+    await expect(page.getByRole('heading', { name: 'Sign in to CCD' })).toBeVisible()
+    await page.getByRole('button', { name: 'Switch language' }).click()
+    await page.getByRole('menuitemradio', { name: '简体中文' }).click()
+    await expect(page.getByRole('heading', { name: '登录到 CCD' })).toBeVisible()
+
+    await page.getByRole('button', { name: '切换主题' }).click()
+    await page.waitForFunction(
+      () =>
+        document.documentElement.dataset.themeMode === 'dark' &&
+        document.documentElement.dataset.themeTransitioning === 'false' &&
+        document.documentElement.classList.contains('dark')
+    )
+  })
+
+  test('login gateway keeps mobile layout inside the viewport', async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.clear()
+      window.localStorage.setItem('ccd-e2e-mode', 'visual')
+    })
+    await page.setViewportSize({ width: 390, height: 844 })
+
+    await gotoVisual(page, '/login')
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+    await expect(page.locator('#auth-visual-stage')).toBeVisible()
+    await expect(page.locator('#login-submit')).toBeVisible()
+
+    const geometry = await page.evaluate(() => ({
+      clientWidth: document.documentElement.clientWidth,
+      scrollWidth: document.documentElement.scrollWidth,
+      shellHeight: document.querySelector('#login-shell')?.getBoundingClientRect().height ?? 0,
+    }))
+
+    expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 1)
+    expect(geometry.shellHeight).toBeGreaterThan(0)
+    expect(geometry.shellHeight).toBeLessThanOrEqual(844)
+  })
+
   test('renders login, dashboard, and not-found views through the router', async ({ page }) => {
     await gotoVisual(page, '/login')
     await waitForAppReady(page)
