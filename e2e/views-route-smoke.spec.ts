@@ -15,6 +15,25 @@ test.describe('view route smoke coverage', () => {
     await waitForAppReady(page)
     await waitForRuntimeLoadingIdle(page)
     await expect(page.locator('#login-submit')).toBeVisible()
+    await page.waitForFunction(() => typeof window.$toast?.dangerIn === 'function')
+    await page.evaluate(() => {
+      const target = window as Window & {
+        loginFailureToastCalls?: Array<{
+          detail?: string
+          position: string
+          summary: string
+        }>
+      }
+      const toast = target.$toast
+      if (!toast?.dangerIn) return
+
+      target.loginFailureToastCalls = []
+      const dangerIn = toast.dangerIn.bind(toast)
+      toast.dangerIn = ((position: string, summary: string, detail?: string) => {
+        target.loginFailureToastCalls?.push({ position, summary, detail })
+        dangerIn(position, summary, detail)
+      }) as typeof toast.dangerIn
+    })
 
     await page.locator('#login-fill-admin').click()
     await expect(page.locator('#username')).toHaveValue('admin')
@@ -27,8 +46,25 @@ test.describe('view route smoke coverage', () => {
     await page.locator('#login-fill-admin').click()
     await page.locator('#password').fill('badpass')
     await page.locator('#login-submit').click()
-    await expect(page.locator('.p-toast.p-toast-top-center')).toBeVisible()
-    await expect(page.locator('.p-toast.p-toast-top-center')).toContainText('登录失败')
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const target = window as Window & {
+            loginFailureToastCalls?: Array<{
+              detail?: string
+              position: string
+              summary: string
+            }>
+          }
+
+          return (
+            target.loginFailureToastCalls?.some(
+              call => call.position === 'top-center' && call.summary === '登录失败'
+            ) ?? false
+          )
+        })
+      )
+      .toBe(true)
     await expect(page.locator('#password')).toHaveValue('')
 
     await page.getByRole('button', { name: '切换语言' }).click()
