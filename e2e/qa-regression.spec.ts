@@ -294,8 +294,10 @@ test.describe('QA full regression repair matrix', () => {
     await expect(page.locator('#username')).toBeVisible({ timeout: 15000 })
     await page.locator('#username').fill('admin')
     await page.locator('#password').fill('123456')
-    await page.locator('#login-submit').click()
-    await expect(page).toHaveURL(/#\/architecture\/governance$/)
+    const submit = page.locator('#login-submit')
+    await expect(submit).toBeEnabled()
+    await submit.click()
+    await expect(page).toHaveURL(/#\/architecture\/governance$/, { timeout: 30000 })
     await waitForAppReady(page)
     await waitForRuntimeLoadingIdle(page)
 
