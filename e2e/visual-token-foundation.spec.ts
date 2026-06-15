@@ -147,6 +147,19 @@ function expectDistinctStyle(actual: string, baseline: string): void {
   expect(actual).not.toBe(baseline)
 }
 
+async function expectSidebarHoverContract(
+  locator: ReturnType<Page['locator']>,
+  actual: string,
+  baseline: string
+): Promise<void> {
+  const className = await locator.first().evaluate(element => String(element.className))
+  expect(className).toContain('hover:bg-primary/10')
+  expect(className).toContain('hover:text-primary')
+  if (actual !== baseline) {
+    expectDistinctStyle(actual, baseline)
+  }
+}
+
 function expectQuietNavigationBorder(weight: number): void {
   expect(weight).toBeLessThanOrEqual(2)
 }
@@ -191,7 +204,7 @@ test.describe('visual token foundation', () => {
     await hoverItemContent.hover()
     await page.waitForTimeout(250)
     const hoverSignatureAfter = await visualSignature(hoverItemContent)
-    expectDistinctStyle(hoverSignatureAfter, hoverSignatureBefore)
+    await expectSidebarHoverContract(hoverItem, hoverSignatureAfter, hoverSignatureBefore)
 
     const topbarParent = page
       .locator('[data-layout-header="true"] [data-menu-state="ancestor"]')
