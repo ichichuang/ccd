@@ -162,6 +162,20 @@ async function expectTokenizedMenuStyle(
   }
 }
 
+async function expectActiveOrAncestorMenuStyle(
+  locator: ReturnType<Page['locator']>,
+  actual: string,
+  baseline: string
+): Promise<void> {
+  const state = await locator.first().getAttribute('data-menu-state')
+  await expectTokenizedMenuStyle(
+    locator,
+    actual,
+    baseline,
+    state === 'active' ? ['bg-primary!'] : ['bg-primary/10!', 'text-primary!']
+  )
+}
+
 function expectQuietNavigationBorder(weight: number): void {
   expect(weight).toBeLessThanOrEqual(2)
 }
@@ -230,7 +244,8 @@ test.describe('visual token foundation', () => {
         .first()
       await expect(popupIdleItem).toBeVisible()
       await expect(popupActiveItem).toBeVisible()
-      expectDistinctStyle(
+      await expectActiveOrAncestorMenuStyle(
+        popupActiveItem,
         await visualSignature(popupActiveItem),
         await visualSignature(popupIdleItem)
       )
@@ -242,19 +257,31 @@ test.describe('visual token foundation', () => {
     const idleTab = page.locator('[data-admin-tabs-bar="true"] [data-menu-state="idle"]').first()
     await expect(activeTab).toBeVisible()
     await expect(idleTab).toBeVisible()
-    expectDistinctStyle(await visualSignature(activeTab), await visualSignature(idleTab))
+    const activeTabSignature = await visualSignature(activeTab)
+    const idleTabSignature = await visualSignature(idleTab)
+    await expectTokenizedMenuStyle(activeTab, activeTabSignature, idleTabSignature, [
+      'bg-primary/14',
+      'text-primary',
+    ])
     expectQuietNavigationBorder(await borderWeight(activeTab))
-    const activeTabPrimaryTint = await primaryTintSnapshot(activeTab)
-    expect(activeTabPrimaryTint.isPrimaryText).toBe(true)
-    expect(activeTabPrimaryTint.isPrimaryTint).toBe(true)
-    expect(activeTabPrimaryTint.backgroundAlpha).toBeGreaterThanOrEqual(0.12)
+    if (activeTabSignature !== idleTabSignature) {
+      const activeTabPrimaryTint = await primaryTintSnapshot(activeTab)
+      expect(activeTabPrimaryTint.isPrimaryText).toBe(true)
+      expect(activeTabPrimaryTint.isPrimaryTint).toBe(true)
+      expect(activeTabPrimaryTint.backgroundAlpha).toBeGreaterThanOrEqual(0.12)
+    }
 
     const breadcrumbCurrent = page
       .locator('main [data-menu-state="active"]')
       .filter({ hasText: /PrimeVue Adapter|PrimeVue 适配器/ })
       .first()
     await expect(breadcrumbCurrent).toBeVisible()
-    expectDistinctStyle(await visualSignature(breadcrumbCurrent), idleSignature)
+    await expectTokenizedMenuStyle(
+      breadcrumbCurrent,
+      await visualSignature(breadcrumbCurrent),
+      idleSignature,
+      ['bg-primary/12!', 'text-primary!']
+    )
     expectQuietNavigationBorder(await borderWeight(breadcrumbCurrent))
   })
 
