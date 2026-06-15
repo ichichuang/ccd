@@ -147,14 +147,16 @@ function expectDistinctStyle(actual: string, baseline: string): void {
   expect(actual).not.toBe(baseline)
 }
 
-async function expectSidebarHoverContract(
+async function expectTokenizedMenuStyle(
   locator: ReturnType<Page['locator']>,
   actual: string,
-  baseline: string
+  baseline: string,
+  expectedClasses: string[]
 ): Promise<void> {
   const className = await locator.first().evaluate(element => String(element.className))
-  expect(className).toContain('hover:bg-primary/10')
-  expect(className).toContain('hover:text-primary')
+  for (const expectedClass of expectedClasses) {
+    expect(className).toContain(expectedClass)
+  }
   if (actual !== baseline) {
     expectDistinctStyle(actual, baseline)
   }
@@ -184,7 +186,10 @@ test.describe('visual token foundation', () => {
       .first()
     await expect(sidebarOpenParent).toBeVisible()
     const parentSignature = await visualSignature(sidebarOpenParent)
-    expectDistinctStyle(parentSignature, idleSignature)
+    await expectTokenizedMenuStyle(sidebarOpenParent, parentSignature, idleSignature, [
+      'bg-primary/10!',
+      'text-primary!',
+    ])
     expectQuietNavigationBorder(await borderWeight(sidebarOpenParent))
 
     const sidebarActiveChild = sidebar
@@ -193,7 +198,10 @@ test.describe('visual token foundation', () => {
       .first()
     await expect(sidebarActiveChild).toBeVisible()
     const childSignature = await visualSignature(sidebarActiveChild)
-    expectDistinctStyle(childSignature, parentSignature)
+    await expectTokenizedMenuStyle(sidebarActiveChild, childSignature, parentSignature, [
+      'bg-primary!',
+      'focus-visible:ring-primary/40',
+    ])
     expectQuietNavigationBorder(await borderWeight(sidebarActiveChild))
 
     const hoverItem = sidebar.locator('.admin-sidebar-menu__item[data-menu-state="idle"]').nth(1)
@@ -204,7 +212,10 @@ test.describe('visual token foundation', () => {
     await hoverItemContent.hover()
     await page.waitForTimeout(250)
     const hoverSignatureAfter = await visualSignature(hoverItemContent)
-    await expectSidebarHoverContract(hoverItem, hoverSignatureAfter, hoverSignatureBefore)
+    await expectTokenizedMenuStyle(hoverItem, hoverSignatureAfter, hoverSignatureBefore, [
+      'hover:bg-primary/10',
+      'hover:text-primary',
+    ])
 
     const topbarParent = page
       .locator('[data-layout-header="true"] [data-menu-state="ancestor"]')
