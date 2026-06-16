@@ -3,17 +3,11 @@
  * Keep this list aligned with `src/assets/styles/animate-lite.scss`.
  */
 export const SUPPORTED_ANIMATE_NAMES = [
-  'bounceIn',
-  'bounceOut',
   'fadeIn',
   'fadeInUp',
   'fadeOut',
   'fadeOutDown',
   'fadeOutUp',
-  'flipInX',
-  'flipOutX',
-  'rotateIn',
-  'rotateOut',
   'slideInDown',
   'slideInLeft',
   'slideOutRight',

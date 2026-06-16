@@ -32,10 +32,12 @@ CCD design guidance for AI-generated UI work.
 | ------------------------------- | ------------------ | ------: | ---------: |
 | [[ccd-product-design-language]] | CCD 产品设计语言   | `draft` |       0.82 |
 | [[ccd-ai-ui-skill-governance]]  | CCD AI UI 技能治理 | `draft` |       0.82 |
+| [[animation-governance]]        | 动画治理           | `draft` |       0.82 |
 
 ## Related pages
 
 - [[ai-governance-control-plane]]
 - [[validation-gates]]
+- [[animation-governance]]
 - [[design-tokens-role]]
 - [[vue-ui-role]]

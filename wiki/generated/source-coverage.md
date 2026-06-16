@@ -52,6 +52,9 @@ Generated view from wiki frontmatter `source_paths`.
 | `.ai/runtime/web-demo-ui-rebuild-plan.md`                       |          1 |
 | `.ai/skills/**`                                                 |          1 |
 | `.ai/skills/design/**`                                          |          3 |
+| `.ai/skills/design/ccd-animate-lite/SKILL.md`                   |          1 |
+| `.ai/skills/design/ccd-gsap-motion/SKILL.md`                    |          1 |
+| `.ai/skills/design/ccd-motion-system/SKILL.md`                  |          1 |
 | `.github/**`                                                    |          1 |
 | `.github/CODEOWNERS`                                            |          1 |
 | `.github/workflows/ci.yml`                                      |          5 |
@@ -66,8 +69,10 @@ Generated view from wiki frontmatter `source_paths`.
 | `apps/desktop/src-tauri/tauri.conf.json`                        |          1 |
 | `apps/desktop/src/adapters/index.ts`                            |          3 |
 | `apps/web-demo/**`                                              |          2 |
+| `apps/web-demo/src/assets/styles/animate-lite.scss`             |          1 |
 | `apps/web-demo/src/locales/**`                                  |          1 |
 | `apps/web-demo/src/locales/lang/console/**`                     |          1 |
+| `apps/web-demo/src/plugins/animation/**`                        |          1 |
 | `apps/web-demo/src/router/**`                                   |          1 |
 | `apps/web-demo/src/router/modules/architecture-console.spec.ts` |          2 |
 | `apps/web-demo/src/router/modules/architecture.ts`              |          1 |
@@ -98,6 +103,7 @@ Generated view from wiki frontmatter `source_paths`.
 | `packages/vue-hooks/**`                                         |          1 |
 | `packages/vue-primevue-adapter/**`                              |          1 |
 | `packages/vue-ui/**`                                            |          2 |
+| `packages/vue-ui/src/AnimateWrapper/**`                         |          1 |
 | `pnpm-lock.yaml`                                                |          1 |
 | `pnpm-workspace.yaml`                                           |          3 |
 | `README.en.md`                                                  |         35 |

@@ -56,7 +56,20 @@
         "表单",
         "仪表盘",
         "响应式",
-        "暗色模式"
+        "暗色模式",
+        "gsap",
+        "GreenSock",
+        "timeline animation",
+        "ScrollTrigger",
+        "animate-lite",
+        "AnimateWrapper",
+        "route transition",
+        "animation library",
+        "motion library",
+        "交互动效",
+        "高级动效",
+        "时间线动画",
+        "路由动画"
       ],
       "path_globs": [
         "apps/**/src/**/*.vue",
@@ -69,9 +82,10 @@
       ],
       "skills": [
         ".ai/skills/design/ccd-product-language",
-        ".ai/skills/design/ccd-page-archetypes",
-        ".ai/skills/design/ccd-material-system",
         ".ai/skills/design/ccd-motion-system",
+        ".ai/skills/design/ccd-material-system",
+        ".ai/skills/design/ccd-gsap-motion",
+        ".ai/skills/design/ccd-animate-lite",
         ".ai/skills/design/ccd-ui-review-gate"
       ],
       "prechecks": ["pnpm codex:preflight"],
