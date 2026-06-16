@@ -152,7 +152,7 @@ async function handleLoginSubmit(): Promise<void> {
 }
 
 const formGap = computed(() =>
-  props.responsive.isCompact ? 'var(--spacing-2xs)' : 'var(--spacing-xs)'
+  props.responsive.isCompact ? 'var(--spacing-xs)' : 'var(--spacing-sm)'
 )
 
 onMounted(() => emitCharacterState())
@@ -178,6 +178,11 @@ onMounted(() => emitCharacterState())
           class="login-field-shell row-center"
           :class="{ 'login-field-shell--invalid': state.errors.length > 0 }"
         >
+          <Icons
+            name="i-lucide-user"
+            size="sm"
+            class="login-field-icon"
+          />
           <InputText
             id="username"
             :model-value="getInputValue(state.value)"
@@ -200,6 +205,11 @@ onMounted(() => emitCharacterState())
           class="login-field-shell row-center"
           :class="{ 'login-field-shell--invalid': state.errors.length > 0 }"
         >
+          <Icons
+            name="i-lucide-lock"
+            size="sm"
+            class="login-field-icon"
+          />
           <InputText
             id="password"
             :model-value="getInputValue(state.value)"
@@ -278,14 +288,16 @@ onMounted(() => emitCharacterState())
 <style scoped>
 .login-field-shell {
   width: 100%;
-  height: calc(var(--spacing-3xl) + var(--spacing-xs));
+  height: calc(var(--control-height-lg) + var(--spacing-sm));
   overflow: hidden;
-  border: 1px solid rgb(var(--border) / 80%);
-  border-radius: var(--radius-lg);
-  background: rgb(var(--card));
+  border: 1px solid rgb(var(--foreground) / 12%);
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(180deg, rgb(var(--card) / 92%), rgb(var(--background) / 74%)),
+    rgb(var(--card) / 88%);
   box-shadow:
-    inset 0 1px 0 rgb(var(--foreground) / 3%),
-    0 1px 2px rgb(var(--foreground) / 2%);
+    inset 0 1px 0 rgb(var(--foreground) / 6%),
+    0 1px 2px rgb(var(--foreground) / 3%);
   color: rgb(var(--foreground));
   transition:
     background-color var(--transition-sm) ease-out,
@@ -294,41 +306,52 @@ onMounted(() => emitCharacterState())
 }
 
 .login-field-shell:hover {
-  border-color: rgb(var(--primary) / 50%);
+  border-color: rgb(var(--primary) / 38%);
 }
 
 .login-field-shell:focus-within {
-  border-color: rgb(var(--primary));
-  background: rgb(var(--card));
+  border-color: rgb(var(--primary) / 78%);
+  background:
+    linear-gradient(180deg, rgb(var(--card)), rgb(var(--background) / 82%)), rgb(var(--card));
   box-shadow:
-    0 0 0 2px rgb(var(--primary) / 14%),
-    0 2px 8px rgb(var(--primary) / 5%);
+    0 0 0 1px rgb(var(--primary) / 26%),
+    0 0 0 4px rgb(var(--primary) / 8%),
+    0 2px 8px rgb(var(--primary) / 5%),
+    inset 0 1px 0 rgb(var(--foreground) / 7%);
 }
 
 :global(.dark) .login-field-shell {
-  border-color: rgb(var(--border) / 50%);
-  background: rgb(var(--background) / 40%);
+  border-color: rgb(var(--foreground) / 18%);
+  background:
+    linear-gradient(180deg, rgb(var(--card) / 88%), rgb(var(--background) / 70%)),
+    rgb(var(--background) / 70%);
 }
 
 :global(.dark) .login-field-shell:hover {
-  border-color: rgb(var(--primary) / 60%);
+  border-color: rgb(var(--primary) / 48%);
 }
 
 :global(.dark) .login-field-shell:focus-within {
-  border-color: rgb(var(--primary));
-  background: rgb(var(--background) / 75%);
+  border-color: rgb(var(--primary) / 82%);
+  background:
+    linear-gradient(180deg, rgb(var(--card) / 84%), rgb(var(--background) / 78%)),
+    rgb(var(--background) / 78%);
   box-shadow:
-    0 0 0 2px rgb(var(--primary) / 18%),
-    inset 0 1px 0 rgb(var(--foreground) / 4%);
+    0 0 0 1px rgb(var(--primary) / 30%),
+    0 0 0 4px rgb(var(--primary) / 10%),
+    inset 0 1px 0 rgb(var(--foreground) / 5%);
 }
 
 .login-field-shell--invalid {
-  border-color: rgb(var(--danger) / 80%) !important;
-  background-color: rgb(var(--danger) / 3%) !important;
+  border-color: rgb(var(--danger) / 64%) !important;
+  background-color: rgb(var(--danger) / 2%) !important;
+  box-shadow:
+    0 0 0 3px rgb(var(--danger) / 7%),
+    inset 0 1px 0 rgb(var(--foreground) / 5%) !important;
 }
 
 :global(.dark) .login-field-shell--invalid {
-  border-color: rgb(var(--danger) / 80%) !important;
+  border-color: rgb(var(--danger) / 66%) !important;
   background-color: rgb(var(--danger) / 5%) !important;
 }
 
@@ -336,7 +359,7 @@ onMounted(() => emitCharacterState())
   height: 100% !important;
   min-width: 0 !important;
   flex: 1 1 auto !important;
-  padding: 0 var(--spacing-md) !important;
+  padding: 0 var(--spacing-md) 0 var(--spacing-sm) !important;
   border: 0 !important;
   border-radius: 0 !important;
   background: transparent !important;
@@ -346,26 +369,42 @@ onMounted(() => emitCharacterState())
 }
 
 .login-field-input--password {
-  padding-right: var(--spacing-xs) !important;
+  padding-right: var(--spacing-sm) !important;
+}
+
+.login-field-icon {
+  width: var(--spacing-lg);
+  margin-left: calc(var(--spacing-md) + var(--spacing-xs));
+  flex: 0 0 auto;
+  color: rgb(var(--muted-foreground) / 74%);
+  opacity: 0.82;
+}
+
+:global(.dark) .login-field-icon {
+  color: rgb(var(--card-foreground) / 58%);
+}
+
+.login-field-shell:focus-within .login-field-icon {
+  color: rgb(var(--primary) / 90%);
 }
 
 .login-field-input::placeholder {
-  color: rgb(var(--muted-foreground) / 60%) !important;
+  color: rgb(var(--muted-foreground) / 66%) !important;
 }
 
 :global(.dark) .login-field-input::placeholder {
-  color: rgb(var(--muted-foreground) / 50%) !important;
+  color: rgb(var(--card-foreground) / 66%) !important;
 }
 
 .login-password-toggle {
-  width: 28px;
-  height: 28px;
-  margin-right: var(--spacing-xs);
+  width: calc(var(--control-height-sm) + var(--spacing-xs));
+  height: calc(var(--control-height-sm) + var(--spacing-xs));
+  margin-right: var(--spacing-sm);
   flex: 0 0 auto;
-  border: 0 !important;
-  border-radius: var(--radius-full) !important;
-  background: transparent !important;
-  color: rgb(var(--muted-foreground)) !important;
+  border: 1px solid transparent !important;
+  border-radius: var(--radius-5xl) !important;
+  background: rgb(var(--foreground) / 4%) !important;
+  color: rgb(var(--muted-foreground) / 88%) !important;
   box-shadow: none !important;
   padding: 0 !important;
   transition:
@@ -374,7 +413,14 @@ onMounted(() => emitCharacterState())
 }
 
 .login-password-toggle:hover {
+  border-color: rgb(var(--primary) / 24%) !important;
   background: rgb(var(--primary) / 10%) !important;
+  color: rgb(var(--primary)) !important;
+}
+
+.login-password-toggle[aria-pressed='true'] {
+  border-color: rgb(var(--primary) / 34%) !important;
+  background: rgb(var(--primary) / 12%) !important;
   color: rgb(var(--primary)) !important;
 }
 
@@ -387,8 +433,16 @@ onMounted(() => emitCharacterState())
   letter-spacing: 0 !important;
 }
 
+:global(.dark) :deep(label) {
+  color: rgb(var(--card-foreground) / 84%) !important;
+}
+
+:deep(label > span.text-danger) {
+  display: none !important;
+}
+
 :deep(.text-danger) {
-  color: rgb(var(--danger)) !important;
+  color: rgb(var(--danger) / 92%) !important;
   font-size: var(--font-size-xs) !important;
   font-weight: 500 !important;
   letter-spacing: 0 !important;
@@ -399,8 +453,12 @@ onMounted(() => emitCharacterState())
   color: rgb(var(--muted-foreground) / 80%) !important;
 }
 
+:global(.dark) :deep(.text-muted-foreground) {
+  color: rgb(var(--card-foreground) / 78%) !important;
+}
+
 .login-form-footer {
-  gap: var(--spacing-md);
+  gap: var(--spacing-lg);
   padding-top: var(--spacing-sm);
 }
 
@@ -417,6 +475,10 @@ onMounted(() => emitCharacterState())
   font-size: var(--font-size-sm);
   font-weight: 550;
   line-height: 1;
+}
+
+:global(.dark) .login-remember-option {
+  color: rgb(var(--card-foreground) / 82%);
 }
 
 .login-forgot-button {
@@ -439,6 +501,7 @@ onMounted(() => emitCharacterState())
 .login-submit-button {
   justify-content: center;
   width: 100%;
+  min-height: calc(var(--control-height-lg) + var(--spacing-sm) + var(--spacing-xs));
   border: 0 !important;
   border-radius: var(--radius-lg) !important;
   background: linear-gradient(90deg, rgb(var(--primary)), rgb(var(--accent) / 85%)) !important;
@@ -451,7 +514,6 @@ onMounted(() => emitCharacterState())
   transition:
     background-color var(--transition-sm) ease-out,
     opacity var(--transition-sm) ease-out,
-    transform var(--transition-sm) ease-out,
     box-shadow var(--transition-sm) ease-out;
 }
 
@@ -464,10 +526,6 @@ onMounted(() => emitCharacterState())
   box-shadow:
     0 var(--spacing-sm) var(--spacing-xl) rgb(var(--primary) / 24%),
     0 2px 4px rgb(var(--foreground) / 10%) !important;
-}
-
-.login-submit-button:active:not(:disabled) {
-  transform: translateY(0.5px);
 }
 
 .login-submit-button:disabled {

@@ -120,9 +120,11 @@ test.describe('view route smoke coverage', () => {
     await page.locator('#password').fill('123456')
 
     const stage = page.getByTestId('auth-visual-stage')
-    const staticCore = page.getByTestId('auth-static-core')
+    const palette = page.getByTestId('auth-palette-picker')
     await expect(stage).toBeVisible()
-    await expect(staticCore).toBeVisible()
+    await expect(palette).toBeVisible()
+    await expect(page.getByTestId('auth-static-core')).toHaveCount(0)
+    await expect(stage.locator('.auth-architecture-chip')).toHaveCount(0)
 
     await page.evaluate(() => {
       const el = document.querySelector('[data-testid="auth-visual-stage"]')

@@ -25,7 +25,7 @@ function handleUserClick(): void {
 
 <template>
   <section class="auth-quick-accounts col-stretch">
-    <div class="auth-quick-accounts__header row-start">
+    <div class="auth-quick-accounts__header row-center">
       <span>{{ t('login.quickAccounts') }}</span>
     </div>
     <div class="auth-quick-accounts__grid">
@@ -57,20 +57,39 @@ function handleUserClick(): void {
 
 <style scoped>
 .auth-quick-accounts {
-  gap: var(--spacing-sm);
+  gap: calc(var(--spacing-sm) + var(--spacing-xs));
   padding: var(--spacing-md);
-  border: 1px solid rgb(var(--border) / 40%);
-  border-radius: var(--radius-lg);
-  background: linear-gradient(180deg, rgb(var(--muted) / 10%), rgb(var(--background) / 50%));
+  border: 1px solid rgb(var(--foreground) / 10%);
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(180deg, rgb(var(--muted) / 24%), rgb(var(--background) / 70%)),
+    rgb(var(--card) / 72%);
+  box-shadow:
+    inset 0 1px 0 rgb(var(--foreground) / 4%),
+    0 1px 2px rgb(var(--foreground) / 4%);
 }
 
 .auth-quick-accounts__header {
-  padding: 0 var(--spacing-xs);
+  gap: var(--spacing-sm);
+  width: 100%;
   color: rgb(var(--muted-foreground));
   font-size: var(--font-size-xs);
   font-weight: 600;
   line-height: 1;
   letter-spacing: 0;
+}
+
+.auth-quick-accounts__header::before,
+.auth-quick-accounts__header::after {
+  display: block;
+  flex: 1 1 auto;
+  height: 1px;
+  content: '';
+  background: linear-gradient(90deg, transparent, rgb(var(--border) / 72%));
+}
+
+.auth-quick-accounts__header::after {
+  background: linear-gradient(90deg, rgb(var(--border) / 72%), transparent);
 }
 
 .auth-quick-accounts__grid {
@@ -82,9 +101,10 @@ function handleUserClick(): void {
 .auth-quick-accounts__chip {
   justify-content: center;
   min-width: 0;
-  border: 1px solid rgb(var(--border) / 50%) !important;
-  border-radius: var(--radius-full) !important;
-  background: rgb(var(--card)) !important;
+  height: var(--control-height-sm);
+  border: 1px solid rgb(var(--border) / 70%) !important;
+  border-radius: var(--radius-5xl) !important;
+  background: rgb(var(--card) / 88%) !important;
   color: rgb(var(--muted-foreground)) !important;
   font-size: var(--font-size-xs) !important;
   font-weight: 600 !important;
@@ -92,23 +112,50 @@ function handleUserClick(): void {
   transition:
     background-color var(--transition-sm) ease-out,
     border-color var(--transition-sm) ease-out,
-    color var(--transition-sm) ease-out,
-    transform var(--transition-sm) ease-out;
+    color var(--transition-sm) ease-out;
 }
 
 .auth-quick-accounts__chip:hover {
   border-color: rgb(var(--primary) / 40%) !important;
-  background: rgb(var(--primary) / 6%) !important;
+  background: rgb(var(--primary) / 7%) !important;
   color: rgb(var(--primary)) !important;
 }
 
 .auth-quick-accounts__chip--active {
   border-color: rgb(var(--primary) / 60%) !important;
-  background: rgb(var(--primary) / 8%) !important;
+  background:
+    linear-gradient(180deg, rgb(var(--primary) / 12%), rgb(var(--card) / 74%)),
+    rgb(var(--primary) / 8%) !important;
   color: rgb(var(--primary)) !important;
+  box-shadow:
+    inset 0 1px 0 rgb(var(--foreground) / 5%),
+    0 0 0 2px rgb(var(--primary) / 7%) !important;
 }
 
-.auth-quick-accounts__chip:active {
-  transform: translateY(0.5px);
+:global(.dark) .auth-quick-accounts {
+  border-color: rgb(var(--foreground) / 16%);
+  background:
+    linear-gradient(180deg, rgb(var(--card) / 62%), rgb(var(--background) / 74%)),
+    rgb(var(--background) / 62%);
+  box-shadow:
+    inset 0 1px 0 rgb(var(--foreground) / 5%),
+    0 1px 2px rgb(var(--background) / 24%);
+}
+
+:global(.dark) .auth-quick-accounts__header {
+  color: rgb(var(--card-foreground) / 78%);
+}
+
+:global(.dark) .auth-quick-accounts__chip {
+  border-color: rgb(var(--foreground) / 14%) !important;
+  background: rgb(var(--card) / 58%) !important;
+  color: rgb(var(--card-foreground) / 80%) !important;
+}
+
+:global(.dark) .auth-quick-accounts__chip--active {
+  border-color: rgb(var(--primary) / 62%) !important;
+  background:
+    linear-gradient(180deg, rgb(var(--primary) / 18%), rgb(var(--background) / 68%)),
+    rgb(var(--primary) / 10%) !important;
 }
 </style>

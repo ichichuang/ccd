@@ -49,33 +49,53 @@ const { t } = useI18n({ useScope: 'global' })
 .auth-login-card {
   position: relative;
   isolation: isolate;
-  gap: var(--spacing-2xl);
+  gap: calc(var(--spacing-xl) + var(--spacing-xs));
   width: 100%;
-  max-width: 500px;
-  padding: var(--spacing-3xl);
+  max-width: 540px;
+  padding: calc(var(--spacing-2xl) + var(--spacing-sm)) calc(var(--spacing-2xl) + var(--spacing-xs))
+    var(--spacing-xl);
   overflow: hidden;
-  border: 1px solid rgb(var(--border) / 70%);
+  border: 1px solid rgb(var(--foreground) / 12%);
   border-radius: var(--radius-2xl);
-  background: rgb(var(--card));
+  background:
+    radial-gradient(circle at 16% 8%, rgb(var(--background) / 80%), transparent 18%),
+    radial-gradient(circle at 82% 86%, rgb(var(--accent) / 10%), transparent 30%),
+    linear-gradient(180deg, rgb(var(--card) / 96%), rgb(var(--background) / 82%)), rgb(var(--card));
+  backdrop-filter: blur(26px) saturate(1.16);
   box-shadow:
-    0 1px 3px rgb(var(--foreground) / 4%),
-    0 var(--spacing-2xl) var(--spacing-5xl) rgb(var(--foreground) / 8%),
-    0 var(--spacing-4xl) var(--spacing-5xl) rgb(var(--primary) / 5%);
+    inset 0 1px 0 rgb(var(--foreground) / 8%),
+    inset 0 -1px 0 rgb(var(--primary) / 8%),
+    0 1px 2px rgb(var(--foreground) / 6%),
+    0 var(--spacing-xl) var(--spacing-5xl) rgb(var(--foreground) / 12%),
+    0 0 var(--spacing-5xl) rgb(var(--primary) / 9%);
 }
 
 .auth-login-card::before {
   position: absolute;
-  inset: 0 0 auto;
-  height: 1.5px;
+  top: 0;
+  left: calc(var(--spacing-2xl) - var(--spacing-xs));
+  right: calc(var(--spacing-2xl) - var(--spacing-xs));
+  height: 2px;
   content: '';
   background: linear-gradient(
     90deg,
     transparent,
-    rgb(var(--primary) / 48%),
-    rgb(var(--accent) / 25%),
+    rgb(var(--primary) / 52%),
+    rgb(var(--accent) / 32%),
     transparent
   );
-  opacity: 0.9;
+  opacity: 0.86;
+}
+
+.auth-login-card::after {
+  position: absolute;
+  inset: 1px;
+  content: '';
+  border-radius: calc(var(--radius-2xl) - 1px);
+  pointer-events: none;
+  box-shadow:
+    inset 0 1px 0 rgb(var(--foreground) / 6%),
+    inset 0 0 var(--spacing-5xl) rgb(var(--primary) / 3%);
 }
 
 .auth-login-card__header {
@@ -85,7 +105,7 @@ const { t } = useI18n({ useScope: 'global' })
 }
 
 .auth-login-card__identity {
-  gap: var(--spacing-2xs);
+  gap: var(--spacing-xs);
   min-width: 0;
   flex: 1 1 auto;
 }
@@ -93,7 +113,7 @@ const { t } = useI18n({ useScope: 'global' })
 .auth-login-card__eyebrow {
   color: rgb(var(--primary) / 90%);
   font-size: var(--font-size-xs);
-  font-weight: 700;
+  font-weight: 750;
   letter-spacing: 0;
   line-height: 1;
 }
@@ -101,7 +121,7 @@ const { t } = useI18n({ useScope: 'global' })
 .auth-login-card__title {
   margin: 0;
   color: rgb(var(--foreground));
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-3xl);
   font-weight: 800;
   letter-spacing: 0;
   line-height: 1.15;
@@ -121,7 +141,7 @@ const { t } = useI18n({ useScope: 'global' })
 }
 
 .auth-login-card__body {
-  gap: var(--spacing-xl);
+  gap: var(--spacing-lg);
 }
 
 .auth-login-card--compact {
@@ -130,37 +150,79 @@ const { t } = useI18n({ useScope: 'global' })
 }
 
 :global(.dark) .auth-login-card {
-  border-color: rgb(var(--border) / 45%);
-  background: linear-gradient(180deg, rgb(var(--card)), rgb(var(--background) / 98%));
+  border-color: rgb(var(--foreground) / 18%);
+  background:
+    linear-gradient(180deg, rgb(var(--foreground) / 8%), rgb(var(--foreground) / 3%)),
+    radial-gradient(circle at 16% 8%, rgb(var(--foreground) / 10%), transparent 18%),
+    radial-gradient(circle at 56% 0%, rgb(var(--primary) / 9%), transparent 26%),
+    radial-gradient(circle at 82% 86%, rgb(var(--accent) / 13%), transparent 30%),
+    linear-gradient(180deg, rgb(var(--card) / 98%), rgb(var(--background) / 62%)), rgb(var(--card));
   box-shadow:
-    inset 0 1px 0 rgb(var(--foreground) / 5%),
-    0 0 0 1px rgb(var(--primary) / 7%),
-    0 var(--spacing-2xl) var(--spacing-5xl) rgb(var(--background) / 38%),
-    0 0 var(--spacing-3xl) rgb(var(--primary) / 4%);
+    inset 0 1px 0 rgb(var(--foreground) / 9%),
+    inset 0 -1px 0 rgb(var(--primary) / 10%),
+    0 0 0 1px rgb(var(--primary) / 10%),
+    0 var(--spacing-xl) var(--spacing-4xl) rgb(var(--background) / 58%),
+    0 0 var(--spacing-5xl) rgb(var(--primary) / 10%);
+}
+
+:global(.dark) .auth-login-card__eyebrow {
+  color: rgb(var(--primary) / 96%);
+}
+
+:global(.dark) .auth-login-card__title {
+  color: rgb(var(--card-foreground));
+}
+
+:global(.dark) .auth-login-card__subtitle {
+  color: rgb(var(--card-foreground) / 84%);
+}
+
+:global(.dark) .auth-login-card::after {
+  box-shadow:
+    inset 0 1px 0 rgb(var(--foreground) / 8%),
+    inset 0 0 0 1px rgb(var(--foreground) / 2%);
 }
 
 @media (width <= 768px) {
   .auth-login-card {
-    padding: var(--spacing-lg);
-    gap: var(--spacing-lg);
+    padding: calc(var(--spacing-xl) + var(--spacing-xs)) calc(var(--spacing-lg) + var(--spacing-xs))
+      var(--spacing-xl);
+    gap: var(--spacing-md);
+  }
+
+  .auth-login-card__header {
+    display: block;
+  }
+
+  .auth-login-card__identity {
+    display: block;
+  }
+
+  .auth-login-card__eyebrow {
+    display: block;
+    margin-bottom: var(--spacing-md);
   }
 
   .auth-login-card__title {
-    font-size: var(--font-size-xl);
+    white-space: nowrap;
   }
 
   .auth-login-card__subtitle {
     max-width: 98%;
+    margin-top: var(--spacing-xs);
   }
 
   .auth-login-card__actions {
+    position: absolute;
+    top: 0;
+    right: 0;
     align-self: flex-start;
   }
 }
 
 @media (width <= 390px) {
   .auth-login-card {
-    padding: var(--spacing-md);
+    padding: var(--spacing-lg);
   }
 }
 </style>

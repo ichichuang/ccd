@@ -17,7 +17,7 @@ const viewportHeight = computed(() => deviceStore.height)
 const responsiveState = computed<LoginResponsiveState>(() => ({
   isMobile: viewportWidth.value < BREAKPOINTS.md,
   isTablet: viewportWidth.value >= BREAKPOINTS.md && viewportWidth.value < BREAKPOINTS.xl,
-  isCompact: viewportWidth.value < BREAKPOINTS.lg || viewportHeight.value <= 740,
+  isCompact: viewportWidth.value <= BREAKPOINTS.lg || viewportHeight.value <= 820,
 }))
 
 const characterState = ref<LoginCharacterState>({
@@ -50,10 +50,7 @@ function preventDecorativeSelection(event: Event): void {
     <div class="login-page__content relative z-content layout-full center">
       <LoginShell :responsive="responsiveState">
         <template #visual>
-          <AuthVisualStage
-            :responsive="responsiveState"
-            :character-state="characterState"
-          />
+          <AuthVisualStage :responsive="responsiveState" />
         </template>
 
         <LoginForm
