@@ -5,11 +5,21 @@ import AuthShaderBackdrop from './components/AuthShaderBackdrop.vue'
 import AuthVisualStage from './components/AuthVisualStage.vue'
 import LoginForm from './components/LoginForm.vue'
 import LoginShell from './components/LoginShell.vue'
+import { useLoginPaletteTransition } from './composables/useLoginPaletteTransition'
 import type { LoginCharacterState, LoginResponsiveState } from './types'
 
 defineOptions({ name: 'LoginPage' })
 
 const deviceStore = useDeviceStore()
+const loginRootRef = ref<HTMLElement | null>(null)
+const preferredReducedMotion = usePreferredReducedMotion()
+
+const { switchPalette } = useLoginPaletteTransition(
+  loginRootRef,
+  computed(() => preferredReducedMotion.value === 'reduce')
+)
+
+provide('loginSwitchPalette', switchPalette)
 
 const viewportWidth = computed(() => deviceStore.width)
 const viewportHeight = computed(() => deviceStore.height)
@@ -42,6 +52,7 @@ function preventDecorativeSelection(event: Event): void {
 <template>
   <main
     id="login-page"
+    ref="loginRootRef"
     class="layout-screen relative isolate select-none bg-background text-foreground"
     @selectstart="preventDecorativeSelection"
   >
@@ -63,6 +74,26 @@ function preventDecorativeSelection(event: Event): void {
 </template>
 
 <style scoped>
+#login-page {
+  --auth-theme-transition-duration: 300ms;
+  --auth-theme-transition-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Login-local numeric RGB channel variables.
+     GSAP tweens these bare numbers; all colour surfaces derive from them.
+     Initial values are set by useLoginPaletteTransition() at runtime.
+     Fallback defaults match the default morandi-elegance theme. */
+  --auth-primary-r: 106;
+  --auth-primary-g: 90;
+  --auth-primary-b: 205;
+  --auth-accent-r: 99;
+  --auth-accent-g: 102;
+  --auth-accent-b: 241;
+
+  transition:
+    background-color var(--auth-theme-transition-duration) var(--auth-theme-transition-ease),
+    color var(--auth-theme-transition-duration) var(--auth-theme-transition-ease);
+}
+
 .login-page__content {
   padding: calc(var(--safe-top) + var(--spacing-xl)) calc(var(--safe-right) + var(--spacing-xl))
     calc(var(--safe-bottom) + var(--spacing-xl)) calc(var(--safe-left) + var(--spacing-xl));

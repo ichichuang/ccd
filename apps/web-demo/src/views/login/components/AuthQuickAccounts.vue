@@ -116,20 +116,30 @@ function handleUserClick(): void {
 }
 
 .auth-quick-accounts__chip:hover {
-  border-color: rgb(var(--primary) / 40%) !important;
-  background: rgb(var(--primary) / 7%) !important;
-  color: rgb(var(--primary)) !important;
+  border-color: rgb(
+    var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 40%
+  ) !important;
+  background: rgb(
+    var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 7%
+  ) !important;
+  color: rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b)) !important;
 }
 
 .auth-quick-accounts__chip--active {
-  border-color: rgb(var(--primary) / 60%) !important;
+  border-color: rgb(
+    var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 60%
+  ) !important;
   background:
-    linear-gradient(180deg, rgb(var(--primary) / 12%), rgb(var(--card) / 74%)),
-    rgb(var(--primary) / 8%) !important;
-  color: rgb(var(--primary)) !important;
+    linear-gradient(
+      180deg,
+      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 12%),
+      rgb(var(--card) / 74%)
+    ),
+    rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 8%) !important;
+  color: rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b)) !important;
   box-shadow:
     inset 0 1px 0 rgb(var(--foreground) / 5%),
-    0 0 0 2px rgb(var(--primary) / 7%) !important;
+    0 0 0 2px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 7%) !important;
 }
 
 :global(.dark) .auth-quick-accounts {
@@ -153,9 +163,15 @@ function handleUserClick(): void {
 }
 
 :global(.dark) .auth-quick-accounts__chip--active {
-  border-color: rgb(var(--primary) / 62%) !important;
+  border-color: rgb(
+    var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 62%
+  ) !important;
   background:
-    linear-gradient(180deg, rgb(var(--primary) / 18%), rgb(var(--background) / 68%)),
-    rgb(var(--primary) / 10%) !important;
+    linear-gradient(
+      180deg,
+      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 18%),
+      rgb(var(--background) / 68%)
+    ),
+    rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 10%) !important;
 }
 </style>

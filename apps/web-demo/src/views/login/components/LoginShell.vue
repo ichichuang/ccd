@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createScopedGsapContext, gsap, type ScopedGsapContext } from '@/plugins/animation'
 import type { LoginResponsiveState } from '../types'
 
 defineOptions({ name: 'LoginShell' })
@@ -6,11 +7,103 @@ defineOptions({ name: 'LoginShell' })
 defineProps<{
   responsive: LoginResponsiveState
 }>()
+
+const shellRef = ref<HTMLElement | null>(null)
+const preferredReducedMotion = usePreferredReducedMotion()
+
+let entranceMotion: ScopedGsapContext | null = null
+
+onMounted(() => {
+  const scope = shellRef.value
+  if (!scope) return
+
+  entranceMotion = createScopedGsapContext(
+    () => {
+      const card = scope.querySelector<HTMLElement>('[data-testid="auth-login-card"]')
+      const identityItems = Array.from(
+        scope.querySelectorAll<HTMLElement>(
+          '.auth-login-card__eyebrow, .auth-login-card__title, .auth-login-card__subtitle'
+        )
+      )
+      const headerActions = scope.querySelector<HTMLElement>('.auth-toolbar')
+      const formFields = Array.from(scope.querySelectorAll<HTMLElement>('.login-field-shell'))
+      const formFooterItems = Array.from(
+        scope.querySelectorAll<HTMLElement>('.login-form-options, .login-submit-button')
+      )
+      const quickAccounts = scope.querySelector<HTMLElement>('.auth-quick-accounts')
+      const paletteOrbs = Array.from(scope.querySelectorAll<HTMLElement>('.auth-palette-orb'))
+
+      if (!card) return
+
+      gsap.set([card], { autoAlpha: 0, y: 16, scale: 0.985 })
+      if (identityItems.length > 0) gsap.set(identityItems, { autoAlpha: 0, y: 8 })
+      if (headerActions) gsap.set(headerActions, { autoAlpha: 0, y: 6 })
+      if (formFields.length > 0) gsap.set(formFields, { autoAlpha: 0, y: 8 })
+      if (formFooterItems.length > 0) gsap.set(formFooterItems, { autoAlpha: 0, y: 6 })
+      if (quickAccounts) gsap.set(quickAccounts, { autoAlpha: 0, y: 6 })
+      if (paletteOrbs.length > 0) gsap.set(paletteOrbs, { autoAlpha: 0, y: 4 })
+
+      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+
+      tl.to(card, { autoAlpha: 1, y: 0, scale: 1, duration: 0.72 })
+
+      if (identityItems.length > 0) {
+        tl.to(
+          identityItems,
+          { autoAlpha: 1, y: 0, duration: 0.48, stagger: 0.055, ease: 'sine.out' },
+          '-=0.38'
+        )
+      }
+
+      if (headerActions) {
+        tl.to(headerActions, { autoAlpha: 1, y: 0, duration: 0.42, ease: 'sine.out' }, '-=0.28')
+      }
+
+      if (formFields.length > 0) {
+        tl.to(
+          formFields,
+          { autoAlpha: 1, y: 0, duration: 0.48, stagger: 0.06, ease: 'sine.out' },
+          '-=0.12'
+        )
+      }
+
+      if (formFooterItems.length > 0) {
+        tl.to(
+          formFooterItems,
+          { autoAlpha: 1, y: 0, duration: 0.42, stagger: 0.05, ease: 'sine.out' },
+          '-=0.06'
+        )
+      }
+
+      if (quickAccounts) {
+        tl.to(quickAccounts, { autoAlpha: 1, y: 0, duration: 0.38, ease: 'sine.out' }, '-=0.04')
+      }
+
+      if (paletteOrbs.length > 0) {
+        tl.to(
+          paletteOrbs,
+          { autoAlpha: 1, y: 0, duration: 0.32, stagger: 0.04, ease: 'sine.out' },
+          '+=0.04'
+        )
+      }
+    },
+    {
+      scope,
+      isReducedMotion: preferredReducedMotion.value === 'reduce',
+    }
+  )
+})
+
+onBeforeUnmount(() => {
+  entranceMotion?.revert()
+  entranceMotion = null
+})
 </script>
 
 <template>
   <section
     id="login-shell"
+    ref="shellRef"
     class="login-shell relative"
     :class="{
       'login-shell--mobile': responsive.isMobile,
@@ -118,6 +211,8 @@ defineProps<{
   font-weight: 800;
   letter-spacing: 0;
   line-height: 1;
+  transition: color var(--auth-theme-transition-duration, var(--transition-sm))
+    var(--auth-theme-transition-ease, ease-out);
 }
 
 :global(.dark) .login-shell__mobile-mark {

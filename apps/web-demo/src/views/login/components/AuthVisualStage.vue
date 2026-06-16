@@ -32,6 +32,11 @@ defineProps<{
   width: 100%;
   color: rgb(var(--muted-foreground));
   text-align: center;
+  transition:
+    color var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    opacity var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out);
 }
 
 .auth-visual-stage__palette {

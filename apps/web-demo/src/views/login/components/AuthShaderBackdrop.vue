@@ -1,10 +1,70 @@
 <script setup lang="ts">
+import { createScopedGsapContext, gsap, type ScopedGsapContext } from '@/plugins/animation'
+
 defineOptions({ name: 'AuthShaderBackdrop' })
+
+const backdropRef = ref<HTMLElement | null>(null)
+const preferredReducedMotion = usePreferredReducedMotion()
+
+let bubbleDriftMotion: ScopedGsapContext | null = null
+
+onMounted(() => {
+  const scope = backdropRef.value
+  if (!scope) return
+
+  bubbleDriftMotion = createScopedGsapContext(
+    () => {
+      const bubbles = Array.from(
+        scope.querySelectorAll<HTMLElement>('[data-testid="auth-glass-bubble"]')
+      )
+      const drift = [
+        { x: -5, y: -7, scale: 1.008, opacity: 0.95, duration: 24 },
+        { x: 5, y: 4, scale: 0.992, opacity: 0.96, duration: 28 },
+        { x: -4, y: -6, scale: 1.01, opacity: 0.94, duration: 20 },
+        { x: 6, y: 5, scale: 0.995, opacity: 0.95, duration: 22 },
+      ]
+
+      if (bubbles.length === 0) return
+
+      gsap.set(bubbles, {
+        transformOrigin: '50% 50%',
+        willChange: 'transform, opacity',
+      })
+
+      bubbles.forEach((bubble, index) => {
+        const config = drift[index % drift.length]
+        gsap.to(bubble, {
+          x: config.x,
+          y: config.y,
+          scale: config.scale,
+          opacity: config.opacity,
+          duration: config.duration,
+          delay: index * 0.7,
+          ease: 'sine.inOut',
+          repeat: -1,
+          yoyo: true,
+          overwrite: 'auto',
+        })
+      })
+    },
+    {
+      scope,
+      isReducedMotion: preferredReducedMotion.value === 'reduce',
+    }
+  )
+})
+
+onBeforeUnmount(() => {
+  bubbleDriftMotion?.revert()
+  bubbleDriftMotion = null
+})
 </script>
 
 <template>
   <div
+    ref="backdropRef"
     class="auth-shader-backdrop absolute inset-0 z-base pointer-events-none overflow-hidden"
+    data-testid="auth-shader-backdrop"
     aria-hidden="true"
   >
     <div class="auth-shader-backdrop__field absolute inset-0" />
@@ -12,12 +72,30 @@ defineOptions({ name: 'AuthShaderBackdrop' })
     <div class="auth-shader-backdrop__blueprint auth-shader-backdrop__blueprint--left" />
     <div class="auth-shader-backdrop__blueprint auth-shader-backdrop__blueprint--right" />
     <div class="auth-shader-backdrop__card-glow" />
-    <div class="auth-shader-backdrop__ice-panel auth-shader-backdrop__ice-panel--left" />
-    <div class="auth-shader-backdrop__ice-panel auth-shader-backdrop__ice-panel--right" />
-    <div class="auth-shader-backdrop__bubble auth-shader-backdrop__bubble--large" />
-    <div class="auth-shader-backdrop__bubble auth-shader-backdrop__bubble--wide" />
-    <div class="auth-shader-backdrop__bubble auth-shader-backdrop__bubble--pearl" />
-    <div class="auth-shader-backdrop__bubble auth-shader-backdrop__bubble--drop" />
+    <div
+      class="auth-shader-backdrop__ice-panel auth-shader-backdrop__ice-panel--left"
+      data-testid="auth-glass-panel"
+    />
+    <div
+      class="auth-shader-backdrop__ice-panel auth-shader-backdrop__ice-panel--right"
+      data-testid="auth-glass-panel"
+    />
+    <div
+      class="auth-shader-backdrop__bubble auth-shader-backdrop__bubble--large"
+      data-testid="auth-glass-bubble"
+    />
+    <div
+      class="auth-shader-backdrop__bubble auth-shader-backdrop__bubble--wide"
+      data-testid="auth-glass-bubble"
+    />
+    <div
+      class="auth-shader-backdrop__bubble auth-shader-backdrop__bubble--pearl"
+      data-testid="auth-glass-bubble"
+    />
+    <div
+      class="auth-shader-backdrop__bubble auth-shader-backdrop__bubble--drop"
+      data-testid="auth-glass-bubble"
+    />
     <div class="auth-shader-backdrop__glow auth-shader-backdrop__glow--primary" />
     <div class="auth-shader-backdrop__glow auth-shader-backdrop__glow--accent" />
   </div>
@@ -38,6 +116,8 @@ defineOptions({ name: 'AuthShaderBackdrop' })
   --auth-backdrop-highlight: 64%;
 
   background: rgb(var(--background));
+  transition: background-color var(--auth-theme-transition-duration, var(--transition-sm))
+    var(--auth-theme-transition-ease, ease-out);
 }
 
 :global(.dark) .auth-shader-backdrop {
@@ -58,12 +138,17 @@ defineOptions({ name: 'AuthShaderBackdrop' })
   background:
     radial-gradient(
       ellipse at 50% 42%,
-      rgb(var(--primary) / var(--auth-backdrop-primary)),
+      rgb(
+        var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) /
+          var(--auth-backdrop-primary)
+      ),
       transparent 34%
     ),
     radial-gradient(
       ellipse at 78% 72%,
-      rgb(var(--accent) / var(--auth-backdrop-accent)),
+      rgb(
+        var(--auth-accent-r) var(--auth-accent-g) var(--auth-accent-b) / var(--auth-backdrop-accent)
+      ),
       transparent 34%
     ),
     radial-gradient(
@@ -82,6 +167,11 @@ defineOptions({ name: 'AuthShaderBackdrop' })
       rgb(var(--muted) / var(--auth-backdrop-panel)) 54%,
       rgb(var(--background)) 100%
     );
+  transition:
+    opacity var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    filter var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out);
 }
 
 .auth-shader-backdrop__grid {
@@ -98,6 +188,11 @@ defineOptions({ name: 'AuthShaderBackdrop' })
     rgb(var(--foreground) / 52%) 68%,
     transparent 100%
   );
+  transition:
+    opacity var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    filter var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out);
 }
 
 .auth-shader-backdrop__blueprint {
@@ -127,6 +222,15 @@ defineOptions({ name: 'AuthShaderBackdrop' })
   box-shadow:
     inset 0 1px 0 rgb(var(--foreground) / 4%),
     0 0 var(--spacing-4xl) rgb(var(--info) / 6%);
+  transition:
+    border-color var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    box-shadow var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    opacity var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    filter var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out);
 }
 
 .auth-shader-backdrop__blueprint--left {
@@ -144,13 +248,27 @@ defineOptions({ name: 'AuthShaderBackdrop' })
   border: 1px solid rgb(var(--foreground) / 10%);
   background:
     radial-gradient(circle at 22% 18%, rgb(var(--background) / 64%), transparent 18%),
-    radial-gradient(circle at 78% 82%, rgb(var(--accent) / 14%), transparent 32%),
+    radial-gradient(
+      circle at 78% 82%,
+      rgb(var(--auth-accent-r) var(--auth-accent-g) var(--auth-accent-b) / 14%),
+      transparent 32%
+    ),
     linear-gradient(180deg, rgb(var(--card) / 38%), rgb(var(--background) / 12%));
   box-shadow:
     inset 0 1px 0 rgb(var(--foreground) / 8%),
-    inset 0 -1px 0 rgb(var(--primary) / 10%),
-    0 var(--spacing-lg) var(--spacing-5xl) rgb(var(--primary) / 9%);
+    inset 0 -1px 0 rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 10%),
+    0 var(--spacing-lg) var(--spacing-5xl)
+      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 9%);
   backdrop-filter: blur(28px) saturate(1.18);
+  transition:
+    border-color var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    box-shadow var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    opacity var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    filter var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out);
 }
 
 .auth-shader-backdrop__ice-panel--left {
@@ -179,17 +297,38 @@ defineOptions({ name: 'AuthShaderBackdrop' })
   margin-inline: auto;
   border-radius: var(--radius-2xl);
   background:
-    radial-gradient(ellipse at 48% 38%, rgb(var(--primary) / 12%), transparent 54%),
-    radial-gradient(ellipse at 66% 78%, rgb(var(--accent) / 10%), transparent 58%),
+    radial-gradient(
+      ellipse at 48% 38%,
+      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 12%),
+      transparent 54%
+    ),
+    radial-gradient(
+      ellipse at 66% 78%,
+      rgb(var(--auth-accent-r) var(--auth-accent-g) var(--auth-accent-b) / 10%),
+      transparent 58%
+    ),
     radial-gradient(ellipse at 30% 82%, rgb(var(--info) / 8%), transparent 48%);
   filter: blur(48px);
   opacity: 0.88;
+  transition:
+    opacity var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    filter var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out);
 }
 
 :global(.dark) .auth-shader-backdrop__card-glow {
   background:
-    radial-gradient(ellipse at 48% 40%, rgb(var(--primary) / 16%), transparent 54%),
-    radial-gradient(ellipse at 72% 76%, rgb(var(--accent) / 14%), transparent 56%),
+    radial-gradient(
+      ellipse at 48% 40%,
+      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 14%),
+      transparent 54%
+    ),
+    radial-gradient(
+      ellipse at 72% 76%,
+      rgb(var(--auth-accent-r) var(--auth-accent-g) var(--auth-accent-b) / 14%),
+      transparent 56%
+    ),
     radial-gradient(ellipse at 30% 82%, rgb(var(--info) / 10%), transparent 48%);
   opacity: 0.76;
 }
@@ -203,7 +342,11 @@ defineOptions({ name: 'AuthShaderBackdrop' })
       rgb(var(--background) / var(--auth-backdrop-highlight)),
       transparent 16%
     ),
-    radial-gradient(circle at 68% 74%, rgb(var(--accent) / 18%), transparent 32%),
+    radial-gradient(
+      circle at 68% 74%,
+      rgb(var(--auth-accent-r) var(--auth-accent-g) var(--auth-accent-b) / 18%),
+      transparent 32%
+    ),
     radial-gradient(circle at 72% 20%, rgb(var(--info) / 12%), transparent 28%),
     linear-gradient(
       180deg,
@@ -212,9 +355,22 @@ defineOptions({ name: 'AuthShaderBackdrop' })
     );
   box-shadow:
     inset 0 1px 0 rgb(var(--foreground) / 12%),
-    inset 0 -1px 0 rgb(var(--primary) / 14%),
-    0 var(--spacing-md) var(--spacing-5xl) rgb(var(--primary) / var(--auth-backdrop-bubble-shadow));
+    inset 0 -1px 0 rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 14%),
+    0 var(--spacing-md) var(--spacing-5xl)
+      rgb(
+        var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) /
+          var(--auth-backdrop-bubble-shadow)
+      );
   backdrop-filter: blur(18px) saturate(1.24);
+  transition:
+    border-color var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    box-shadow var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    opacity var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    filter var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out);
 }
 
 .auth-shader-backdrop__bubble::after {
@@ -227,6 +383,13 @@ defineOptions({ name: 'AuthShaderBackdrop' })
   border-radius: var(--radius-5xl);
   background: rgb(var(--background) / 38%);
   filter: blur(8px);
+  transition:
+    background-color var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    filter var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    opacity var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out);
 }
 
 .auth-shader-backdrop__bubble--large {
@@ -267,6 +430,11 @@ defineOptions({ name: 'AuthShaderBackdrop' })
   filter: blur(92px);
   pointer-events: none;
   opacity: 0.3;
+  transition:
+    opacity var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    filter var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out);
 }
 
 .auth-shader-backdrop__glow--primary {
@@ -274,7 +442,11 @@ defineOptions({ name: 'AuthShaderBackdrop' })
   left: 30%;
   width: 360px;
   height: 360px;
-  background: radial-gradient(circle, rgb(var(--primary) / 11%), transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 11%),
+    transparent 70%
+  );
 }
 
 .auth-shader-backdrop__glow--accent {
@@ -282,7 +454,11 @@ defineOptions({ name: 'AuthShaderBackdrop' })
   bottom: 10%;
   width: 360px;
   height: 360px;
-  background: radial-gradient(circle, rgb(var(--accent) / 11%), transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgb(var(--auth-accent-r) var(--auth-accent-g) var(--auth-accent-b) / 11%),
+    transparent 70%
+  );
 }
 
 @media (width <= 768px) {

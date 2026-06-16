@@ -118,18 +118,84 @@ test.describe('view route smoke coverage', () => {
 
     await page.locator('#username').fill('admin')
     await page.locator('#password').fill('123456')
+    await page.locator('#password').focus()
+
+    const passwordFieldGeometry = await page.evaluate(() => {
+      const password = document.querySelector<HTMLInputElement>('#password')
+      const shell = password?.closest<HTMLElement>('.login-field-shell')
+      const leading = shell?.querySelector<HTMLElement>('.login-field-affix--leading')
+      const toggle = shell?.querySelector<HTMLElement>('.login-password-toggle')
+
+      const shellRect = shell?.getBoundingClientRect()
+      const leadingRect = leading?.getBoundingClientRect()
+      const toggleRect = toggle?.getBoundingClientRect()
+      const leadingStyle = leading ? getComputedStyle(leading) : null
+      const toggleStyle = toggle ? getComputedStyle(toggle) : null
+      const transparentColor = 'rgba(0, 0, 0, 0)'
+
+      return {
+        hasParts: Boolean(shellRect && leadingRect && toggleRect),
+        leadingCenterDelta:
+          shellRect && leadingRect
+            ? Math.abs(
+                leadingRect.top + leadingRect.height / 2 - (shellRect.top + shellRect.height / 2)
+              )
+            : Number.POSITIVE_INFINITY,
+        toggleCenterDelta:
+          shellRect && toggleRect
+            ? Math.abs(
+                toggleRect.top + toggleRect.height / 2 - (shellRect.top + shellRect.height / 2)
+              )
+            : Number.POSITIVE_INFINITY,
+        leadingHasVisibleDivider:
+          leadingStyle !== null &&
+          Number.parseFloat(leadingStyle.borderRightWidth) > 0 &&
+          leadingStyle.borderRightStyle !== 'none' &&
+          leadingStyle.borderRightColor !== transparentColor,
+        toggleHasVisibleDivider:
+          toggleStyle !== null &&
+          Number.parseFloat(toggleStyle.borderLeftWidth) > 0 &&
+          toggleStyle.borderLeftStyle !== 'none' &&
+          toggleStyle.borderLeftColor !== transparentColor,
+      }
+    })
+
+    expect(passwordFieldGeometry.hasParts).toBe(true)
+    expect(passwordFieldGeometry.leadingCenterDelta).toBeLessThanOrEqual(1)
+    expect(passwordFieldGeometry.toggleCenterDelta).toBeLessThanOrEqual(1)
+    expect(passwordFieldGeometry.leadingHasVisibleDivider).toBe(false)
+    expect(passwordFieldGeometry.toggleHasVisibleDivider).toBe(false)
 
     const stage = page.getByTestId('auth-visual-stage')
     const palette = page.getByTestId('auth-palette-picker')
+    const card = page.getByTestId('auth-login-card')
+    const bubbles = page.getByTestId('auth-glass-bubble')
     await expect(stage).toBeVisible()
     await expect(palette).toBeVisible()
+    await expect(card).toBeVisible()
+    await expect(bubbles).toHaveCount(4)
     await expect(page.getByTestId('auth-static-core')).toHaveCount(0)
     await expect(stage.locator('.auth-architecture-chip')).toHaveCount(0)
+    await expect(
+      page.locator(
+        '[data-login-diagonal-slash], [data-login-line-sweep], .login-diagonal-slash, .login-line-sweep'
+      )
+    ).toHaveCount(0)
 
     await page.evaluate(() => {
       const el = document.querySelector('[data-testid="auth-visual-stage"]')
       if (el instanceof HTMLElement) {
         el.dataset.e2eStageMarker = 'preserved'
+      }
+
+      const card = document.querySelector('[data-testid="auth-login-card"]')
+      if (card instanceof HTMLElement) {
+        card.dataset.e2eCardMarker = 'preserved'
+      }
+
+      const username = document.querySelector('#username')
+      if (username instanceof HTMLElement) {
+        username.dataset.e2eInputMarker = 'preserved'
       }
     })
 
@@ -146,11 +212,41 @@ test.describe('view route smoke coverage', () => {
     })
     expect(isPreserved).toBe(true)
 
+    const isCardPreservedAfterTheme = await page.evaluate(() => {
+      const el = document.querySelector('[data-testid="auth-login-card"]')
+      return el instanceof HTMLElement ? el.dataset.e2eCardMarker === 'preserved' : false
+    })
+    expect(isCardPreservedAfterTheme).toBe(true)
+
+    const isInputPreservedAfterTheme = await page.evaluate(() => {
+      const el = document.querySelector('#username')
+      return el instanceof HTMLElement ? el.dataset.e2eInputMarker === 'preserved' : false
+    })
+    expect(isInputPreservedAfterTheme).toBe(true)
+
+    await palette.getByRole('button', { pressed: false }).first().click()
+    await page.waitForTimeout(120)
+
+    await expect(page.locator('#username')).toHaveValue('admin')
+    await expect(page.locator('#password')).toHaveValue('123456')
+
+    const isCardPreservedAfterPalette = await page.evaluate(() => {
+      const el = document.querySelector('[data-testid="auth-login-card"]')
+      return el instanceof HTMLElement ? el.dataset.e2eCardMarker === 'preserved' : false
+    })
+    expect(isCardPreservedAfterPalette).toBe(true)
+
+    const isInputPreservedAfterPalette = await page.evaluate(() => {
+      const el = document.querySelector('#username')
+      return el instanceof HTMLElement ? el.dataset.e2eInputMarker === 'preserved' : false
+    })
+    expect(isInputPreservedAfterPalette).toBe(true)
+
     expect(errors).toHaveLength(0)
     expect(consoleErrors).toHaveLength(0)
 
     const hasRotation = await page.evaluate(() => {
-      const elements = Array.from(document.querySelectorAll('[data-testid="auth-visual-stage"] *'))
+      const elements = Array.from(document.querySelectorAll('#login-page *'))
       return elements.some(el => {
         const style = getComputedStyle(el)
         const animation = style.animationName || ''
@@ -163,6 +259,50 @@ test.describe('view route smoke coverage', () => {
       })
     })
     expect(hasRotation).toBe(false)
+  })
+
+  test('login gateway renders final static state under reduced motion', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await page.addInitScript(() => {
+      window.localStorage.clear()
+      window.localStorage.setItem('theme-mode', 'light')
+    })
+
+    await gotoVisual(page, '/login')
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+    await expect(page.locator('#login-submit')).toBeVisible()
+    await expect(page.getByTestId('auth-glass-bubble')).toHaveCount(4)
+
+    const motionState = await page.evaluate(() => {
+      const animatedNodes = Array.from(
+        document.querySelectorAll<HTMLElement>(
+          [
+            '[data-testid="auth-login-card"]',
+            '.login-field-shell',
+            '.login-form-options',
+            '#login-submit',
+            '.auth-quick-accounts',
+            '[data-testid="auth-palette-picker"]',
+            '[data-testid="auth-glass-bubble"]',
+          ].join(', ')
+        )
+      )
+      const card = document.querySelector<HTMLElement>('[data-testid="auth-login-card"]')
+      const cardStyle = card ? getComputedStyle(card) : null
+
+      return {
+        hasInlineMotion: animatedNodes.some(
+          node => node.style.transform || node.style.opacity || node.style.visibility
+        ),
+        cardOpacity: cardStyle?.opacity ?? '',
+        cardTransform: cardStyle?.transform ?? '',
+      }
+    })
+
+    expect(motionState.hasInlineMotion).toBe(false)
+    expect(motionState.cardOpacity).toBe('1')
+    expect(motionState.cardTransform).toBe('none')
   })
 
   test('login gateway keeps mobile layout inside the viewport', async ({ page }) => {

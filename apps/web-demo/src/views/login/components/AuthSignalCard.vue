@@ -41,12 +41,16 @@ defineProps<{
 }
 
 .auth-signal-card--active {
-  border-color: rgb(var(--primary) / 50%);
+  border-color: rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 50%);
   color: rgb(var(--foreground));
-  background: linear-gradient(135deg, rgb(var(--primary) / 4%), rgb(var(--card) / 70%));
+  background: linear-gradient(
+    135deg,
+    rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 4%),
+    rgb(var(--card) / 70%)
+  );
   box-shadow:
     inset 0 1px 0 rgb(var(--foreground) / 4%),
-    0 4px 12px rgb(var(--primary) / 3%);
+    0 4px 12px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 3%);
 }
 
 .auth-signal-dot {
@@ -61,8 +65,8 @@ defineProps<{
 }
 
 .auth-signal-dot--active {
-  background: rgb(var(--primary));
-  box-shadow: 0 0 8px rgb(var(--primary));
+  background: rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b));
+  box-shadow: 0 0 8px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b));
 }
 
 .auth-signal-card__label {

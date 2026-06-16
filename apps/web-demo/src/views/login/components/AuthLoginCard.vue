@@ -19,6 +19,7 @@ const { t } = useI18n({ useScope: 'global' })
   <section
     class="auth-login-card col-stretch"
     :class="{ 'auth-login-card--compact': compact }"
+    data-testid="auth-login-card"
     aria-labelledby="login-card-title"
   >
     <header class="auth-login-card__header row-between">
@@ -59,15 +60,31 @@ const { t } = useI18n({ useScope: 'global' })
   border-radius: var(--radius-2xl);
   background:
     radial-gradient(circle at 16% 8%, rgb(var(--background) / 80%), transparent 18%),
-    radial-gradient(circle at 82% 86%, rgb(var(--accent) / 10%), transparent 30%),
+    radial-gradient(
+      circle at 82% 86%,
+      rgb(var(--auth-accent-r) var(--auth-accent-g) var(--auth-accent-b) / 10%),
+      transparent 30%
+    ),
     linear-gradient(180deg, rgb(var(--card) / 96%), rgb(var(--background) / 82%)), rgb(var(--card));
   backdrop-filter: blur(26px) saturate(1.16);
   box-shadow:
     inset 0 1px 0 rgb(var(--foreground) / 8%),
-    inset 0 -1px 0 rgb(var(--primary) / 8%),
+    inset 0 -1px 0 rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 8%),
     0 1px 2px rgb(var(--foreground) / 6%),
     0 var(--spacing-xl) var(--spacing-5xl) rgb(var(--foreground) / 12%),
-    0 0 var(--spacing-5xl) rgb(var(--primary) / 9%);
+    0 0 var(--spacing-5xl)
+      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 9%);
+  transition:
+    background-color var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    border-color var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    box-shadow var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    opacity var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    filter var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out);
 }
 
 .auth-login-card::before {
@@ -80,11 +97,16 @@ const { t } = useI18n({ useScope: 'global' })
   background: linear-gradient(
     90deg,
     transparent,
-    rgb(var(--primary) / 52%),
-    rgb(var(--accent) / 32%),
+    rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 52%),
+    rgb(var(--auth-accent-r) var(--auth-accent-g) var(--auth-accent-b) / 32%),
     transparent
   );
   opacity: 0.86;
+  transition:
+    opacity var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    filter var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out);
 }
 
 .auth-login-card::after {
@@ -95,7 +117,13 @@ const { t } = useI18n({ useScope: 'global' })
   pointer-events: none;
   box-shadow:
     inset 0 1px 0 rgb(var(--foreground) / 6%),
-    inset 0 0 var(--spacing-5xl) rgb(var(--primary) / 3%);
+    inset 0 0 var(--spacing-5xl)
+      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 3%);
+  transition:
+    box-shadow var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    opacity var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out);
 }
 
 .auth-login-card__header {
@@ -111,11 +139,13 @@ const { t } = useI18n({ useScope: 'global' })
 }
 
 .auth-login-card__eyebrow {
-  color: rgb(var(--primary) / 90%);
+  color: rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 90%);
   font-size: var(--font-size-xs);
   font-weight: 750;
   letter-spacing: 0;
   line-height: 1;
+  transition: color var(--auth-theme-transition-duration, var(--transition-sm))
+    var(--auth-theme-transition-ease, ease-out);
 }
 
 .auth-login-card__title {
@@ -125,6 +155,8 @@ const { t } = useI18n({ useScope: 'global' })
   font-weight: 800;
   letter-spacing: 0;
   line-height: 1.15;
+  transition: color var(--auth-theme-transition-duration, var(--transition-sm))
+    var(--auth-theme-transition-ease, ease-out);
 }
 
 .auth-login-card__subtitle {
@@ -134,6 +166,8 @@ const { t } = useI18n({ useScope: 'global' })
   font-weight: 450;
   line-height: 1.45;
   word-break: keep-all;
+  transition: color var(--auth-theme-transition-duration, var(--transition-sm))
+    var(--auth-theme-transition-ease, ease-out);
 }
 
 .auth-login-card__actions {
@@ -154,19 +188,28 @@ const { t } = useI18n({ useScope: 'global' })
   background:
     linear-gradient(180deg, rgb(var(--foreground) / 8%), rgb(var(--foreground) / 3%)),
     radial-gradient(circle at 16% 8%, rgb(var(--foreground) / 10%), transparent 18%),
-    radial-gradient(circle at 56% 0%, rgb(var(--primary) / 9%), transparent 26%),
-    radial-gradient(circle at 82% 86%, rgb(var(--accent) / 13%), transparent 30%),
+    radial-gradient(
+      circle at 56% 0%,
+      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 9%),
+      transparent 26%
+    ),
+    radial-gradient(
+      circle at 82% 86%,
+      rgb(var(--auth-accent-r) var(--auth-accent-g) var(--auth-accent-b) / 14%),
+      transparent 30%
+    ),
     linear-gradient(180deg, rgb(var(--card) / 98%), rgb(var(--background) / 62%)), rgb(var(--card));
   box-shadow:
     inset 0 1px 0 rgb(var(--foreground) / 9%),
-    inset 0 -1px 0 rgb(var(--primary) / 10%),
-    0 0 0 1px rgb(var(--primary) / 10%),
+    inset 0 -1px 0 rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 10%),
+    0 0 0 1px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 10%),
     0 var(--spacing-xl) var(--spacing-4xl) rgb(var(--background) / 58%),
-    0 0 var(--spacing-5xl) rgb(var(--primary) / 10%);
+    0 0 var(--spacing-5xl)
+      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 10%);
 }
 
 :global(.dark) .auth-login-card__eyebrow {
-  color: rgb(var(--primary) / 96%);
+  color: rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 96%);
 }
 
 :global(.dark) .auth-login-card__title {

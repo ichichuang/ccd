@@ -2,11 +2,16 @@
 import { THEME_PRESETS } from '@ccd/design-tokens'
 import { useThemeStore } from '@/stores/modules/system'
 import { useI18n } from 'vue-i18n'
+import type { LoginPaletteTransition } from '../composables/useLoginPaletteTransition'
 
 defineOptions({ name: 'AuthPalettePicker' })
 
 const { t } = useI18n({ useScope: 'global' })
 const themeStore = useThemeStore()
+
+const switchPalette = inject<LoginPaletteTransition['switchPalette']>('loginSwitchPalette', () =>
+  Promise.resolve(false)
+)
 
 const activeTheme = computed(() => themeStore.themeName)
 
@@ -33,7 +38,7 @@ const presets = computed(() =>
 )
 
 function selectTheme(name: string): void {
-  themeStore.setTheme(name)
+  void switchPalette(name)
 }
 </script>
 
@@ -81,6 +86,15 @@ function selectTheme(name: string): void {
   border-radius: var(--radius-5xl);
   background: rgb(var(--card) / 38%);
   box-shadow: inset 0 1px 0 rgb(var(--foreground) / 5%);
+  transition:
+    background-color var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    border-color var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    box-shadow var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    opacity var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out);
 }
 
 .auth-palette-orb {
@@ -105,9 +119,14 @@ function selectTheme(name: string): void {
   opacity: 0.76;
   padding: 0 !important;
   transition:
-    opacity var(--transition-sm) ease-out,
-    box-shadow var(--transition-sm) ease-out,
-    border-color var(--transition-sm) ease-out;
+    opacity var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    box-shadow var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    border-color var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    filter var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out);
 }
 
 :global(.dark) .auth-palette-orb {
@@ -175,6 +194,13 @@ function selectTheme(name: string): void {
   background: hsl(var(--orb-hue) 60% 98% / 52%);
   filter: blur(2px);
   pointer-events: none;
+  transition:
+    background-color var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    opacity var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    filter var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out);
 }
 
 .auth-palette-orb__dot {
@@ -187,13 +213,22 @@ function selectTheme(name: string): void {
   background: hsl(var(--orb-hue) 60% 98% / 92%);
   box-shadow: 0 0 0 1px hsl(var(--orb-hue) 56% 64% / 48%);
   pointer-events: none;
+  transition:
+    background-color var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    box-shadow var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out),
+    opacity var(--auth-theme-transition-duration, var(--transition-sm))
+      var(--auth-theme-transition-ease, ease-out);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .auth-palette-orb {
     transition:
-      opacity var(--transition-sm) ease-out,
-      box-shadow var(--transition-sm) ease-out;
+      opacity var(--auth-theme-transition-duration, var(--transition-sm))
+        var(--auth-theme-transition-ease, ease-out),
+      box-shadow var(--auth-theme-transition-duration, var(--transition-sm))
+        var(--auth-theme-transition-ease, ease-out);
   }
 }
 </style>

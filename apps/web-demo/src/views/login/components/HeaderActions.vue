@@ -206,7 +206,7 @@ onBeforeUnmount(() => {
 }
 
 .auth-toolbar:hover {
-  border-color: rgb(var(--primary) / 32%);
+  border-color: rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 32%);
   box-shadow:
     inset 0 1px 0 rgb(var(--foreground) / 6%),
     0 1px 4px rgb(var(--foreground) / 6%);
@@ -272,7 +272,7 @@ onBeforeUnmount(() => {
   width: var(--spacing-xs);
   height: var(--spacing-xs);
   border-radius: var(--radius-5xl);
-  background: rgb(var(--primary));
+  background: rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b));
   transform: translateX(-50%);
 }
 
@@ -283,7 +283,7 @@ onBeforeUnmount(() => {
 }
 
 .auth-toolbar__btn[aria-expanded='true'] .auth-toolbar__chevron {
-  color: rgb(var(--primary));
+  color: rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b));
   opacity: 0.92;
 }
 
@@ -369,50 +369,64 @@ onBeforeUnmount(() => {
 }
 
 .auth-locale-item:active {
-  background: rgb(var(--primary) / 8%) !important;
+  background: rgb(
+    var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 8%
+  ) !important;
 }
 
 .auth-locale-item:focus-visible {
   outline: none !important;
   box-shadow:
-    inset 0 0 0 1px rgb(var(--primary) / 42%),
-    0 0 0 2px rgb(var(--primary) / 18%) !important;
+    inset 0 0 0 1px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 42%),
+    0 0 0 2px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 18%) !important;
 }
 
 .auth-locale-panel .auth-locale-item:is(.auth-locale-item--active, [aria-checked='true']) {
-  color: rgb(var(--primary)) !important;
+  color: rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b)) !important;
   background:
-    linear-gradient(180deg, rgb(var(--primary) / 14%), rgb(var(--primary) / 8%)),
+    linear-gradient(
+      180deg,
+      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 14%),
+      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 8%)
+    ),
     rgb(var(--card) / 78%) !important;
   box-shadow:
     inset 0 1px 0 rgb(var(--foreground) / 5%),
-    0 0 0 1px rgb(var(--primary) / 18%),
-    0 1px 4px rgb(var(--primary) / 0%) !important;
+    0 0 0 1px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 18%),
+    0 1px 4px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 0%) !important;
 }
 
 :global(.dark)
   .auth-locale-panel
   .auth-locale-item:is(.auth-locale-item--active, [aria-checked='true']) {
-  color: rgb(var(--primary) / 96%) !important;
+  color: rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 96%) !important;
   background:
-    linear-gradient(180deg, rgb(var(--primary) / 20%), rgb(var(--primary) / 11%)),
+    linear-gradient(
+      180deg,
+      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 20%),
+      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 11%)
+    ),
     rgb(var(--background) / 70%) !important;
   box-shadow:
     inset 0 1px 0 rgb(var(--foreground) / 6%),
-    0 0 0 1px rgb(var(--primary) / 22%),
-    0 1px 4px rgb(var(--primary) / 0%) !important;
+    0 0 0 1px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 22%),
+    0 1px 4px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 0%) !important;
 }
 
 .auth-locale-panel .auth-locale-item:is(.auth-locale-item--active, [aria-checked='true']):hover,
 .auth-locale-panel .auth-locale-item:is(.auth-locale-item--active, [aria-checked='true']):active {
-  color: rgb(var(--primary)) !important;
+  color: rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b)) !important;
   background:
-    linear-gradient(180deg, rgb(var(--primary) / 16%), rgb(var(--primary) / 10%)),
+    linear-gradient(
+      180deg,
+      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 16%),
+      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 10%)
+    ),
     rgb(var(--card) / 84%) !important;
   box-shadow:
     inset 0 1px 0 rgb(var(--foreground) / 6%),
-    0 0 0 1px rgb(var(--primary) / 26%),
-    0 1px 4px rgb(var(--primary) / 10%) !important;
+    0 0 0 1px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 26%),
+    0 1px 4px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 10%) !important;
 }
 
 :global(.dark)
@@ -421,39 +435,51 @@ onBeforeUnmount(() => {
 :global(.dark)
   .auth-locale-panel
   .auth-locale-item:is(.auth-locale-item--active, [aria-checked='true']):active {
-  color: rgb(var(--primary) / 98%) !important;
+  color: rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 98%) !important;
   background:
-    linear-gradient(180deg, rgb(var(--primary) / 23%), rgb(var(--primary) / 13%)),
+    linear-gradient(
+      180deg,
+      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 23%),
+      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 13%)
+    ),
     rgb(var(--background) / 76%) !important;
   box-shadow:
     inset 0 1px 0 rgb(var(--foreground) / 7%),
-    0 0 0 1px rgb(var(--primary) / 30%),
-    0 1px 4px rgb(var(--primary) / 12%) !important;
+    0 0 0 1px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 30%),
+    0 1px 4px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 12%) !important;
 }
 
 .auth-locale-panel
   .auth-locale-item:is(.auth-locale-item--active, [aria-checked='true']):focus-visible {
-  color: rgb(var(--primary)) !important;
+  color: rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b)) !important;
   background:
-    linear-gradient(180deg, rgb(var(--primary) / 16%), rgb(var(--primary) / 10%)),
+    linear-gradient(
+      180deg,
+      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 16%),
+      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 10%)
+    ),
     rgb(var(--card) / 84%) !important;
   box-shadow:
     inset 0 1px 0 rgb(var(--foreground) / 6%),
-    inset 0 0 0 1px rgb(var(--primary) / 44%),
-    0 0 0 2px rgb(var(--primary) / 18%) !important;
+    inset 0 0 0 1px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 44%),
+    0 0 0 2px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 18%) !important;
 }
 
 :global(.dark)
   .auth-locale-panel
   .auth-locale-item:is(.auth-locale-item--active, [aria-checked='true']):focus-visible {
-  color: rgb(var(--primary) / 98%) !important;
+  color: rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 98%) !important;
   background:
-    linear-gradient(180deg, rgb(var(--primary) / 23%), rgb(var(--primary) / 13%)),
+    linear-gradient(
+      180deg,
+      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 23%),
+      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 13%)
+    ),
     rgb(var(--background) / 76%) !important;
   box-shadow:
     inset 0 1px 0 rgb(var(--foreground) / 7%),
-    inset 0 0 0 1px rgb(var(--primary) / 48%),
-    0 0 0 2px rgb(var(--primary) / 22%) !important;
+    inset 0 0 0 1px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 48%),
+    0 0 0 2px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 22%) !important;
 }
 
 .auth-locale-indicator {
@@ -463,7 +489,7 @@ onBeforeUnmount(() => {
   width: 3px;
   height: clamp(16px, calc(var(--spacing-md) + var(--spacing-xs) / 2), 18px);
   border-radius: var(--radius-5xl);
-  background: rgb(var(--primary));
+  background: rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b));
   transform: translateY(-50%);
 }
 
