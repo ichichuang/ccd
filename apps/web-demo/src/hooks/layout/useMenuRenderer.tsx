@@ -72,12 +72,12 @@ export interface TieredMenuItemRendererOptions {
 
 function getLabelClassByContext(context: MenuVisualContext): string {
   if (context === 'breadcrumb') {
-    return 'truncate flex-1 text-left pt-px text-sm text-current!'
+    return 'truncate flex-1 text-left pt-px text-sm !text-current'
   }
   if (context === 'header') {
-    return `truncate flex-1 text-left text-current! ${MENU_TEXT_CLASS} font-medium pt-px`
+    return `truncate flex-1 text-left !text-current ${MENU_TEXT_CLASS} font-medium pt-px`
   }
-  return ['truncate flex-1 text-current!', MENU_TEXT_CLASS].join(' ')
+  return ['truncate flex-1 !text-current', MENU_TEXT_CLASS].join(' ')
 }
 
 export function createTieredMenuItemRenderer(
@@ -195,7 +195,7 @@ export function createTieredMenuItemRenderer(
           <Icons
             name={item.icon}
             size={getIconSize(context)}
-            class={`text-current! shrink-0 ${MENU_ICON_COMMON_CLASS}`}
+            class={`!text-current shrink-0 ${MENU_ICON_COMMON_CLASS}`}
           />
         )}
         <span class={finalLabelClass}>{item.label}</span>
@@ -203,7 +203,7 @@ export function createTieredMenuItemRenderer(
           <Icons
             name="i-lucide-chevron-right"
             size={getIconSize(context)}
-            class={`ml-auto text-current! shrink-0 ${MENU_ICON_COMMON_CLASS}`}
+            class={`ml-auto !text-current shrink-0 ${MENU_ICON_COMMON_CLASS}`}
           />
         )}
       </a>

@@ -157,9 +157,7 @@ async function expectTokenizedMenuStyle(
   for (const expectedClass of expectedClasses) {
     expect(className).toContain(expectedClass)
   }
-  if (actual !== baseline) {
-    expectDistinctStyle(actual, baseline)
-  }
+  expectDistinctStyle(actual, baseline)
 }
 
 async function expectActiveOrAncestorMenuStyle(
@@ -172,7 +170,7 @@ async function expectActiveOrAncestorMenuStyle(
     locator,
     actual,
     baseline,
-    state === 'active' ? ['bg-primary!'] : ['bg-primary/10!', 'text-primary!']
+    state === 'active' ? ['!bg-primary'] : ['!bg-primary/10', '!text-primary']
   )
 }
 
@@ -201,8 +199,8 @@ test.describe('visual token foundation', () => {
     await expect(sidebarOpenParent).toBeVisible()
     const parentSignature = await visualSignature(sidebarOpenParent)
     await expectTokenizedMenuStyle(sidebarOpenParent, parentSignature, idleSignature, [
-      'bg-primary/10!',
-      'text-primary!',
+      '!bg-primary/10',
+      '!text-primary',
     ])
     expectQuietNavigationBorder(await borderWeight(sidebarOpenParent))
 
@@ -213,7 +211,7 @@ test.describe('visual token foundation', () => {
     await expect(sidebarActiveChild).toBeVisible()
     const childSignature = await visualSignature(sidebarActiveChild)
     await expectTokenizedMenuStyle(sidebarActiveChild, childSignature, parentSignature, [
-      'bg-primary!',
+      '!bg-primary',
       'focus-visible:ring-primary/40',
     ])
     expectQuietNavigationBorder(await borderWeight(sidebarActiveChild))
@@ -264,12 +262,10 @@ test.describe('visual token foundation', () => {
       'text-primary',
     ])
     expectQuietNavigationBorder(await borderWeight(activeTab))
-    if (activeTabSignature !== idleTabSignature) {
-      const activeTabPrimaryTint = await primaryTintSnapshot(activeTab)
-      expect(activeTabPrimaryTint.isPrimaryText).toBe(true)
-      expect(activeTabPrimaryTint.isPrimaryTint).toBe(true)
-      expect(activeTabPrimaryTint.backgroundAlpha).toBeGreaterThanOrEqual(0.12)
-    }
+    const activeTabPrimaryTint = await primaryTintSnapshot(activeTab)
+    expect(activeTabPrimaryTint.isPrimaryText).toBe(true)
+    expect(activeTabPrimaryTint.isPrimaryTint).toBe(true)
+    expect(activeTabPrimaryTint.backgroundAlpha).toBeGreaterThanOrEqual(0.12)
 
     const breadcrumbCurrent = page
       .locator('main [data-menu-state="active"]')
@@ -280,7 +276,7 @@ test.describe('visual token foundation', () => {
       breadcrumbCurrent,
       await visualSignature(breadcrumbCurrent),
       idleSignature,
-      ['bg-primary/12!', 'text-primary!']
+      ['!bg-primary/12', '!text-primary']
     )
     expectQuietNavigationBorder(await borderWeight(breadcrumbCurrent))
   })

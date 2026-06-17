@@ -235,6 +235,7 @@ const SHELL_CHROME_COLOR_SAFELIST_CLASSES: readonly string[] = [
   'text-primary',
   'text-primary-foreground',
   'text-current',
+  '!text-current',
   'bg-popover',
   'bg-popover/95',
   'w-max',
@@ -277,13 +278,17 @@ const SHELL_CHROME_IMPORTANT_STATE_SAFELIST_CLASSES: readonly string[] = [
   '!bg-primary/14',
   '!bg-primary/12',
   '!bg-primary/10',
+  '!bg-transparent',
   '!text-primary',
   '!text-primary-foreground',
+  '!transition-none',
+  '![outline:none]',
   'dark:!bg-primary-light',
   'dark:!bg-primary-light/70',
   'dark:!text-primary-light-foreground',
   'hover:!bg-primary',
   'hover:!bg-primary/14',
+  'hover:!bg-transparent',
   'hover:!text-primary',
   'hover:!text-primary-foreground',
 ]
@@ -297,6 +302,32 @@ const PRIMEVUE_FORM_COLOR_SAFELIST_CLASSES: readonly string[] = [
   'bg-popover',
   'text-popover-foreground',
   'text-muted-foreground',
+]
+
+const PRIMEVUE_FORM_RESET_SAFELIST_CLASSES: readonly string[] = [
+  '!border-0',
+  '!shadow-none',
+  '!rounded-none',
+  '!bg-transparent',
+  '!ring-0',
+  '![outline:none]',
+  '!text-muted-foreground',
+  'hover:!bg-muted/60',
+  'hover:!text-primary',
+  'group-hover:!text-primary',
+  'focus:![outline:none]',
+  'focus:!ring-0',
+  'focus:!shadow-none',
+  'focus:!border-0',
+  'focus-visible:![outline:none]',
+  'focus-visible:!border-primary',
+  'focus-visible:!ring-0',
+  'focus-visible:!shadow-none',
+  'focus-visible:!ring-offset-0',
+  'focus-visible:[box-shadow:var(--p-form-field-focus-ring-shadow)]',
+  'focus-within:![outline:none]',
+  'focus-within:!border-primary',
+  'focus-within:[box-shadow:var(--p-form-field-focus-ring-shadow)]',
 ]
 
 /** Semantic shortcut names from design-engine SSOT — prevents tree-shaking of macro classes. */
@@ -330,6 +361,7 @@ function getDynamicSafelist(): string[] {
     ...SHELL_CHROME_COLOR_SAFELIST_CLASSES,
     ...SHELL_CHROME_IMPORTANT_STATE_SAFELIST_CLASSES,
     ...PRIMEVUE_FORM_COLOR_SAFELIST_CLASSES,
+    ...PRIMEVUE_FORM_RESET_SAFELIST_CLASSES,
     ...SEMANTIC_SHORTCUTS_SAFELIST_CLASSES,
   ]
 }

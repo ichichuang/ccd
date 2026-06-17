@@ -206,7 +206,7 @@ export default defineComponent({
                 >
                   <div
                     ref={contextMenuPanelRef}
-                    class={`fixed z-popover flex flex-col gap-xs origin-top-left outline-none! ${MENU_ADMIN_CONTEXT_PANEL_UNIFIED}`}
+                    class={`fixed z-popover flex flex-col gap-xs origin-top-left ![outline:none] ${MENU_ADMIN_CONTEXT_PANEL_UNIFIED}`}
                     style={{ top: `${contextMenu.value.y}px`, left: `${contextMenu.value.x}px` }}
                     onMousedown={(e: MouseEvent) => e.stopPropagation()}
                     onClick={(e: MouseEvent) => e.stopPropagation()}

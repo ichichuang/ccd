@@ -361,7 +361,7 @@ export default defineComponent({
         <span
           ref={el => setMenuLabelRef(key, el instanceof HTMLElement ? el : null)}
           data-menu-label-key={key}
-          class={`admin-sidebar-menu__label text-ellipsis-1 text-left! min-w-0 flex-1 text-current! ${MENU_TEXT_CLASS}`}
+          class={`admin-sidebar-menu__label text-ellipsis-1 !text-left min-w-0 flex-1 !text-current ${MENU_TEXT_CLASS}`}
         >
           {item.label}
         </span>
@@ -377,19 +377,19 @@ export default defineComponent({
 
       const content = (
         <span
-          class={`admin-sidebar-menu__item-content flex items-center ${MENU_ITEM_GAP} w-full min-w-0 overflow-hidden text-current! ${MENU_TEXT_CLASS}`}
+          class={`admin-sidebar-menu__item-content flex items-center ${MENU_ITEM_GAP} w-full min-w-0 overflow-hidden !text-current ${MENU_TEXT_CLASS}`}
         >
           {item.icon ? (
             <Icons
               name={item.icon}
               size={getIconSize('sidebar')}
-              class={`admin-sidebar-menu__icon text-current! shrink-0 ${MENU_ICON_COMMON_CLASS}`}
+              class={`admin-sidebar-menu__icon !text-current shrink-0 ${MENU_ICON_COMMON_CLASS}`}
             />
           ) : (
             <Icons
               name={MENU_FALLBACK_ICON}
               size={getIconSize('sidebar')}
-              class={`admin-sidebar-menu__icon admin-sidebar-menu__icon--fallback text-current! shrink-0 ${MENU_ICON_COMMON_CLASS}`}
+              class={`admin-sidebar-menu__icon admin-sidebar-menu__icon--fallback !text-current shrink-0 ${MENU_ICON_COMMON_CLASS}`}
               aria-hidden="true"
             />
           )}
@@ -398,7 +398,7 @@ export default defineComponent({
             <Icons
               name="i-lucide-chevron-down"
               size={getIconSize('sidebar')}
-              class={`admin-sidebar-menu__arrow text-current! shrink-0 text-center flex-shrink-0 center ml-auto w-5 ${isSubmenuVisuallyOpen ? 'rotate-180' : 'rotate-0'}`}
+              class={`admin-sidebar-menu__arrow !text-current shrink-0 text-center flex-shrink-0 center ml-auto w-5 ${isSubmenuVisuallyOpen ? 'rotate-180' : 'rotate-0'}`}
             />
           ) : null}
         </span>
@@ -410,7 +410,7 @@ export default defineComponent({
       const isRootRow = level <= 0
       const linkClass = [
         baseClasses,
-        isRootRow ? 'min-w-0 flex-1 bg-transparent! text-current!' : '',
+        isRootRow ? 'min-w-0 flex-1 !bg-transparent !text-current' : '',
         stateClasses,
       ]
         .filter(Boolean)
@@ -450,7 +450,7 @@ export default defineComponent({
                   routeLinkExactActive
                     ? 'router-link-exact-active c-admin-sidebar-menu__link--route-exact-active'
                     : '',
-                  isRootRow && routeLinkActive ? 'bg-transparent! hover:bg-transparent!' : '',
+                  isRootRow && routeLinkActive ? '!bg-transparent hover:!bg-transparent' : '',
                 ]
                   .filter(Boolean)
                   .join(' ')
@@ -552,7 +552,7 @@ export default defineComponent({
               class: 'mb-xs last:mb-0',
             },
             headerContent: (options: PanelMenuPtOptionsLike) => ({
-              class: 'bg-transparent!',
+              class: '!bg-transparent',
               ...buildPanelRowAttrs(options),
             }),
             itemContent: (options: PanelMenuPtOptionsLike) => buildPanelRowAttrs(options),

@@ -63,7 +63,7 @@ export const MENU_ADMIN_TAB_INACTIVE_UNIFIED =
 export const MENU_ADMIN_CONTEXT_ITEM_UNIFIED =
   `flex items-center gap-sm whitespace-nowrap cursor-pointer select-none transition-colors duration-md ease-out-expo border-none bg-transparent px-sm py-xs rounded-sm text-sm text-popover-foreground hover:bg-primary/10 hover:text-primary focus:bg-primary/10 focus:text-primary focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 focus-visible:ring-offset-popover group` as const
 /** Admin tabs 右键菜单图标 hover 色：统一对齐 primary */
-export const MENU_ADMIN_CONTEXT_ICON_UNIFIED = 'text-current transition-none!' as const
+export const MENU_ADMIN_CONTEXT_ICON_UNIFIED = 'text-current !transition-none' as const
 
 /** 未激活项文字（子级） */
 export const MENU_INACTIVE_TEXT = 'text-foreground'
@@ -95,7 +95,7 @@ export const MENU_PANEL_PADDING = 'px-md py-sm'
 /** 文字样式 */
 export const MENU_TEXT_CLASS = 'text-md font-sans'
 /** 图标通用 class（transition-none 使图标随 wrapper 同帧变化，不独立过渡） */
-export const MENU_ICON_COMMON_CLASS = 'w-5 text-center flex-shrink-0 center transition-none!'
+export const MENU_ICON_COMMON_CLASS = 'w-5 text-center flex-shrink-0 center !transition-none'
 
 /**
  * 菜单项交互语义类名，用于交互指令（v-tap/v-swipe 等）识别可交互菜单项。

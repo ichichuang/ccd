@@ -69,7 +69,7 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
       >
         <Icons
           name="i-lucide-house"
-          :class="[MENU_ICON_COMMON_CLASS, 'shrink-0 text-current!']"
+          :class="[MENU_ICON_COMMON_CLASS, 'shrink-0 !text-current']"
           :size="getIconSize('breadcrumb')"
         />
       </span>
@@ -103,7 +103,7 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
             <Icons
               v-if="item.icon && showIcon"
               :name="item.icon"
-              :class="[MENU_ICON_COMMON_CLASS, 'shrink-0 text-current!']"
+              :class="[MENU_ICON_COMMON_CLASS, 'shrink-0 !text-current']"
               :size="getIconSize('breadcrumb')"
             />
             <span>{{ item.title }}</span>
@@ -114,7 +114,7 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
                   ? 'i-lucide-panel-bottom-close'
                   : 'i-lucide-panel-bottom-open'
               "
-              :class="[MENU_ICON_COMMON_CLASS, 'text-current! shrink-0']"
+              :class="[MENU_ICON_COMMON_CLASS, '!text-current shrink-0']"
               :size="'xs'"
             />
           </span>

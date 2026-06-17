@@ -181,19 +181,19 @@ export default defineComponent({
           }}
         >
           <span
-            class={`admin-sidebar-menu__item-content flex items-center justify-center ${MENU_ITEM_GAP} w-full min-w-0 overflow-hidden text-current! ${MENU_TEXT_CLASS}`}
+            class={`admin-sidebar-menu__item-content flex items-center justify-center ${MENU_ITEM_GAP} w-full min-w-0 overflow-hidden !text-current ${MENU_TEXT_CLASS}`}
           >
             {item.icon ? (
               <Icons
                 name={item.icon}
                 size={getIconSize('sidebar')}
-                class={`admin-sidebar-menu__icon text-current! shrink-0 ${MENU_ICON_COMMON_CLASS}`}
+                class={`admin-sidebar-menu__icon !text-current shrink-0 ${MENU_ICON_COMMON_CLASS}`}
               />
             ) : (
               <Icons
                 name={MENU_FALLBACK_ICON}
                 size={getIconSize('sidebar')}
-                class={`admin-sidebar-menu__icon admin-sidebar-menu__icon--fallback text-current! shrink-0 ${MENU_ICON_COMMON_CLASS}`}
+                class={`admin-sidebar-menu__icon admin-sidebar-menu__icon--fallback !text-current shrink-0 ${MENU_ICON_COMMON_CLASS}`}
                 aria-hidden="true"
               />
             )}

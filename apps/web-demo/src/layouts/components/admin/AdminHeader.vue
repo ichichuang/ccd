@@ -144,17 +144,17 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
         <Icons
           name={item.icon}
           size={getIconSize('header')}
-          class={`text-current! shrink-0 ${MENU_ICON_COMMON_CLASS}`}
+          class={`!text-current shrink-0 ${MENU_ICON_COMMON_CLASS}`}
         />
       )}
-      <span class={`truncate text-current! ${MENU_TEXT_CLASS} font-medium pt-px`}>
+      <span class={`truncate !text-current ${MENU_TEXT_CLASS} font-medium pt-px`}>
         {item.label}
       </span>
       {hasChildren && (
         <Icons
           name="i-lucide-chevron-down"
           size={getIconSize('header')}
-          class={`text-current! shrink-0 ${MENU_ICON_COMMON_CLASS} ${isSubmenuOpen ? 'rotate-180' : ''}`}
+          class={`!text-current shrink-0 ${MENU_ICON_COMMON_CLASS} ${isSubmenuOpen ? 'rotate-180' : ''}`}
         />
       )}
     </>

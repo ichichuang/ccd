@@ -17,15 +17,46 @@ const ADMIN_SHELL_IMPORTANT_STATE_CLASSES = [
   '!bg-primary/14',
   '!bg-primary/12',
   '!bg-primary/10',
+  '!bg-transparent',
   '!text-primary',
   '!text-primary-foreground',
+  '!text-current',
+  '!transition-none',
+  '![outline:none]',
   'dark:!bg-primary-light',
   'dark:!bg-primary-light/70',
   'dark:!text-primary-light-foreground',
   'hover:!bg-primary',
   'hover:!bg-primary/14',
+  'hover:!bg-transparent',
   'hover:!text-primary',
   'hover:!text-primary-foreground',
+] as const
+
+const PRIMEVUE_FORM_RESET_CLASSES = [
+  '!border-0',
+  '!shadow-none',
+  '!rounded-none',
+  '!bg-transparent',
+  '!ring-0',
+  '![outline:none]',
+  '!text-muted-foreground',
+  'hover:!bg-muted/60',
+  'hover:!text-primary',
+  'group-hover:!text-primary',
+  'focus:![outline:none]',
+  'focus:!ring-0',
+  'focus:!shadow-none',
+  'focus:!border-0',
+  'focus-visible:![outline:none]',
+  'focus-visible:!border-primary',
+  'focus-visible:!ring-0',
+  'focus-visible:!shadow-none',
+  'focus-visible:!ring-offset-0',
+  'focus-visible:[box-shadow:var(--p-form-field-focus-ring-shadow)]',
+  'focus-within:![outline:none]',
+  'focus-within:!border-primary',
+  'focus-within:[box-shadow:var(--p-form-field-focus-ring-shadow)]',
 ] as const
 
 function asRecord(value: unknown): Record<string, unknown> {
@@ -98,6 +129,18 @@ describe('createCcdUnoEngineConfig', () => {
     expect(generated.css).toContain('background-color:rgb(var(--primary)')
     expect(generated.css).toContain('.\\!text-primary-foreground')
     expect(generated.css).toContain('color:rgb(var(--primary-foreground)')
+    expect(generated.css).toContain('!important')
+  })
+
+  it('emits PrimeVue form reset utilities from the safelist', async () => {
+    const config = createCcdUnoConfig()
+    const generator = await createGenerator(config)
+    const generated = await generator.generate('', { preflights: false })
+    const matched = Array.from(generated.matched)
+
+    expect(config.safelist).toEqual(expect.arrayContaining([...PRIMEVUE_FORM_RESET_CLASSES]))
+    expect(matched).toEqual(expect.arrayContaining([...PRIMEVUE_FORM_RESET_CLASSES]))
+    expect(generated.css).toContain('outline:')
     expect(generated.css).toContain('!important')
   })
 })

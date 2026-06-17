@@ -1,14 +1,9 @@
 // @vitest-environment jsdom
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+/// <reference types="vite/client" />
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import PrimeDialog from './PrimeDialog.vue'
-
-const primeDialogSource = readFileSync(
-  resolve(process.cwd(), 'packages/vue-ui/src/PrimeDialog/PrimeDialog.vue'),
-  'utf8'
-)
+import primeDialogSource from './PrimeDialog.vue?raw'
 
 vi.mock('primevue/dialog', async () => {
   const { defineComponent, h } = await import('vue')
