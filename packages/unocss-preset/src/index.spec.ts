@@ -1,4 +1,5 @@
 import type { UserConfig } from 'unocss'
+import { createGenerator } from 'unocss'
 import { describe, expect, it } from 'vitest'
 
 import {
@@ -10,6 +11,22 @@ import {
   theme,
 } from './index.js'
 import { getEngineSafelist } from './safelist/index.js'
+
+const ADMIN_SHELL_IMPORTANT_STATE_CLASSES = [
+  '!bg-primary',
+  '!bg-primary/14',
+  '!bg-primary/12',
+  '!bg-primary/10',
+  '!text-primary',
+  '!text-primary-foreground',
+  'dark:!bg-primary-light',
+  'dark:!bg-primary-light/70',
+  'dark:!text-primary-light-foreground',
+  'hover:!bg-primary',
+  'hover:!bg-primary/14',
+  'hover:!text-primary',
+  'hover:!text-primary-foreground',
+] as const
 
 function asRecord(value: unknown): Record<string, unknown> {
   return value as Record<string, unknown>
@@ -65,6 +82,23 @@ describe('createCcdUnoEngineConfig', () => {
     expect(spacing.md).toBe('var(--spacing-md)')
     expect(spacing.extension).toBe('var(--spacing-extension)')
     expect(asRecord(theme.colors).extension).toBeUndefined()
+  })
+
+  it('emits important admin shell route state utilities from the safelist', async () => {
+    const config = createCcdUnoConfig()
+    const generator = await createGenerator(config)
+    const generated = await generator.generate('', { preflights: false })
+    const matched = Array.from(generated.matched)
+
+    expect(config.safelist).toEqual(
+      expect.arrayContaining([...ADMIN_SHELL_IMPORTANT_STATE_CLASSES])
+    )
+    expect(matched).toEqual(expect.arrayContaining([...ADMIN_SHELL_IMPORTANT_STATE_CLASSES]))
+    expect(generated.css).toContain('.\\!bg-primary')
+    expect(generated.css).toContain('background-color:rgb(var(--primary)')
+    expect(generated.css).toContain('.\\!text-primary-foreground')
+    expect(generated.css).toContain('color:rgb(var(--primary-foreground)')
+    expect(generated.css).toContain('!important')
   })
 })
 

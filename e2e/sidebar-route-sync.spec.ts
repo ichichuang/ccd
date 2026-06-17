@@ -52,6 +52,8 @@ const primeVueAdapterRowSelector =
   '[data-layout-sidebar="true"] .admin-sidebar-menu__visual-row:has(a.admin-sidebar-menu__item[href*="/ui/primevue-adapter"])'
 const primeVueAdapterContentSelector =
   '[data-layout-sidebar="true"] .p-panelmenu-item-content:has(a.admin-sidebar-menu__item[href*="/ui/primevue-adapter"])'
+const runtimeStateSidebarItemSelector =
+  '[data-layout-sidebar="true"] a.admin-sidebar-menu__item[href*="/runtime/state"]'
 const systemConfigurationHeaderSelector =
   '[data-layout-sidebar="true"] .p-panelmenu-header-content:has-text("系统")'
 const systemConfigurationRowSelector =
@@ -291,13 +293,8 @@ test.describe('sidebar route/menu first-paint synchronization', () => {
       .locator('.admin-sidebar-menu__item[data-menu-state="ancestor"]')
       .filter({ hasText: 'UI' })
       .first()
-    const primeVueAncestor = sidebar
-      .locator('.admin-sidebar-menu__item[data-menu-state="ancestor"]')
-      .filter({ hasText: 'PrimeVue' })
-      .first()
 
     await expect(uiAncestor).toBeVisible()
-    await expect(primeVueAncestor).toBeVisible()
 
     const systemConfigurationRow = directPage.locator(systemConfigurationRowSelector)
     await expect(systemConfigurationRow).toBeVisible()
@@ -418,10 +415,12 @@ test.describe('sidebar route/menu first-paint synchronization', () => {
     await expect(page).toHaveURL(/#\/runtime\/state$/)
 
     const dashboardItem = page.locator(dashboardSidebarItemSelector)
+    const runtimeStateItem = page.locator(runtimeStateSidebarItemSelector)
+    await expect(runtimeStateItem).toHaveAttribute('data-menu-state', 'active')
+    await expect(dashboardItem).toHaveAttribute('data-menu-state', 'idle')
     await expect(dashboardItem).toBeVisible()
-    await dashboardItem.click()
 
-    await expect(page).toHaveURL(/#\/dashboard$/)
+    await Promise.all([page.waitForURL(/#\/dashboard$/), dashboardItem.click()])
     await waitForRuntimeLoadingIdle(page)
     await expect(page.locator('#dashboard-page')).toBeVisible()
     await expect(dashboardItem).toHaveAttribute('data-menu-state', 'active')

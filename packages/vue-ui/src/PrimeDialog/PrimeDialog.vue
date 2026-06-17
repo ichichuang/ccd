@@ -288,8 +288,7 @@ const defaultDialogPt: DialogPtValue = {
   content: { class: 'bg-transparent overflow-y-auto px-md py-sm' },
   footer: { class: 'bg-transparent px-md py-sm' },
   mask: {
-    class:
-      'ccd-dialog-mask transition-opacity duration-md opacity-100 [&.p-overlay-mask-leave-active]:opacity-0',
+    class: 'ccd-dialog-mask',
   },
 }
 
@@ -424,11 +423,51 @@ function getDialogPt(options: DialogOptions): DialogPtValue | undefined {
 
 .ccd-dialog-mask {
   background: rgb(0 0 0 / 18%) !important;
+  opacity: 1;
   backdrop-filter: none !important;
   will-change: auto !important;
 }
 
 .dark .ccd-dialog-mask {
   background: rgb(0 0 0 / 48%) !important;
+}
+
+.ccd-dialog-mask.p-overlay-mask-enter-active {
+  animation: ccd-dialog-mask-enter var(--transition-md) cubic-bezier(0.4, 0, 0.2, 1) both !important;
+}
+
+.ccd-dialog-mask.p-overlay-mask-leave-active {
+  animation: ccd-dialog-mask-leave var(--transition-sm) cubic-bezier(0.4, 0, 0.2, 1) both !important;
+}
+
+@keyframes ccd-dialog-mask-enter {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ccd-dialog-mask-leave {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ccd-dialog-mask.p-overlay-mask-enter-active,
+  .ccd-dialog-mask.p-overlay-mask-leave-active {
+    animation: none !important;
+  }
+
+  .ccd-dialog-mask.p-overlay-mask-leave-active {
+    opacity: 0;
+  }
 }
 </style>

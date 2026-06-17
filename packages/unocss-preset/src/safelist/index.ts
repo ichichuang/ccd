@@ -272,6 +272,22 @@ const SHELL_CHROME_COLOR_SAFELIST_CLASSES: readonly string[] = [
   'border-sidebar-primary',
 ]
 
+const SHELL_CHROME_IMPORTANT_STATE_SAFELIST_CLASSES: readonly string[] = [
+  '!bg-primary',
+  '!bg-primary/14',
+  '!bg-primary/12',
+  '!bg-primary/10',
+  '!text-primary',
+  '!text-primary-foreground',
+  'dark:!bg-primary-light',
+  'dark:!bg-primary-light/70',
+  'dark:!text-primary-light-foreground',
+  'hover:!bg-primary',
+  'hover:!bg-primary/14',
+  'hover:!text-primary',
+  'hover:!text-primary-foreground',
+]
+
 const PRIMEVUE_FORM_COLOR_SAFELIST_CLASSES: readonly string[] = [
   'bg-background',
   'text-foreground',
@@ -312,6 +328,7 @@ function getDynamicSafelist(): string[] {
     ...DYNAMIC_SIZE_DEMO_SAFELIST_CLASSES,
     ...DYNAMIC_THEME_DEMO_SAFELIST_CLASSES,
     ...SHELL_CHROME_COLOR_SAFELIST_CLASSES,
+    ...SHELL_CHROME_IMPORTANT_STATE_SAFELIST_CLASSES,
     ...PRIMEVUE_FORM_COLOR_SAFELIST_CLASSES,
     ...SEMANTIC_SHORTCUTS_SAFELIST_CLASSES,
   ]

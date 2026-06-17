@@ -61,6 +61,7 @@ export interface DialogOptionsBase {
   class?: string
   style?: CSSProperties
   openDelay?: number
+  /** @deprecated Unused — dialog removal is handled by the after-hide lifecycle event. */
   closeDelay?: number
   closeOnEscape?: boolean
   closeOnMask?: boolean

@@ -1,7 +1,14 @@
 // @vitest-environment jsdom
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import PrimeDialog from './PrimeDialog.vue'
+
+const primeDialogSource = readFileSync(
+  resolve(process.cwd(), 'packages/vue-ui/src/PrimeDialog/PrimeDialog.vue'),
+  'utf8'
+)
 
 vi.mock('primevue/dialog', async () => {
   const { defineComponent, h } = await import('vue')
@@ -68,10 +75,22 @@ describe('PrimeDialog', () => {
     const maskClass = wrapper.get('.prime-dialog-stub').attributes('data-mask-class') ?? ''
 
     expect(maskClass).toContain('ccd-dialog-mask')
-    expect(maskClass).toContain('transition-opacity')
+    expect(maskClass).not.toContain('transition-opacity')
+    expect(maskClass).not.toContain('duration-md')
+    expect(maskClass).not.toContain('ease-smooth')
+    expect(maskClass).not.toContain('p-overlay-mask-enter-from')
+    expect(maskClass).not.toContain('p-overlay-mask-enter-to')
+    expect(maskClass).not.toContain('p-overlay-mask-leave-from')
+    expect(maskClass).not.toContain('p-overlay-mask-leave-to')
+    expect(maskClass).not.toContain('p-overlay-mask-leave-active')
     expect(maskClass).not.toContain('bg-background')
     expect(maskClass).not.toContain('backdrop-blur')
     expect(maskClass).not.toContain('backdrop-filter')
+
+    expect(primeDialogSource).toContain('.ccd-dialog-mask.p-overlay-mask-enter-active')
+    expect(primeDialogSource).toContain('.ccd-dialog-mask.p-overlay-mask-leave-active')
+    expect(primeDialogSource).toContain('@keyframes ccd-dialog-mask-enter')
+    expect(primeDialogSource).toContain('@keyframes ccd-dialog-mask-leave')
   })
 
   it('uses a solid card surface for the default dialog panel', () => {

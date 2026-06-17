@@ -7,25 +7,25 @@
 
 /** 激活项及所有父级统一样式（菜单激活态单一权威）：暗色使用 primary-light 避免亮紫底黑字的突兀感 */
 export const MENU_ACTIVE_UNIFIED =
-  'bg-primary! text-primary-foreground! dark:bg-primary-light! dark:text-primary-light-foreground!' as const
+  '!bg-primary !text-primary-foreground dark:!bg-primary-light dark:!text-primary-light-foreground' as const
 
 /** 打开/聚焦/hover 态：弱于激活态，用于未命中当前路由但已展开的父级菜单 */
 export const MENU_OPEN_UNIFIED =
-  'bg-primary/12! text-primary! dark:bg-primary-light/70! dark:text-primary-light-foreground!' as const
+  '!bg-primary/12 !text-primary dark:!bg-primary-light/70 dark:!text-primary-light-foreground' as const
 
 /** 侧栏菜单激活态：使用 solid primary + primary foreground，作为侧栏最强选中态 */
 export const MENU_SIDEBAR_ACTIVE_UNIFIED =
-  'bg-primary! [color:rgb(var(--primary-foreground))]! hover:bg-primary! hover:[color:rgb(var(--primary-foreground))]! focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 focus-visible:ring-offset-background' as const
+  '!bg-primary !text-primary-foreground hover:!bg-primary hover:!text-primary-foreground focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 focus-visible:ring-offset-background' as const
 
 /** 侧栏菜单打开/聚焦/选中态：弱于激活态，强于 hover 态 */
 export const MENU_SIDEBAR_OPEN_UNIFIED =
-  'bg-primary/10! text-primary! hover:bg-primary/14! hover:text-primary!' as const
+  '!bg-primary/10 !text-primary hover:!bg-primary/14 hover:!text-primary' as const
 /** 侧栏菜单 hover 态：低于打开/聚焦态 */
 export const MENU_SIDEBAR_HOVER_UNIFIED = 'hover:bg-primary/10 hover:text-primary' as const
 /** 侧栏菜单祖先态（展开的父级，非当前叶节点）：比叶节点激活态更轻 */
 export const MENU_SIDEBAR_ANCESTOR_UNIFIED = MENU_SIDEBAR_OPEN_UNIFIED
 /** Admin 顶栏 / 面包屑 / 标签栏共用高亮文字色：统一对齐 primary 主色 */
-export const MENU_ADMIN_CHROME_TEXT_UNIFIED = 'text-primary!' as const
+export const MENU_ADMIN_CHROME_TEXT_UNIFIED = '!text-primary' as const
 /** Admin 顶部 chrome 区域激活叶节点：复用侧栏最强选中态，图标通过 text-current 继承 */
 export const MENU_ADMIN_CHROME_ACTIVE_UNIFIED = MENU_SIDEBAR_ACTIVE_UNIFIED
 /** Admin 顶部 chrome 区域打开/聚焦态：复用侧栏轻量高亮反馈 */
@@ -53,7 +53,7 @@ export const MENU_ADMIN_TAB_ACTIVE_UNIFIED =
 export const MENU_ADMIN_TAB_CLOSE_UNIFIED =
   'center rounded-sm p-0.5 duration-md text-current opacity-70 hover:opacity-100 hover:bg-danger/12 hover:text-danger' as const
 /** 面包屑当前项：轻量底色 + 主色文字，不使用完整按钮外观 */
-export const MENU_BREADCRUMB_CURRENT_UNIFIED = 'bg-primary/12! text-primary!' as const
+export const MENU_BREADCRUMB_CURRENT_UNIFIED = '!bg-primary/12 !text-primary' as const
 /** 面包屑 hover 态：比当前项更轻的反馈 */
 export const MENU_BREADCRUMB_HOVER_UNIFIED = 'hover:bg-primary/10 hover:text-primary' as const
 /** Admin 标签栏未激活 hover 态：仅高亮文字/图标，不引入 hover 背景 */

@@ -7,6 +7,9 @@ const DEFAULT_DIALOG_CLOSE_DELAY_MS = 320
  * 对话框响应式 breakpoints
  * SSOT: src/constants/breakpoints.ts (BREAKPOINTS)
  * 与 device store 的 isMobileLayout/isTabletLayout/isPCLayout 对齐
+ *
+ * @deprecated DIALOG_BREAKPOINTS is not wired into defaultDialogProps.breakpoints;
+ *   no runtime consumer exists. Remove in a future major version.
  */
 export const DIALOG_BREAKPOINTS: Record<string, string> = {
   [`${BREAKPOINTS['5xl']}px`]: '46%',
@@ -34,5 +37,6 @@ export const defaultDialogProps: Partial<DialogOptions> = {
   hideClose: false,
   sureBtnLoading: false,
   openDelay: 0,
+  /** @deprecated closeDelay is unused — removal is handled by after-hide emit. Remove in a future major version. */
   closeDelay: DEFAULT_DIALOG_CLOSE_DELAY_MS,
 }
