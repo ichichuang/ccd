@@ -43,7 +43,7 @@ export const uiPages = {
     key: 'proForm',
     status: baseStatus,
     stats: [
-      { key: 'proFormLegacyRoutes', value: '9 -> 1', icon: 'i-lucide-form-input' },
+      { key: 'proFormSchemaSurface', value: 'Schema', icon: 'i-lucide-form-input' },
       { key: 'schemaEngine', icon: 'i-lucide-workflow' },
     ],
     capabilities: [
@@ -61,14 +61,14 @@ export const uiPages = {
         sourcePaths: ['packages/vue-ui/src/ProForm/**'],
       },
     ],
-    commands: [{ key: 'webDemoTypeCheck', command: 'pnpm --filter @ccd/web-demo type-check' }],
+    commands: [],
   },
   UiProTable: {
     id: 'UiProTable',
     key: 'proTable',
     status: baseStatus,
     stats: [
-      { key: 'proTableLegacyRoutes', value: '8 -> 1', icon: 'i-lucide-table' },
+      { key: 'proTableDataSurface', value: 'Data', icon: 'i-lucide-table' },
       { key: 'headlessBoundary', icon: 'i-lucide-brackets' },
     ],
     capabilities: [

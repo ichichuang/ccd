@@ -56,9 +56,9 @@ function demoMessageKey(section: string, field: string): string {
 }
 
 const ownerValidationCommand: Record<NonNullable<ConsoleProFormValues['owner']>, string> = {
-  app: 'pnpm ai:guard',
-  package: 'pnpm api:report',
-  future: 'pnpm governance:gate',
+  app: 'Review in the app experience',
+  package: 'Confirm reusable component fit',
+  future: 'Plan a later extraction review',
 }
 
 const proFormSchema = computed<FormSchema<ConsoleProFormValues>>(() => ({
@@ -285,21 +285,26 @@ const showPrimeVueAdapterDemo = computed(() => page.value.id === 'UiPrimeVueAdap
       <StatusBadgeRow :items="page.status" />
     </template>
 
-    <section class="grid min-w-0 grid-cols-1 gap-md lg:grid-cols-3">
+    <section class="grid min-w-0 grid-cols-1 gap-md lg:grid-cols-4">
       <article
-        v-for="stat in page.stats"
+        v-for="(stat, statIndex) in page.stats"
         :key="stat.key"
-        class="material-elevated col-stretch min-w-0 gap-md"
+        class="architecture-stat-card material-elevated col-stretch min-w-0 gap-md"
+        :class="statIndex === 0 ? 'lg:col-span-2' : ''"
       >
         <div class="row-between gap-md">
           <span class="text-sm text-muted-foreground">{{ t(statMessageKey(stat, 'label')) }}</span>
-          <Icons
-            :name="stat.icon"
-            size="lg"
-            class="text-primary"
-          />
+          <span class="glass-icon-box text-primary">
+            <Icons
+              :name="stat.icon"
+              size="lg"
+            />
+          </span>
         </div>
-        <strong class="text-2xl text-foreground">
+        <strong
+          class="text-foreground"
+          :class="statIndex === 0 ? 'text-3xl' : 'text-2xl'"
+        >
           {{ stat.value ?? t(statMessageKey(stat, 'value')) }}
         </strong>
         <span class="text-sm text-muted-foreground">{{ t(statMessageKey(stat, 'detail')) }}</span>
@@ -314,11 +319,7 @@ const showPrimeVueAdapterDemo = computed(() => page.value.id === 'UiPrimeVueAdap
       />
     </section>
 
-    <RouteEvidenceTable
-      v-if="showRouteEvidence"
-      before-count="106"
-      after-count="30"
-    />
+    <RouteEvidenceTable v-if="showRouteEvidence" />
 
     <DemoSection
       v-if="showPrimeVueAdapterDemo"
@@ -562,7 +563,10 @@ const showPrimeVueAdapterDemo = computed(() => page.value.id === 'UiPrimeVueAdap
     </DemoSection>
 
     <EvidencePanel :items="page.evidence" />
-    <CommandPanel :commands="page.commands" />
+    <CommandPanel
+      v-if="page.commands.length"
+      :commands="page.commands"
+    />
   </ArchitecturePageShell>
 </template>
 
@@ -570,6 +574,19 @@ const showPrimeVueAdapterDemo = computed(() => page.value.id === 'UiPrimeVueAdap
 .architecture-safe-code,
 :deep(.architecture-safe-code) {
   overflow-wrap: anywhere;
+}
+
+.architecture-stat-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.architecture-stat-card::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: '';
+  border-top: 1px solid rgb(var(--primary) / 18%);
 }
 
 .pro-table-demo-grid {

@@ -43,6 +43,8 @@ export const include = [
   'primevue/config',
   'primevue/confirmationservice',
   'primevue/dialogservice',
+  'primevue/toast',
+  'primevue/toasteventbus',
   'primevue/toastservice',
   'primevue/tooltip',
   'primevue/useconfirm',

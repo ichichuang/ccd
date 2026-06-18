@@ -1,13 +1,13 @@
 import { expect, test } from '@playwright/test'
 import { gotoVisual, loginAsAdmin, waitForAppReady, waitForRuntimeLoadingIdle } from './helpers/app'
 
-async function openChartsConsole(page: import('@playwright/test').Page): Promise<void> {
+async function openChartsShowcase(page: import('@playwright/test').Page): Promise<void> {
   await page.setViewportSize({ width: 1280, height: 720 })
   await loginAsAdmin(page)
-  await gotoVisual(page, '/ui/charts')
+  await gotoVisual(page, '/showcase/components/charts/theme')
   await waitForAppReady(page)
   await waitForRuntimeLoadingIdle(page)
-  await expect(page).toHaveURL(/#\/ui\/charts$/)
+  await expect(page).toHaveURL(/#\/showcase\/components\/charts\/theme$/)
 }
 
 async function expectUsableCanvas(page: import('@playwright/test').Page): Promise<void> {
@@ -31,22 +31,25 @@ async function expectUsableCanvas(page: import('@playwright/test').Page): Promis
   expect(geometry.height).toBeGreaterThan(0)
 }
 
-test.describe('UseEcharts architecture-console smoke', () => {
+test.describe('UseEcharts showcase smoke', () => {
   test('charts route renders a real canvas with non-zero dimensions', async ({ page }) => {
-    await openChartsConsole(page)
+    await openChartsShowcase(page)
     await expectUsableCanvas(page)
   })
 
   test('chart repaints after parent container resize', async ({ page }) => {
-    await openChartsConsole(page)
+    await openChartsShowcase(page)
     await expectUsableCanvas(page)
 
     const before = await page.locator('.echarts').first().boundingBox()
     expect(before?.width ?? 0).toBeGreaterThan(0)
 
-    await page.locator('[data-testid="architecture-console-page"]').evaluate(element => {
-      ;(element as HTMLElement).style.maxWidth = '760px'
-    })
+    await page
+      .locator('.demo-stage:has(.echarts)')
+      .first()
+      .evaluate(element => {
+        ;(element as HTMLElement).style.width = '760px'
+      })
 
     await page.waitForFunction(previousWidth => {
       const chart = document.querySelector('.echarts')

@@ -38,6 +38,20 @@ interface SidebarDashboardDiagnostics {
   } | null
 }
 
+interface SidebarShowcaseDiagnostics {
+  route: {
+    path: string
+    name: string | null
+    fullPath: string
+    activeMenu: string | null
+  } | null
+  distances: {
+    root: number | null
+    components: number | null
+    proTableBasic: number | null
+  }
+}
+
 const dashboardSidebarItemSelector =
   '[data-layout-sidebar="true"] a.admin-sidebar-menu__item[href$="#/dashboard"]'
 const dashboardSidebarRowSelector =
@@ -53,7 +67,17 @@ const primeVueAdapterRowSelector =
 const primeVueAdapterContentSelector =
   '[data-layout-sidebar="true"] .p-panelmenu-item-content:has(a.admin-sidebar-menu__item[href*="/ui/primevue-adapter"])'
 const runtimeStateSidebarItemSelector =
-  '[data-layout-sidebar="true"] a.admin-sidebar-menu__item[href*="/runtime/state"]'
+  '[data-layout-sidebar="true"] a.admin-sidebar-menu__item[href$="#/runtime/state"]'
+const showcaseProTableBasicSidebarItemSelector =
+  '[data-layout-sidebar="true"] a.admin-sidebar-menu__item[href*="/showcase/components/pro-table/basic"]'
+const showcaseProTableBasicRowSelector =
+  '[data-layout-sidebar="true"] .admin-sidebar-menu__visual-row:has(a.admin-sidebar-menu__item[href*="/showcase/components/pro-table/basic"])'
+const showcaseProTableBasicContentSelector =
+  '[data-layout-sidebar="true"] .p-panelmenu-item-content:has(a.admin-sidebar-menu__item[href*="/showcase/components/pro-table/basic"])'
+const showcaseRootRowSelector =
+  '[data-layout-sidebar="true"] .admin-sidebar-menu__visual-row--root:has-text("展示")'
+const showcaseComponentsRowSelector =
+  '[data-layout-sidebar="true"] .admin-sidebar-menu__visual-row:has-text("组件")'
 const systemConfigurationHeaderSelector =
   '[data-layout-sidebar="true"] .p-panelmenu-header-content:has-text("系统")'
 const systemConfigurationRowSelector =
@@ -190,6 +214,86 @@ async function snapshotDashboardDiagnostics(page: Page): Promise<SidebarDashboar
             color: getComputedStyle(headerDashboardNode).color,
           }
         : null,
+    }
+  })
+}
+
+async function snapshotShowcaseDiagnostics(page: Page): Promise<SidebarShowcaseDiagnostics> {
+  return page.evaluate(async () => {
+    const app = document.querySelector('#app')
+    const vueApp = app && (app as typeof app & { __vue_app__?: unknown }).__vue_app__
+    const globalProperties = (vueApp as { config?: { globalProperties?: Record<string, unknown> } })
+      ?.config?.globalProperties
+    const router = globalProperties?.$router as
+      | {
+          currentRoute?: {
+            value?: {
+              path?: string
+              name?: unknown
+              fullPath?: string
+              meta?: { activeMenu?: unknown }
+            }
+          }
+        }
+      | undefined
+
+    const route = router?.currentRoute?.value
+    const helper = await import('/src/router/utils/helper.ts')
+
+    type MenuModelItem = {
+      key?: string
+      route?: { path?: string; name?: string }
+      items?: MenuModelItem[]
+    }
+
+    const menuModel = helper
+      .getAdminMenuTree()
+      .map((item: MenuItem) =>
+        helper.menuItemToPrimeModel(item, (key: string): string => key)
+      ) as MenuModelItem[]
+
+    const queue = [...menuModel]
+    let rootItem: MenuModelItem | null = null
+    let componentsItem: MenuModelItem | null = null
+    let proTableBasicItem: MenuModelItem | null = null
+
+    while (queue.length > 0) {
+      const candidate = queue.shift()
+      if (!candidate) continue
+
+      if (candidate.key === '/showcase') rootItem = candidate
+      if (candidate.key === '/showcase/components') componentsItem = candidate
+      if (candidate.route?.path === '/showcase/components/pro-table/basic') {
+        proTableBasicItem = candidate
+      }
+      if (Array.isArray(candidate.items) && candidate.items.length > 0) {
+        queue.push(...candidate.items)
+      }
+    }
+
+    const activeDistance = (item: MenuModelItem | null): number | null =>
+      route && item
+        ? helper.getActiveDistance(
+            route as import('vue-router').RouteLocationNormalized,
+            item as import('/src/router/utils/helper.ts').PrimeMenuModelItem
+          )
+        : null
+
+    return {
+      route:
+        route && typeof route.path === 'string'
+          ? {
+              path: route.path,
+              name: typeof route.name === 'string' ? route.name : null,
+              fullPath: typeof route.fullPath === 'string' ? route.fullPath : '',
+              activeMenu: typeof route.meta?.activeMenu === 'string' ? route.meta.activeMenu : null,
+            }
+          : null,
+      distances: {
+        root: activeDistance(rootItem),
+        components: activeDistance(componentsItem),
+        proTableBasic: activeDistance(proTableBasicItem),
+      },
     }
   })
 }
@@ -397,6 +501,72 @@ test.describe('sidebar route/menu first-paint synchronization', () => {
       expect(diagnostics.headerDashboardDom?.backgroundColor).not.toBe(TRANSPARENT_BACKGROUND)
       expect(diagnostics.headerDashboardDom?.color).not.toBe(INACTIVE_TEXT_COLOR)
     }
+
+    await directContext.close()
+  })
+
+  test('direct first load nested showcase route keeps sidebar ancestors and child active', async ({
+    browser,
+  }) => {
+    const directContext = await browser.newContext({ storageState: AUTH_STORAGE_STATE_PATH })
+    const directPage = await directContext.newPage()
+    await directPage.goto('/?e2e=visual#/showcase/components/pro-table/basic', {
+      waitUntil: 'domcontentloaded',
+    })
+    await waitForAppReady(directPage)
+    await waitForRuntimeLoadingIdle(directPage)
+    await expect(directPage).toHaveURL(/#\/showcase\/components\/pro-table\/basic$/)
+
+    const sidebar = directPage.locator('[data-layout-sidebar="true"]')
+    await expect(sidebar).toBeVisible()
+
+    const showcaseRootRow = directPage.locator(showcaseRootRowSelector)
+    const showcaseComponentsRow = directPage.locator(showcaseComponentsRowSelector)
+    const proTableBasicItem = directPage.locator(showcaseProTableBasicSidebarItemSelector)
+    const proTableBasicRow = directPage.locator(showcaseProTableBasicRowSelector)
+
+    await expect(showcaseRootRow).toBeVisible()
+    await expect(showcaseComponentsRow).toBeVisible()
+    await expect(proTableBasicItem).toBeVisible()
+    await expect(proTableBasicRow).toBeVisible()
+    await expect(showcaseRootRow).toHaveAttribute('data-menu-row-state', 'ancestor')
+    await expect(showcaseComponentsRow).toHaveAttribute('data-menu-row-state', 'ancestor')
+    await expect(proTableBasicItem).toHaveAttribute('aria-current', 'page')
+    await expect(proTableBasicItem).toHaveAttribute('data-route-active', 'true')
+    await expect(proTableBasicItem).toHaveAttribute('data-route-exact-active', 'true')
+    await expect(proTableBasicItem).toHaveAttribute('data-menu-state', 'active')
+    await expect(proTableBasicRow).toHaveAttribute('data-route-active', 'true')
+    await expect(proTableBasicRow).toHaveAttribute('data-route-exact-active', 'true')
+    await expect(proTableBasicRow).toHaveAttribute('data-menu-row-state', 'active')
+    await expect(proTableBasicRow).not.toHaveCSS('background-color', TRANSPARENT_BACKGROUND)
+    await expectRowWidthAligned(
+      directPage,
+      showcaseProTableBasicRowSelector,
+      showcaseProTableBasicContentSelector,
+      showcaseProTableBasicSidebarItemSelector
+    )
+
+    const diagnostics = await snapshotShowcaseDiagnostics(directPage)
+    expect(diagnostics.route).toMatchObject({
+      path: '/showcase/components/pro-table/basic',
+      name: 'ShowcaseComponentsProTableBasic',
+      fullPath: '/showcase/components/pro-table/basic',
+    })
+    expect(diagnostics.distances.proTableBasic).toBe(0)
+    expect(diagnostics.distances.components).toBeGreaterThan(0)
+    expect(diagnostics.distances.root).toBeGreaterThan(0)
+
+    const systemConfigurationRow = directPage.locator(systemConfigurationRowSelector)
+    await expect(systemConfigurationRow).toBeVisible()
+    await systemConfigurationRow.hover()
+    await expect(proTableBasicRow).toHaveAttribute('data-menu-row-state', 'active')
+    await expect(showcaseRootRow).toHaveAttribute('data-menu-row-state', 'ancestor')
+    await expect(showcaseComponentsRow).toHaveAttribute('data-menu-row-state', 'ancestor')
+
+    await directPage.locator('[data-layout-content="true"]').hover()
+    await expect(proTableBasicItem).toHaveAttribute('data-route-exact-active', 'true')
+    await expect(proTableBasicItem).toHaveAttribute('data-menu-state', 'active')
+    await expect(proTableBasicRow).toHaveAttribute('data-menu-row-state', 'active')
 
     await directContext.close()
   })

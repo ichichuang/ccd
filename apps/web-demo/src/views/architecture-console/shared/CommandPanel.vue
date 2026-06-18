@@ -26,11 +26,12 @@ function commandDescriptionKey(item: ConsoleCommand): string {
           {{ t('console.shared.commands.description') }}
         </p>
       </div>
-      <Icons
-        name="i-lucide-terminal"
-        size="xl"
-        class="text-primary"
-      />
+      <span class="glass-icon-box shrink-0 text-primary">
+        <Icons
+          name="i-lucide-terminal"
+          size="xl"
+        />
+      </span>
     </div>
 
     <div class="col-stretch gap-sm">

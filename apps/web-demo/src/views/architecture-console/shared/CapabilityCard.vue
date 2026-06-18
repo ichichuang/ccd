@@ -20,9 +20,9 @@ function capabilityBulletKey(item: ConsoleCapability, index: number): string {
 </script>
 
 <template>
-  <article class="material-elevated col-stretch min-w-0 gap-md">
+  <article class="architecture-capability-card material-elevated col-stretch min-w-0 gap-md">
     <div class="row-between gap-md">
-      <span class="glass-icon-box">
+      <span class="glass-icon-box shrink-0 text-primary">
         <Icons
           :name="item.icon"
           size="lg"
@@ -59,3 +59,9 @@ function capabilityBulletKey(item: ConsoleCapability, index: number): string {
     </ul>
   </article>
 </template>
+
+<style scoped>
+.architecture-capability-card {
+  min-height: 100%;
+}
+</style>

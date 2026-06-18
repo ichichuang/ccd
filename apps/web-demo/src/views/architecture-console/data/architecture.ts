@@ -107,14 +107,14 @@ export const architecturePages = {
     id: 'ArchitectureGovernance',
     key: 'governance',
     status: [
-      { key: 'routeMetadata', severity: 'success' },
-      { key: 'i18n', value: 'en-US + zh-CN', severity: 'info' },
-      { key: 'ledgerP4', severity: 'warn' },
+      { key: 'clearExploration', severity: 'success' },
+      { key: 'languageReady', severity: 'info' },
+      { key: 'reviewReadiness', severity: 'warn' },
     ],
     stats: [
-      { key: 'targetRoutes', value: '23', icon: 'i-lucide-route' },
-      { key: 'legacyExample', value: '0', icon: 'i-lucide-archive-x' },
-      { key: 'routeTests', icon: 'i-lucide-list-checks' },
+      { key: 'guidedExploration', icon: 'i-lucide-route' },
+      { key: 'stableEntry', icon: 'i-lucide-badge-check' },
+      { key: 'bilingualReadiness', icon: 'i-lucide-list-checks' },
     ],
     capabilities: [
       {

@@ -3,11 +3,6 @@ import { useI18n } from 'vue-i18n'
 
 defineOptions({ name: 'RouteEvidenceTable' })
 
-defineProps<{
-  beforeCount: string
-  afterCount: string
-}>()
-
 const { t } = useI18n()
 </script>
 
@@ -16,32 +11,46 @@ const { t } = useI18n()
     <div class="row-between gap-md">
       <div class="col-stretch min-w-0 gap-xs">
         <h2 class="text-lg font-semibold text-foreground m-0">
-          {{ t('console.routeReduction.title') }}
+          {{ t('console.routeEvidence.title') }}
         </h2>
         <p class="text-sm text-muted-foreground m-0">
-          {{ t('console.routeReduction.description') }}
+          {{ t('console.routeEvidence.description') }}
         </p>
       </div>
-      <Icons
-        name="i-lucide-route"
-        size="xl"
-        class="text-primary"
-      />
+      <span class="glass-icon-box shrink-0 text-primary">
+        <Icons
+          name="i-lucide-route"
+          size="xl"
+        />
+      </span>
     </div>
 
-    <div class="grid min-w-0 grid-cols-1 gap-md md:grid-cols-2">
+    <div class="grid min-w-0 grid-cols-1 gap-md md:grid-cols-3">
       <div class="demo-well col-stretch gap-xs">
-        <span class="text-sm text-muted-foreground">{{ t('console.routeReduction.before') }}</span>
-        <strong class="text-2xl text-foreground">{{ beforeCount }}</strong>
+        <span class="text-sm text-muted-foreground">{{ t('console.routeEvidence.modules') }}</span>
+        <strong class="text-lg text-foreground">
+          {{ t('console.routeEvidence.modulesValue') }}
+        </strong>
         <span class="text-sm text-muted-foreground">
-          {{ t('console.routeReduction.beforeDetail') }}
+          {{ t('console.routeEvidence.modulesDetail') }}
         </span>
       </div>
       <div class="demo-well col-stretch gap-xs">
-        <span class="text-sm text-muted-foreground">{{ t('console.routeReduction.after') }}</span>
-        <strong class="text-2xl text-foreground">{{ afterCount }}</strong>
+        <span class="text-sm text-muted-foreground">{{ t('console.routeEvidence.metadata') }}</span>
+        <strong class="text-lg text-foreground">
+          {{ t('console.routeEvidence.metadataValue') }}
+        </strong>
         <span class="text-sm text-muted-foreground">
-          {{ t('console.routeReduction.afterDetail') }}
+          {{ t('console.routeEvidence.metadataDetail') }}
+        </span>
+      </div>
+      <div class="demo-well col-stretch gap-xs">
+        <span class="text-sm text-muted-foreground">{{ t('console.routeEvidence.locale') }}</span>
+        <strong class="text-lg text-foreground">
+          {{ t('console.routeEvidence.localeValue') }}
+        </strong>
+        <span class="text-sm text-muted-foreground">
+          {{ t('console.routeEvidence.localeDetail') }}
         </span>
       </div>
     </div>

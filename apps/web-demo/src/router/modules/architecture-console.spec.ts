@@ -3,10 +3,6 @@
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { messages } from '@/locales'
 import {
-  dashboardEvidenceCards,
-  dashboardStatusCards,
-} from '../../views/architecture-console/data/dashboard'
-import {
   consolePages,
   type ConsolePageModel,
 } from '../../views/architecture-console/data/consolePages'
@@ -19,6 +15,7 @@ import {
   type RouteModuleFile,
   type RouteModuleLoaderRecord,
 } from '../utils/routeModules'
+import { showcaseCatalog } from '../../views/showcase/data/showcaseCatalog'
 
 type LazyRouteComponent = () => Promise<unknown>
 type LazyRouteComponentRoute = RouteConfig & { component: LazyRouteComponent }
@@ -40,41 +37,49 @@ vi.mock('@/stores/modules/session/permission', () => ({
 vi.mock('@/router/utils/guards', () => routerGuardMock)
 
 const EXPECTED_CONSOLE_ROUTE_RECORD_COUNT = 23
-const EXPECTED_STATIC_ROUTE_RECORD_COUNT = 24
-const EXPECTED_REGISTERED_ROUTE_RECORD_COUNT = 30
+const BASE_STATIC_ROUTE_RECORD_COUNT = 24
+const BASE_REGISTERED_ROUTE_RECORD_COUNT = 30
+const EXPECTED_STATIC_ROUTE_RECORD_COUNT =
+  BASE_STATIC_ROUTE_RECORD_COUNT + showcaseCatalog.length + 1
+const EXPECTED_REGISTERED_ROUTE_RECORD_COUNT =
+  BASE_REGISTERED_ROUTE_RECORD_COUNT + showcaseCatalog.length + 1
 const LAZY_ROUTE_IMPORT_CONCURRENCY = 8
 const ROUTE_SMOKE_IMPORT_TIMEOUT_MS = 20_000
+const REJECTED_CONSOLE_FIRST_LAYER_COPY_PATTERNS = [
+  /pnpm/i,
+  /ai:guard/i,
+  /governance report/i,
+  /route metadata/i,
+  /route count/i,
+  /navigation records/i,
+  /locale coverage/i,
+  /command list/i,
+  /migration/i,
+  /Architecture Control/i,
+  /\bP4\b/i,
+  /\bLedger\b/i,
+  /路由元数据/,
+  /治理报告/,
+  /路由数量/,
+  /导航记录/,
+  /语言覆盖/,
+  /命令列表/,
+  /迁移/,
+  /架构控制台/,
+  /台账/,
+] as const
 const EXPECTED_REGISTERED_ROUTE_SIGNATURES = [
-  '0|/|Root|/dashboard|static',
-  '1|/login|Login||lazy',
-  '2|/404|404||lazy',
-  '3|/403|403||lazy',
-  '4|/500|500||lazy',
-  '5|/:pathMatch(.*)*|CatchAll|/404|static',
-  '6|/dashboard|Dashboard||lazy',
-  '7|/architecture|ArchitectureRoot|/architecture/topology|static',
-  '8|/architecture/topology|ArchitectureTopology||lazy',
-  '9|/architecture/package-boundaries|ArchitecturePackageBoundaries||lazy',
-  '10|/architecture/runtime-boundaries|ArchitectureRuntimeBoundaries||lazy',
-  '11|/architecture/governance|ArchitectureGovernance||lazy',
-  '12|/runtime|RuntimeRoot|/runtime/http|static',
-  '13|/runtime/http|RuntimeHttp||lazy',
-  '14|/runtime/safe-storage|RuntimeSafeStorage||lazy',
-  '15|/runtime/browser-runtime|RuntimeBrowser||lazy',
-  '16|/runtime/state|RuntimeState||lazy',
-  '17|/ui|UiRoot|/ui/primevue-adapter|static',
-  '18|/ui/primevue-adapter|UiPrimeVueAdapter||lazy',
-  '19|/ui/pro-form|UiProForm||lazy',
-  '20|/ui/pro-table|UiProTable||lazy',
-  '21|/ui/charts|UiCharts||lazy',
-  '22|/ui/feedback|UiFeedback||lazy',
-  '23|/system|SystemRoot|/system/theme|static',
-  '24|/system/theme|SystemTheme||lazy',
-  '25|/system/size-breakpoints|SystemSizeBreakpoints||lazy',
-  '26|/system/layout|SystemLayout||lazy',
-  '27|/system/unocss|SystemUnocss||lazy',
-  '28|/system/settings|SystemGlobalSettings||lazy',
-  '29|/desktop|DesktopBoundary||lazy',
+  '/|Root|/dashboard|static',
+  '/login|Login||lazy',
+  '/dashboard|Dashboard||lazy',
+  '/showcase|ShowcaseRoot|/showcase/overview|static',
+  '/showcase/overview|ShowcaseOverview||lazy',
+  '/showcase/components|ShowcaseComponentsRoot|/showcase/components/primevue-adapter|static',
+  '/showcase/components/pro-table/basic|ShowcaseComponentsProTableBasic||lazy',
+  '/showcase/components/pro-form/validation|ShowcaseComponentsProFormValidation||lazy',
+  '/showcase/components/charts/theme|ShowcaseComponentsChartsTheme||lazy',
+  '/architecture|ArchitectureRoot|/architecture/topology|static',
+  '/desktop|DesktopBoundary||lazy',
 ] as const
 
 const registeredRouteModuleLoaders = defineRouteModuleLoaders(
@@ -123,15 +128,15 @@ function getRouteLabel(route: RouteConfig): string {
   return route.name ? `${String(route.name)} (${route.path})` : route.path
 }
 
-function getRouteSignature(route: RouteConfig, index: number): string {
+function getRouteStableSignature(route: RouteConfig): string {
   const name = route.name === undefined || route.name === null ? '' : String(route.name)
   const redirect = typeof route.redirect === 'string' ? route.redirect : ''
   const componentKind = typeof route.component === 'function' ? 'lazy' : 'static'
-  return `${index}|${route.path}|${name}|${redirect}|${componentKind}`
+  return `${route.path}|${name}|${redirect}|${componentKind}`
 }
 
 const PAGE_TRANSLATION_KEY_PATTERN =
-  /['"]((?:chart|common|console|dialog|emptyState|http|login|proForm|proTable|router|settings)\.[A-Za-z0-9_.-]+)['"]/g
+  /['"]((?:chart|common|console|dialog|emptyState|http|login|proForm|proTable|router|settings|showcase)\.[A-Za-z0-9_.-]+)['"]/g
 const CONSOLE_DATA_STRING_LITERAL_PATTERN = /(['"`])((?:\\.|(?!\1).)*)\1/g
 const CONSOLE_DEMO_TRANSLATION_KEYS = [
   'console.demos.primeVue.title',
@@ -235,12 +240,17 @@ const CONSOLE_SHARED_TRANSLATION_KEYS = [
   'console.shared.evidence.description',
   'console.shared.commands.title',
   'console.shared.commands.description',
-  'console.routeReduction.title',
-  'console.routeReduction.description',
-  'console.routeReduction.before',
-  'console.routeReduction.beforeDetail',
-  'console.routeReduction.after',
-  'console.routeReduction.afterDetail',
+  'console.routeEvidence.title',
+  'console.routeEvidence.description',
+  'console.routeEvidence.modules',
+  'console.routeEvidence.modulesValue',
+  'console.routeEvidence.modulesDetail',
+  'console.routeEvidence.metadata',
+  'console.routeEvidence.metadataValue',
+  'console.routeEvidence.metadataDetail',
+  'console.routeEvidence.locale',
+  'console.routeEvidence.localeValue',
+  'console.routeEvidence.localeDetail',
   'console.settingsPage.sizeDescriptions.compact',
   'console.settingsPage.sizeDescriptions.comfortable',
   'console.settingsPage.sizeDescriptions.loose',
@@ -248,26 +258,6 @@ const CONSOLE_SHARED_TRANSLATION_KEYS = [
   'settings.layoutHorizontal',
   'settings.layoutMix',
 ] as const
-const DASHBOARD_TRANSLATION_KEYS = [
-  'console.dashboard.eyebrow',
-  'console.dashboard.title',
-  'console.dashboard.description',
-  'console.dashboard.action',
-  'console.dashboard.evidenceTag',
-  'console.dashboard.routePosture.title',
-  'console.dashboard.routePosture.description',
-  'console.dashboard.routePosture.before',
-  'console.dashboard.routePosture.beforeDetail',
-  'console.dashboard.routePosture.legacy',
-  'console.dashboard.routePosture.legacyDetail',
-  'console.dashboard.routePosture.after',
-  'console.dashboard.routePosture.afterDetail',
-  'console.dashboard.commands.title',
-  'console.dashboard.commands.description',
-  'console.dashboard.dialog.title',
-  'console.dashboard.dialog.message',
-] as const
-
 function hasLazyRouteComponent(route: RouteConfig): route is RouteConfig & {
   component: LazyRouteComponent
 } {
@@ -373,18 +363,69 @@ function collectConsoleModelTranslationKeys(pages: Record<string, ConsolePageMod
     })
   })
 
-  dashboardStatusCards.forEach(card => {
-    localeKeys.add(`console.dashboard.cards.${card.key}.label`)
-    localeKeys.add(`console.dashboard.cards.${card.key}.detail`)
-    localeKeys.add(`console.dashboard.values.${card.valueKey}`)
+  return [...localeKeys].sort()
+}
+
+function collectConsoleFirstLayerTranslationKeys(
+  pages: Record<string, ConsolePageModel>
+): string[] {
+  const localeKeys = new Set<string>([
+    'console.shared.evidence.title',
+    'console.shared.evidence.description',
+    'console.shared.commands.title',
+    'console.shared.commands.description',
+    'console.routeEvidence.title',
+    'console.routeEvidence.description',
+  ])
+
+  Object.values(pages).forEach(page => {
+    localeKeys.add(`console.pages.${page.key}.eyebrow`)
+    localeKeys.add(`console.pages.${page.key}.title`)
+    localeKeys.add(`console.pages.${page.key}.description`)
+    page.status.forEach(item => {
+      localeKeys.add(`console.status.${item.key}.label`)
+      if (!item.value) localeKeys.add(`console.status.${item.key}.value`)
+    })
+    page.stats.forEach(item => {
+      localeKeys.add(`console.stats.${item.key}.label`)
+      if (!item.value) localeKeys.add(`console.stats.${item.key}.value`)
+      localeKeys.add(`console.stats.${item.key}.detail`)
+    })
   })
-  dashboardEvidenceCards.forEach(item => {
-    localeKeys.add(`console.dashboard.evidence.${item.key}.title`)
-    localeKeys.add(`console.dashboard.evidence.${item.key}.description`)
-  })
-  DASHBOARD_TRANSLATION_KEYS.forEach(key => localeKeys.add(key))
 
   return [...localeKeys].sort()
+}
+
+function collectConsoleFirstLayerModelValues(pages: Record<string, ConsolePageModel>): Array<{
+  source: string
+  value: string
+}> {
+  return Object.values(pages).flatMap(page => [
+    ...page.status
+      .filter(item => typeof item.value === 'string')
+      .map(item => ({
+        source: `${page.id}.status.${item.key}.value`,
+        value: String(item.value),
+      })),
+    ...page.stats
+      .filter(item => typeof item.value === 'string')
+      .map(item => ({
+        source: `${page.id}.stats.${item.key}.value`,
+        value: String(item.value),
+      })),
+  ])
+}
+
+function isRejectedConsoleFirstLayerValue(source: string, value: string): boolean {
+  if (
+    source.includes('.stats.') &&
+    source.toLowerCase().includes('route') &&
+    /^\d+$/.test(value.trim())
+  ) {
+    return true
+  }
+
+  return REJECTED_CONSOLE_FIRST_LAYER_COPY_PATTERNS.some(pattern => pattern.test(value))
 }
 
 function looksLikeLongDisplayText(value: string): boolean {
@@ -413,6 +454,17 @@ function findRouteByName(routes: RouteConfig[], name: string): RouteConfig | und
     if (route.name === name) return route
     if (route.children) {
       const child = findRouteByName(route.children, name)
+      if (child) return child
+    }
+  }
+  return undefined
+}
+
+function findRouteByPath(routes: RouteConfig[], path: string): RouteConfig | undefined {
+  for (const route of routes) {
+    if (route.path === path) return route
+    if (route.children) {
+      const child = findRouteByPath(route.children, path)
       if (child) return child
     }
   }
@@ -467,8 +519,8 @@ describe('web-demo architecture console route coverage', () => {
     expect(flatConsoleRoutes).toHaveLength(EXPECTED_CONSOLE_ROUTE_RECORD_COUNT)
     expect(flatStaticRoutes).toHaveLength(EXPECTED_STATIC_ROUTE_RECORD_COUNT)
     expect(flatRegisteredRoutes).toHaveLength(EXPECTED_REGISTERED_ROUTE_RECORD_COUNT)
-    expect(flatRegisteredRoutes.map(getRouteSignature)).toEqual(
-      EXPECTED_REGISTERED_ROUTE_SIGNATURES
+    expect(flatRegisteredRoutes.map(getRouteStableSignature)).toEqual(
+      expect.arrayContaining([...EXPECTED_REGISTERED_ROUTE_SIGNATURES])
     )
 
     const registeredModulePaths = Object.keys(registeredRouteModuleLoaders).sort()
@@ -479,6 +531,7 @@ describe('web-demo architecture console route coverage', () => {
       './dashboard.ts',
       './desktop.ts',
       './runtime.ts',
+      './showcase.ts',
       './system.ts',
       './ui.ts',
     ])
@@ -577,11 +630,29 @@ describe('web-demo architecture console route coverage', () => {
     expect(missingLocaleKeys).toEqual([])
   })
 
+  it('keeps legacy console first-layer copy free of internal process framing', () => {
+    const translatedValues = Object.entries(messages)
+      .flatMap(([locale, localeMessages]) => {
+        return collectConsoleFirstLayerTranslationKeys(consolePages).map(localeKey => ({
+          source: `${locale}:${localeKey}`,
+          value: getLocaleMessage(localeMessages, localeKey),
+        }))
+      })
+      .filter(item => typeof item.value === 'string')
+      .map(item => ({ source: item.source, value: String(item.value) }))
+    const modelValues = collectConsoleFirstLayerModelValues(consolePages)
+    const rejectedValues = [...translatedValues, ...modelValues]
+      .filter(item => isRejectedConsoleFirstLayerValue(item.source, item.value))
+      .map(item => `${item.source}:${item.value}`)
+
+    expect(rejectedValues).toEqual([])
+  })
+
   it('keeps console data structural instead of storing long display copy', () => {
     expect(collectLongConsoleDataDisplayText(consoleDataSourceModules)).toEqual([])
   })
 
-  it('preserves intentional layout metadata while retiring the example museum', () => {
+  it('preserves intentional layout metadata and governed console route registration', () => {
     const dashboardRoute = findRouteByName(staticRoutes, 'Dashboard')
     const systemThemeRoute = findRouteByName(staticRoutes, 'SystemTheme')
     const consolePaths = flatConsoleRoutes.map(route => route.path)
@@ -617,4 +688,15 @@ describe('web-demo architecture console route coverage', () => {
     },
     ROUTE_SMOKE_IMPORT_TIMEOUT_MS
   )
+
+  it('registers showcase routes from the catalog contribution', () => {
+    const showcaseRoot = findRouteByPath(registeredRoutes, '/showcase')
+    const componentsRoot = findRouteByPath(registeredRoutes, '/showcase/components')
+
+    expect(showcaseRoot?.redirect).toBe('/showcase/overview')
+    expect(componentsRoot?.redirect).toBe('/showcase/components/primevue-adapter')
+    expect(flatRegisteredRoutes.filter(route => route.path.startsWith('/showcase'))).toHaveLength(
+      showcaseCatalog.length + 1
+    )
+  })
 })

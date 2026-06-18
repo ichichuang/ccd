@@ -26,14 +26,15 @@ function evidenceKey(item: ConsoleEvidence, field: string): string {
           {{ t('console.shared.evidence.description') }}
         </p>
       </div>
-      <Icons
-        name="i-lucide-file-check-2"
-        size="xl"
-        class="text-primary"
-      />
+      <span class="glass-icon-box shrink-0 text-primary">
+        <Icons
+          name="i-lucide-file-check-2"
+          size="xl"
+        />
+      </span>
     </div>
 
-    <div class="grid min-w-0 grid-cols-1 gap-md xl:grid-cols-2">
+    <div class="grid min-w-0 grid-cols-1 gap-md lg:grid-cols-2">
       <article
         v-for="item in items"
         :key="item.key"

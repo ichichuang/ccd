@@ -47,16 +47,55 @@ export interface DashboardCard {
   severity: Extract<ConsoleSeverity, 'success' | 'info' | 'warn' | 'danger'>
 }
 
+export interface DashboardCapabilityCard {
+  key: string
+  valueKey: string
+  icon: string
+  severity: Extract<ConsoleSeverity, 'success' | 'info' | 'warn' | 'danger'>
+  bulletCount: number
+  evidencePath: string
+}
+
+export interface DashboardArchitectureLane {
+  key: string
+  icon: string
+  command: string
+  pointCount: number
+}
+
+export interface DashboardComponentPanel {
+  key: string
+  valueKey: string
+  icon: string
+  severity: Extract<ConsoleSeverity, 'success' | 'info' | 'warn' | 'danger'>
+  evidencePath: string
+}
+
+export interface DashboardPipelineCommand {
+  key: string
+  command: string
+}
+
 export interface DashboardEvidence {
   key: string
   path: string
   icon: string
 }
 
+export type DashboardTableStatus = 'governed' | 'appOwned' | 'tokenized'
+
+export interface DashboardTableRow extends Record<string, unknown> {
+  id: string
+  capabilityKey: string
+  ownerKey: string
+  status: DashboardTableStatus
+  validation: string
+}
+
 export const baseStatus: ConsoleStatusItem[] = [
-  { key: 'topology', value: 'contracts -> core -> apps', severity: 'success' },
+  { key: 'topology', value: 'Reusable layers', severity: 'success' },
   { key: 'runtimeAdapters', severity: 'info' },
-  { key: 'p4Guarded', severity: 'warn' },
+  { key: 'deliveryChecks', severity: 'warn' },
 ]
 
 export const packageStats: ConsoleStat[] = [

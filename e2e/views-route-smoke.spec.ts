@@ -1,5 +1,41 @@
 import { expect, test, type Page } from '@playwright/test'
-import { gotoVisual, loginAsAdmin, waitForAppReady, waitForRuntimeLoadingIdle } from './helpers/app'
+import {
+  gotoVisual,
+  loginAsAdmin,
+  waitForAppReady,
+  waitForRuntimeLoadingIdle,
+  withVisualMode,
+} from './helpers/app'
+import {
+  SHOWCASE_ROUTE_SMOKE_TARGET_PATHS,
+  type ShowcaseRouteSmokeTargetPath,
+} from './showcaseRouteSmokeTargets'
+
+const showcaseRouteSmokeTargetSet = new Set<string>(SHOWCASE_ROUTE_SMOKE_TARGET_PATHS)
+let routeSmokeNavigationId = 0
+
+function showcaseSmokePath(path: ShowcaseRouteSmokeTargetPath): ShowcaseRouteSmokeTargetPath {
+  if (!showcaseRouteSmokeTargetSet.has(path)) {
+    throw new Error(`Missing showcase route smoke target: ${path}`)
+  }
+
+  return path
+}
+
+async function gotoRouteSmokeVisual(page: Page, hashPath: string): Promise<void> {
+  routeSmokeNavigationId += 1
+  const normalizedPath = hashPath.startsWith('/') ? hashPath : `/${hashPath}`
+  const visualUrl = withVisualMode(normalizedPath).replace(
+    '?e2e=visual',
+    `?e2e=visual&e2eRouteSmoke=${routeSmokeNavigationId}`
+  )
+
+  await page.goto(visualUrl)
+  await page.waitForFunction(
+    path => window.location.hash === `#${path}` || window.location.hash === '#/404',
+    normalizedPath
+  )
+}
 
 async function waitForLoginThemeState(page: Page, targetMode: 'light' | 'dark'): Promise<void> {
   await page.waitForFunction(mode => {
@@ -337,32 +373,225 @@ test.describe('view route smoke coverage', () => {
     await expect(page.locator('#password')).toBeVisible()
 
     await loginAsAdmin(page)
-    await expect(page.locator('#dashboard-page')).toBeVisible()
-    await expect(page.locator('#dashboard-page')).toContainText('架构控制中心')
-    await expect(page.locator('#dashboard-page')).toContainText('运行时隔离')
+    const dashboard = page.locator('#dashboard-page')
+    const startExploring = page.locator('#dashboard-start-exploring')
 
-    await gotoVisual(page, '/ui/pro-form')
+    await expect(dashboard).toBeVisible()
+    await expect(dashboard).toContainText(/CCD/)
+    await expect(dashboard).toContainText(/consistent|一致/)
+    await expect(startExploring).toBeVisible()
+    await expect(startExploring).toHaveAttribute('href', /#\/showcase\/overview$/)
+    await expect(page.locator('#dashboard-page canvas')).toHaveCount(0)
+    await expect(
+      page.locator('#dashboard-page .echarts canvas, #dashboard-page .p-datatable')
+    ).toHaveCount(0)
+    await expect(
+      page.locator(
+        '#dashboard-page form, #dashboard-page .pro-table, #dashboard-page [class*="pro-table"], #dashboard-page .pro-form, #dashboard-page [class*="pro-form"]'
+      )
+    ).toHaveCount(0)
+
+    await gotoRouteSmokeVisual(page, '/ui/pro-form')
     await waitForAppReady(page)
     await waitForRuntimeLoadingIdle(page)
     await expect(page.getByTestId('architecture-console-page')).toContainText('ProForm 能力')
-    await expect(page.getByTestId('architecture-console-page')).toContainText('Schema 驱动 ProForm')
+    await expect(page.getByTestId('architecture-console-page')).toContainText('引导式请求表单')
 
-    await gotoVisual(page, '/ui/pro-table')
+    await gotoRouteSmokeVisual(page, '/ui/pro-table')
     await waitForAppReady(page)
     await waitForRuntimeLoadingIdle(page)
     await expect(page.getByTestId('architecture-console-page')).toContainText('ProTable 能力')
     await expect(page.getByTestId('architecture-console-page')).toContainText('类型化 ProTable')
 
-    await gotoVisual(page, '/system/settings')
+    await gotoRouteSmokeVisual(page, '/system/settings')
     await waitForAppReady(page)
     await waitForRuntimeLoadingIdle(page)
     await expect(page.getByTestId('global-settings-page')).toContainText('全局设置')
     await expect(page.getByTestId('global-settings-page')).toContainText('布局模块')
 
-    await gotoVisual(page, '/missing-view')
+    await gotoRouteSmokeVisual(page, '/missing-view')
     await waitForAppReady(page)
     await waitForRuntimeLoadingIdle(page)
     await expect(page).toHaveURL(/#\/404$/)
     await expect(page.locator('body')).toContainText('404')
+  })
+
+  test('renders the showcase overview page through the catalog route', async ({ page }) => {
+    const pageErrors: string[] = []
+    const consoleDiagnostics: string[] = []
+
+    page.on('pageerror', err => pageErrors.push(err.message))
+    page.on('console', msg => {
+      const text = msg.text()
+      if (msg.type() === 'error' || text.includes('showcase.remaining')) {
+        consoleDiagnostics.push(text)
+      }
+    })
+
+    await loginAsAdmin(page)
+    await gotoRouteSmokeVisual(page, showcaseSmokePath('/showcase/overview'))
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+
+    await expect(page.locator('h1', { hasText: '概览' })).toBeVisible()
+    await expect(page.getByText('浏览承载产品演示', { exact: false }).first()).toBeVisible()
+    await expect(page.getByText('能力', { exact: false }).first()).toBeVisible()
+    await expect(
+      page.getByText(/预览外壳|页面渲染失败|showcase\.remaining|ai:guard|pnpm/)
+    ).toHaveCount(0)
+
+    expect(pageErrors).toHaveLength(0)
+    expect(consoleDiagnostics).toHaveLength(0)
+  })
+
+  test('renders the ProTable showcase page through the catalog route', async ({ page }) => {
+    const pageErrors: string[] = []
+    const consoleErrors: string[] = []
+
+    page.on('pageerror', err => pageErrors.push(err.message))
+    page.on('console', msg => {
+      if (msg.type() === 'error') consoleErrors.push(msg.text())
+    })
+
+    await loginAsAdmin(page)
+    await gotoRouteSmokeVisual(page, showcaseSmokePath('/showcase/components/pro-table/basic'))
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+
+    await expect(page.locator('h1', { hasText: '基础表格' })).toBeVisible()
+    await expect(page.getByText('推荐操作').first()).toBeVisible()
+    await expect(page.getByText('可复用表格起点').first()).toBeVisible()
+    await expect(
+      page.getByText('先定义类型化列与稳定行字段', { exact: false }).first()
+    ).toBeVisible()
+    await expect(page.getByText(/预览外壳|页面渲染失败|验证命令|ai:guard|pnpm/)).toHaveCount(0)
+
+    expect(pageErrors).toHaveLength(0)
+    expect(consoleErrors).toHaveLength(0)
+  })
+
+  test('renders the ProForm validation showcase page through the catalog route', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = []
+    const consoleErrors: string[] = []
+
+    page.on('pageerror', err => pageErrors.push(err.message))
+    page.on('console', msg => {
+      if (msg.type() === 'error') consoleErrors.push(msg.text())
+    })
+
+    await loginAsAdmin(page)
+    await gotoRouteSmokeVisual(page, showcaseSmokePath('/showcase/components/pro-form/validation'))
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+
+    await expect(page.locator('h1', { hasText: '校验' })).toBeVisible()
+    await expect(page.getByText('试用校验规则').first()).toBeVisible()
+    await expect(page.getByText('校验可见').first()).toBeVisible()
+    await page.getByRole('button', { name: /^校验$/ }).click()
+    await expect(page.getByText('请求名称必填。').first()).toBeVisible()
+    await expect(page.getByText(/预览外壳|页面渲染失败|验证命令|ai:guard|pnpm/)).toHaveCount(0)
+
+    expect(pageErrors).toHaveLength(0)
+    expect(consoleErrors).toHaveLength(0)
+  })
+
+  test('renders the chart theme showcase page through the catalog route', async ({ page }) => {
+    const pageErrors: string[] = []
+    const consoleDiagnostics: string[] = []
+
+    page.on('pageerror', err => pageErrors.push(err.message))
+    page.on('console', msg => {
+      const text = msg.text()
+      if (msg.type() === 'error' || text.includes('showcase.remaining')) {
+        consoleDiagnostics.push(text)
+      }
+    })
+
+    await loginAsAdmin(page)
+    await gotoRouteSmokeVisual(page, showcaseSmokePath('/showcase/components/charts/theme'))
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+
+    await expect(page.locator('h1', { hasText: '图表主题' })).toBeVisible()
+    await expect(page.getByText('查看主题感知图表如何跟随当前 token 色板').first()).toBeVisible()
+    await expect(
+      page.getByText('主题模式变化由图表包装与 token 运行时处理。').first()
+    ).toBeVisible()
+    await expect(page.locator('canvas').first()).toBeVisible()
+    await expect(
+      page.getByText(/预览外壳|页面渲染失败|showcase\.remaining|ai:guard|pnpm/)
+    ).toHaveCount(0)
+
+    expect(pageErrors).toHaveLength(0)
+    expect(consoleDiagnostics).toHaveLength(0)
+  })
+
+  test('renders the feedback dialog-toast showcase page through the catalog route', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = []
+    const consoleDiagnostics: string[] = []
+
+    page.on('pageerror', err => pageErrors.push(err.message))
+    page.on('console', msg => {
+      const text = msg.text()
+      if (msg.type() === 'error' || text.includes('showcase.remaining')) {
+        consoleDiagnostics.push(text)
+      }
+    })
+
+    await loginAsAdmin(page)
+    await gotoRouteSmokeVisual(page, showcaseSmokePath('/showcase/feedback/dialog-toast'))
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+
+    await expect(page.locator('h1', { hasText: 'Dialog 与 Toast' })).toBeVisible()
+    await expect(page.getByText('反馈从空状态开始').first()).toBeVisible()
+    await page.getByRole('button', { name: '打开 Dialog' }).click()
+    await expect(page.getByText('反馈 Dialog').first()).toBeVisible()
+    await expect(page.getByText('Dialog 已打开').first()).toBeVisible()
+    await page.getByRole('button', { name: '确定' }).click()
+    await page.getByRole('button', { name: '显示 Message' }).click()
+    await expect(page.getByText('Message 已显示').first()).toBeVisible()
+    await page.getByRole('button', { name: '显示 Toast' }).click()
+    await expect(page.getByText('Toast 已显示').first()).toBeVisible()
+    await expect(
+      page.getByText(/预览外壳|页面渲染失败|showcase\.remaining|ai:guard|pnpm/)
+    ).toHaveCount(0)
+
+    expect(pageErrors).toHaveLength(0)
+    expect(consoleDiagnostics).toHaveLength(0)
+  })
+
+  test('renders the design tokens showcase page through the catalog route', async ({ page }) => {
+    const pageErrors: string[] = []
+    const consoleDiagnostics: string[] = []
+
+    page.on('pageerror', err => pageErrors.push(err.message))
+    page.on('console', msg => {
+      const text = msg.text()
+      if (msg.type() === 'error' || text.includes('showcase.remaining')) {
+        consoleDiagnostics.push(text)
+      }
+    })
+
+    await loginAsAdmin(page)
+    await gotoRouteSmokeVisual(page, showcaseSmokePath('/showcase/design/tokens'))
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+
+    await expect(page.locator('h1', { hasText: '设计 Token' })).toBeVisible()
+    await expect(page.getByText('查看语义 token 族', { exact: false }).first()).toBeVisible()
+    await expect(
+      page.getByText('状态表面如何跨主题保持可读', { exact: false }).first()
+    ).toBeVisible()
+    await expect(
+      page.getByText(/预览外壳|页面渲染失败|showcase\.remaining|ai:guard|pnpm/)
+    ).toHaveCount(0)
+
+    expect(pageErrors).toHaveLength(0)
+    expect(consoleDiagnostics).toHaveLength(0)
   })
 })

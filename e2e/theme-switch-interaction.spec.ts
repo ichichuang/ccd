@@ -88,16 +88,22 @@ async function readRaisedButtonVisuals(page: Page): Promise<RaisedButtonVisual[]
 }
 
 async function expectToastTopCenter(page: Page): Promise<void> {
+  await page.waitForFunction(() => typeof window.$toast?.add === 'function')
   await page.evaluate(() => {
-    window.$message?.success('E2E top center message')
+    window.$toast?.add({
+      severity: 'success',
+      summary: 'E2E top center message',
+      group: 'tc',
+      life: 10000,
+    })
   })
 
-  const toast = page.locator('.p-toast.p-toast-top-center').first()
+  const toast = page.getByText('E2E top center message').last()
   await expect(toast).toBeVisible()
-  await expect(toast.getByText('E2E top center message')).toBeVisible()
 
   const geometry = await toast.evaluate(element => {
-    const rect = element.getBoundingClientRect()
+    const container = element.closest('.p-toast') ?? element
+    const rect = container.getBoundingClientRect()
     return {
       top: Math.round(rect.top),
       centerX: Math.round(rect.left + rect.width / 2),
@@ -150,7 +156,7 @@ test.describe('theme switch interaction', () => {
     expect(visuals.every(visual => visual.boxShadow !== 'none')).toBe(true)
   })
 
-  test('window message default renders at top center', async ({ page }) => {
+  test('window toast top-center group renders at top center', async ({ page }) => {
     await loginAsAdmin(page)
     await expectToastTopCenter(page)
   })

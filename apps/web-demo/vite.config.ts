@@ -130,6 +130,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
 
     resolve: {
       alias,
+      dedupe: ['vue', 'primevue'],
     },
 
     server: {

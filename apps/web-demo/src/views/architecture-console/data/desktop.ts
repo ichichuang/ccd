@@ -6,8 +6,8 @@ export const desktopPages = {
     key: 'desktopBoundary',
     status: [
       { key: 'desktopUntouched', severity: 'success' },
-      { key: 'tauriAdapterOnly', severity: 'info' },
-      { key: 'p4BackendDeferred', severity: 'warn' },
+      { key: 'desktopAdapter', severity: 'info' },
+      { key: 'desktopPlanning', severity: 'warn' },
     ],
     stats: [
       { key: 'desktopAdapterPath', value: 'apps/desktop', icon: 'i-lucide-monitor' },
