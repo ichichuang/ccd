@@ -43,7 +43,12 @@ const route = useRoute()
 const { t } = useI18n()
 const page = computed(() => getConsolePage(route.name))
 
+const routeNameForDisplay = computed(() =>
+  typeof route.name === 'string' ? route.name : String(route.name ?? '')
+)
+
 function pageMessageKey(field: string): string {
+  if (!page.value) return ''
   return `console.pages.${page.value.key}.${field}`
 }
 
@@ -267,16 +272,49 @@ const chartOption = computed<EChartsOption>(() => ({
   ],
 }))
 
-const showProFormDemo = computed(() => page.value.id === 'UiProForm')
-const showProTableDemo = computed(() => page.value.id === 'UiProTable')
-const showChartDemo = computed(() => page.value.id === 'UiCharts')
-const showFeedbackDemo = computed(() => page.value.id === 'UiFeedback')
-const showRouteEvidence = computed(() => page.value.id === 'ArchitectureGovernance')
-const showPrimeVueAdapterDemo = computed(() => page.value.id === 'UiPrimeVueAdapter')
+const showProFormDemo = computed(() => page.value?.id === 'UiProForm')
+const showProTableDemo = computed(() => page.value?.id === 'UiProTable')
+const showChartDemo = computed(() => page.value?.id === 'UiCharts')
+const showFeedbackDemo = computed(() => page.value?.id === 'UiFeedback')
+const showRouteEvidence = computed(() => page.value?.id === 'ArchitectureGovernance')
+const showPrimeVueAdapterDemo = computed(() => page.value?.id === 'UiPrimeVueAdapter')
 </script>
 
 <template>
+  <!-- Missing-model state: safe fallback when route has no page model -->
+  <div
+    v-if="!page"
+    class="layout-screen col-center gap-lg px-xl py-2xl"
+  >
+    <div
+      class="card glass-card col-center gap-xl text-center text-card-foreground w-full max-w-[48ch] rounded-xl p-xl"
+    >
+      <div
+        class="surface-warn rounded-full center shrink-0 w-[var(--spacing-4xl)] h-[var(--spacing-4xl)]"
+      >
+        <Icons
+          name="i-lucide-triangle-alert"
+          size="5xl"
+        />
+      </div>
+      <h1 class="text-2xl font-bold tracking-tighter">{{ $t('router.error.title') }}</h1>
+      <p class="text-sm text-muted-foreground m-0">
+        No page model is configured for this route. Route name: {{ routeNameForDisplay }}
+      </p>
+      <a
+        href="#/dashboard"
+        class="no-underline"
+      >
+        <Button
+          :label="$t('router.error.backToHome')"
+          icon="i-lucide-home"
+        />
+      </a>
+    </div>
+  </div>
+
   <ArchitecturePageShell
+    v-else
     :eyebrow="t(pageMessageKey('eyebrow'))"
     :title="t(pageMessageKey('title'))"
     :description="t(pageMessageKey('description'))"

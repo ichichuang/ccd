@@ -4,6 +4,7 @@ import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { messages } from '@/locales'
 import {
   consolePages,
+  getConsolePage,
   type ConsolePageModel,
 } from '../../views/architecture-console/data/consolePages'
 import { validateRegisteredRouteMetadata } from '../utils/metadata'
@@ -100,7 +101,10 @@ const consoleViewSourceModules = import.meta.glob<string>(
   }
 )
 const consoleDataSourceModules = import.meta.glob<string>(
-  ['../../views/architecture-console/data/**/*.ts'],
+  [
+    '../../views/architecture-console/data/**/*.ts',
+    '!../../views/architecture-console/data/**/*.spec.ts',
+  ],
   {
     eager: true,
     import: 'default',
@@ -698,5 +702,24 @@ describe('web-demo architecture console route coverage', () => {
     expect(flatRegisteredRoutes.filter(route => route.path.startsWith('/showcase'))).toHaveLength(
       showcaseCatalog.length + 1
     )
+  })
+
+  it('covers every ConsolePage-backed route with a page model (strict 18-contract)', () => {
+    const pageNames = Object.keys(consolePages)
+
+    // Exactly 18 ConsolePage models
+    expect(pageNames).toHaveLength(18)
+
+    // Every model key must return its model (no undefined)
+    for (const name of pageNames) {
+      const model = getConsolePage(name)
+      expect(model, `ConsolePage model not found for route "${name}"`).toBeDefined()
+      expect(model!.id).toBe(name)
+    }
+
+    // Unknown names return undefined (strict lookup, no topology fallback)
+    expect(getConsolePage('NonExistentRoute')).toBeUndefined()
+    expect(getConsolePage('')).toBeUndefined()
+    expect(getConsolePage(null)).toBeUndefined()
   })
 })

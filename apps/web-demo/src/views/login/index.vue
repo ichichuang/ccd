@@ -6,7 +6,7 @@ import AuthVisualStage from './components/AuthVisualStage.vue'
 import LoginForm from './components/LoginForm.vue'
 import LoginShell from './components/LoginShell.vue'
 import { useLoginPaletteTransition } from './composables/useLoginPaletteTransition'
-import type { LoginCharacterState, LoginResponsiveState } from './types'
+import type { LoginResponsiveState } from './types'
 
 defineOptions({ name: 'LoginPage' })
 
@@ -29,17 +29,6 @@ const responsiveState = computed<LoginResponsiveState>(() => ({
   isTablet: viewportWidth.value >= BREAKPOINTS.md && viewportWidth.value < BREAKPOINTS.xl,
   isCompact: viewportWidth.value <= BREAKPOINTS.lg || viewportHeight.value <= 820,
 }))
-
-const characterState = ref<LoginCharacterState>({
-  activeField: null,
-  usernameLength: 0,
-  passwordLength: 0,
-  showPassword: false,
-})
-
-function handleCharacterStateChange(nextState: LoginCharacterState): void {
-  characterState.value = nextState
-}
 
 function preventDecorativeSelection(event: Event): void {
   const target = event.target
@@ -64,10 +53,7 @@ function preventDecorativeSelection(event: Event): void {
           <AuthVisualStage :responsive="responsiveState" />
         </template>
 
-        <LoginForm
-          :responsive="responsiveState"
-          @character-state-change="handleCharacterStateChange"
-        />
+        <LoginForm :responsive="responsiveState" />
       </LoginShell>
     </div>
   </main>

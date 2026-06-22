@@ -1,37 +1,21 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import type { LoginParams } from '@/types/dto/auth.dto'
 import type { FormSchema, ProFormExpose } from '@ccd/vue-ui'
 import AuthLoginCard from './AuthLoginCard.vue'
-import AuthQuickAccounts from './AuthQuickAccounts.vue'
 import HeaderActions from './HeaderActions.vue'
 import { useLoginSubmit } from '../composables/useLoginSubmit'
-import type { LoginCharacterState, LoginFieldName, LoginResponsiveState } from '../types'
+import type { LoginResponsiveState } from '../types'
 
 defineOptions({ name: 'LoginForm' })
 
-type LoginFormValues = LoginParams
-type QuickAccountKind = 'admin' | 'user'
-
 const props = defineProps<{
   responsive: LoginResponsiveState
-}>()
-
-const emit = defineEmits<{
-  characterStateChange: [state: LoginCharacterState]
 }>()
 
 const { t, locale } = useI18n({ useScope: 'global' })
 const { loading, submitLogin } = useLoginSubmit()
 const formRef = ref<ProFormExpose | null>(null)
 const isPasswordVisible = ref<boolean>(false)
-const rememberMe = ref<boolean>(false)
-const activeField = ref<LoginFieldName | null>(null)
-const selectedQuickAccount = ref<QuickAccountKind | null>(null)
-const fieldDraft = reactive<Record<LoginFieldName, string>>({
-  username: '',
-  password: '',
-})
 
 const loginSchema = computed<FormSchema>(() => ({
   fields: [
@@ -81,59 +65,17 @@ const loginSchema = computed<FormSchema>(() => ({
   ],
 }))
 
-const ADMIN_PRESET: LoginFormValues = { username: 'admin', password: '123456' }
-const USER_PRESET: LoginFormValues = { username: 'user', password: '123456' }
-
 function getInputValue(value: unknown): string {
   return typeof value === 'string' ? value : ''
 }
 
-function emitCharacterState(): void {
-  emit('characterStateChange', {
-    activeField: activeField.value,
-    usernameLength: fieldDraft.username.length,
-    passwordLength: fieldDraft.password.length,
-    showPassword: isPasswordVisible.value,
-  })
-}
-
-function commitInputValue(
-  field: LoginFieldName,
-  onUpdate: (value: unknown) => void,
-  value: unknown
-): void {
+function handleInputUpdate(onUpdate: (value: unknown) => void, value: unknown): void {
   const normalizedValue = typeof value === 'string' ? value : ''
-  selectedQuickAccount.value = null
-  fieldDraft[field] = normalizedValue
-  activeField.value = field
   onUpdate(normalizedValue)
-  emitCharacterState()
-}
-
-function handleFieldFocus(field: LoginFieldName, value: unknown): void {
-  activeField.value = field
-  fieldDraft[field] = getInputValue(value)
-  emitCharacterState()
-}
-
-function handleFieldBlur(field: LoginFieldName, value: unknown): void {
-  fieldDraft[field] = getInputValue(value)
-  activeField.value = null
-  emitCharacterState()
 }
 
 function togglePasswordVisibility(): void {
   isPasswordVisible.value = !isPasswordVisible.value
-  emitCharacterState()
-}
-
-function fillPreset(kind: QuickAccountKind, values: LoginFormValues): void {
-  selectedQuickAccount.value = kind
-  formRef.value?.form.setFieldsValue(values)
-  fieldDraft.username = values.username
-  fieldDraft.password = values.password
-  activeField.value = 'username'
-  emitCharacterState()
 }
 
 async function handleLoginSubmit(): Promise<void> {
@@ -144,18 +86,12 @@ async function handleLoginSubmit(): Promise<void> {
 
   await submitLogin(instance.getFormState().values, () => {
     instance.form.setFieldsValue({ password: '' })
-    selectedQuickAccount.value = null
-    fieldDraft.password = ''
-    activeField.value = 'password'
-    emitCharacterState()
   })
 }
 
 const formGap = computed(() =>
   props.responsive.isCompact ? 'var(--spacing-xs)' : 'var(--spacing-sm)'
 )
-
-onMounted(() => emitCharacterState())
 </script>
 
 <template>
@@ -195,9 +131,7 @@ onMounted(() => emitCharacterState())
             :invalid="state.errors.length > 0"
             class="login-field-input"
             fluid
-            @focus="handleFieldFocus('username', state.value)"
-            @blur="handleFieldBlur('username', state.value)"
-            @update:model-value="value => commitInputValue('username', onUpdate, value)"
+            @update:model-value="value => handleInputUpdate(onUpdate, value)"
           />
         </div>
       </template>
@@ -225,9 +159,7 @@ onMounted(() => emitCharacterState())
             :invalid="state.errors.length > 0"
             class="login-field-input login-field-input--password"
             fluid
-            @focus="handleFieldFocus('password', state.value)"
-            @blur="handleFieldBlur('password', state.value)"
-            @update:model-value="value => commitInputValue('password', onUpdate, value)"
+            @update:model-value="value => handleInputUpdate(onUpdate, value)"
           />
           <Button
             type="button"
@@ -249,32 +181,6 @@ onMounted(() => emitCharacterState())
 
       <template #footer="{ formState }">
         <div class="login-form-footer col-stretch">
-          <div class="login-form-options row-between">
-            <label class="login-remember-option row-center">
-              <Checkbox
-                v-model="rememberMe"
-                binary
-                input-id="login-remember"
-                class="shrink-0 leading-none"
-                :pt="{
-                  root: { class: 'center' },
-                  box: {
-                    class:
-                      'shrink-0 transition-[background-color,border-color,box-shadow,color] duration-sm ease-smooth',
-                  },
-                }"
-              />
-              <span>{{ t('login.rememberMe') }}</span>
-            </label>
-            <Button
-              type="button"
-              severity="secondary"
-              variant="text"
-              class="login-forgot-button ring-focus-focus"
-              :label="t('login.forgotPassword')"
-            />
-          </div>
-
           <Button
             id="login-submit"
             class="login-submit-button ring-focus-focus"
@@ -282,12 +188,6 @@ onMounted(() => emitCharacterState())
             :loading="formState.submitting || loading"
             size="large"
             @click="handleLoginSubmit"
-          />
-
-          <AuthQuickAccounts
-            :selected="selectedQuickAccount"
-            @fill-admin="fillPreset('admin', ADMIN_PRESET)"
-            @fill-user="fillPreset('user', USER_PRESET)"
           />
         </div>
       </template>
@@ -497,171 +397,66 @@ onMounted(() => emitCharacterState())
 }
 
 .login-password-toggle:hover {
-  background: rgb(
-    var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 10%
-  ) !important;
-  box-shadow: inset 0 0 0 1px
-    rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 26%) !important;
-  color: rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b)) !important;
-}
-
-.login-password-toggle:focus-visible {
-  background: rgb(
-    var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 12%
-  ) !important;
-  color: rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b)) !important;
-  outline: none !important;
-  box-shadow: inset 0 0 0 1px
-    rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 18%) !important;
-}
-
-.login-password-toggle[aria-pressed='true'] {
-  background: rgb(
-    var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 12%
-  ) !important;
-  box-shadow: inset 0 0 0 1px
-    rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 20%) !important;
-  color: rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b)) !important;
-}
-
-/* Deep overrides for ProForm labels and errors */
-:deep(label) {
-  font-size: var(--font-size-xs) !important;
-  font-weight: 600 !important;
-  color: rgb(var(--muted-foreground)) !important;
-  margin-bottom: var(--spacing-xs) !important;
-  letter-spacing: 0 !important;
-}
-
-:global(.dark) :deep(label) {
-  color: rgb(var(--card-foreground) / 84%) !important;
-}
-
-:deep(label > span.text-danger) {
-  display: none !important;
-}
-
-:deep(.text-danger) {
-  color: rgb(var(--danger) / 92%) !important;
-  font-size: var(--font-size-xs) !important;
-  font-weight: 500 !important;
-  letter-spacing: 0 !important;
-}
-
-:deep(.text-muted-foreground) {
-  font-size: var(--font-size-xs) !important;
-  color: rgb(var(--muted-foreground) / 80%) !important;
-}
-
-:global(.dark) :deep(.text-muted-foreground) {
-  color: rgb(var(--card-foreground) / 78%) !important;
+  background: rgb(var(--foreground) / 7%) !important;
+  color: rgb(var(--foreground) / 90%) !important;
+  box-shadow: 0 1px 3px rgb(var(--foreground) / 6%) !important;
 }
 
 .login-form-footer {
-  gap: var(--spacing-lg);
-  padding-top: var(--spacing-sm);
-}
-
-.login-form-options {
-  min-height: var(--spacing-2xl);
-  gap: var(--spacing-sm);
-  padding: 0 var(--spacing-xs);
-  transition: color var(--auth-theme-transition-duration, var(--transition-sm))
-    var(--auth-theme-transition-ease, ease-out);
-}
-
-.login-remember-option {
-  gap: var(--spacing-xs);
-  cursor: pointer;
-  color: rgb(var(--muted-foreground));
-  font-size: var(--font-size-sm);
-  font-weight: 550;
-  line-height: 1;
-  transition: color var(--auth-theme-transition-duration, var(--transition-sm))
-    var(--auth-theme-transition-ease, ease-out);
-}
-
-:global(.dark) .login-remember-option {
-  color: rgb(var(--card-foreground) / 82%);
-}
-
-.login-forgot-button {
-  height: var(--spacing-lg);
-  border: 0 !important;
-  border-radius: var(--radius-md) !important;
-  background: transparent !important;
-  color: rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b)) !important;
-  box-shadow: none !important;
-  font-size: var(--font-size-sm) !important;
-  font-weight: 550 !important;
-  padding: 0 var(--spacing-xs) !important;
-  transition:
-    background-color var(--auth-theme-transition-duration, var(--transition-sm))
-      var(--auth-theme-transition-ease, ease-out),
-    color var(--auth-theme-transition-duration, var(--transition-sm))
-      var(--auth-theme-transition-ease, ease-out);
-}
-
-.login-forgot-button:hover {
-  background: rgb(
-    var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 8%
-  ) !important;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-sm);
 }
 
 .login-submit-button {
-  justify-content: center;
   width: 100%;
-  min-height: calc(var(--control-height-lg) + var(--spacing-sm) + var(--spacing-xs));
-  border: 0 !important;
-  border-radius: var(--radius-lg) !important;
-  background-color: rgb(
-    var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b)
-  ) !important;
-  background-image: linear-gradient(
-    90deg,
-    transparent,
-    rgb(var(--auth-accent-r) var(--auth-accent-g) var(--auth-accent-b) / 42%)
-  ) !important;
-  color: rgb(var(--primary-foreground)) !important;
+  height: var(--control-height-lg);
+  margin-top: var(--spacing-xs);
+  border-radius: var(--radius-xl);
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  background: linear-gradient(
+    135deg,
+    rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b)),
+    rgb(var(--auth-accent-r) var(--auth-accent-g) var(--auth-accent-b))
+  );
+  border: 0;
+  color: white;
   box-shadow:
-    0 var(--spacing-xs) var(--spacing-lg)
-      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 20%),
-    0 1px 2px rgb(var(--foreground) / 8%) !important;
-  font-weight: 600 !important;
-  letter-spacing: 0 !important;
+    0 2px 8px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 28%),
+    0 0 0 1px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 12%);
   transition:
-    background-color var(--auth-theme-transition-duration, var(--transition-sm))
-      var(--auth-theme-transition-ease, ease-out),
-    opacity var(--auth-theme-transition-duration, var(--transition-sm))
+    background var(--auth-theme-transition-duration, var(--transition-sm))
       var(--auth-theme-transition-ease, ease-out),
     box-shadow var(--auth-theme-transition-duration, var(--transition-sm))
       var(--auth-theme-transition-ease, ease-out),
-    color var(--auth-theme-transition-duration, var(--transition-sm))
+    transform var(--auth-theme-transition-duration, var(--transition-sm))
       var(--auth-theme-transition-ease, ease-out),
-    filter var(--auth-theme-transition-duration, var(--transition-sm))
+    opacity var(--auth-theme-transition-duration, var(--transition-sm))
       var(--auth-theme-transition-ease, ease-out);
 }
 
 .login-submit-button:hover:not(:disabled) {
-  background-color: rgb(var(--primary-hover)) !important;
-  background-image: linear-gradient(
-    90deg,
-    transparent,
-    rgb(var(--auth-accent-r) var(--auth-accent-g) var(--auth-accent-b) / 52%)
-  ) !important;
   box-shadow:
-    0 var(--spacing-sm) var(--spacing-xl)
-      rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 24%),
-    0 2px 4px rgb(var(--foreground) / 10%) !important;
+    0 4px 14px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 38%),
+    0 0 0 1px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 18%);
+  transform: translateY(-1px);
 }
 
-.login-submit-button:disabled {
-  opacity: 0.6;
+.login-submit-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 20%);
 }
 
-@media (width <= 768px) {
-  .login-form-options {
-    padding: 0;
-  }
+:global(.dark) .login-submit-button {
+  box-shadow:
+    0 2px 8px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 22%),
+    0 0 0 1px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 8%);
+}
+
+:global(.dark) .login-submit-button:hover:not(:disabled) {
+  box-shadow:
+    0 4px 14px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 30%),
+    0 0 0 1px rgb(var(--auth-primary-r) var(--auth-primary-g) var(--auth-primary-b) / 14%);
 }
 </style>

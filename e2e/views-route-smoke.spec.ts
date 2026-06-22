@@ -84,15 +84,20 @@ test.describe('view route smoke coverage', () => {
       }) as typeof toast.dangerIn
     })
 
-    await page.locator('#login-fill-admin').click()
+    await page.locator('#username').fill('admin')
     await expect(page.locator('#username')).toHaveValue('admin')
+    await page.locator('#password').fill('123456')
     await expect(page.locator('#password')).toHaveValue('123456')
 
-    await page.locator('#login-fill-user').click()
+    await page.locator('#username').clear()
+    await page.locator('#password').clear()
+    await page.locator('#username').fill('user')
     await expect(page.locator('#username')).toHaveValue('user')
+    await page.locator('#password').fill('123456')
     await expect(page.locator('#password')).toHaveValue('123456')
 
-    await page.locator('#login-fill-admin').click()
+    await page.locator('#username').clear()
+    await page.locator('#username').fill('admin')
     await page.locator('#password').fill('badpass')
     await page.locator('#login-submit').click()
     await expect
@@ -318,7 +323,6 @@ test.describe('view route smoke coverage', () => {
             '.login-field-shell',
             '.login-form-options',
             '#login-submit',
-            '.auth-quick-accounts',
             '[data-testid="auth-palette-picker"]',
             '[data-testid="auth-glass-bubble"]',
           ].join(', ')

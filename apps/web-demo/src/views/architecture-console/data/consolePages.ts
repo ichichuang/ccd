@@ -22,9 +22,9 @@ export const consolePages: Record<string, ConsolePageModel> = {
   ...desktopPages,
 }
 
-export function getConsolePage(routeName: unknown): ConsolePageModel {
+export function getConsolePage(routeName: unknown): ConsolePageModel | undefined {
   if (typeof routeName === 'string' && routeName in consolePages) {
     return consolePages[routeName]
   }
-  return consolePages.ArchitectureTopology
+  return undefined
 }
