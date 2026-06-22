@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import ShowcaseCapabilityPage from '../../../shared/ShowcaseCapabilityPage.vue'
+import ShowcaseChartDemoShell from '../shared/ShowcaseChartDemoShell.vue'
 
 defineOptions({ name: 'ShowcaseComponentsChartsResponsive' })
 </script>
 
 <template>
-  <ShowcaseCapabilityPage id="components-charts-responsive" />
+  <ShowcaseChartDemoShell id="components-charts-responsive" />
 </template>

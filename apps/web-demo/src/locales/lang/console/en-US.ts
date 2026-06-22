@@ -1048,11 +1048,43 @@ const enUSConsole = {
         scrollItem: 'Scrollable row {index}',
       },
       chart: {
+        controlsTitle: 'Chart controls',
+        controlsDescription:
+          'Wrapper-owned controls stay beside the chart without reaching into ECharts internals.',
+        readinessTitle: 'Readiness and options',
+        readinessDescription:
+          'Chart state, route context, and option ownership remain visible next to the demo.',
+        optionTitle: 'Option summary',
+        optionDescription:
+          'The route supplies data-only chart options and lets the adapter merge theme runtime.',
+        optionRoute: 'Route',
+        optionSource: 'Option source',
+        wrapperStateTitle: 'Wrapper state',
+        wrapperStateDescription:
+          'Ready, finished, and loading signals are page feedback from the approved wrapper.',
+        eventsEmptyTitle: 'Waiting for chart events',
+        eventsEmptyDescription:
+          'The wrapper will replace this empty state once ready or finished events arrive.',
+        evidenceTitle: 'Source and wrapper evidence',
+        evidenceDescription:
+          'Long paths wrap inside copyable evidence panels so source ownership stays inspectable.',
+        wrapperEvidenceTitle: 'Wrapper evidence',
+        wrapperEvidenceDescription:
+          'The chart adapter and option helper are the approved boundary for this showcase family.',
+        regionLabel: '{title} chart region',
         wrapperDriven: 'Wrapper driven',
         readyCount: 'Ready {count}',
         finishedCount: 'Finished {count}',
         compactWidth: 'Compact width',
         loading: 'Loading',
+        kind: {
+          overview: 'Overview',
+          theme: 'Theme',
+          responsive: 'Responsive',
+          states: 'States',
+          events: 'Events',
+          'dashboard-preview': 'Dashboard preview',
+        },
         overview: {
           note: 'The overview chart compares adoption and confidence from data-only series.',
         },

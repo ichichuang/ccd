@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import ShowcaseCapabilityPage from '../../../shared/ShowcaseCapabilityPage.vue'
+import ShowcaseChartDemoShell from '../shared/ShowcaseChartDemoShell.vue'
 
 defineOptions({ name: 'ShowcaseComponentsChartsOverview' })
 </script>
 
 <template>
-  <ShowcaseCapabilityPage id="components-charts-overview" />
+  <ShowcaseChartDemoShell id="components-charts-overview" />
 </template>
