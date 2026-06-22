@@ -3,11 +3,15 @@ import { DraftStorage, ProFormPlugins, type ProFormPlugin, type ProFormExpose } 
 import { useI18n } from 'vue-i18n'
 import { showcaseCatalog } from '../../../data/showcaseCatalog'
 import type { ShowcaseCatalogItem } from '../../../data/types'
+import ShowcaseCard from '../../../shared/ShowcaseCard.vue'
 import ShowcaseDemoPanel from '../../../shared/ShowcaseDemoPanel.vue'
+import ShowcaseEmptyState from '../../../shared/ShowcaseEmptyState.vue'
 import ShowcaseFeatureCard from '../../../shared/ShowcaseFeatureCard.vue'
 import ShowcasePageShell from '../../../shared/ShowcasePageShell.vue'
 import ShowcaseRelatedLinks from '../../../shared/ShowcaseRelatedLinks.vue'
+import ShowcaseSection from '../../../shared/ShowcaseSection.vue'
 import ShowcaseSourceLinks from '../../../shared/ShowcaseSourceLinks.vue'
+import ShowcaseToolbar from '../../../shared/ShowcaseToolbar.vue'
 import ProFormFieldArrayControls from './ProFormFieldArrayControls.vue'
 import {
   createProFormDemoInitialValues,
@@ -434,8 +438,12 @@ async function handleFormSubmit(values: ProFormDemoValues): Promise<void> {
             />
           </div>
 
-          <section class="demo-well col-stretch min-w-0 gap-sm">
-            <div class="row-start min-w-0 gap-sm flex-wrap">
+          <ShowcaseToolbar
+            :title="$t('showcase.proForm.toolbar.title')"
+            :description="$t('showcase.proForm.toolbar.description')"
+            :summary="actionSummary"
+          >
+            <template #actions>
               <Button
                 size="small"
                 icon="i-lucide-badge-check"
@@ -466,44 +474,15 @@ async function handleFormSubmit(values: ProFormDemoValues): Promise<void> {
                 :label="$t('showcase.proForm.controls.submitApi')"
                 @click="handleSubmitApi"
               />
-            </div>
-            <p class="text-sm text-muted-foreground m-0">
-              {{ actionSummary }}
-            </p>
-          </section>
-
-          <section
-            v-if="modeConfig.submitStates"
-            class="demo-well row-between min-w-0 gap-md flex-wrap"
-          >
-            <div class="col-stretch min-w-0 gap-xs">
-              <span class="text-sm font-semibold text-foreground">
-                {{ $t('showcase.proForm.submitState.title') }}
-              </span>
-              <p class="text-sm text-muted-foreground m-0">
-                {{ $t('showcase.proForm.submitState.description') }}
-              </p>
-            </div>
-            <div class="row-start gap-sm">
-              <ToggleSwitch v-model="forceSubmitError" />
-              <span class="text-sm text-foreground">
-                {{ $t('showcase.proForm.submitState.forceError') }}
-              </span>
-            </div>
-          </section>
-
-          <section
-            v-if="modeConfig.draft"
-            class="demo-well col-stretch min-w-0 gap-sm"
-          >
-            <div class="row-start min-w-0 gap-sm flex-wrap">
               <Button
+                v-if="modeConfig.draft"
                 size="small"
                 icon="i-lucide-save"
                 :label="$t('showcase.proForm.controls.saveDraft')"
                 @click="handleSaveDraft"
               />
               <Button
+                v-if="modeConfig.draft"
                 size="small"
                 severity="secondary"
                 outlined
@@ -512,6 +491,7 @@ async function handleFormSubmit(values: ProFormDemoValues): Promise<void> {
                 @click="handleReadDraft"
               />
               <Button
+                v-if="modeConfig.draft"
                 size="small"
                 severity="secondary"
                 outlined
@@ -519,114 +499,146 @@ async function handleFormSubmit(values: ProFormDemoValues): Promise<void> {
                 :label="$t('showcase.proForm.controls.clearDraft')"
                 @click="handleClearDraft"
               />
+            </template>
+
+            <div
+              v-if="modeConfig.submitStates"
+              class="row-between min-w-0 gap-md flex-wrap"
+            >
+              <div class="col-stretch min-w-0 gap-xs">
+                <span class="text-sm font-semibold text-foreground">
+                  {{ $t('showcase.proForm.submitState.title') }}
+                </span>
+                <p class="text-sm text-muted-foreground m-0">
+                  {{ $t('showcase.proForm.submitState.description') }}
+                </p>
+              </div>
+              <div class="row-start gap-sm">
+                <ToggleSwitch v-model="forceSubmitError" />
+                <span class="text-sm text-foreground">
+                  {{ $t('showcase.proForm.submitState.forceError') }}
+                </span>
+              </div>
             </div>
-            <p class="text-sm text-muted-foreground m-0">
+
+            <p
+              v-if="modeConfig.draft"
+              class="text-sm text-muted-foreground m-0"
+            >
               {{ draftSummary }}
             </p>
-          </section>
+          </ShowcaseToolbar>
 
-          <section class="material-solid col-stretch min-w-0 gap-md p-md">
-            <ProForm
-              ref="formRef"
-              :schema="schema"
-              :initial-values="initialValues"
-              :resolver="resolver"
-              :persist-key="persistKey"
-              :auto-save="modeConfig.draft === true"
-              validate-on="submit"
-              @submit="handleFormSubmit"
-            >
-              <template #field-milestones>
-                <ProFormFieldArrayControls v-if="modeConfig.fieldArray" />
-              </template>
+          <ShowcaseSection
+            :title="$t('showcase.proForm.form.title')"
+            :description="$t('showcase.proForm.form.description')"
+            icon="i-lucide-clipboard-list"
+          >
+            <section class="material-elevated col-stretch min-w-0 gap-md">
+              <ProForm
+                ref="formRef"
+                :schema="schema"
+                :initial-values="initialValues"
+                :resolver="resolver"
+                :persist-key="persistKey"
+                :auto-save="modeConfig.draft === true"
+                validate-on="submit"
+                @submit="handleFormSubmit"
+              >
+                <template #field-milestones>
+                  <ProFormFieldArrayControls v-if="modeConfig.fieldArray" />
+                </template>
 
-              <template #footer="{ formState, submit }">
-                <div class="col-stretch min-w-0 gap-md pt-md">
-                  <div
-                    class="border-t border-t-solid border-border"
-                    aria-hidden="true"
-                  />
-                  <div class="row-between min-w-0 gap-md flex-wrap">
-                    <div class="row-start gap-sm flex-wrap">
-                      <Tag
-                        :value="submitStateLabel"
-                        :severity="submitSeverity"
-                      />
-                      <Tag
-                        :value="
-                          formState.valid
-                            ? $t('showcase.proForm.state.valid')
-                            : $t('showcase.proForm.state.invalid')
-                        "
-                        :severity="formState.valid ? 'success' : 'danger'"
+                <template #footer="{ formState, submit }">
+                  <div class="col-stretch min-w-0 gap-md pt-md">
+                    <div
+                      class="border-t border-t-solid border-border"
+                      aria-hidden="true"
+                    />
+                    <div class="row-between min-w-0 gap-md flex-wrap">
+                      <div class="row-start gap-sm flex-wrap">
+                        <Tag
+                          :value="submitStateLabel"
+                          :severity="submitSeverity"
+                        />
+                        <Tag
+                          :value="
+                            formState.valid
+                              ? $t('showcase.proForm.state.valid')
+                              : $t('showcase.proForm.state.invalid')
+                          "
+                          :severity="formState.valid ? 'success' : 'danger'"
+                        />
+                      </div>
+                      <Button
+                        icon="i-lucide-send"
+                        :label="$t('showcase.proForm.controls.submit')"
+                        :loading="formState.submitting || submitState === 'submitting'"
+                        @click="submit"
                       />
                     </div>
-                    <Button
-                      icon="i-lucide-send"
-                      :label="$t('showcase.proForm.controls.submit')"
-                      :loading="formState.submitting || submitState === 'submitting'"
-                      @click="submit"
-                    />
                   </div>
-                </div>
-              </template>
-            </ProForm>
-          </section>
-
-          <div class="grid min-w-0 grid-cols-1 gap-md lg:grid-cols-3">
-            <section class="demo-well col-stretch min-w-0 gap-xs">
-              <span class="text-xs font-semibold text-primary">
-                {{ $t('showcase.proForm.state.title') }}
-              </span>
-              <p class="text-sm text-muted-foreground m-0">
-                {{ stateSummary }}
-              </p>
+                </template>
+              </ProForm>
             </section>
+          </ShowcaseSection>
 
-            <section class="demo-well col-stretch min-w-0 gap-xs">
-              <span class="text-xs font-semibold text-primary">
-                {{ $t('showcase.proForm.values.title') }}
-              </span>
-              <p class="text-sm text-muted-foreground m-0">
-                {{ valuesSummary }}
-              </p>
-            </section>
+          <ShowcaseSection
+            :title="$t('showcase.proForm.feedback.title')"
+            :description="$t('showcase.proForm.feedback.description')"
+            icon="i-lucide-message-circle"
+          >
+            <div class="grid min-w-0 grid-cols-1 gap-md lg:grid-cols-3">
+              <ShowcaseCard
+                icon="i-lucide-activity"
+                :title="$t('showcase.proForm.state.title')"
+                :description="stateSummary"
+              />
 
-            <section class="demo-well col-stretch min-w-0 gap-xs">
-              <span class="text-xs font-semibold text-primary">
-                {{ $t('showcase.proForm.submitState.shortTitle') }}
-              </span>
-              <p class="text-sm text-muted-foreground m-0">
-                {{ submitStateLabel }}
-              </p>
-            </section>
-          </div>
+              <ShowcaseCard
+                icon="i-lucide-list-checks"
+                :title="$t('showcase.proForm.values.title')"
+                :description="valuesSummary"
+              />
+
+              <ShowcaseCard
+                icon="i-lucide-send"
+                :title="$t('showcase.proForm.submitState.shortTitle')"
+                :description="submitStateLabel"
+                :tag="submitStateLabel"
+                :tag-severity="submitSeverity"
+              />
+            </div>
+          </ShowcaseSection>
 
           <section
             v-if="modeConfig.eventLog"
-            class="demo-well col-stretch min-w-0 gap-sm"
+            class="col-stretch min-w-0"
           >
-            <span class="text-xs font-semibold text-primary">
-              {{ $t('showcase.proForm.events.title') }}
-            </span>
-            <ul
-              v-if="eventMessages.length"
-              class="col-stretch gap-xs m-0 p-0 list-none"
+            <ShowcaseCard
+              icon="i-lucide-radio"
+              :title="$t('showcase.proForm.events.title')"
+              :description="$t('showcase.proForm.events.description')"
             >
-              <li
-                v-for="message in eventMessages"
-                :key="message"
-                class="code-inline"
+              <ul
+                v-if="eventMessages.length"
+                class="col-stretch gap-xs m-0 p-0 list-none"
               >
-                {{ message }}
-              </li>
-            </ul>
-            <p
-              v-else
-              class="text-sm text-muted-foreground m-0"
-            >
-              {{ $t('showcase.proForm.events.empty') }}
-            </p>
+                <li
+                  v-for="message in eventMessages"
+                  :key="message"
+                  class="code-inline break-all"
+                >
+                  {{ message }}
+                </li>
+              </ul>
+              <ShowcaseEmptyState
+                v-else
+                icon="i-lucide-radio"
+                :title="$t('showcase.proForm.events.emptyTitle')"
+                :description="$t('showcase.proForm.events.empty')"
+              />
+            </ShowcaseCard>
           </section>
         </div>
       </ShowcaseDemoPanel>

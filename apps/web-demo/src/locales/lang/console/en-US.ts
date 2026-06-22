@@ -1715,6 +1715,21 @@ const enUSConsole = {
         clearDraft: 'Clear draft',
         submit: 'Submit request',
       },
+      toolbar: {
+        title: 'Form actions',
+        description:
+          'Validate, inspect, submit, and run draft controls from the same visible work area.',
+      },
+      form: {
+        title: 'Schema-driven form',
+        description:
+          'The ProForm wrapper owns fields, layout spans, validation, conditions, reactions, and submit handling.',
+      },
+      feedback: {
+        title: 'Local feedback',
+        description:
+          'State, values, submit result, and event records stay visible on the page after each action.',
+      },
       actions: {
         ready:
           'Use the controls to validate, submit, and inspect the form without opening developer tools.',
@@ -1769,6 +1784,8 @@ const enUSConsole = {
       },
       events: {
         title: 'Event log',
+        description: 'Recent method calls and submit events appear as readable page evidence.',
+        emptyTitle: 'No form events yet',
         empty: 'Interact with the form to record events here.',
         validate: 'validate: {detail}',
         values: 'getValues: {detail}',

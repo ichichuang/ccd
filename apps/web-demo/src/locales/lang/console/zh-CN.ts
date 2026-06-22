@@ -1579,6 +1579,18 @@ const zhCNConsole = {
         clearDraft: '清除草稿',
         submit: '提交请求',
       },
+      toolbar: {
+        title: '表单操作',
+        description: '在同一个可见工作区内校验、检查、提交，并运行草稿控件。',
+      },
+      form: {
+        title: 'Schema 驱动表单',
+        description: 'ProForm 包装组件持有字段、布局 span、校验、条件、联动与提交处理。',
+      },
+      feedback: {
+        title: '本地反馈',
+        description: '每次操作后的状态、取值、提交结果与事件记录都保留在页面内。',
+      },
       actions: {
         ready: '使用控件校验、提交并检查表单，无需打开开发者工具。',
         valid: '校验通过，表单可以提交。',
@@ -1630,6 +1642,8 @@ const zhCNConsole = {
       },
       events: {
         title: '事件记录',
+        description: '最近的方法调用与提交事件会作为可读页面证据展示。',
+        emptyTitle: '暂无表单事件',
         empty: '与表单交互后会在这里记录事件。',
         validate: 'validate：{detail}',
         values: 'getValues：{detail}',
