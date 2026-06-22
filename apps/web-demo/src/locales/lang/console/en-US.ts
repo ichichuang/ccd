@@ -1290,6 +1290,37 @@ const enUSConsole = {
       badges: {
         proTableOnly: 'ProTable only',
       },
+      intent: {
+        title: 'Demo intent',
+        description:
+          'Each route keeps the table behavior under review first, then exposes the surrounding state, source, and package evidence.',
+      },
+      table: {
+        title: 'Table workspace',
+        description:
+          'Controls, ProTable toolbar actions, and the live table stay in one scan-friendly work area.',
+        regionLabel: '{title} table demo',
+      },
+      stateArea: {
+        title: 'Interaction evidence',
+        description:
+          'Method calls, fetch state, row focus, selection, and event feedback remain visible outside the table chrome.',
+      },
+      capabilities: {
+        title: 'Capability notes',
+        description:
+          'These notes keep the route intent, preserved behavior, and implementation boundaries close to the demo.',
+      },
+      source: {
+        title: 'Source and package evidence',
+        description:
+          'Route, shell, data, column, and package API paths are rendered as selectable wrapping text.',
+      },
+      evidence: {
+        apiTitle: 'ProTable package API',
+        apiDescription:
+          'The showcase consumes the existing ProTable component, props, toolbar, request, and exposed-method contracts without package edits.',
+      },
       modes: {
         overview: {
           label: 'Overview',
@@ -1450,6 +1481,9 @@ const enUSConsole = {
       },
       events: {
         title: 'Event log',
+        description:
+          'Recent ProTable refresh, row, sort, filter, page, and request events are shown as readable local evidence.',
+        emptyTitle: 'No table events yet',
         empty: 'Interact with the table to record events here.',
         manual: 'manual refresh',
         refresh: 'refresh: {detail}',

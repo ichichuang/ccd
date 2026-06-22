@@ -3,7 +3,22 @@
 import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
 import { describe, expect, it } from 'vitest'
+import enUSConsole from '../../../../../locales/lang/console/en-US'
 import ProTableDemoShell from './ProTableDemoShell.vue'
+
+type ProTableDemoShellMode =
+  | 'api-events'
+  | 'basic'
+  | 'columns'
+  | 'server-request'
+  | 'selection'
+  | 'sorting-filtering'
+  | 'states'
+
+interface ShellMountOptions {
+  id: `components-pro-table-${string}`
+  mode: ProTableDemoShellMode
+}
 
 const i18n = createI18n({
   legacy: false,
@@ -12,151 +27,134 @@ const i18n = createI18n({
   missingWarn: false,
   fallbackWarn: false,
   messages: {
-    'en-US': {
-      showcase: {
-        shell: {
-          heroActions: 'Showcase actions',
-          source: {
-            title: 'Source',
-            description: 'Implementation evidence.',
-            empty: 'No source path is registered.',
-          },
-          related: {
-            title: 'Related pages',
-            description: 'Nearby showcase routes.',
-          },
-          technical: {
-            title: 'Technical notes',
-          },
-          demoLevels: {
-            complete: 'Complete',
-            preview: 'Preview',
-          },
-        },
-        pages: {
-          components: {
-            proTable: {
-              basic: {
-                eyebrow: 'Table',
-                title: 'Basic Table',
-                description: 'Basic table route description.',
-                try: 'Try the table',
-              },
-            },
-          },
-        },
-        proTable: {
-          badges: {
-            proTableOnly: 'ProTable only',
-          },
-          modes: {
-            basic: {
-              label: 'Basic',
-              demo: 'Baseline table demo.',
-              tableTitle: 'Basic rows',
-            },
-          },
-          toolbar: {
-            title: 'Table actions',
-            description:
-              'Run table methods and inspect state feedback without leaving the data surface.',
-          },
-          controls: {
-            reload: 'Reload',
-            clearSelection: 'Clear selection',
-            getState: 'Get state',
-            getFetchState: 'Get fetch state',
-            exportPage: 'Export page',
-            exportSelected: 'Export selected',
-          },
-          actions: {
-            ready: 'Ready for table actions.',
-          },
-          empty: {
-            title: 'No rows',
-            description: 'The table has no rows.',
-          },
-          state: {
-            title: 'State',
-            empty: 'No state read yet.',
-            none: 'None',
-          },
-          fetch: {
-            title: 'Fetch',
-            empty: 'No fetch state read yet.',
-          },
-          selection: {
-            title: 'Selection',
-            summary: '{count} selected, active row {row}.',
-          },
-          rows: {
-            none: 'No active row',
-          },
-        },
-      },
-    },
+    'en-US': enUSConsole,
   },
 })
 
+const globalMountOptions = {
+  plugins: [i18n],
+  stubs: {
+    Button: {
+      props: ['label', 'icon', 'severity', 'outlined', 'size'],
+      template: '<button type="button">{{ label }}</button>',
+    },
+    CScrollbar: {
+      template: '<div class="c-scrollbar-stub"><slot /></div>',
+    },
+    EmptyState: {
+      props: ['icon', 'title', 'description', 'actionLabel'],
+      template:
+        '<section class="empty-state-stub"><span>{{ title }}</span><span>{{ description }}</span><span>{{ actionLabel }}</span></section>',
+    },
+    Icons: {
+      props: ['name', 'size'],
+      template: '<span class="icon-stub" :data-name="name" />',
+    },
+    ProTable: {
+      props: ['title'],
+      template:
+        '<section class="pro-table-stub"><strong>{{ title }}</strong><slot name="empty" /></section>',
+    },
+    RouterLink: {
+      props: ['to'],
+      template: '<a class="router-link-stub" :href="to"><slot /></a>',
+    },
+    Select: {
+      props: ['modelValue', 'options', 'optionLabel', 'optionValue'],
+      template: '<div class="select-stub" />',
+    },
+    Tag: {
+      props: ['value', 'severity'],
+      template: '<span class="tag-stub" :data-severity="severity">{{ value }}</span>',
+    },
+    ToggleSwitch: {
+      props: ['modelValue'],
+      template: '<span class="toggle-stub" />',
+    },
+  },
+}
+
+function mountShell({ id, mode }: ShellMountOptions) {
+  return mount(ProTableDemoShell, {
+    global: globalMountOptions,
+    props: {
+      id,
+      mode,
+    },
+  })
+}
+
 describe('ProTableDemoShell visual foundation', () => {
-  it('preserves the table action area and source evidence panel', () => {
-    const wrapper = mount(ProTableDemoShell, {
-      global: {
-        plugins: [i18n],
-        stubs: {
-          Button: {
-            props: ['label', 'icon', 'severity', 'outlined', 'size'],
-            template: '<button type="button">{{ label }}</button>',
-          },
-          CScrollbar: {
-            template: '<div class="c-scrollbar-stub"><slot /></div>',
-          },
-          EmptyState: {
-            props: ['icon', 'title', 'description', 'actionLabel'],
-            template:
-              '<section class="empty-state-stub"><span>{{ title }}</span><span>{{ description }}</span><span>{{ actionLabel }}</span></section>',
-          },
-          Icons: {
-            props: ['name', 'size'],
-            template: '<span class="icon-stub" :data-name="name" />',
-          },
-          ProTable: {
-            props: ['title'],
-            template:
-              '<section class="pro-table-stub"><strong>{{ title }}</strong><slot name="empty" /></section>',
-          },
-          RouterLink: {
-            props: ['to'],
-            template: '<a class="router-link-stub" :href="to"><slot /></a>',
-          },
-          Select: {
-            props: ['modelValue', 'options', 'optionLabel', 'optionValue'],
-            template: '<div class="select-stub" />',
-          },
-          Tag: {
-            props: ['value', 'severity'],
-            template: '<span class="tag-stub" :data-severity="severity">{{ value }}</span>',
-          },
-          ToggleSwitch: {
-            props: ['modelValue'],
-            template: '<span class="toggle-stub" />',
-          },
-        },
-      },
-      props: {
-        id: 'components-pro-table-basic',
-        mode: 'basic',
-      },
+  it('renders shared showcase primitives around the table workspace', () => {
+    const wrapper = mountShell({
+      id: 'components-pro-table-basic',
+      mode: 'basic',
+    })
+
+    expect(wrapper.find('[data-testid="showcase-pro-table-shell"]').exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'ShowcaseHero' }).exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'ShowcaseDemoPanel' }).exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'ShowcaseToolbar' }).exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'ShowcaseSourceLinks' }).exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'ShowcaseEvidencePanel' }).exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'ShowcaseEmptyState' }).exists()).toBe(true)
+    expect(wrapper.find('[data-testid="showcase-pro-table-action-toolbar"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="showcase-pro-table-demo-region"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="showcase-pro-table-state-area"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="showcase-pro-table-source-area"]').exists()).toBe(true)
+  })
+
+  it('preserves action toolbar, table content, state result, and source evidence areas', () => {
+    const wrapper = mountShell({
+      id: 'components-pro-table-basic',
+      mode: 'basic',
     })
 
     expect(wrapper.text()).toContain('Table actions')
-    expect(wrapper.text()).toContain('Ready for table actions.')
+    expect(wrapper.text()).toContain('Use the controls to call ProTable exposed methods')
     expect(wrapper.text()).toContain('Reload')
-    expect(wrapper.text()).toContain('Basic rows')
+    expect(wrapper.text()).toContain('Basic capability rows')
     expect(wrapper.find('.pro-table-stub').exists()).toBe(true)
     expect(wrapper.find('.empty-state-stub').exists()).toBe(true)
+    expect(wrapper.text()).toContain('Table state')
+    expect(wrapper.text()).toContain('Fetch state')
+    expect(wrapper.text()).toContain('Selection and row focus')
     expect(wrapper.text()).toContain(
       'apps/web-demo/src/views/showcase/components/pro-table/shared/ProTableDemoShell.vue'
     )
+    expect(wrapper.text()).toContain('packages/vue-ui/src/ProTable/engine/types/props.ts')
+  })
+
+  it('documents column controls and valueEnum behavior on the columns route', () => {
+    const wrapper = mountShell({
+      id: 'components-pro-table-columns',
+      mode: 'columns',
+    })
+
+    expect(wrapper.text()).toContain('Column controls')
+    expect(wrapper.text()).toContain('Hide owner')
+    expect(wrapper.text()).toContain('Plain column objects')
+    expect(wrapper.text()).toContain('Value enum rendering')
+    expect(wrapper.text()).toContain('Status cells render through valueEnum')
+  })
+
+  it('renders the API event result area and readable wrapping source paths', () => {
+    const wrapper = mountShell({
+      id: 'components-pro-table-api-events',
+      mode: 'api-events',
+    })
+
+    expect(wrapper.text()).toContain('Event log')
+    expect(wrapper.text()).toContain('No table events yet')
+    expect(wrapper.text()).toContain('Injected API executor')
+    expect(wrapper.text()).toContain('ProTable package API')
+
+    const codeBlocks = wrapper.findAll('code')
+    expect(codeBlocks.length).toBeGreaterThan(1)
+    expect(
+      codeBlocks.every(
+        code => code.classes().includes('break-all') && code.classes().includes('select-all')
+      )
+    ).toBe(true)
   })
 })

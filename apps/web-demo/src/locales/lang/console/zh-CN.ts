@@ -1177,6 +1177,32 @@ const zhCNConsole = {
       badges: {
         proTableOnly: '仅 ProTable',
       },
+      intent: {
+        title: '演示意图',
+        description: '每个路由先呈现表格行为，再展示周边状态、源码与包 API 证据。',
+      },
+      table: {
+        title: '表格工作区',
+        description: '控件、ProTable 工具栏操作与实时表格保留在同一个易扫视工作区内。',
+        regionLabel: '{title} 表格演示',
+      },
+      stateArea: {
+        title: '交互证据',
+        description: '方法调用、请求状态、行聚焦、选择与事件反馈都保留在表格 chrome 外侧。',
+      },
+      capabilities: {
+        title: '能力说明',
+        description: '这些说明把路由意图、保留行为与实现边界放在演示附近。',
+      },
+      source: {
+        title: '源码与包证据',
+        description: '路由、共享壳、数据、列与包 API 路径都以可选择、可换行文本呈现。',
+      },
+      evidence: {
+        apiTitle: 'ProTable 包 API',
+        apiDescription:
+          '展示页消费既有 ProTable 组件、props、工具栏、请求与暴露方法契约，不修改包代码。',
+      },
       modes: {
         overview: {
           label: '概览',
@@ -1333,6 +1359,8 @@ const zhCNConsole = {
       },
       events: {
         title: '事件记录',
+        description: '最近的刷新、行点击、排序、过滤、分页与请求事件会作为本地证据展示。',
+        emptyTitle: '暂无表格事件',
         empty: '与表格交互后会在这里记录事件。',
         manual: '手动刷新',
         refresh: 'refresh：{detail}',

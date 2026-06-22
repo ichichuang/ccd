@@ -13,11 +13,14 @@ import type {
 import { useI18n } from 'vue-i18n'
 import { showcaseCatalog } from '../../../data/showcaseCatalog'
 import type { ShowcaseCatalogItem } from '../../../data/types'
+import ShowcaseCard from '../../../shared/ShowcaseCard.vue'
 import ShowcaseDemoPanel from '../../../shared/ShowcaseDemoPanel.vue'
 import ShowcaseEmptyState from '../../../shared/ShowcaseEmptyState.vue'
+import ShowcaseEvidencePanel from '../../../shared/ShowcaseEvidencePanel.vue'
 import ShowcaseFeatureCard from '../../../shared/ShowcaseFeatureCard.vue'
-import ShowcasePageShell from '../../../shared/ShowcasePageShell.vue'
+import ShowcaseHero from '../../../shared/ShowcaseHero.vue'
 import ShowcaseRelatedLinks from '../../../shared/ShowcaseRelatedLinks.vue'
+import ShowcaseSection from '../../../shared/ShowcaseSection.vue'
 import ShowcaseSourceLinks from '../../../shared/ShowcaseSourceLinks.vue'
 import ShowcaseToolbar from '../../../shared/ShowcaseToolbar.vue'
 import { createProTableDemoColumns } from './proTableColumns'
@@ -123,7 +126,13 @@ const SHARED_SOURCE_PATHS = [
   'apps/web-demo/src/views/showcase/components/pro-table/shared/ProTableDemoShell.vue',
   'apps/web-demo/src/views/showcase/components/pro-table/shared/proTableDemoData.ts',
   'apps/web-demo/src/views/showcase/components/pro-table/shared/proTableColumns.ts',
-]
+] as const
+
+const PRO_TABLE_API_EVIDENCE_PATHS = [
+  'packages/vue-ui/src/ProTable/ProTable.vue',
+  'packages/vue-ui/src/ProTable/engine/types/props.ts',
+  'packages/vue-ui/src/ProTable/components/ProTableToolbar.vue',
+] as const
 
 const MODE_CONFIGS: Record<ProTableDemoMode, ProTableModeConfig> = {
   overview: {
@@ -411,6 +420,11 @@ const tableSelectable = computed(() => modeConfig.value.selectable ?? false)
 const tableLoading = computed(() => Boolean(modeConfig.value.stateControls && localLoading.value))
 const demoTitle = computed(() => t(`${item.value.localeBaseKey}.try`))
 const demoDescription = computed(() => t(`showcase.proTable.modes.${props.mode}.demo`))
+const tableRegionLabel = computed(() =>
+  t('showcase.proTable.table.regionLabel', {
+    title: t(`showcase.proTable.modes.${props.mode}.tableTitle`),
+  })
+)
 const actionSummary = computed(() => t(actionMessage.value.key, actionMessage.value.params ?? {}))
 const stateSummary = computed(() => {
   if (!stateMessage.value) return t('showcase.proTable.state.empty')
@@ -423,6 +437,15 @@ const fetchSummary = computed(() => {
 const selectedCount = computed(() => selectedRows.value.length)
 const activeRowTitle = computed(
   () => activeRow.value?.capability ?? t('showcase.proTable.rows.none')
+)
+const hasTableControls = computed(() =>
+  Boolean(
+    modeConfig.value.statusFilter ||
+    modeConfig.value.ownerFilter ||
+    modeConfig.value.stateControls ||
+    modeConfig.value.virtualModeSwitch ||
+    modeConfig.value.columnControls
+  )
 )
 
 watch(
@@ -566,325 +589,364 @@ function handleRequestError(error: Error): void {
 </script>
 
 <template>
-  <ShowcasePageShell
-    :item="item"
-    :related-ids="relatedIds"
+  <article
+    class="col-stretch min-w-0 gap-lg"
+    data-testid="showcase-pro-table-shell"
   >
-    <template #demo>
-      <ShowcaseDemoPanel
-        :title="demoTitle"
-        :description="demoDescription"
-      >
-        <div class="col-stretch min-w-0 gap-md">
+    <ShowcaseHero
+      :eyebrow="$t(`${item.localeBaseKey}.eyebrow`)"
+      :title="$t(`${item.localeBaseKey}.title`)"
+      :description="$t(`${item.localeBaseKey}.description`)"
+      :icon="item.icon"
+    />
+
+    <ShowcaseDemoPanel
+      :title="demoTitle"
+      :description="demoDescription"
+    >
+      <div class="col-stretch min-w-0 gap-md">
+        <ShowcaseCard
+          icon="i-lucide-goal"
+          :title="$t('showcase.proTable.intent.title')"
+          :description="$t('showcase.proTable.intent.description')"
+          :tag="$t(`showcase.proTable.modes.${props.mode}.label`)"
+        >
           <div class="row-start min-w-0 gap-sm flex-wrap">
             <Tag
               :value="$t(`showcase.shell.demoLevels.${item.demoLevel}`)"
               :severity="item.demoLevel === 'complete' ? 'success' : 'info'"
             />
             <Tag
-              :value="$t(`showcase.proTable.modes.${props.mode}.label`)"
-              severity="secondary"
-            />
-            <Tag
               :value="$t('showcase.proTable.badges.proTableOnly')"
               severity="contrast"
             />
           </div>
+        </ShowcaseCard>
 
-          <div
-            v-if="
-              modeConfig.statusFilter ||
-              modeConfig.ownerFilter ||
-              modeConfig.stateControls ||
-              modeConfig.virtualModeSwitch ||
-              modeConfig.columnControls
-            "
-            class="grid min-w-0 grid-cols-1 gap-md lg:grid-cols-3"
-          >
-            <section
-              v-if="modeConfig.statusFilter"
-              class="demo-well col-stretch min-w-0 gap-sm"
+        <ShowcaseSection
+          :title="$t('showcase.proTable.table.title')"
+          :description="$t('showcase.proTable.table.description')"
+          icon="i-lucide-table-2"
+          data-testid="showcase-pro-table-workspace"
+        >
+          <div class="col-stretch min-w-0 gap-md">
+            <div
+              v-if="hasTableControls"
+              class="grid min-w-0 grid-cols-1 gap-md lg:grid-cols-3"
             >
-              <span class="text-xs font-semibold text-muted-foreground">
-                {{ $t('showcase.proTable.filters.status') }}
-              </span>
-              <Select
-                v-model="statusFilter"
-                :options="statusOptions"
-                option-label="label"
-                option-value="value"
-              />
-            </section>
-
-            <section
-              v-if="modeConfig.ownerFilter"
-              class="demo-well col-stretch min-w-0 gap-sm"
-            >
-              <span class="text-xs font-semibold text-muted-foreground">
-                {{ $t('showcase.proTable.filters.owner') }}
-              </span>
-              <Select
-                v-model="ownerFilter"
-                :options="ownerOptions"
-                option-label="label"
-                option-value="value"
-              />
-            </section>
-
-            <section
-              v-if="modeConfig.virtualModeSwitch"
-              class="demo-well col-stretch min-w-0 gap-sm"
-            >
-              <span class="text-xs font-semibold text-muted-foreground">
-                {{ $t('showcase.proTable.filters.scrollMode') }}
-              </span>
-              <Select
-                v-model="virtualPresentation"
-                :options="virtualModeOptions"
-                option-label="label"
-                option-value="value"
-              />
-            </section>
-
-            <section
-              v-if="modeConfig.stateControls"
-              class="demo-well col-stretch min-w-0 gap-sm"
-            >
-              <div class="row-between min-w-0 gap-sm">
-                <span class="text-sm text-foreground">
-                  {{ $t('showcase.proTable.controls.loading') }}
-                </span>
-                <ToggleSwitch v-model="localLoading" />
-              </div>
-              <div class="row-between min-w-0 gap-sm">
-                <span class="text-sm text-foreground">
-                  {{ $t('showcase.proTable.controls.empty') }}
-                </span>
-                <ToggleSwitch v-model="localEmpty" />
-              </div>
-            </section>
-
-            <section
-              v-if="modeConfig.columnControls"
-              class="demo-well col-stretch min-w-0 gap-sm"
-            >
-              <span class="text-xs font-semibold text-muted-foreground">
-                {{ $t('showcase.proTable.controls.columns') }}
-              </span>
-              <Button
-                size="small"
-                icon="i-lucide-columns-3"
-                :label="
-                  ownerColumnVisible
-                    ? $t('showcase.proTable.controls.hideOwner')
-                    : $t('showcase.proTable.controls.showOwner')
-                "
-                @click="handleToggleOwnerColumn"
-              />
-            </section>
-          </div>
-
-          <ShowcaseToolbar
-            :title="$t('showcase.proTable.toolbar.title')"
-            :description="$t('showcase.proTable.toolbar.description')"
-            :summary="actionSummary"
-          >
-            <template #actions>
-              <Button
-                size="small"
-                icon="i-lucide-refresh-cw"
-                :label="$t('showcase.proTable.controls.reload')"
-                @click="handleReload"
-              />
-              <Button
-                size="small"
-                icon="i-lucide-eraser"
-                :label="$t('showcase.proTable.controls.clearSelection')"
-                severity="secondary"
-                outlined
-                @click="handleClearSelection"
-              />
-              <Button
-                size="small"
-                icon="i-lucide-activity"
-                :label="$t('showcase.proTable.controls.getState')"
-                severity="secondary"
-                outlined
-                @click="handleReadState"
-              />
-              <Button
-                size="small"
-                icon="i-lucide-wifi"
-                :label="$t('showcase.proTable.controls.getFetchState')"
-                severity="secondary"
-                outlined
-                @click="handleReadFetchState"
-              />
-              <Button
-                size="small"
-                icon="i-lucide-download"
-                :label="$t('showcase.proTable.controls.exportPage')"
-                severity="secondary"
-                outlined
-                @click="handleExportPage"
-              />
-              <Button
-                size="small"
-                icon="i-lucide-check-square"
-                :label="$t('showcase.proTable.controls.exportSelected')"
-                severity="secondary"
-                outlined
-                @click="handleExportSelected"
-              />
-            </template>
-          </ShowcaseToolbar>
-
-          <ProTable
-            ref="tableRef"
-            v-model:selected="selectedRows"
-            :columns="tableColumns"
-            :data="tableData"
-            :request="tableRequest"
-            :request-config="tableRequestConfig"
-            :api-url="usesApiExecutor ? '/showcase/pro-table/local' : undefined"
-            api-method="GET"
-            :api-executor="tableApiExecutor"
-            data-key="data.records"
-            total-key="data.total"
-            row-key="id"
-            :title="$t(`showcase.proTable.modes.${props.mode}.tableTitle`)"
-            :loading="tableLoading"
-            :pagination="tablePagination"
-            :selectable="tableSelectable"
-            :virtual-scroll="isVirtualMode"
-            :infinite-scroll="isInfiniteMode"
-            :height-mode="tableHeightMode"
-            :height="tableHeight"
-            :show-density-control="modeConfig.showDensityControl ?? true"
-            show-toolbar
-            global-filter
-            row-hover
-            striped-rows
-            show-horizontal-lines
-            @refresh="handleRefreshEvent"
-            @row-click="handleRowClick"
-            @sort-change="handleSortChange"
-            @filter-change="handleFilterChange"
-            @page-change="handlePageChange"
-            @request-error="handleRequestError"
-          >
-            <template #empty>
-              <ShowcaseEmptyState
-                icon="i-lucide-table-2"
-                :title="$t('showcase.proTable.empty.title')"
-                :description="$t('showcase.proTable.empty.description')"
-              />
-            </template>
-          </ProTable>
-
-          <div class="grid min-w-0 grid-cols-1 gap-md lg:grid-cols-3">
-            <section class="demo-well col-stretch min-w-0 gap-xs">
-              <span class="text-xs font-semibold text-primary">
-                {{ $t('showcase.proTable.state.title') }}
-              </span>
-              <p class="text-sm text-muted-foreground m-0">
-                {{ stateSummary }}
-              </p>
-            </section>
-
-            <section class="demo-well col-stretch min-w-0 gap-xs">
-              <span class="text-xs font-semibold text-primary">
-                {{ $t('showcase.proTable.fetch.title') }}
-              </span>
-              <p class="text-sm text-muted-foreground m-0">
-                {{ fetchSummary }}
-              </p>
-            </section>
-
-            <section class="demo-well col-stretch min-w-0 gap-xs">
-              <span class="text-xs font-semibold text-primary">
-                {{ $t('showcase.proTable.selection.title') }}
-              </span>
-              <p class="text-sm text-muted-foreground m-0">
-                {{
-                  $t('showcase.proTable.selection.summary', {
-                    count: selectedCount,
-                    row: activeRowTitle,
-                  })
-                }}
-              </p>
-            </section>
-          </div>
-
-          <section
-            v-if="modeConfig.eventLog"
-            class="demo-well col-stretch min-w-0 gap-sm"
-          >
-            <span class="text-xs font-semibold text-primary">
-              {{ $t('showcase.proTable.events.title') }}
-            </span>
-            <ul
-              v-if="eventMessages.length"
-              class="col-stretch gap-xs m-0 p-0 list-none"
-            >
-              <li
-                v-for="message in eventMessages"
-                :key="message"
-                class="code-inline"
+              <section
+                v-if="modeConfig.statusFilter"
+                class="demo-well col-stretch min-w-0 gap-sm"
               >
-                {{ message }}
-              </li>
-            </ul>
-            <p
-              v-else
-              class="text-sm text-muted-foreground m-0"
+                <span class="text-xs font-semibold text-muted-foreground">
+                  {{ $t('showcase.proTable.filters.status') }}
+                </span>
+                <Select
+                  v-model="statusFilter"
+                  :options="statusOptions"
+                  option-label="label"
+                  option-value="value"
+                />
+              </section>
+
+              <section
+                v-if="modeConfig.ownerFilter"
+                class="demo-well col-stretch min-w-0 gap-sm"
+              >
+                <span class="text-xs font-semibold text-muted-foreground">
+                  {{ $t('showcase.proTable.filters.owner') }}
+                </span>
+                <Select
+                  v-model="ownerFilter"
+                  :options="ownerOptions"
+                  option-label="label"
+                  option-value="value"
+                />
+              </section>
+
+              <section
+                v-if="modeConfig.virtualModeSwitch"
+                class="demo-well col-stretch min-w-0 gap-sm"
+              >
+                <span class="text-xs font-semibold text-muted-foreground">
+                  {{ $t('showcase.proTable.filters.scrollMode') }}
+                </span>
+                <Select
+                  v-model="virtualPresentation"
+                  :options="virtualModeOptions"
+                  option-label="label"
+                  option-value="value"
+                />
+              </section>
+
+              <section
+                v-if="modeConfig.stateControls"
+                class="demo-well col-stretch min-w-0 gap-sm"
+              >
+                <div class="row-between min-w-0 gap-sm">
+                  <span class="text-sm text-foreground">
+                    {{ $t('showcase.proTable.controls.loading') }}
+                  </span>
+                  <ToggleSwitch v-model="localLoading" />
+                </div>
+                <div class="row-between min-w-0 gap-sm">
+                  <span class="text-sm text-foreground">
+                    {{ $t('showcase.proTable.controls.empty') }}
+                  </span>
+                  <ToggleSwitch v-model="localEmpty" />
+                </div>
+              </section>
+
+              <section
+                v-if="modeConfig.columnControls"
+                class="demo-well col-stretch min-w-0 gap-sm"
+              >
+                <span class="text-xs font-semibold text-muted-foreground">
+                  {{ $t('showcase.proTable.controls.columns') }}
+                </span>
+                <Button
+                  size="small"
+                  icon="i-lucide-columns-3"
+                  :label="
+                    ownerColumnVisible
+                      ? $t('showcase.proTable.controls.hideOwner')
+                      : $t('showcase.proTable.controls.showOwner')
+                  "
+                  @click="handleToggleOwnerColumn"
+                />
+              </section>
+            </div>
+
+            <ShowcaseToolbar
+              :title="$t('showcase.proTable.toolbar.title')"
+              :description="$t('showcase.proTable.toolbar.description')"
+              :summary="actionSummary"
+              data-testid="showcase-pro-table-action-toolbar"
             >
-              {{ $t('showcase.proTable.events.empty') }}
-            </p>
-          </section>
+              <template #actions>
+                <Button
+                  size="small"
+                  icon="i-lucide-refresh-cw"
+                  :label="$t('showcase.proTable.controls.reload')"
+                  @click="handleReload"
+                />
+                <Button
+                  size="small"
+                  icon="i-lucide-eraser"
+                  :label="$t('showcase.proTable.controls.clearSelection')"
+                  severity="secondary"
+                  outlined
+                  @click="handleClearSelection"
+                />
+                <Button
+                  size="small"
+                  icon="i-lucide-activity"
+                  :label="$t('showcase.proTable.controls.getState')"
+                  severity="secondary"
+                  outlined
+                  @click="handleReadState"
+                />
+                <Button
+                  size="small"
+                  icon="i-lucide-wifi"
+                  :label="$t('showcase.proTable.controls.getFetchState')"
+                  severity="secondary"
+                  outlined
+                  @click="handleReadFetchState"
+                />
+                <Button
+                  size="small"
+                  icon="i-lucide-download"
+                  :label="$t('showcase.proTable.controls.exportPage')"
+                  severity="secondary"
+                  outlined
+                  @click="handleExportPage"
+                />
+                <Button
+                  size="small"
+                  icon="i-lucide-check-square"
+                  :label="$t('showcase.proTable.controls.exportSelected')"
+                  severity="secondary"
+                  outlined
+                  @click="handleExportSelected"
+                />
+              </template>
+            </ShowcaseToolbar>
+
+            <section
+              class="material-solid col-stretch min-w-0 gap-sm p-sm"
+              :aria-label="tableRegionLabel"
+              data-testid="showcase-pro-table-demo-region"
+            >
+              <ProTable
+                ref="tableRef"
+                v-model:selected="selectedRows"
+                :columns="tableColumns"
+                :data="tableData"
+                :request="tableRequest"
+                :request-config="tableRequestConfig"
+                :api-url="usesApiExecutor ? '/showcase/pro-table/local' : undefined"
+                api-method="GET"
+                :api-executor="tableApiExecutor"
+                data-key="data.records"
+                total-key="data.total"
+                row-key="id"
+                :title="$t(`showcase.proTable.modes.${props.mode}.tableTitle`)"
+                :loading="tableLoading"
+                :pagination="tablePagination"
+                :selectable="tableSelectable"
+                :virtual-scroll="isVirtualMode"
+                :infinite-scroll="isInfiniteMode"
+                :height-mode="tableHeightMode"
+                :height="tableHeight"
+                :show-density-control="modeConfig.showDensityControl ?? true"
+                show-toolbar
+                global-filter
+                row-hover
+                striped-rows
+                show-horizontal-lines
+                @refresh="handleRefreshEvent"
+                @row-click="handleRowClick"
+                @sort-change="handleSortChange"
+                @filter-change="handleFilterChange"
+                @page-change="handlePageChange"
+                @request-error="handleRequestError"
+              >
+                <template #empty>
+                  <ShowcaseEmptyState
+                    icon="i-lucide-table-2"
+                    :title="$t('showcase.proTable.empty.title')"
+                    :description="$t('showcase.proTable.empty.description')"
+                  />
+                </template>
+              </ProTable>
+            </section>
+          </div>
+        </ShowcaseSection>
+      </div>
+    </ShowcaseDemoPanel>
+
+    <ShowcaseSection
+      :title="$t('showcase.proTable.stateArea.title')"
+      :description="$t('showcase.proTable.stateArea.description')"
+      icon="i-lucide-activity"
+      data-testid="showcase-pro-table-state-area"
+    >
+      <div class="grid min-w-0 grid-cols-1 gap-md lg:grid-cols-3">
+        <ShowcaseCard
+          icon="i-lucide-list-checks"
+          :title="$t('showcase.proTable.state.title')"
+          :description="stateSummary"
+        />
+
+        <ShowcaseCard
+          icon="i-lucide-wifi"
+          :title="$t('showcase.proTable.fetch.title')"
+          :description="fetchSummary"
+        />
+
+        <ShowcaseCard
+          icon="i-lucide-check-square"
+          :title="$t('showcase.proTable.selection.title')"
+          :description="
+            $t('showcase.proTable.selection.summary', {
+              count: selectedCount,
+              row: activeRowTitle,
+            })
+          "
+        />
+      </div>
+
+      <ShowcaseCard
+        v-if="modeConfig.eventLog"
+        icon="i-lucide-radio"
+        :title="$t('showcase.proTable.events.title')"
+        :description="$t('showcase.proTable.events.description')"
+      >
+        <ul
+          v-if="eventMessages.length"
+          class="col-stretch gap-xs m-0 p-0 list-none"
+        >
+          <li
+            v-for="message in eventMessages"
+            :key="message"
+            class="code-inline break-all"
+          >
+            {{ message }}
+          </li>
+        </ul>
+        <ShowcaseEmptyState
+          v-else
+          icon="i-lucide-radio"
+          :title="$t('showcase.proTable.events.emptyTitle')"
+          :description="$t('showcase.proTable.events.empty')"
+        />
+      </ShowcaseCard>
+    </ShowcaseSection>
+
+    <ShowcaseSection
+      :title="$t('showcase.proTable.capabilities.title')"
+      :description="$t('showcase.proTable.capabilities.description')"
+      icon="i-lucide-panels-top-left"
+      data-testid="showcase-pro-table-capabilities"
+    >
+      <div class="grid min-w-0 grid-cols-1 gap-md xl:grid-cols-2">
+        <div class="col-stretch min-w-0 gap-md">
+          <ShowcaseFeatureCard
+            v-for="featureKey in featureKeys"
+            :key="featureKey"
+            :icon="getFeatureIcon(featureKey)"
+            :title="$t(`showcase.proTable.features.${featureKey}.title`)"
+            :description="$t(`showcase.proTable.features.${featureKey}.description`)"
+            :tag="$t(`showcase.proTable.features.${featureKey}.tag`)"
+          />
         </div>
-      </ShowcaseDemoPanel>
-    </template>
 
-    <template #features>
-      <ShowcaseFeatureCard
-        v-for="featureKey in featureKeys"
-        :key="featureKey"
-        :icon="getFeatureIcon(featureKey)"
-        :title="$t(`showcase.proTable.features.${featureKey}.title`)"
-        :description="$t(`showcase.proTable.features.${featureKey}.description`)"
-        :tag="$t(`showcase.proTable.features.${featureKey}.tag`)"
-      />
-    </template>
+        <div class="col-stretch min-w-0 gap-md">
+          <ShowcaseFeatureCard
+            v-for="featureKey in explanationKeys"
+            :key="featureKey"
+            :icon="getFeatureIcon(featureKey)"
+            :title="$t(`showcase.proTable.features.${featureKey}.title`)"
+            :description="$t(`showcase.proTable.features.${featureKey}.description`)"
+            :tag="$t(`showcase.proTable.features.${featureKey}.tag`)"
+          />
+        </div>
+      </div>
+    </ShowcaseSection>
 
-    <template #explanation>
-      <ShowcaseFeatureCard
-        v-for="featureKey in explanationKeys"
-        :key="featureKey"
-        :icon="getFeatureIcon(featureKey)"
-        :title="$t(`showcase.proTable.features.${featureKey}.title`)"
-        :description="$t(`showcase.proTable.features.${featureKey}.description`)"
-        :tag="$t(`showcase.proTable.features.${featureKey}.tag`)"
-      />
-    </template>
+    <ShowcaseSection
+      :title="$t('showcase.proTable.source.title')"
+      :description="$t('showcase.proTable.source.description')"
+      icon="i-lucide-folder-code"
+      data-testid="showcase-pro-table-source-area"
+    >
+      <div class="grid min-w-0 grid-cols-1 gap-md xl:grid-cols-2">
+        <ShowcaseSourceLinks :source-paths="sourcePaths" />
 
-    <template #technical="{ item: scopedItem }">
-      <ShowcaseFeatureCard
-        v-for="technicalKey in technicalKeys"
-        :key="technicalKey"
-        :icon="getTechnicalIcon(technicalKey)"
-        :title="$t(`showcase.proTable.technical.${technicalKey}.title`)"
-        :description="$t(`showcase.proTable.technical.${technicalKey}.description`)"
-        :tag="$t('showcase.shell.technical.title')"
-      />
-      <ShowcaseSourceLinks
-        :item="scopedItem"
-        :source-paths="sourcePaths"
-      />
-      <ShowcaseRelatedLinks
-        :item="scopedItem"
-        :related-ids="relatedIds"
-      />
-    </template>
-  </ShowcasePageShell>
+        <ShowcaseEvidencePanel
+          :title="$t('showcase.proTable.evidence.apiTitle')"
+          :description="$t('showcase.proTable.evidence.apiDescription')"
+          :empty-text="$t('showcase.shell.source.empty')"
+          :source-paths="PRO_TABLE_API_EVIDENCE_PATHS"
+        />
+      </div>
+
+      <div class="grid min-w-0 grid-cols-1 gap-md xl:grid-cols-2">
+        <ShowcaseFeatureCard
+          v-for="technicalKey in technicalKeys"
+          :key="technicalKey"
+          :icon="getTechnicalIcon(technicalKey)"
+          :title="$t(`showcase.proTable.technical.${technicalKey}.title`)"
+          :description="$t(`showcase.proTable.technical.${technicalKey}.description`)"
+          :tag="$t('showcase.shell.technical.title')"
+        />
+      </div>
+    </ShowcaseSection>
+
+    <ShowcaseRelatedLinks
+      :item="item"
+      :related-ids="relatedIds"
+    />
+  </article>
 </template>
