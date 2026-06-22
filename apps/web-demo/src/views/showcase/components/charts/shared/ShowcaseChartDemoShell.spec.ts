@@ -69,6 +69,9 @@ describe('Phase 2C charts showcase source constraints', () => {
 
     expect(shell).toContain('<UseEcharts')
     expect(shell).toContain('createShowcaseChartOption')
+    expect(shell).toContain(':on-events="chartEvents"')
+    expect(shell).toContain('showcase-chart-stage')
+    expect(shell).not.toContain('@finished=')
     expect(rawChartRuntimePattern.test(shell)).toBe(false)
   })
 

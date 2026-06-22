@@ -50,6 +50,9 @@ const chartKind = computed<ShowcaseChartDemoKind>(() => {
   return 'overview'
 })
 const option = computed(() => createShowcaseChartOption(chartKind.value))
+const chartEvents = computed(() => ({
+  finished: recordFinished,
+}))
 const isResponsiveDemo = computed(() => chartKind.value === 'responsive')
 const isStateDemo = computed(() => chartKind.value === 'states')
 const isEventDemo = computed(() => chartKind.value === 'events')
@@ -154,16 +157,16 @@ function recordFinished(): void {
       </ShowcaseToolbar>
 
       <section
-        class="demo-stage min-w-0 h-[44vh] min-h-[320px] max-h-[560px]"
-        :class="{ 'md:max-w-[72%]': compact }"
+        class="showcase-chart-stage demo-stage min-w-0"
+        :class="{ 'showcase-chart-stage--compact': compact }"
         :aria-label="chartRegionLabel"
         data-testid="showcase-chart-region"
       >
         <UseEcharts
           :option="option"
           :loading="loading"
+          :on-events="chartEvents"
           @chart-ready="recordReady"
-          @finished="recordFinished"
         />
       </section>
     </ShowcaseDemoPanel>
@@ -254,3 +257,17 @@ function recordFinished(): void {
     />
   </article>
 </template>
+
+<style scoped>
+.showcase-chart-stage {
+  height: 44vh;
+  min-height: 320px;
+  max-height: 560px;
+}
+
+@media (width >= 768px) {
+  .showcase-chart-stage--compact {
+    max-width: 72%;
+  }
+}
+</style>
