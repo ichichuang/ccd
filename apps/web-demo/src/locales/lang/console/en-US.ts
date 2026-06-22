@@ -1073,6 +1073,9 @@ const enUSConsole = {
         },
       },
       feedback: {
+        actionsTitle: 'Feedback actions',
+        actionsDescription:
+          'Trigger dialog, message, toast, and empty-state feedback from one action group.',
         openDialog: 'Open dialog',
         showMessage: 'Show message',
         showToast: 'Show toast',
@@ -1372,6 +1375,11 @@ const enUSConsole = {
         getFetchState: 'Get fetch state',
         exportPage: 'Export page',
         exportSelected: 'Export selected',
+      },
+      toolbar: {
+        title: 'Table actions',
+        description:
+          'Run table methods and inspect state feedback without leaving the data surface.',
       },
       actions: {
         ready: 'Use the controls to call ProTable exposed methods and inspect the result here.',

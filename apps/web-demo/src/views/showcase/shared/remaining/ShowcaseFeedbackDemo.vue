@@ -2,7 +2,10 @@
 import { CScrollbar } from '@ccd/vue-ui'
 import { useI18n } from 'vue-i18n'
 import { showcaseFeedbackAdapter } from '@/adapters/showcaseFeedback.adapter'
+import ShowcaseCard from '../ShowcaseCard.vue'
+import ShowcaseEmptyState from '../ShowcaseEmptyState.vue'
 import ShowcaseFeedbackDialogBridge from '../ShowcaseFeedbackDialogBridge'
+import ShowcaseToolbar from '../ShowcaseToolbar.vue'
 
 interface FeedbackLog {
   id: number
@@ -62,48 +65,46 @@ function recordEmptyStateAction(): void {
 <template>
   <ShowcaseFeedbackDialogBridge v-slot="{ openInfoDialog: openDialog }">
     <section class="grid min-w-0 grid-cols-1 gap-md xl:grid-cols-2">
-      <article class="material-solid col-stretch min-w-0 gap-md p-md">
-        <div class="row-start min-w-0 gap-sm flex-wrap">
-          <Button
-            :label="$t('showcase.remaining.feedback.openDialog')"
-            severity="primary"
-            @click="openInfoDialog(openDialog)"
-          />
-          <Button
-            :label="$t('showcase.remaining.feedback.showMessage')"
-            severity="success"
-            outlined
-            @click="showMessage"
-          />
-          <Button
-            :label="$t('showcase.remaining.feedback.showToast')"
-            severity="warn"
-            outlined
-            @click="showToast"
-          />
-        </div>
+      <ShowcaseCard
+        icon="i-lucide-message-circle"
+        :title="$t('showcase.remaining.feedback.actionsTitle')"
+        :description="$t('showcase.remaining.feedback.actionsDescription')"
+      >
+        <ShowcaseToolbar class="min-w-0">
+          <template #actions>
+            <Button
+              :label="$t('showcase.remaining.feedback.openDialog')"
+              severity="primary"
+              @click="openInfoDialog(openDialog)"
+            />
+            <Button
+              :label="$t('showcase.remaining.feedback.showMessage')"
+              severity="success"
+              outlined
+              @click="showMessage"
+            />
+            <Button
+              :label="$t('showcase.remaining.feedback.showToast')"
+              severity="warn"
+              outlined
+              @click="showToast"
+            />
+          </template>
+        </ShowcaseToolbar>
 
-        <EmptyState
+        <ShowcaseEmptyState
           icon="i-lucide-message-circle"
           :title="$t('showcase.remaining.feedback.emptyTitle')"
           :description="$t('showcase.remaining.feedback.emptyDescription')"
           :action-label="$t('showcase.remaining.feedback.emptyAction')"
           @action="recordEmptyStateAction"
         />
-      </article>
+      </ShowcaseCard>
 
-      <article class="material-solid col-stretch min-w-0 gap-md p-md">
-        <div class="row-start min-w-0 gap-sm">
-          <Icons
-            name="i-lucide-list-checks"
-            size="lg"
-            class="text-primary"
-          />
-          <h3 class="text-base font-semibold text-foreground m-0">
-            {{ $t('showcase.remaining.feedback.logTitle') }}
-          </h3>
-        </div>
-
+      <ShowcaseCard
+        icon="i-lucide-list-checks"
+        :title="$t('showcase.remaining.feedback.logTitle')"
+      >
         <CScrollbar class="h-[32vh]">
           <ul class="col-stretch gap-xs m-0 p-0 list-none">
             <li
@@ -118,14 +119,14 @@ function recordEmptyStateAction(): void {
               />
             </li>
           </ul>
-          <EmptyState
+          <ShowcaseEmptyState
             v-if="visibleLogs.length === 0"
             icon="i-lucide-inbox"
             :title="$t('showcase.remaining.feedback.noLogsTitle')"
             :description="$t('showcase.remaining.feedback.noLogsDescription')"
           />
         </CScrollbar>
-      </article>
+      </ShowcaseCard>
     </section>
   </ShowcaseFeedbackDialogBridge>
 </template>

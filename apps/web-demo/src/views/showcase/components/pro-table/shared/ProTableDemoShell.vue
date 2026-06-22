@@ -14,10 +14,12 @@ import { useI18n } from 'vue-i18n'
 import { showcaseCatalog } from '../../../data/showcaseCatalog'
 import type { ShowcaseCatalogItem } from '../../../data/types'
 import ShowcaseDemoPanel from '../../../shared/ShowcaseDemoPanel.vue'
+import ShowcaseEmptyState from '../../../shared/ShowcaseEmptyState.vue'
 import ShowcaseFeatureCard from '../../../shared/ShowcaseFeatureCard.vue'
 import ShowcasePageShell from '../../../shared/ShowcasePageShell.vue'
 import ShowcaseRelatedLinks from '../../../shared/ShowcaseRelatedLinks.vue'
 import ShowcaseSourceLinks from '../../../shared/ShowcaseSourceLinks.vue'
+import ShowcaseToolbar from '../../../shared/ShowcaseToolbar.vue'
 import { createProTableDemoColumns } from './proTableColumns'
 import type { ProTableDemoColumnPreset } from './proTableColumns'
 import {
@@ -682,8 +684,12 @@ function handleRequestError(error: Error): void {
             </section>
           </div>
 
-          <section class="demo-well col-stretch min-w-0 gap-sm">
-            <div class="row-start min-w-0 gap-sm flex-wrap">
+          <ShowcaseToolbar
+            :title="$t('showcase.proTable.toolbar.title')"
+            :description="$t('showcase.proTable.toolbar.description')"
+            :summary="actionSummary"
+          >
+            <template #actions>
               <Button
                 size="small"
                 icon="i-lucide-refresh-cw"
@@ -730,11 +736,8 @@ function handleRequestError(error: Error): void {
                 outlined
                 @click="handleExportSelected"
               />
-            </div>
-            <p class="text-sm text-muted-foreground m-0">
-              {{ actionSummary }}
-            </p>
-          </section>
+            </template>
+          </ShowcaseToolbar>
 
           <ProTable
             ref="tableRef"
@@ -771,7 +774,7 @@ function handleRequestError(error: Error): void {
             @request-error="handleRequestError"
           >
             <template #empty>
-              <EmptyState
+              <ShowcaseEmptyState
                 icon="i-lucide-table-2"
                 :title="$t('showcase.proTable.empty.title')"
                 :description="$t('showcase.proTable.empty.description')"

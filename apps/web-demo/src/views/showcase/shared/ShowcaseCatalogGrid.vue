@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { showcaseCatalog, showcaseCatalogGroups } from '../data/showcaseCatalog'
 import type { ShowcaseCatalogGroup, ShowcaseCatalogItem, ShowcaseDemoLevel } from '../data/types'
+import ShowcaseSection from './ShowcaseSection.vue'
 
 defineOptions({ name: 'ShowcaseCatalogGrid' })
 
@@ -33,38 +34,23 @@ function getDemoLevelSeverity(level: ShowcaseDemoLevel): 'success' | 'info' {
 
 <template>
   <section class="col-stretch min-w-0 gap-lg">
-    <article
+    <ShowcaseSection
       v-for="section in groupSections"
       :key="section.group.id"
-      class="col-stretch min-w-0 gap-md"
+      :icon="section.group.icon"
+      :title="$t(section.group.titleKey)"
+      :description="$t(section.group.descriptionKey)"
     >
-      <header class="row-start min-w-0 gap-md">
-        <span class="glass-icon-box text-primary">
-          <Icons
-            :name="section.group.icon"
-            size="lg"
-          />
-        </span>
-        <div class="col-stretch min-w-0 gap-xs">
-          <h2 class="text-lg font-semibold text-foreground m-0">
-            {{ $t(section.group.titleKey) }}
-          </h2>
-          <p class="text-sm text-muted-foreground m-0">
-            {{ $t(section.group.descriptionKey) }}
-          </p>
-        </div>
-      </header>
-
       <div class="grid min-w-0 grid-cols-1 gap-md md:grid-cols-2 xl:grid-cols-3">
         <RouterLink
           v-for="item in section.items"
           :key="item.id"
           :to="item.path"
           :aria-current="item.id === props.activeId ? 'page' : undefined"
-          class="material-solid interactive-card col-stretch min-w-0 gap-sm p-md no-underline"
+          class="material-solid col-stretch min-w-0 gap-md p-md no-underline ring-focus-focus"
         >
           <div class="row-between min-w-0 gap-md">
-            <span class="glass-icon-box text-primary">
+            <span class="center rounded-md p-sm bg-primary-light text-primary">
               <Icons
                 :name="item.icon"
                 size="md"
@@ -80,7 +66,7 @@ function getDemoLevelSeverity(level: ShowcaseDemoLevel): 'success' | 'info' {
             <h3 class="text-base font-semibold text-foreground m-0">
               {{ $t(item.titleKey) }}
             </h3>
-            <p class="text-sm text-muted-foreground m-0 text-ellipsis-2">
+            <p class="text-sm text-muted-foreground m-0">
               {{ $t(`${item.localeBaseKey}.description`) }}
             </p>
           </div>
@@ -98,6 +84,6 @@ function getDemoLevelSeverity(level: ShowcaseDemoLevel): 'success' | 'info' {
           </div>
         </RouterLink>
       </div>
-    </article>
+    </ShowcaseSection>
   </section>
 </template>

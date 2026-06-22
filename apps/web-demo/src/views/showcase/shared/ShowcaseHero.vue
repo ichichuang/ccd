@@ -20,8 +20,8 @@ const props = defineProps<ShowcaseHeroProps>()
 </script>
 
 <template>
-  <header class="material-elevated col-stretch min-w-0 gap-lg">
-    <div class="row-between min-w-0 gap-lg">
+  <header class="material-elevated col-stretch min-w-0 gap-md">
+    <div class="col-stretch min-w-0 gap-md lg:row-between">
       <div class="col-stretch min-w-0 gap-sm">
         <span
           v-if="props.eyebrow"
@@ -39,7 +39,7 @@ const props = defineProps<ShowcaseHeroProps>()
 
       <span
         v-if="props.icon"
-        class="glass-icon-box text-primary"
+        class="center rounded-lg p-md bg-primary-light text-primary"
       >
         <Icons
           :name="props.icon"

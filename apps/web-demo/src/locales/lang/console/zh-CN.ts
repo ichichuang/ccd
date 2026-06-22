@@ -970,6 +970,8 @@ const zhCNConsole = {
         },
       },
       feedback: {
+        actionsTitle: '反馈操作',
+        actionsDescription: '在同一个操作组中触发 Dialog、Message、Toast 与空状态反馈。',
         openDialog: '打开 Dialog',
         showMessage: '显示 Message',
         showToast: '显示 Toast',
@@ -1267,6 +1269,10 @@ const zhCNConsole = {
         getFetchState: '读取请求状态',
         exportPage: '导出当前页',
         exportSelected: '导出选中',
+      },
+      toolbar: {
+        title: '表格操作',
+        description: '在数据表面附近运行表格方法，并查看状态反馈。',
       },
       actions: {
         ready: '使用控件调用 ProTable 暴露方法，并在这里查看结果。',
