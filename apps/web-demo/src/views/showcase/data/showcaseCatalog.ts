@@ -1,4 +1,9 @@
-import type { ShowcaseCatalogGroup, ShowcaseCatalogItem, ShowcaseRouteMeta } from './types'
+import type {
+  ShowcaseCatalogGroup,
+  ShowcaseCatalogItem,
+  ShowcaseGroupId,
+  ShowcaseRouteMeta,
+} from './types'
 
 type ShowcaseItemInput = Omit<ShowcaseCatalogItem, 'localeBaseKey' | 'sourcePaths' | 'tags'> & {
   sourcePath: string
@@ -7,6 +12,17 @@ type ShowcaseItemInput = Omit<ShowcaseCatalogItem, 'localeBaseKey' | 'sourcePath
 }
 
 type ShowcaseViewModuleLoader = () => Promise<unknown>
+
+interface ShowcaseRouteGroup {
+  id: string
+  groupId: ShowcaseGroupId
+  path: `/showcase${string}`
+  name: string
+  titleKey: `router.showcase.${string}`
+  icon: `i-${string}`
+  rank: number
+  redirect: `/showcase${string}`
+}
 
 const SHOWCASE_VIEW_SOURCE_PREFIX = 'apps/web-demo/src/views/showcase/'
 const SHOWCASE_PLACEHOLDER_SOURCE_PATH =
@@ -751,6 +767,82 @@ export const SHOWCASE_ROOT_ROUTE = {
   redirect: '/showcase/overview',
 } as const
 
+export const SHOWCASE_ROUTE_GROUPS = [
+  {
+    id: 'components-pro-table',
+    groupId: 'tables',
+    path: '/showcase/components/pro-table',
+    name: 'ShowcaseComponentsProTable',
+    titleKey: 'router.showcase.components.proTable.root',
+    icon: 'i-lucide-table',
+    rank: 20,
+    redirect: '/showcase/components/pro-table/overview',
+  },
+  {
+    id: 'components-pro-form',
+    groupId: 'forms',
+    path: '/showcase/components/pro-form',
+    name: 'ShowcaseComponentsProForm',
+    titleKey: 'router.showcase.components.proForm.root',
+    icon: 'i-lucide-form-input',
+    rank: 40,
+    redirect: '/showcase/components/pro-form/overview',
+  },
+  {
+    id: 'components-charts',
+    groupId: 'charts',
+    path: '/showcase/components/charts',
+    name: 'ShowcaseComponentsCharts',
+    titleKey: 'router.showcase.components.charts.root',
+    icon: 'i-lucide-chart-no-axes-combined',
+    rank: 60,
+    redirect: '/showcase/components/charts/overview',
+  },
+  {
+    id: 'hooks',
+    groupId: 'hooks',
+    path: '/showcase/hooks',
+    name: 'ShowcaseHooks',
+    titleKey: 'router.showcase.hooks.root',
+    icon: 'i-lucide-waypoints',
+    rank: 100,
+    redirect: '/showcase/hooks/overview',
+  },
+  {
+    id: 'utils',
+    groupId: 'utils',
+    path: '/showcase/utils',
+    name: 'ShowcaseUtils',
+    titleKey: 'router.showcase.utils.root',
+    icon: 'i-lucide-wrench',
+    rank: 120,
+    redirect: '/showcase/utils/overview',
+  },
+  {
+    id: 'runtime',
+    groupId: 'runtime',
+    path: '/showcase/runtime',
+    name: 'ShowcaseRuntime',
+    titleKey: 'router.showcase.runtime.root',
+    icon: 'i-lucide-cpu',
+    rank: 140,
+    redirect: '/showcase/runtime/overview',
+  },
+  {
+    id: 'design',
+    groupId: 'design',
+    path: '/showcase/design',
+    name: 'ShowcaseDesign',
+    titleKey: 'router.showcase.design.root',
+    icon: 'i-lucide-swatch-book',
+    rank: 160,
+    redirect: '/showcase/design/tokens',
+  },
+] satisfies ShowcaseRouteGroup[]
+
+const COMPONENT_ROUTE_GROUPS = ['tables', 'forms', 'charts'] satisfies ShowcaseGroupId[]
+const ROOT_ROUTE_GROUPS = ['hooks', 'utils', 'runtime', 'design'] satisfies ShowcaseGroupId[]
+
 function toShowcaseViewModuleKey(sourcePath: string, id: string): string {
   if (!sourcePath.startsWith(SHOWCASE_VIEW_SOURCE_PREFIX) || !sourcePath.endsWith('.vue')) {
     throw new Error(`[ShowcaseCatalog] Invalid Vue source path for ${id}: ${sourcePath}`)
@@ -824,7 +916,10 @@ function createCatalogGroupRoute(
     path: item.path,
     name: item.name,
     redirect,
-    meta: createRouteMeta(item),
+    meta: {
+      ...createRouteMeta(item),
+      hiddenTag: true,
+    },
     children,
   }
 }
@@ -833,10 +928,51 @@ function sortCatalogItems(items: ShowcaseCatalogItem[]): ShowcaseCatalogItem[] {
   return [...items].sort((a, b) => a.rank - b.rank)
 }
 
+function sortRouteConfigs(routes: RouteConfig[]): RouteConfig[] {
+  return [...routes].sort((a, b) => (a.meta?.rank ?? 999) - (b.meta?.rank ?? 999))
+}
+
 function requireCatalogItem(id: ShowcaseCatalogItem['id']): ShowcaseCatalogItem {
   const item = showcaseCatalog.find(catalogItem => catalogItem.id === id)
   if (!item) throw new Error(`[ShowcaseCatalog] Missing required catalog item: ${id}`)
   return item
+}
+
+function requireRouteGroup(id: ShowcaseRouteGroup['id']): ShowcaseRouteGroup {
+  const group = SHOWCASE_ROUTE_GROUPS.find(routeGroup => routeGroup.id === id)
+  if (!group) throw new Error(`[ShowcaseCatalog] Missing required route group: ${id}`)
+  return group
+}
+
+function createRouteGroupMeta(group: ShowcaseRouteGroup): NonNullable<RouteConfig['meta']> {
+  return {
+    titleKey: group.titleKey,
+    icon: group.icon,
+    rank: group.rank,
+    hiddenTag: true,
+    showcaseGroupId: group.groupId,
+  }
+}
+
+function createRouteGroupRoute(group: ShowcaseRouteGroup, children: RouteConfig[]): RouteConfig {
+  return {
+    path: group.path,
+    name: group.name,
+    redirect: group.redirect,
+    meta: createRouteGroupMeta(group),
+    children,
+  }
+}
+
+function createCatalogRoutesByGroupId(
+  items: ShowcaseCatalogItem[],
+  groupId: ShowcaseGroupId
+): RouteConfig[] {
+  return sortCatalogItems(items.filter(item => item.groupId === groupId)).map(createCatalogRoute)
+}
+
+function isRootGroupedCatalogItem(item: ShowcaseCatalogItem): boolean {
+  return ROOT_ROUTE_GROUPS.some(groupId => groupId === item.groupId)
 }
 
 export function createShowcaseRoutes(): RouteConfig {
@@ -845,11 +981,39 @@ export function createShowcaseRoutes(): RouteConfig {
   const componentsChildren = sortCatalogItems(
     showcaseCatalog.filter(item => item.parentId === componentsRoot.id)
   )
+  const componentPrimitiveChildren = componentsChildren.filter(
+    item => !COMPONENT_ROUTE_GROUPS.some(groupId => groupId === item.groupId)
+  )
   const rootChildren = sortCatalogItems(
     showcaseCatalog.filter(
-      item => item.id === overview.id || item.id === componentsRoot.id || !item.parentId
+      item =>
+        item.id === overview.id ||
+        item.id === componentsRoot.id ||
+        (!item.parentId && !isRootGroupedCatalogItem(item))
     )
   )
+  const rootChildRoutes = rootChildren.map(item => {
+    if (item.id !== componentsRoot.id) return createCatalogRoute(item)
+    return createCatalogGroupRoute(
+      item,
+      sortRouteConfigs([
+        ...componentPrimitiveChildren.map(createCatalogRoute),
+        createRouteGroupRoute(
+          requireRouteGroup('components-pro-table'),
+          createCatalogRoutesByGroupId(componentsChildren, 'tables')
+        ),
+        createRouteGroupRoute(
+          requireRouteGroup('components-pro-form'),
+          createCatalogRoutesByGroupId(componentsChildren, 'forms')
+        ),
+        createRouteGroupRoute(
+          requireRouteGroup('components-charts'),
+          createCatalogRoutesByGroupId(componentsChildren, 'charts')
+        ),
+      ]),
+      '/showcase/components/primevue-adapter'
+    )
+  })
 
   return {
     path: SHOWCASE_ROOT_ROUTE.path,
@@ -859,14 +1023,26 @@ export function createShowcaseRoutes(): RouteConfig {
       titleKey: SHOWCASE_ROOT_ROUTE.titleKey,
       icon: SHOWCASE_ROOT_ROUTE.icon,
       rank: SHOWCASE_ROOT_ROUTE.rank,
+      hiddenTag: true,
     },
-    children: rootChildren.map(item => {
-      if (item.id !== componentsRoot.id) return createCatalogRoute(item)
-      return createCatalogGroupRoute(
-        item,
-        componentsChildren.map(createCatalogRoute),
-        '/showcase/components/primevue-adapter'
-      )
-    }),
+    children: sortRouteConfigs([
+      ...rootChildRoutes,
+      createRouteGroupRoute(
+        requireRouteGroup('hooks'),
+        createCatalogRoutesByGroupId(showcaseCatalog, 'hooks')
+      ),
+      createRouteGroupRoute(
+        requireRouteGroup('utils'),
+        createCatalogRoutesByGroupId(showcaseCatalog, 'utils')
+      ),
+      createRouteGroupRoute(
+        requireRouteGroup('runtime'),
+        createCatalogRoutesByGroupId(showcaseCatalog, 'runtime')
+      ),
+      createRouteGroupRoute(
+        requireRouteGroup('design'),
+        createCatalogRoutesByGroupId(showcaseCatalog, 'design')
+      ),
+    ]),
   }
 }

@@ -48,6 +48,7 @@ interface SidebarShowcaseDiagnostics {
   distances: {
     root: number | null
     components: number | null
+    proTable: number | null
     proTableBasic: number | null
   }
 }
@@ -78,6 +79,8 @@ const showcaseRootRowSelector =
   '[data-layout-sidebar="true"] .admin-sidebar-menu__visual-row--root:has-text("展示")'
 const showcaseComponentsRowSelector =
   '[data-layout-sidebar="true"] .admin-sidebar-menu__visual-row:has-text("组件")'
+const showcaseProTableRowSelector =
+  '[data-layout-sidebar="true"] .admin-sidebar-menu__visual-row:has([data-menu-label-key="/showcase/components/pro-table"])'
 const systemConfigurationHeaderSelector =
   '[data-layout-sidebar="true"] .p-panelmenu-header-content:has-text("系统")'
 const systemConfigurationRowSelector =
@@ -255,6 +258,7 @@ async function snapshotShowcaseDiagnostics(page: Page): Promise<SidebarShowcaseD
     const queue = [...menuModel]
     let rootItem: MenuModelItem | null = null
     let componentsItem: MenuModelItem | null = null
+    let proTableItem: MenuModelItem | null = null
     let proTableBasicItem: MenuModelItem | null = null
 
     while (queue.length > 0) {
@@ -263,6 +267,7 @@ async function snapshotShowcaseDiagnostics(page: Page): Promise<SidebarShowcaseD
 
       if (candidate.key === '/showcase') rootItem = candidate
       if (candidate.key === '/showcase/components') componentsItem = candidate
+      if (candidate.key === '/showcase/components/pro-table') proTableItem = candidate
       if (candidate.route?.path === '/showcase/components/pro-table/basic') {
         proTableBasicItem = candidate
       }
@@ -292,6 +297,7 @@ async function snapshotShowcaseDiagnostics(page: Page): Promise<SidebarShowcaseD
       distances: {
         root: activeDistance(rootItem),
         components: activeDistance(componentsItem),
+        proTable: activeDistance(proTableItem),
         proTableBasic: activeDistance(proTableBasicItem),
       },
     }
@@ -522,15 +528,18 @@ test.describe('sidebar route/menu first-paint synchronization', () => {
 
     const showcaseRootRow = directPage.locator(showcaseRootRowSelector)
     const showcaseComponentsRow = directPage.locator(showcaseComponentsRowSelector)
+    const showcaseProTableRow = directPage.locator(showcaseProTableRowSelector)
     const proTableBasicItem = directPage.locator(showcaseProTableBasicSidebarItemSelector)
     const proTableBasicRow = directPage.locator(showcaseProTableBasicRowSelector)
 
     await expect(showcaseRootRow).toBeVisible()
     await expect(showcaseComponentsRow).toBeVisible()
+    await expect(showcaseProTableRow).toBeVisible()
     await expect(proTableBasicItem).toBeVisible()
     await expect(proTableBasicRow).toBeVisible()
     await expect(showcaseRootRow).toHaveAttribute('data-menu-row-state', 'ancestor')
     await expect(showcaseComponentsRow).toHaveAttribute('data-menu-row-state', 'ancestor')
+    await expect(showcaseProTableRow).toHaveAttribute('data-menu-row-state', 'ancestor')
     await expect(proTableBasicItem).toHaveAttribute('aria-current', 'page')
     await expect(proTableBasicItem).toHaveAttribute('data-route-active', 'true')
     await expect(proTableBasicItem).toHaveAttribute('data-route-exact-active', 'true')
@@ -553,6 +562,7 @@ test.describe('sidebar route/menu first-paint synchronization', () => {
       fullPath: '/showcase/components/pro-table/basic',
     })
     expect(diagnostics.distances.proTableBasic).toBe(0)
+    expect(diagnostics.distances.proTable).toBeGreaterThan(0)
     expect(diagnostics.distances.components).toBeGreaterThan(0)
     expect(diagnostics.distances.root).toBeGreaterThan(0)
 
@@ -562,6 +572,7 @@ test.describe('sidebar route/menu first-paint synchronization', () => {
     await expect(proTableBasicRow).toHaveAttribute('data-menu-row-state', 'active')
     await expect(showcaseRootRow).toHaveAttribute('data-menu-row-state', 'ancestor')
     await expect(showcaseComponentsRow).toHaveAttribute('data-menu-row-state', 'ancestor')
+    await expect(showcaseProTableRow).toHaveAttribute('data-menu-row-state', 'ancestor')
 
     await directPage.locator('[data-layout-content="true"]').hover()
     await expect(proTableBasicItem).toHaveAttribute('data-route-exact-active', 'true')

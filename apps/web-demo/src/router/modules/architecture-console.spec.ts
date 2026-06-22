@@ -16,7 +16,7 @@ import {
   type RouteModuleFile,
   type RouteModuleLoaderRecord,
 } from '../utils/routeModules'
-import { showcaseCatalog } from '../../views/showcase/data/showcaseCatalog'
+import { SHOWCASE_ROUTE_GROUPS, showcaseCatalog } from '../../views/showcase/data/showcaseCatalog'
 
 type LazyRouteComponent = () => Promise<unknown>
 type LazyRouteComponentRoute = RouteConfig & { component: LazyRouteComponent }
@@ -41,9 +41,9 @@ const EXPECTED_CONSOLE_ROUTE_RECORD_COUNT = 23
 const BASE_STATIC_ROUTE_RECORD_COUNT = 24
 const BASE_REGISTERED_ROUTE_RECORD_COUNT = 30
 const EXPECTED_STATIC_ROUTE_RECORD_COUNT =
-  BASE_STATIC_ROUTE_RECORD_COUNT + showcaseCatalog.length + 1
+  BASE_STATIC_ROUTE_RECORD_COUNT + showcaseCatalog.length + SHOWCASE_ROUTE_GROUPS.length + 1
 const EXPECTED_REGISTERED_ROUTE_RECORD_COUNT =
-  BASE_REGISTERED_ROUTE_RECORD_COUNT + showcaseCatalog.length + 1
+  BASE_REGISTERED_ROUTE_RECORD_COUNT + showcaseCatalog.length + SHOWCASE_ROUTE_GROUPS.length + 1
 const LAZY_ROUTE_IMPORT_CONCURRENCY = 8
 const ROUTE_SMOKE_IMPORT_TIMEOUT_MS = 20_000
 const REJECTED_CONSOLE_FIRST_LAYER_COPY_PATTERNS = [
@@ -76,9 +76,16 @@ const EXPECTED_REGISTERED_ROUTE_SIGNATURES = [
   '/showcase|ShowcaseRoot|/showcase/overview|static',
   '/showcase/overview|ShowcaseOverview||lazy',
   '/showcase/components|ShowcaseComponentsRoot|/showcase/components/primevue-adapter|static',
+  '/showcase/components/pro-table|ShowcaseComponentsProTable|/showcase/components/pro-table/overview|static',
   '/showcase/components/pro-table/basic|ShowcaseComponentsProTableBasic||lazy',
+  '/showcase/components/pro-form|ShowcaseComponentsProForm|/showcase/components/pro-form/overview|static',
   '/showcase/components/pro-form/validation|ShowcaseComponentsProFormValidation||lazy',
+  '/showcase/components/charts|ShowcaseComponentsCharts|/showcase/components/charts/overview|static',
   '/showcase/components/charts/theme|ShowcaseComponentsChartsTheme||lazy',
+  '/showcase/hooks|ShowcaseHooks|/showcase/hooks/overview|static',
+  '/showcase/utils|ShowcaseUtils|/showcase/utils/overview|static',
+  '/showcase/runtime|ShowcaseRuntime|/showcase/runtime/overview|static',
+  '/showcase/design|ShowcaseDesign|/showcase/design/tokens|static',
   '/architecture|ArchitectureRoot|/architecture/topology|static',
   '/desktop|DesktopBoundary||lazy',
 ] as const
@@ -699,8 +706,15 @@ describe('web-demo architecture console route coverage', () => {
 
     expect(showcaseRoot?.redirect).toBe('/showcase/overview')
     expect(componentsRoot?.redirect).toBe('/showcase/components/primevue-adapter')
+    SHOWCASE_ROUTE_GROUPS.forEach(group => {
+      const groupRoute = findRouteByPath(registeredRoutes, group.path)
+
+      expect(groupRoute?.redirect, group.path).toBe(group.redirect)
+      expect(groupRoute?.component, group.path).toBeUndefined()
+      expect(groupRoute?.meta?.hiddenTag, group.path).toBe(true)
+    })
     expect(flatRegisteredRoutes.filter(route => route.path.startsWith('/showcase'))).toHaveLength(
-      showcaseCatalog.length + 1
+      showcaseCatalog.length + SHOWCASE_ROUTE_GROUPS.length + 1
     )
   })
 

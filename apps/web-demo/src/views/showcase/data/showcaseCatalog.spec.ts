@@ -2,8 +2,11 @@
 
 import { describe, expect, it } from 'vitest'
 import { messages } from '@/locales'
+import { addParentPathsToLeafRoutes } from '@/router/utils/transform'
+import { generateMenuTree } from '@/router/utils/menu'
 import {
   SHOWCASE_ROOT_ROUTE,
+  SHOWCASE_ROUTE_GROUPS,
   createShowcaseRoutes,
   getShowcasePlaceholderModuleKey,
   getShowcaseSourceModuleKey,
@@ -111,6 +114,41 @@ const PLANNED_ROUTE_PATHS = [
   '/showcase/design/motion',
   '/showcase/governance',
   '/showcase/desktop-boundary',
+] as const
+const EXPECTED_SHOWCASE_ROUTE_RECORD_COUNT =
+  PLANNED_ROUTE_PATHS.length + SHOWCASE_ROUTE_GROUPS.length + 1
+const EXPECTED_SHOWCASE_LEAF_ROUTE_PATHS = PLANNED_ROUTE_PATHS.filter(
+  path => path !== '/showcase/components'
+)
+const EXPECTED_SHOWCASE_ROUTE_ANCESTRY = [
+  {
+    path: '/showcase/components/pro-table/basic',
+    ancestors: ['/showcase', '/showcase/components', '/showcase/components/pro-table'],
+  },
+  {
+    path: '/showcase/components/pro-form/validation',
+    ancestors: ['/showcase', '/showcase/components', '/showcase/components/pro-form'],
+  },
+  {
+    path: '/showcase/components/charts/theme',
+    ancestors: ['/showcase', '/showcase/components', '/showcase/components/charts'],
+  },
+  {
+    path: '/showcase/hooks/theme-switching',
+    ancestors: ['/showcase', '/showcase/hooks'],
+  },
+  {
+    path: '/showcase/utils/date',
+    ancestors: ['/showcase', '/showcase/utils'],
+  },
+  {
+    path: '/showcase/runtime/http',
+    ancestors: ['/showcase', '/showcase/runtime'],
+  },
+  {
+    path: '/showcase/design/tokens',
+    ancestors: ['/showcase', '/showcase/design'],
+  },
 ] as const
 
 const showcaseVisibleSourceModules = import.meta.glob<string>(
@@ -276,6 +314,25 @@ function collectShowcaseRouteSmokeTargetPaths(): string[] {
   return [...(targetPaths ?? [])].sort()
 }
 
+function findRouteByPath(routes: RouteConfig[], path: string): RouteConfig | undefined {
+  for (const route of routes) {
+    if (route.path === path) return route
+    const child = route.children ? findRouteByPath(route.children, path) : undefined
+    if (child) return child
+  }
+  return undefined
+}
+
+function findMenuPath(items: MenuItem[], path: string, ancestors: string[] = []): string[] {
+  for (const item of items) {
+    const currentPath = [...ancestors, item.path]
+    if (item.path === path) return currentPath
+    const childPath = item.children ? findMenuPath(item.children, path, currentPath) : []
+    if (childPath.length > 0) return childPath
+  }
+  return []
+}
+
 describe('showcase catalog', () => {
   it('covers every planned route path exactly once', () => {
     const catalogPaths = showcaseCatalog.map(item => item.path).sort()
@@ -380,6 +437,9 @@ describe('showcase catalog', () => {
       REQUIRED_PAGE_LOCALE_FIELDS.forEach(field => {
         localeKeys.add(`${item.localeBaseKey}.${field}`)
       })
+    })
+    SHOWCASE_ROUTE_GROUPS.forEach(group => {
+      localeKeys.add(group.titleKey)
     })
 
     const missingLocaleKeys = Object.entries(messages).flatMap(([locale, localeMessages]) => {
@@ -551,8 +611,20 @@ describe('showcase routes', () => {
     expect(route.path).toBe(SHOWCASE_ROOT_ROUTE.path)
     expect(route.name).toBe(SHOWCASE_ROOT_ROUTE.name)
     expect(route.redirect).toBe('/showcase/overview')
+    expect(route.meta?.hiddenTag).toBe(true)
     expect(componentsRoot?.component).toBeUndefined()
+    expect(componentsRoot?.meta?.hiddenTag).toBe(true)
     expect(componentsRoot?.redirect).toBe('/showcase/components/primevue-adapter')
+    SHOWCASE_ROUTE_GROUPS.forEach(group => {
+      const groupRoute = flatRoutes.find(item => item.path === group.path)
+
+      expect(groupRoute?.name, group.path).toBe(group.name)
+      expect(groupRoute?.component, group.path).toBeUndefined()
+      expect(groupRoute?.redirect, group.path).toBe(group.redirect)
+      expect(groupRoute?.meta?.titleKey, group.path).toBe(group.titleKey)
+      expect(groupRoute?.meta?.hiddenTag, group.path).toBe(true)
+      expect(groupRoute?.children?.length ?? 0, group.path).toBeGreaterThan(0)
+    })
     expect(collectRanks(route.children ?? [])).toEqual(
       [...collectRanks(route.children ?? [])].sort((a, b) => a - b)
     )
@@ -565,9 +637,34 @@ describe('showcase routes', () => {
     const flatRoutes = flattenRouteRecords([createShowcaseRoutes()])
     const routePaths = flatRoutes.map(route => route.path)
 
-    expect(flatRoutes).toHaveLength(showcaseCatalog.length + 1)
-    expect(routePaths).toEqual(expect.arrayContaining(['/showcase', ...PLANNED_ROUTE_PATHS]))
+    expect(flatRoutes).toHaveLength(EXPECTED_SHOWCASE_ROUTE_RECORD_COUNT)
+    expect(collectDuplicates(routePaths)).toEqual([])
+    expect(routePaths).toEqual(
+      expect.arrayContaining([
+        '/showcase',
+        ...PLANNED_ROUTE_PATHS,
+        ...SHOWCASE_ROUTE_GROUPS.map(group => group.path),
+      ])
+    )
     expect(flatRoutes.every(route => route.meta?.titleKey)).toBe(true)
+  })
+
+  it('preserves existing leaf URLs while nesting submenu ancestry', () => {
+    const [route] = addParentPathsToLeafRoutes([createShowcaseRoutes()])
+    const flatRoutes = flattenRouteRecords(route ? [route] : [])
+    const leafPaths = flatRoutes
+      .filter(item => !item.children || item.children.length === 0)
+      .map(item => item.path)
+      .sort()
+    const menuTree = route ? generateMenuTree([route]) : []
+
+    expect(leafPaths).toEqual([...EXPECTED_SHOWCASE_LEAF_ROUTE_PATHS].sort())
+    EXPECTED_SHOWCASE_ROUTE_ANCESTRY.forEach(({ path, ancestors }) => {
+      const leafRoute = findRouteByPath(route ? [route] : [], path)
+
+      expect(leafRoute?.meta?.parentPaths, path).toEqual([...ancestors])
+      expect(findMenuPath(menuTree, path), path).toEqual([...ancestors, path])
+    })
   })
 
   it('uses lazy route components for catalog-backed leaf pages', () => {
