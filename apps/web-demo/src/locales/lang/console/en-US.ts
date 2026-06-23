@@ -1105,9 +1105,17 @@ const enUSConsole = {
         },
       },
       feedback: {
+        stageTitle: 'Feedback demo stage',
+        stageDescription:
+          'Dialog, message, toast, and empty-state feedback share one governed local surface.',
         actionsTitle: 'Feedback actions',
         actionsDescription:
           'Trigger dialog, message, toast, and empty-state feedback from one action group.',
+        toolbarTitle: 'Feedback type controls',
+        toolbarDescription: 'Run each feedback channel without leaving the showcase route.',
+        stageCardTitle: 'Overlay and feedback channels',
+        stageCardDescription:
+          'The stage keeps dialog, message, and toast contracts visible before events are recorded.',
         openDialog: 'Open dialog',
         showMessage: 'Show message',
         showToast: 'Show toast',
@@ -1123,12 +1131,25 @@ const enUSConsole = {
         emptyActionTitle: 'Empty-state action',
         emptyActionBody: 'The empty-state action wrote feedback to the log.',
         logTitle: 'Feedback event log',
+        logDescription:
+          'Newest events appear first while the log keeps long feedback text readable.',
         noLogsTitle: 'No feedback yet',
         noLogsDescription: 'Trigger a control to populate this scrollable log.',
         dialogOpened: 'Dialog opened',
         messageShown: 'Message shown',
         toastShown: 'Toast shown',
         emptyActionLogged: 'Empty-state action recorded',
+        contractTitle: 'Local feedback contract',
+        contractDescription:
+          'The page records reviewable feedback events while app-owned facades keep overlay behavior centralized.',
+        dialogContractTitle: 'Dialog bridge',
+        dialogContractDescription:
+          'Dialog actions call the shared bridge and append a local event after opening.',
+        messageContractTitle: 'Message facade',
+        messageContractDescription: 'Message feedback stays routed through the app-owned adapter.',
+        toastContractTitle: 'Toast facade',
+        toastContractDescription:
+          'Toast feedback uses the same adapter with the fixed top-right demo position.',
       },
       hooks: {
         permissionAllowed: 'Allowed',
