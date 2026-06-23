@@ -1341,6 +1341,91 @@ const zhCNConsole = {
         },
       },
       design: {
+        toolbarTitle: '设计预览控制',
+        toolbarDescription:
+          '检查本地 token、工具类、材质、密度与动效样本，不修改 design-token 或运行时实现。',
+        inspectSample: '检查样本',
+        resetSample: '重置样本',
+        runCount: '预览次数',
+        lastAction: '最近动作',
+        activeSample: '当前样本',
+        readOnlyTitle: '运行时归属不变',
+        readOnlyDescription:
+          '这些控件只轮转本地展示样本；主题、密度、UnoCSS 与 token 归属仍留在现有模块。',
+        previewTitle: 'Token 与样本预览',
+        previewDescription: '代表性值保持可见，并让较长的工具类或 token 名称正常换行。',
+        stateTitle: '语义结果面板',
+        stateDescription: '当前主题、密度、布局与路由上下文在视觉样本旁保持可读。',
+        contractTitle: '设计系统契约',
+        contractDescription: '页面把视觉规则、运行时归属与源码证据放在一起，便于实现前检查。',
+        sourceTitle: '设计源码证据',
+        sourceDescription: '路由、演示、token、UnoCSS 与动效引用以可选中且可换行的路径展示。',
+        badges: {
+          tokens: 'Tokens',
+          unocss: 'UnoCSS',
+          material: '材质',
+          density: '密度',
+          motion: '动效',
+        },
+        actionStatus: {
+          ready: '就绪',
+          sampled: '样本已检查',
+          reset: '样本已重置',
+        },
+        summary: {
+          tokens: '语义 token 族证明品牌、状态与引导表面不需要局部颜色覆盖。',
+          unocss: '封闭的工具类快捷方式让布局、焦点与证据文本在页面之间保持确定性。',
+          material: 'Solid、elevated 与 panel 材质展示层级关系，同时避免过度玻璃效果。',
+          density: '密度样本展示紧凑、舒适与宽松节奏如何保持 token 驱动。',
+          motion: '动效样本在请求减少动效时仍保持克制且含义明确。',
+        },
+        notes: {
+          tokens: 'Token 预览有意使用语义类，而不是硬编码颜色。',
+          unocss: 'UnoCSS 示例是可复制文本加已注册快捷类，不发明新的工具类名称。',
+          material: '材质预览展示批准的表面；密集源码证据仍保持实心且可读。',
+          density: '密度预览只展示节奏；预设值与尺寸注入仍由尺寸运行时持有。',
+          motion: '动效预览不增加页面级动画，因此减少动效与视觉测试保持稳定。',
+        },
+        results: {
+          activeRoute: '路由',
+          themeMode: '主题模式',
+          densityMode: '密度',
+          transitionMode: '过渡',
+          breakpoint: '断点',
+          deviceType: '设备',
+        },
+        samples: {
+          primary: 'surface-primary',
+          success: 'surface-success',
+          warn: 'surface-warn',
+          info: 'surface-info',
+          solid: 'material-solid',
+          elevated: 'material-elevated',
+          panel: 'glass-panel',
+          shortcut: 'layout-container + material-solid',
+          border: 'border border-solid border-border',
+          focus: 'ring-focus-focus',
+          compact: 'p-sm + gap-xs',
+          comfortable: 'p-md + gap-sm',
+          loose: 'p-lg + gap-md',
+          micro: '仅交互时使用 motion-lift',
+          reduced: 'prefers-reduced-motion 保留含义',
+          stable: '无失控动画',
+        },
+        contract: {
+          tokens: {
+            title: 'Token 优先',
+            description: '页面渲染语义类与可复制 token 名称，同时不触碰 packages。',
+          },
+          runtime: {
+            title: '只读运行时',
+            description: '主题、密度、布局与过渡值通过现有公开运行时 API 消费。',
+          },
+          evidence: {
+            title: '证据链路',
+            description: '源码引用保持可选中，并能换行显示较长的包、路由与快捷类路径。',
+          },
+        },
         rows: {
           primary: {
             title: 'Primary',
@@ -1369,6 +1454,42 @@ const zhCNConsole = {
           panel: {
             title: 'Panel',
             description: '只在层级能解释上下文时使用的覆盖层材质。',
+          },
+          shortcut: {
+            title: '快捷类',
+            description: '已注册语义工具类负责页面组合，不使用一次性 CSS。',
+          },
+          border: {
+            title: '边框契约',
+            description: '可见边框同时包含宽度、样式与语义颜色。',
+          },
+          focus: {
+            title: '焦点环',
+            description: '本地操作控件保持键盘焦点可见。',
+          },
+          compact: {
+            title: '紧凑',
+            description: '更紧的间距让密集评审表面仍可扫视。',
+          },
+          comfortable: {
+            title: '舒适',
+            description: '默认节奏平衡重复阅读与控件访问。',
+          },
+          loose: {
+            title: '宽松',
+            description: '更多间距支持触控和更放松的视觉扫描。',
+          },
+          micro: {
+            title: '微反馈',
+            description: '动效仅限交互反馈，并避免布局位移。',
+          },
+          reduced: {
+            title: '减少动效',
+            description: '移除非必要动效时仍然保留含义。',
+          },
+          stable: {
+            title: '视觉稳定',
+            description: '不向证据密集页面添加失控动画。',
           },
         },
         semantic: {

@@ -1501,6 +1501,107 @@ const enUSConsole = {
         },
       },
       design: {
+        toolbarTitle: 'Design preview controls',
+        toolbarDescription:
+          'Inspect local token, utility, material, density, and motion samples without changing design-token or runtime implementations.',
+        inspectSample: 'Inspect sample',
+        resetSample: 'Reset sample',
+        runCount: 'Preview runs',
+        lastAction: 'Last action',
+        activeSample: 'Active sample',
+        readOnlyTitle: 'Runtime ownership unchanged',
+        readOnlyDescription:
+          'The controls only rotate local showcase samples; theme, density, UnoCSS, and token ownership stay in their existing modules.',
+        previewTitle: 'Token and sample preview',
+        previewDescription:
+          'Representative values stay visible with wrapping labels instead of hiding long utility or token names.',
+        stateTitle: 'Semantic result panel',
+        stateDescription:
+          'Current theme, density, layout, and route context remain readable beside the visual sample.',
+        contractTitle: 'Design-system contract',
+        contractDescription:
+          'The page keeps visual rules, runtime ownership, and source evidence together before implementation work begins.',
+        sourceTitle: 'Design source evidence',
+        sourceDescription:
+          'Route, demo, token, UnoCSS, and motion references are rendered as selectable wrapping paths.',
+        badges: {
+          tokens: 'Tokens',
+          unocss: 'UnoCSS',
+          material: 'Material',
+          density: 'Density',
+          motion: 'Motion',
+        },
+        actionStatus: {
+          ready: 'Ready',
+          sampled: 'Sample inspected',
+          reset: 'Sample reset',
+        },
+        summary: {
+          tokens:
+            'Semantic token families prove brand, status, and guidance surfaces without local color overrides.',
+          unocss:
+            'Closed utility shortcuts keep layout, focus, and evidence text deterministic across pages.',
+          material:
+            'Solid, elevated, and panel materials demonstrate layer hierarchy without excessive glass.',
+          density:
+            'Density samples show how compact, comfortable, and loose rhythm stay token-driven.',
+          motion:
+            'Motion samples keep feedback restrained and meaningful when reduced motion is requested.',
+        },
+        notes: {
+          tokens: 'Token previews intentionally use semantic classes instead of hardcoded colors.',
+          unocss:
+            'UnoCSS examples are copyable text plus registered shortcut usage, not invented utility names.',
+          material:
+            'Material previews demonstrate approved surfaces while dense source evidence remains solid and readable.',
+          density:
+            'Density previews show rhythm only; preset values and size injection remain owned by the size runtime.',
+          motion:
+            'Motion previews do not add page-level animation, so reduced-motion and visual tests remain stable.',
+        },
+        results: {
+          activeRoute: 'Route',
+          themeMode: 'Theme mode',
+          densityMode: 'Density',
+          transitionMode: 'Transition',
+          breakpoint: 'Breakpoint',
+          deviceType: 'Device',
+        },
+        samples: {
+          primary: 'surface-primary',
+          success: 'surface-success',
+          warn: 'surface-warn',
+          info: 'surface-info',
+          solid: 'material-solid',
+          elevated: 'material-elevated',
+          panel: 'glass-panel',
+          shortcut: 'layout-container + material-solid',
+          border: 'border border-solid border-border',
+          focus: 'ring-focus-focus',
+          compact: 'p-sm + gap-xs',
+          comfortable: 'p-md + gap-sm',
+          loose: 'p-lg + gap-md',
+          micro: 'motion-lift on interaction only',
+          reduced: 'prefers-reduced-motion keeps meaning',
+          stable: 'no uncontrolled animation',
+        },
+        contract: {
+          tokens: {
+            title: 'Token-first values',
+            description:
+              'The page renders semantic classes and copyable token names while packages remain untouched.',
+          },
+          runtime: {
+            title: 'Runtime read-only',
+            description:
+              'Theme, density, layout, and transition values are consumed from existing public runtime APIs.',
+          },
+          evidence: {
+            title: 'Evidence trail',
+            description:
+              'Source references stay selectable and wrap long package, route, and shortcut paths.',
+          },
+        },
         rows: {
           primary: {
             title: 'Primary',
@@ -1529,6 +1630,42 @@ const enUSConsole = {
           panel: {
             title: 'Panel',
             description: 'Overlay-style material used only where layering explains context.',
+          },
+          shortcut: {
+            title: 'Shortcut',
+            description: 'Registered semantic utilities compose the page without one-off CSS.',
+          },
+          border: {
+            title: 'Border contract',
+            description: 'Visible borders include width, style, and semantic color.',
+          },
+          focus: {
+            title: 'Focus ring',
+            description: 'Keyboard focus remains visible on local action controls.',
+          },
+          compact: {
+            title: 'Compact',
+            description: 'Tighter spacing keeps dense review surfaces scannable.',
+          },
+          comfortable: {
+            title: 'Comfortable',
+            description: 'Default rhythm balances repeated reading with control access.',
+          },
+          loose: {
+            title: 'Loose',
+            description: 'More spacing supports touch and relaxed visual scanning.',
+          },
+          micro: {
+            title: 'Micro feedback',
+            description: 'Motion is limited to interaction feedback and avoids layout shift.',
+          },
+          reduced: {
+            title: 'Reduced motion',
+            description: 'Meaning remains available when nonessential motion is removed.',
+          },
+          stable: {
+            title: 'Visual stability',
+            description: 'No uncontrolled animation is added to evidence-heavy pages.',
           },
         },
         semantic: {
