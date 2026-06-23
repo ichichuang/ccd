@@ -1155,12 +1155,38 @@ const enUSConsole = {
         permissionAllowed: 'Allowed',
         permissionLimited: 'Limited',
         themeMode: 'Theme mode',
+        transitionMode: 'Transition mode',
         locale: 'Locale',
         layoutMode: 'Layout mode',
+        deviceType: 'Device type',
         breakpoint: 'Breakpoint',
+        orientation: 'Orientation',
         permission: 'Permission',
         toggleTheme: 'Toggle theme',
         toggleLocale: 'Toggle locale',
+        toolbarTitle: 'Hook actions',
+        toolbarDescription:
+          'Run the local showcase action when this hook exposes one; read-only hooks keep their runtime state visible.',
+        readOnlyTitle: 'Read-only runtime signal',
+        readOnlyDescription:
+          'This route demonstrates current hook state without mutating global runtime modules.',
+        intentDescription:
+          'The demo keeps the hook contract visible as product-facing state instead of a developer-only trace.',
+        stateTitle: 'State and result',
+        stateDescription:
+          'Shared runtime values stay readable while theme, locale, layout, device, and permission state update.',
+        contractTitle: 'Hook contract',
+        contractDescription:
+          'Hooks stay as app-owned runtime access points while showcase pages only consume their public API.',
+        contractRuntimeTitle: 'Runtime ownership',
+        contractRuntimeDescription:
+          'Theme, locale, auth, and layout state remain owned by their existing stores and runtime helpers.',
+        contractStateTitle: 'Composable API',
+        contractStateDescription:
+          'The page reads the same composable return values used by production surfaces.',
+        contractEvidenceTitle: 'Source evidence',
+        contractEvidenceDescription:
+          'Source paths below remain selectable and wrap long hook implementation paths.',
         badges: {
           'theme-switching': 'Theme switching',
           'locale-switching': 'Locale switching',
