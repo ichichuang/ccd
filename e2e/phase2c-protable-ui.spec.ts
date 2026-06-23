@@ -61,6 +61,48 @@ const proTableRoutes = [
     evidence: 'ProTable.vue',
     control: '选择与行聚焦',
   },
+  {
+    slug: 'toolbar-density',
+    path: '/showcase/components/pro-table/toolbar-density',
+    heading: '工具栏与密度',
+    evidence: 'pro-table/toolbar-density/index.vue',
+    control: '搜索、密度、刷新',
+  },
+  {
+    slug: 'virtual-infinite',
+    path: '/showcase/components/pro-table/virtual-infinite',
+    heading: '虚拟与无限滚动',
+    evidence: 'pro-table/virtual-infinite/index.vue',
+    control: '虚拟行与无限请求加载',
+  },
+  {
+    slug: 'export-refresh',
+    path: '/showcase/components/pro-table/export-refresh',
+    heading: '导出与刷新',
+    evidence: 'pro-table/export-refresh/index.vue',
+    control: '当前页导出、选中导出、刷新',
+  },
+  {
+    slug: 'cell-rendering',
+    path: '/showcase/components/pro-table/cell-rendering',
+    heading: '单元格渲染',
+    evidence: 'pro-table/cell-rendering/index.vue',
+    control: 'Value enum 渲染',
+  },
+  {
+    slug: 'form-composition',
+    path: '/showcase/components/pro-table/form-composition',
+    heading: '表单组合',
+    evidence: 'pro-table/form-composition/index.vue',
+    control: '所有者过滤',
+  },
+  {
+    slug: 'api-events',
+    path: '/showcase/components/pro-table/api-events',
+    heading: 'API 与事件',
+    evidence: 'pro-table/api-events/index.vue',
+    control: '事件记录',
+  },
 ] as const
 
 const mobileRoutes = [
@@ -117,7 +159,7 @@ async function expectProTableRegionReady(page: Page): Promise<void> {
   expect(regionBox?.width ?? 0).toBeGreaterThan(240)
   expect(regionBox?.height ?? 0).toBeGreaterThan(180)
 
-  const table = region.locator('.p-datatable').first()
+  const table = region.locator('table, [role="grid"]').first()
   await expect(table).toBeVisible({ timeout: 15000 })
 
   const tableBox = await table.boundingBox()

@@ -49,6 +49,54 @@ const proFormRoutes = [
     primaryControl: '请求信息',
     evidence: 'proFormDemoSchemas.ts',
   },
+  {
+    slug: 'reactions',
+    path: '/showcase/components/pro-form/reactions',
+    heading: '联动反应',
+    primaryControl: '跟进消息',
+    evidence: 'pro-form/reactions/index.vue',
+    capability: '联动更新文案',
+  },
+  {
+    slug: 'async-data',
+    path: '/showcase/components/pro-form/async-data',
+    heading: '异步数据',
+    primaryControl: '负责人',
+    evidence: 'pro-form/async-data/index.vue',
+    capability: '异步选项保持本地',
+  },
+  {
+    slug: 'field-arrays',
+    path: '/showcase/components/pro-form/field-arrays',
+    heading: '字段数组',
+    primaryControl: '里程碑',
+    evidence: 'pro-form/field-arrays/index.vue',
+    capability: '重复字段易管理',
+  },
+  {
+    slug: 'plugins-draft',
+    path: '/showcase/components/pro-form/plugins-draft',
+    heading: '插件与草稿',
+    primaryControl: '草稿标题',
+    evidence: 'pro-form/plugins-draft/index.vue',
+    capability: '草稿保留进度',
+  },
+  {
+    slug: 'submit-states',
+    path: '/showcase/components/pro-form/submit-states',
+    heading: '提交状态',
+    primaryControl: '使用错误结果',
+    evidence: 'pro-form/submit-states/index.vue',
+    capability: '结果状态明确',
+  },
+  {
+    slug: 'api-events',
+    path: '/showcase/components/pro-form/api-events',
+    heading: 'API 与事件',
+    primaryControl: '事件记录',
+    evidence: 'pro-form/api-events/index.vue',
+    capability: '表单 API 可检查',
+  },
 ] as const
 
 const mobileRoutes = [
@@ -97,6 +145,25 @@ async function expectNoHorizontalOverflow(page: Page): Promise<void> {
   expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.clientWidth + 2)
 }
 
+async function expectSourceEvidenceReadable(page: Page, evidence: string): Promise<void> {
+  await expect(page.getByText('源码', { exact: true }).first()).toBeVisible()
+
+  const code = page.locator('code').filter({ hasText: evidence }).first()
+  await expect(code).toBeVisible()
+
+  const codeMetrics = await code.evaluate(element => {
+    const style = window.getComputedStyle(element)
+    return {
+      clientWidth: element.clientWidth,
+      scrollWidth: element.scrollWidth,
+      wordBreak: style.wordBreak,
+    }
+  })
+
+  expect(codeMetrics.wordBreak).toBe('break-all')
+  expect(codeMetrics.scrollWidth).toBeLessThanOrEqual(codeMetrics.clientWidth + 4)
+}
+
 async function waitForThemeState(page: Page, targetMode: 'light' | 'dark'): Promise<void> {
   await page.waitForFunction(mode => {
     const isDark = document.documentElement.classList.contains('dark')
@@ -134,12 +201,18 @@ async function expectProFormRoute(
   await gotoShowcaseRoute(page, route.path)
 
   await expect(page.locator('h1', { hasText: route.heading })).toBeVisible()
+  await expect(page.getByText('Schema 驱动表单', { exact: true }).first()).toBeVisible()
   await expect(page.getByText('表单操作', { exact: true }).first()).toBeVisible()
   await expect(page.getByRole('button', { name: /^校验$/ }).first()).toBeVisible()
   await expect(page.getByRole('button', { name: '提交请求' }).first()).toBeVisible()
   await expect(page.getByText(route.primaryControl, { exact: false }).first()).toBeVisible()
-  await expect(page.getByText(route.evidence, { exact: false }).first()).toBeVisible()
   await expect(page.getByText('本地反馈', { exact: true }).first()).toBeVisible()
+  await expectSourceEvidenceReadable(page, route.evidence)
+
+  if (route.capability) {
+    await expect(page.getByText(route.capability, { exact: false }).first()).toBeVisible()
+  }
+
   await expectNoHorizontalOverflow(page)
 }
 
