@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import ShowcaseCapabilityPage from '../../shared/ShowcaseCapabilityPage.vue'
+import ShowcaseRuntimePage from '../ShowcaseRuntimePage.vue'
 
 defineOptions({ name: 'ShowcaseRuntimeHttp' })
 </script>
 
 <template>
-  <ShowcaseCapabilityPage id="runtime-http" />
+  <ShowcaseRuntimePage id="runtime-http" />
 </template>

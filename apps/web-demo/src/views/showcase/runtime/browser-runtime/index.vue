@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import ShowcaseCapabilityPage from '../../shared/ShowcaseCapabilityPage.vue'
+import ShowcaseRuntimePage from '../ShowcaseRuntimePage.vue'
 
 defineOptions({ name: 'ShowcaseRuntimeBrowser' })
 </script>
 
 <template>
-  <ShowcaseCapabilityPage id="runtime-browser" />
+  <ShowcaseRuntimePage id="runtime-browser" />
 </template>

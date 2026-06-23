@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import ShowcaseCapabilityPage from '../../shared/ShowcaseCapabilityPage.vue'
+import ShowcaseRuntimePage from '../ShowcaseRuntimePage.vue'
 
 defineOptions({ name: 'ShowcaseRuntimeStateOwnership' })
 </script>
 
 <template>
-  <ShowcaseCapabilityPage id="runtime-state-ownership" />
+  <ShowcaseRuntimePage id="runtime-state-ownership" />
 </template>

@@ -654,6 +654,141 @@ const enUSConsole = {
         technical: 'Technical',
       },
     },
+    runtimePages: {
+      boundaryTitle: 'Runtime boundary summary',
+      boundaryDescription:
+        'Runtime pages expose app-owned behavior as readable state while keeping implementations, adapters, stores, routes, and packages unchanged.',
+      toolbarTitle: 'Runtime demo controls',
+      toolbarDescription:
+        'Run a local showcase check near the runtime readout; the controls update page state only.',
+      runCheck: 'Run check',
+      resetCheck: 'Reset',
+      runCount: 'Preview runs',
+      lastAction: 'Last action',
+      readonlyTitle: 'Local-only runtime check',
+      readonlyDescription:
+        'This control verifies the page contract and visible state without mutating runtime modules.',
+      stateDescription:
+        'Current runtime signals stay readable as theme, locale, layout, device, and permission state change.',
+      resultTitle: 'State and result',
+      resultDescription:
+        'The result panel keeps route, source, and local check output copyable instead of truncating it.',
+      resultRoute: 'Route path',
+      resultSource: 'Page source',
+      notesTitle: 'Runtime notes',
+      notesDescription:
+        'The notes keep ownership decisions close to the demo so new runtime work has a clear boundary.',
+      evidenceTitle: 'Boundary evidence',
+      evidenceDescription:
+        'Runtime source paths remain selectable and wrap long adapter, hook, store, and package references.',
+      actionStatus: {
+        ready: 'Ready',
+        checked: 'Boundary checked',
+        reset: 'Check reset',
+      },
+      badges: {
+        overview: 'Runtime map',
+        http: 'HTTP runtime',
+        browser: 'Browser runtime',
+        layout: 'Layout runtime',
+        stateOwnership: 'State ownership',
+      },
+      rows: {
+        adapterOwner: 'Adapter owner',
+        breakpoint: 'Breakpoint',
+        deviceType: 'Device type',
+        drawer: 'Navigation mode',
+        layoutMode: 'Layout mode',
+        locale: 'Locale',
+        orientation: 'Orientation',
+        permission: 'Permission',
+        requestBoundary: 'Request boundary',
+        requestClient: 'Request client',
+        sidebarMode: 'Sidebar mode',
+        stateOwner: 'State owner',
+        storageBoundary: 'Storage boundary',
+        themeMode: 'Theme mode',
+      },
+      contract: {
+        adapter: {
+          title: 'Adapter-owned runtime',
+          description:
+            'Concrete browser, HTTP, storage, and desktop capabilities stay in app-owned adapters or approved app runtime paths.',
+        },
+        boundary: {
+          title: 'No route or catalog rewiring',
+          description:
+            'The showcase reads existing catalog metadata and keeps navigation targets exactly where they already are.',
+        },
+        state: {
+          title: 'Readable state contract',
+          description:
+            'State panels expose current signals and local demo output without moving logic into shared packages.',
+        },
+      },
+      notes: {
+        http: {
+          title: 'HTTP remains app-owned',
+          description:
+            'Request demos point at alova and useHttpRequest evidence without creating a new transport path.',
+        },
+        storage: {
+          title: 'Storage stays behind safeStorage',
+          description:
+            'Persistence evidence names the safeStorage boundary instead of reading native storage in the page.',
+        },
+        layout: {
+          title: 'Layout reads runtime SSOT',
+          description:
+            'Layout pages consume finalized runtime signals and do not derive shell behavior locally.',
+        },
+        desktop: {
+          title: 'Desktop remains separate',
+          description:
+            'Browser pages can explain desktop ownership without importing or changing desktop code.',
+        },
+      },
+      overview: {
+        demoDescription:
+          'Review the runtime map as one governed page before opening narrower HTTP, browser, layout, or state routes.',
+        focusTitle: 'Runtime map',
+        focusDescription:
+          'The overview gathers app adapters, request boundaries, storage rules, and state ownership into one readable contract.',
+        note: 'Use this page before adding a runtime capability so ownership is visible before code moves.',
+      },
+      http: {
+        demoDescription:
+          'Inspect HTTP ownership through visible request-boundary state without calling a remote endpoint from the page.',
+        focusTitle: 'HTTP and alova boundary',
+        focusDescription:
+          'The page keeps alova, useHttpRequest, interceptor, and feedback responsibilities visible as a contract.',
+        note: 'HTTP behavior remains in the existing app runtime path; this page only reads and explains that boundary.',
+      },
+      browser: {
+        demoDescription:
+          'Read browser runtime signals and adapter ownership without crossing into desktop or package implementations.',
+        focusTitle: 'Browser runtime readout',
+        focusDescription:
+          'Device, breakpoint, orientation, theme, and locale values are shown as runtime output, not local guesses.',
+        note: 'Browser-specific capability stays behind the web app runtime adapter and device runtime.',
+      },
+      layout: {
+        demoDescription:
+          'Inspect finalized layout runtime state while leaving shell renderers, stores, and layout runtime unchanged.',
+        focusTitle: 'Layout runtime readout',
+        focusDescription:
+          'Effective mode, sidebar mode, drawer mode, breakpoint, and device signals come from the layout runtime.',
+        note: 'The page consumes layout runtime state and does not become a second layout resolver.',
+      },
+      stateOwnership: {
+        demoDescription:
+          'Review store, page, adapter, and safeStorage ownership before wiring new stateful behavior.',
+        focusTitle: 'State ownership readout',
+        focusDescription:
+          'Persistent preferences, local page output, and adapter evidence are separated so ownership stays obvious.',
+        note: 'Stateful behavior stays with its owner; the showcase keeps local demo status separate from runtime state.',
+      },
+    },
     placeholder: {
       description: 'This route is ready for its dedicated showcase page.',
       sources: 'Planned sources',

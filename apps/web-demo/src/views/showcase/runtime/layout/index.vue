@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import ShowcaseCapabilityPage from '../../shared/ShowcaseCapabilityPage.vue'
+import ShowcaseRuntimePage from '../ShowcaseRuntimePage.vue'
 
 defineOptions({ name: 'ShowcaseRuntimeLayout' })
 </script>
 
 <template>
-  <ShowcaseCapabilityPage id="runtime-layout" />
+  <ShowcaseRuntimePage id="runtime-layout" />
 </template>
