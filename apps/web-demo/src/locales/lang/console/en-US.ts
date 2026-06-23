@@ -1222,6 +1222,36 @@ const enUSConsole = {
         },
       },
       utils: {
+        toolbarTitle: 'Utility preview controls',
+        toolbarDescription:
+          'Re-run deterministic samples while keeping utility contracts and source boundaries unchanged.',
+        runSample: 'Run sample',
+        resetSample: 'Reset sample',
+        runCount: 'Preview runs',
+        lastAction: 'Last action',
+        sampleTitle: 'Sample input',
+        sampleDescription:
+          'Read the exact payload or policy that feeds the utility preview before comparing output.',
+        outputTitle: 'Utility output',
+        outputDescription:
+          'Result values are produced by the existing app utility path and stay readable across layouts.',
+        outputEmptyTitle: 'No utility output',
+        outputEmptyDescription: 'The current utility sample has no result rows to display.',
+        runtimeTitle: 'Locale and timezone runtime',
+        runtimeDescription:
+          'Date utilities expose initialization, locale, and timezone state through the approved hook.',
+        contractTitle: 'Utility contract',
+        contractDescription:
+          'Showcase pages consume utility APIs without rewriting implementations or route records.',
+        contractUtilityTitle: 'Utility API',
+        contractUtilityDescription:
+          'Formatting, encoding, and restoration behavior comes from the existing utility modules.',
+        contractRuntimeTitle: 'App-owned boundary',
+        contractRuntimeDescription:
+          'Storage and date runtime behavior stays in the web app utility layer, not packages or routes.',
+        contractEvidenceTitle: 'Source evidence',
+        contractEvidenceDescription:
+          'Source paths remain selectable and wrap instead of hiding the utility ownership trail.',
         dateFormat: 'Formatted date',
         dateSmart: 'Smart date',
         workingDay: 'Working day',
@@ -1234,17 +1264,64 @@ const enUSConsole = {
         initialized: 'Initialized',
         locale: 'Locale',
         timezone: 'Timezone',
+        badges: {
+          overview: 'Utils overview',
+          date: 'Date utility',
+          'safe-storage': 'Safe storage',
+          'state-persistence': 'State persistence',
+        },
+        boolean: {
+          yes: 'yes',
+          no: 'no',
+        },
+        actionStatus: {
+          ready: 'Ready',
+          rerun: 'Sample re-run',
+          reset: 'Sample reset',
+        },
         overview: {
+          description:
+            'Compare date, safe storage, and state persistence helpers as one governed utility family.',
           note: 'Utility routes group deterministic helpers by user-facing responsibility.',
+          samplePrimaryLabel: 'Utility scope',
+          samplePrimaryValue: 'date + safeStorage + persistence',
+          sampleSecondaryLabel: 'Route family',
+          sampleSecondaryValue: '/showcase/utils/*',
+          sampleTertiaryLabel: 'Ownership',
+          sampleTertiaryValue: 'app utility modules only',
         },
         date: {
+          description:
+            'Format a fixed timestamp through DateUtils while exposing locale and timezone runtime state.',
           note: 'Date helpers format visible copy through one shared date policy.',
+          samplePrimaryLabel: 'Input timestamp',
+          samplePrimaryValue: '2026-06-18T09:30:00+08:00',
+          sampleSecondaryLabel: 'Format policy',
+          sampleSecondaryValue: 'YYYY-MM-DD HH:mm + smart system format',
+          sampleTertiaryLabel: 'Calendar check',
+          sampleTertiaryValue: 'working-day evaluation',
         },
         'safe-storage': {
+          description:
+            'Encode and restore a preference payload through the safe storage compression and encryption path.',
           note: 'Safe storage previews show encoded and restored preference state.',
+          samplePrimaryLabel: 'Payload scope',
+          samplePrimaryValue: 'showcase',
+          sampleSecondaryLabel: 'Payload mode',
+          sampleSecondaryValue: 'comfortable',
+          sampleTertiaryLabel: 'Payload theme',
+          sampleTertiaryValue: 'system',
         },
         'state-persistence': {
+          description:
+            'Exercise the sync codec used by persistence serializers and read restored preference fields.',
           note: 'State persistence uses the same codec path shown in the restored values.',
+          samplePrimaryLabel: 'Codec path',
+          samplePrimaryValue: 'safeStorageCodecs.sync',
+          sampleSecondaryLabel: 'Restored fields',
+          sampleSecondaryValue: 'theme + scope',
+          sampleTertiaryLabel: 'Persistence role',
+          sampleTertiaryValue: 'preference-state serializer evidence',
         },
       },
       runtime: {
