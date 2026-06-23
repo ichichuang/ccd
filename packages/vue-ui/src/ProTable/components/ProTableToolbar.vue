@@ -155,6 +155,9 @@ const toolbarBtnClass =
         text
         :class="toolbarBtnClass"
         :aria-label="t('proTable.fullscreen')"
+        :aria-pressed="isFullscreen ? 'true' : 'false'"
+        :title="t('proTable.fullscreen')"
+        data-pro-table-fullscreen-toggle
         @click="emit('toggle-fullscreen')"
       >
         <Icons :name="isFullscreen ? 'i-lucide-minimize-2' : 'i-lucide-maximize-2'" />

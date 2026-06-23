@@ -151,6 +151,20 @@ async function expectNoHorizontalOverflow(page: Page): Promise<void> {
   expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.clientWidth + 2)
 }
 
+interface GeometryBox {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+async function expectMeasuredBox(locator: Locator, label: string): Promise<GeometryBox> {
+  const box = await locator.boundingBox()
+  expect(box, `${label} should have a measured layout box`).not.toBeNull()
+  if (!box) throw new Error(`${label} should have a measured layout box`)
+  return box
+}
+
 async function expectProTableRegionReady(page: Page): Promise<void> {
   const region = page.getByTestId('showcase-pro-table-demo-region')
   await expect(region).toBeVisible({ timeout: 15000 })
@@ -317,6 +331,58 @@ test.describe('Phase 2C ProTable showcase UI readiness', () => {
     await expect(page.getByText('选择与行聚焦', { exact: true }).first()).toBeVisible()
     await expectNoHorizontalOverflow(page)
     await captureEvidence(page, testInfo, 'behavior-selection-controls')
+
+    expect(diagnostics.pageErrors).toEqual([])
+    expect(diagnostics.consoleErrors).toEqual([])
+  })
+
+  test('basic ProTable fullscreen expands inside app content and restores without overflow', async ({
+    page,
+  }) => {
+    const diagnostics = collectDiagnostics(page)
+
+    await page.setViewportSize({ width: 1280, height: 720 })
+    await loginAsAdmin(page)
+    await gotoShowcaseRoute(page, '/showcase/components/pro-table/basic')
+
+    const header = page.locator('[data-layout-header="true"]')
+    const sidebar = page.locator('[data-layout-sidebar="true"]')
+    const region = page.getByTestId('showcase-pro-table-demo-region')
+    const expandControl = region.getByRole('button', { name: /切换全屏|Toggle fullscreen/ }).first()
+
+    await expect(header).toBeVisible()
+    await expect(sidebar).toBeVisible()
+    await expect(region).toBeVisible()
+    await expect(expandControl).toBeVisible()
+
+    await expandControl.click()
+
+    const restoreControl = region
+      .getByRole('button', { name: /切换全屏|Toggle fullscreen/ })
+      .first()
+    const expandedTable = region.locator('[data-pro-table-fullscreen="true"]').first()
+
+    await expect(restoreControl).toBeVisible()
+    await expect(restoreControl).toHaveAttribute('aria-pressed', 'true')
+    await expect(expandedTable).toBeVisible()
+    await expect(region.getByPlaceholder(/搜索|Search/)).toBeVisible()
+    await expect(region.getByText('能力', { exact: true }).first()).toBeVisible()
+    await expect(region.getByText('可复用表格起点', { exact: false }).first()).toBeVisible()
+    await expect(region.getByText(/共 \d+ 条|Total \d+ records/).first()).toBeVisible()
+
+    const headerBox = await expectMeasuredBox(header, 'admin header')
+    const sidebarBox = await expectMeasuredBox(sidebar, 'admin sidebar')
+    const expandedBox = await expectMeasuredBox(expandedTable, 'expanded ProTable')
+
+    expect(expandedBox.y).toBeGreaterThanOrEqual(headerBox.y + headerBox.height - 2)
+    expect(expandedBox.x).toBeGreaterThanOrEqual(sidebarBox.x + sidebarBox.width - 2)
+    await expectNoHorizontalOverflow(page)
+
+    await restoreControl.click()
+
+    await expect(region.locator('[data-pro-table-fullscreen="true"]')).toHaveCount(0)
+    await expectProTableRegionReady(page)
+    await expectNoHorizontalOverflow(page)
 
     expect(diagnostics.pageErrors).toEqual([])
     expect(diagnostics.consoleErrors).toEqual([])
