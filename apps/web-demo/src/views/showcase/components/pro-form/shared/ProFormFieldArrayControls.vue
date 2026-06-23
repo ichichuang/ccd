@@ -1,31 +1,71 @@
 <script setup lang="ts">
-import { useFieldArray } from '@ccd/vue-ui'
+import { useFieldArray, useFormContext } from '@ccd/vue-ui'
 import { useI18n } from 'vue-i18n'
 import type { ProFormDemoValues } from './proFormDemoSchemas'
 
 defineOptions({ name: 'ProFormFieldArrayControls' })
 
 const { t } = useI18n()
+const form = useFormContext<ProFormDemoValues>()
 const nextMilestone = ref<string | undefined>('')
 const milestones = useFieldArray<string, ProFormDemoValues>('milestones')
+const visibleMilestones = ref<string[]>(readMilestonesFromForm())
+const milestoneItems = computed(() =>
+  visibleMilestones.value.map((value, index) => ({
+    id: `visible-milestone-${index}-${value}`,
+    value,
+    index,
+  }))
+)
+
+function readMilestonesFromForm(): string[] {
+  const values = form.getValues().milestones
+  return Array.isArray(values)
+    ? values.filter((value): value is string => typeof value === 'string')
+    : []
+}
+
+function writeMilestones(values: string[]): void {
+  form.setFieldsValue({ milestones: values })
+  visibleMilestones.value = [...values]
+}
 
 function appendMilestone(): void {
   const value = (nextMilestone.value ?? '').trim()
   if (!value) return
+  const nextValues = [...visibleMilestones.value, value]
   milestones.append(value)
+  writeMilestones(nextValues)
   nextMilestone.value = ''
 }
 
 function removeMilestone(index: number): void {
+  const nextValues = visibleMilestones.value.filter(
+    (_value, currentIndex) => currentIndex !== index
+  )
   milestones.remove(index)
+  writeMilestones(nextValues)
+}
+
+function moveMilestone(index: number, targetIndex: number): void {
+  if (index < 0 || index >= visibleMilestones.value.length) return
+  if (targetIndex < 0 || targetIndex >= visibleMilestones.value.length) return
+
+  const nextValues = [...visibleMilestones.value]
+  const [movedValue] = nextValues.splice(index, 1)
+  if (movedValue === undefined) return
+
+  nextValues.splice(targetIndex, 0, movedValue)
+  milestones.move(index, targetIndex)
+  writeMilestones(nextValues)
 }
 
 function moveMilestoneUp(index: number): void {
-  milestones.move(index, index - 1)
+  moveMilestone(index, index - 1)
 }
 
 function moveMilestoneDown(index: number): void {
-  milestones.move(index, index + 1)
+  moveMilestone(index, index + 1)
 }
 </script>
 
@@ -41,11 +81,11 @@ function moveMilestoneDown(index: number): void {
     </div>
 
     <ul
-      v-if="milestones.fields.value.length"
+      v-if="milestoneItems.length"
       class="col-stretch gap-xs m-0 p-0 list-none"
     >
       <li
-        v-for="field in milestones.fields.value"
+        v-for="field in milestoneItems"
         :key="field.id"
         class="interactive-item row-between min-w-0 gap-sm"
       >
@@ -68,7 +108,7 @@ function moveMilestoneDown(index: number): void {
             text
             icon="i-lucide-arrow-down"
             :aria-label="t('showcase.proForm.fieldArray.moveDown')"
-            :disabled="field.index === milestones.fields.value.length - 1"
+            :disabled="field.index === milestoneItems.length - 1"
             @click="moveMilestoneDown(field.index)"
           />
           <Button

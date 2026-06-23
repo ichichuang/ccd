@@ -1,4 +1,4 @@
-import { expect, test, type Page, type TestInfo } from '@playwright/test'
+import { expect, test, type Locator, type Page, type TestInfo } from '@playwright/test'
 import {
   loginAsAdmin,
   waitForAppReady,
@@ -188,6 +188,14 @@ async function expectSourceEvidenceReadable(page: Page, evidence: string): Promi
   expect(codeMetrics.scrollWidth).toBeLessThanOrEqual(codeMetrics.clientWidth + 4)
 }
 
+async function selectComboboxOption(page: Page, scope: Locator, optionName: string): Promise<void> {
+  const combobox = scope.getByRole('combobox')
+
+  await combobox.click()
+  await page.getByRole('option', { name: optionName, exact: true }).click()
+  await expect(combobox).toContainText(optionName)
+}
+
 async function waitForThemeState(page: Page, targetMode: 'light' | 'dark'): Promise<void> {
   await page.waitForFunction(mode => {
     const isDark = document.documentElement.classList.contains('dark')
@@ -309,6 +317,42 @@ test.describe('Phase 2C ProTable showcase UI readiness', () => {
     await expect(page.getByText('选择与行聚焦', { exact: true }).first()).toBeVisible()
     await expectNoHorizontalOverflow(page)
     await captureEvidence(page, testInfo, 'behavior-selection-controls')
+
+    expect(diagnostics.pageErrors).toEqual([])
+    expect(diagnostics.consoleErrors).toEqual([])
+  })
+
+  test('virtual/infinite route exposes scroll mode and fetch-state interactions', async ({
+    page,
+  }) => {
+    const diagnostics = collectDiagnostics(page)
+
+    await page.setViewportSize({ width: 1280, height: 720 })
+    await loginAsAdmin(page)
+
+    await gotoShowcaseRoute(page, '/showcase/components/pro-table/virtual-infinite')
+    await expect(page.locator('h1', { hasText: '虚拟与无限滚动' })).toBeVisible()
+
+    const scrollModePanel = page.locator('section').filter({ hasText: '滚动模式' }).first()
+    const scrollModeCombobox = scrollModePanel.getByRole('combobox')
+    await expect(scrollModeCombobox).toContainText('虚拟滚动')
+
+    await selectComboboxOption(page, scrollModePanel, '无限请求')
+    await page.getByRole('button', { name: '刷新' }).first().click()
+    await expect(page.getByTestId('showcase-pro-table-demo-region')).toBeVisible()
+    await expect(page.getByRole('row', { name: /可复用表格起点 1/ }).first()).toBeVisible({
+      timeout: 15000,
+    })
+
+    await page.getByRole('button', { name: '读取请求状态' }).first().click()
+    await expect(page.getByText('已调用 getFetchState()', { exact: false }).first()).toBeVisible()
+    await expect(page.getByText('还有更多 是', { exact: false }).first()).toBeVisible()
+
+    await page.getByRole('button', { name: '读取状态' }).first().click()
+    await expect(page.getByText(/第 \d+ 页，页大小 \d+，总数 \d+/).first()).toBeVisible()
+
+    await expectSourceEvidenceReadable(page, 'pro-table/virtual-infinite/index.vue')
+    await expectNoHorizontalOverflow(page)
 
     expect(diagnostics.pageErrors).toEqual([])
     expect(diagnostics.consoleErrors).toEqual([])

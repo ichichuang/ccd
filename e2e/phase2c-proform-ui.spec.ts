@@ -1,4 +1,4 @@
-import { expect, test, type Page, type TestInfo } from '@playwright/test'
+import { expect, test, type Locator, type Page, type TestInfo } from '@playwright/test'
 import {
   loginAsAdmin,
   waitForAppReady,
@@ -164,6 +164,12 @@ async function expectSourceEvidenceReadable(page: Page, evidence: string): Promi
   expect(codeMetrics.scrollWidth).toBeLessThanOrEqual(codeMetrics.clientWidth + 4)
 }
 
+function getFieldArrayPanel(page: Page): Locator {
+  return page
+    .getByText('使用列表控件管理同一份表单中的重复字段。', { exact: true })
+    .locator('xpath=ancestor::section[1]')
+}
+
 async function waitForThemeState(page: Page, targetMode: 'light' | 'dark'): Promise<void> {
   await page.waitForFunction(mode => {
     const isDark = document.documentElement.classList.contains('dark')
@@ -269,6 +275,67 @@ test.describe('Phase 2C ProForm showcase UI readiness', () => {
     await expect(page.getByText('已本地提交字段', { exact: false }).first()).toBeVisible()
     await expectNoHorizontalOverflow(page)
     await captureEvidence(page, testInfo, 'basic-submit-feedback')
+
+    expect(diagnostics.pageErrors).toEqual([])
+    expect(diagnostics.consoleErrors).toEqual([])
+  })
+
+  test('advanced ProForm draft and field-array interactions update visible state', async ({
+    page,
+  }) => {
+    const diagnostics = collectDiagnostics(page)
+
+    await page.setViewportSize({ width: 1280, height: 720 })
+    await loginAsAdmin(page)
+
+    await gotoShowcaseRoute(page, '/showcase/components/pro-form/plugins-draft')
+    await expect(page.locator('h1', { hasText: '插件与草稿' })).toBeVisible()
+
+    const draftTitle = page.getByLabel('草稿标题')
+    await page.getByRole('button', { name: '清除草稿' }).first().click()
+    await expect(page.getByText('草稿已清除。').first()).toBeVisible()
+    await draftTitle.fill('交互覆盖草稿')
+    await page.getByPlaceholder('记录仍在编辑中的摘要。').fill('保存后应能恢复的交互覆盖摘要。')
+    await page.getByRole('button', { name: '保存草稿' }).first().click()
+    await expect(page.getByText('当前表单取值已保存为草稿。').first()).toBeVisible()
+
+    await draftTitle.fill('临时覆盖标题')
+    await page.getByRole('button', { name: '读取草稿' }).first().click()
+    await expect(draftTitle).toHaveValue('交互覆盖草稿')
+    await expect(page.getByText('草稿已恢复到表单。').first()).toBeVisible()
+    await page.getByRole('button', { name: '清除草稿' }).first().click()
+    await expect(page.getByText('草稿已清除。').first()).toBeVisible()
+    await expectSourceEvidenceReadable(page, 'pro-form/plugins-draft/index.vue')
+    await expectNoHorizontalOverflow(page)
+
+    await gotoShowcaseRoute(page, '/showcase/components/pro-form/field-arrays')
+    await expect(page.locator('h1', { hasText: '字段数组' })).toBeVisible()
+
+    const fieldArrayPanel = getFieldArrayPanel(page)
+    await expect(fieldArrayPanel).toBeVisible()
+    await expect(fieldArrayPanel.locator('li').first()).toBeVisible()
+
+    const initialMilestoneCount = await fieldArrayPanel.locator('li').count()
+    expect(initialMilestoneCount).toBeGreaterThan(0)
+
+    await fieldArrayPanel.getByPlaceholder('新增里程碑').fill('交互覆盖验收')
+    await fieldArrayPanel.getByRole('button', { name: '新增里程碑' }).click()
+    await expect(fieldArrayPanel.locator('li')).toHaveCount(initialMilestoneCount + 1)
+
+    const addedMilestone = fieldArrayPanel.locator('li').filter({ hasText: '交互覆盖验收' })
+    await expect(addedMilestone).toHaveCount(1)
+
+    await page.getByRole('button', { name: '读取取值' }).first().click()
+    await expect(page.getByText(/当前已有值字段：.*milestones/).first()).toBeVisible()
+
+    await addedMilestone.getByRole('button', { name: '删除里程碑' }).click()
+    await expect(addedMilestone).toHaveCount(0)
+    await expect(fieldArrayPanel.locator('li')).toHaveCount(initialMilestoneCount)
+
+    await page.getByRole('button', { name: '读取取值' }).first().click()
+    await expect(page.getByText(/当前已有值字段：.*milestones/).first()).toBeVisible()
+    await expectSourceEvidenceReadable(page, 'ProFormFieldArrayControls.vue')
+    await expectNoHorizontalOverflow(page)
 
     expect(diagnostics.pageErrors).toEqual([])
     expect(diagnostics.consoleErrors).toEqual([])
