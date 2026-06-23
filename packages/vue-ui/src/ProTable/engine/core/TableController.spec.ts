@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { nextTick } from 'vue'
 import { TableController } from './TableController'
 import type { ProTableColumn } from '../types/column'
-import type { ProTableRequestResult } from '../types/props'
+import type { ProTableLoadParams, ProTableRequestResult, RequestFn } from '../types/props'
 
 type Row = { id: string } & Record<string, unknown>
 
@@ -47,6 +47,42 @@ describe('TableController request cancellation', () => {
     await nextTick()
 
     expect(ctrl.processedRows.value).toEqual([{ id: 'latest' }])
+    ctrl.destroy()
+  })
+})
+
+describe('TableController dynamic request configuration', () => {
+  it('loads once and accumulates after request mode is enabled on an existing controller', async () => {
+    const calls: ProTableLoadParams[] = []
+    const request: RequestFn<Row> = async params => {
+      calls.push(params)
+      return {
+        data: [{ id: `page-${params.page}` }],
+        total: 2,
+      }
+    }
+    const ctrl = new TableController<Row>({
+      columns,
+      data: [{ id: 'local' }],
+      paginationEnabled: false,
+    })
+
+    ctrl.setRequest(request, { immediate: true, accumulate: true })
+
+    expect(calls).toHaveLength(1)
+    expect(calls[0].page).toBe(1)
+    await nextTick()
+
+    expect(ctrl.processedRows.value).toEqual([{ id: 'page-1' }])
+
+    ctrl.fetchMore()
+
+    expect(calls).toHaveLength(2)
+    expect(calls[1].page).toBe(2)
+    await nextTick()
+
+    expect(ctrl.processedRows.value).toEqual([{ id: 'page-1' }, { id: 'page-2' }])
+    expect(ctrl.state.fetch.hasMore).toBe(false)
     ctrl.destroy()
   })
 })

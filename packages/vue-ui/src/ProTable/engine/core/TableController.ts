@@ -55,6 +55,24 @@ export interface TableControllerOptions<T extends Record<string, unknown>> {
   onColumnSettingsChange?: (state: ColumnSettingsState) => void
 }
 
+interface SetRequestOptions {
+  reload?: boolean
+}
+
+function normalizeRequestConfig(config?: RequestConfig): Required<RequestConfig> {
+  return {
+    immediate: config?.immediate ?? REQUEST_DEFAULTS.immediate,
+    accumulate: config?.accumulate ?? REQUEST_DEFAULTS.accumulate,
+  }
+}
+
+function isSameRequestConfig(
+  left: Required<RequestConfig>,
+  right: Required<RequestConfig>
+): boolean {
+  return left.immediate === right.immediate && left.accumulate === right.accumulate
+}
+
 function getRowKey<T extends Record<string, unknown>>(row: T, keyField: string): string {
   return String((row as Record<string, unknown>)[keyField] ?? JSON.stringify(row))
 }
@@ -73,9 +91,9 @@ export class TableController<T extends Record<string, unknown>> {
   private _data: ShallowRef<T[]>
   private _serverMode: boolean
   private _rowKey: string
-  private _paginationEnabled: boolean
+  private _paginationEnabled: ShallowRef<boolean>
   private _scope: EffectScope
-  private _request?: RequestFn<T>
+  private _request: ShallowRef<RequestFn<T> | undefined>
   private _requestConfig: Required<RequestConfig>
   private _onRequestError?: (error: Error) => void
   private _fetchVersion = 0
@@ -85,7 +103,7 @@ export class TableController<T extends Record<string, unknown>> {
 
   /** True when ProTable is in request mode (autonomous fetch). */
   get requestMode(): boolean {
-    return !!this._request
+    return !!this._request.value
   }
 
   filteredAndSorted!: ComputedRef<T[]>
@@ -98,13 +116,12 @@ export class TableController<T extends Record<string, unknown>> {
     this._data = shallowRef<T[]>(options.data ?? [])
     this._serverMode = options.serverMode ?? PRO_TABLE_PROPS_DEFAULTS.serverMode
     this._rowKey = String(options.rowKey ?? PRO_TABLE_PROPS_DEFAULTS.rowKey)
-    this._paginationEnabled = options.paginationEnabled ?? PRO_TABLE_PROPS_DEFAULTS.pagination
+    this._paginationEnabled = shallowRef(
+      options.paginationEnabled ?? PRO_TABLE_PROPS_DEFAULTS.pagination
+    )
     this._scope = effectScope()
-    this._request = options.request
-    this._requestConfig = {
-      immediate: options.requestConfig?.immediate ?? REQUEST_DEFAULTS.immediate,
-      accumulate: options.requestConfig?.accumulate ?? REQUEST_DEFAULTS.accumulate,
-    }
+    this._request = shallowRef(options.request)
+    this._requestConfig = normalizeRequestConfig(options.requestConfig)
     this._onRequestError = options.onRequestError
     this._maxSelection = options.maxSelection
     this._onColumnSettingsChange = options.onColumnSettingsChange
@@ -141,7 +158,7 @@ export class TableController<T extends Record<string, unknown>> {
       })
 
       this.processedRows = computed<T[]>(() => {
-        if (!this._paginationEnabled) return this.filteredAndSorted.value
+        if (!this._paginationEnabled.value) return this.filteredAndSorted.value
         return applyPagination(
           this.filteredAndSorted.value,
           { ...this.state.pagination, total: this.totalCount.value },
@@ -162,51 +179,44 @@ export class TableController<T extends Record<string, unknown>> {
         () => this.state.pagination.pageSize,
       ]
 
-      if (this._serverMode && !this._request) {
-        // Legacy mode: emit @load for parent-driven fetch
-        watch(
-          fetchTriggerSources(),
-          () => {
+      watch(
+        fetchTriggerSources(),
+        () => {
+          if (this._request.value) {
+            if (!this._requestConfig.accumulate) {
+              void this.executeFetchInternal(false)
+            }
+            return
+          }
+
+          if (this._serverMode) {
             options.onLoad?.({
               page: this.state.pagination.page,
               pageSize: this.state.pagination.pageSize,
               sort: { ...this.state.sort },
               filter: { ...this.state.filter },
             })
-          },
-          { flush: 'post' }
-        )
-      }
+          }
+        },
+        { flush: 'post' }
+      )
 
-      if (this._request && !this._requestConfig.accumulate) {
-        // Request mode (standard pagination): auto-fetch on state changes
-        watch(
-          fetchTriggerSources(),
-          () => {
-            void this.executeFetchInternal(false)
-          },
-          { flush: 'post' }
-        )
-      }
-
-      if (this._request && this._requestConfig.accumulate) {
-        // Request mode (infinite scroll): sort/filter changes → reset & replace
-        watch(
-          [
-            () => this.state.sort.field,
-            () => this.state.sort.direction,
-            () => this.state.filter.global,
-            () => stableColumnFiltersKey(this.state.filter.columns),
-          ],
-          () => {
-            this._data.value = []
-            this.state.pagination = { ...this.state.pagination, page: 1 }
-            this.state.fetch = { ...this.state.fetch, hasMore: true }
-            void this.executeFetchInternal(false)
-          },
-          { flush: 'post' }
-        )
-      }
+      watch(
+        [
+          () => this.state.sort.field,
+          () => this.state.sort.direction,
+          () => this.state.filter.global,
+          () => stableColumnFiltersKey(this.state.filter.columns),
+        ],
+        () => {
+          if (!this._request.value || !this._requestConfig.accumulate) return
+          this._data.value = []
+          this.state.pagination = { ...this.state.pagination, page: 1 }
+          this.state.fetch = { ...this.state.fetch, hasMore: true }
+          void this.executeFetchInternal(false)
+        },
+        { flush: 'post' }
+      )
     })
   }
 
@@ -217,8 +227,40 @@ export class TableController<T extends Record<string, unknown>> {
   /**
    * Replace the request function at runtime (e.g. when apiUrl prop changes).
    */
-  setRequest(request: RequestFn<T> | undefined): void {
-    this._request = request
+  setRequest(
+    request: RequestFn<T> | undefined,
+    requestConfig?: RequestConfig,
+    options: SetRequestOptions = {}
+  ): void {
+    const nextConfig = normalizeRequestConfig(requestConfig)
+    const requestChanged = this._request.value !== request
+    const configChanged = !isSameRequestConfig(this._requestConfig, nextConfig)
+
+    if (!requestChanged && !configChanged) return
+
+    this.invalidateActiveFetch()
+    this._request.value = request
+    this._requestConfig = nextConfig
+    this.resetRowsForRequestChange()
+
+    const shouldReload = options.reload ?? true
+    if (shouldReload && this._request.value && this._requestConfig.immediate) {
+      void this.executeFetchInternal(false)
+    }
+  }
+
+  /**
+   * Replace only the request configuration at runtime.
+   */
+  setRequestConfig(requestConfig?: RequestConfig): void {
+    this.setRequest(this._request.value, requestConfig)
+  }
+
+  /**
+   * Toggle client-side pagination processing at runtime.
+   */
+  setPaginationEnabled(enabled: boolean): void {
+    this._paginationEnabled.value = enabled
   }
 
   /**
@@ -348,7 +390,8 @@ export class TableController<T extends Record<string, unknown>> {
    * @param append — true for infinite-scroll "load more"
    */
   private async executeFetchInternal(append: boolean): Promise<void> {
-    if (!this._request) return
+    const request = this._request.value
+    if (!request) return
 
     // 取消前一个正在进行的请求
     if (this._abortController) {
@@ -369,7 +412,7 @@ export class TableController<T extends Record<string, unknown>> {
         signal: abortController.signal,
       }
 
-      const result = await this._request(params)
+      const result = await request(params)
 
       // Stale response guard: ignore if a newer fetch was started
       if (version !== this._fetchVersion) return
@@ -412,7 +455,7 @@ export class TableController<T extends Record<string, unknown>> {
    * Trigger the initial fetch (called from ProTable onMounted when immediate=true).
    */
   fetchInitial(): void {
-    if (!this._request || !this._requestConfig.immediate) return
+    if (!this._request.value || !this._requestConfig.immediate) return
     void this.executeFetchInternal(false)
   }
 
@@ -420,7 +463,7 @@ export class TableController<T extends Record<string, unknown>> {
    * Load the next page in accumulate (infinite-scroll) mode.
    */
   fetchMore(): void {
-    if (!this._request || !this._requestConfig.accumulate) return
+    if (!this._request.value || !this._requestConfig.accumulate) return
     if (this.state.fetch.loading || !this.state.fetch.hasMore) return
     // In accumulate mode, page watch is not active — increment and fetch manually
     this.state.pagination = {
@@ -434,13 +477,27 @@ export class TableController<T extends Record<string, unknown>> {
    * Force reload the current page (or reset to page 1 in accumulate mode).
    */
   requestReload(): void {
-    if (!this._request) return
+    if (!this._request.value) return
     if (this._requestConfig.accumulate) {
       this._data.value = []
       this.state.pagination = { ...this.state.pagination, page: 1 }
       this.state.fetch = { ...this.state.fetch, hasMore: true }
     }
     void this.executeFetchInternal(false)
+  }
+
+  private invalidateActiveFetch(): void {
+    this._fetchVersion += 1
+    if (this._abortController) {
+      this._abortController.abort()
+      this._abortController = null
+    }
+  }
+
+  private resetRowsForRequestChange(): void {
+    this._data.value = []
+    this.state.pagination = { ...this.state.pagination, page: 1, total: 0 }
+    this.state.fetch = { ...FETCH_STATE_DEFAULTS }
   }
 
   /**

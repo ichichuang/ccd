@@ -322,7 +322,7 @@ test.describe('Phase 2C ProTable showcase UI readiness', () => {
     expect(diagnostics.consoleErrors).toEqual([])
   })
 
-  test('virtual/infinite route exposes scroll mode and fetch-state interactions', async ({
+  test('virtual/infinite route auto-loads request rows and exposes fetch-state interactions', async ({
     page,
   }) => {
     const diagnostics = collectDiagnostics(page)
@@ -338,8 +338,12 @@ test.describe('Phase 2C ProTable showcase UI readiness', () => {
     await expect(scrollModeCombobox).toContainText('虚拟滚动')
 
     await selectComboboxOption(page, scrollModePanel, '无限请求')
-    await page.getByRole('button', { name: '刷新' }).first().click()
     await expect(page.getByTestId('showcase-pro-table-demo-region')).toBeVisible()
+    await expect(page.getByRole('row', { name: /可复用表格起点 1/ }).first()).toBeVisible({
+      timeout: 15000,
+    })
+
+    await page.getByRole('button', { name: '刷新' }).first().click()
     await expect(page.getByRole('row', { name: /可复用表格起点 1/ }).first()).toBeVisible({
       timeout: 15000,
     })

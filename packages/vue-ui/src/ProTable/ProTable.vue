@@ -253,7 +253,9 @@ const isLoading = computed<boolean>(() =>
 const tableContainerRef = useTemplateRef<HTMLDivElement>('tableContainerRef')
 
 const infiniteScrollCtrl = useProTableInfiniteScroll({
-  enabled: !!props.infiniteScroll,
+  get enabled() {
+    return !!props.infiniteScroll
+  },
   containerRef: tableContainerRef,
   scrollTargetSelectors: ['.p-datatable-table-container', '.p-datatable-wrapper'],
   isLoading,
@@ -290,26 +292,51 @@ watch(
 
 // Sync request function when request/api/apiUrl/searchParams props change
 watch(
-  [() => props.request, () => props.api, () => props.apiUrl, () => props.searchParams],
-  () => ctrl.setRequest(createUnifiedRequest()),
+  [
+    () => props.request,
+    () => props.api,
+    () => props.apiUrl,
+    () => props.searchParams,
+    () => props.requestConfig,
+  ],
+  () => {
+    const nextRequest = createUnifiedRequest()
+    ctrl.setRequest(nextRequest, props.requestConfig)
+
+    if (!nextRequest) {
+      ctrl.setData(props.data)
+      if (props.total !== undefined) ctrl.setTotal(props.total)
+    }
+  },
   { deep: false }
 )
 
-// In request mode, data/total are managed internally — skip prop watchers
-if (!ctrl.requestMode) {
-  watch(
-    () => props.data,
-    data => ctrl.setData(data),
-    { deep: false }
-  )
-  watch(
-    () => props.total,
-    total => {
-      if (total !== undefined) ctrl.setTotal(total)
-    },
-    { immediate: true }
-  )
-}
+watch(enginePaginationEnabled, enabled => ctrl.setPaginationEnabled(enabled))
+
+// In request mode, data/total are managed internally.
+watch(
+  () => props.data,
+  data => {
+    if (!ctrl.requestMode) ctrl.setData(data)
+  },
+  { deep: false }
+)
+watch(
+  () => props.total,
+  total => {
+    if (!ctrl.requestMode && total !== undefined) ctrl.setTotal(total)
+  },
+  { immediate: true }
+)
+
+watch(
+  () => props.infiniteScroll,
+  enabled => {
+    infiniteScrollCtrl.cleanup()
+    if (enabled) nextTick(() => infiniteScrollCtrl.setup())
+  },
+  { flush: 'post' }
+)
 
 watch(
   () => props.maxSelection,
