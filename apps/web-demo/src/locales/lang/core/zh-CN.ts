@@ -171,6 +171,7 @@ const zhCNCore = {
     prevPage: '上一页',
     nextPage: '下一页',
     lastPage: '最后一页',
+    pageSizeAria: '每页行数',
   },
   emptyState: {
     noData: '暂无数据',

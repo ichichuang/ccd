@@ -151,7 +151,8 @@ const densityOptionButtonClass = 'w-full justify-start text-left focus-visible:r
         v-if="showGlobalFilter"
         v-model="filterVal"
         :placeholder="searchPlaceholder"
-        class="w-full sm:w-[var(--spacing-6xl)] shrink"
+        :aria-label="searchPlaceholder"
+        class="pro-table-search w-full shrink"
       />
     </div>
 
@@ -329,5 +330,19 @@ const densityOptionButtonClass = 'w-full justify-start text-left focus-visible:r
   background: rgb(var(--primary) / 10%);
   color: rgb(var(--primary));
   box-shadow: var(--shadow-sm);
+}
+
+/* Global-search width. Was `sm:w-[var(--spacing-6xl)]`, a vue-ui-only arbitrary
+   utility the host never generates (dist excluded from the UnoCSS scan), and
+   `--spacing-6xl` is not a real token (scale max is `5xl`). Scoped CSS ships in
+   dist/vue-ui.css; full-width when narrow, capped on the `sm` breakpoint. */
+.pro-table-search {
+  width: 100%;
+}
+
+@media (width >= 640px) {
+  .pro-table-search {
+    width: var(--spacing-5xl);
+  }
 }
 </style>

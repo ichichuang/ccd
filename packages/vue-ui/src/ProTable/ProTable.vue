@@ -1180,7 +1180,7 @@ defineExpose({
     >
       <div
         v-if="activeFilterColumn"
-        class="flex flex-col gap-sm p-xs min-w-[var(--spacing-6xl)]"
+        class="pro-table-filter-popover flex flex-col gap-sm p-xs"
         data-pro-table-filter-popover
       >
         <Select
@@ -1262,6 +1262,16 @@ defineExpose({
 .pro-table-fetch-error-leave-to {
   opacity: 0;
   max-height: 0;
+}
+
+/* Per-column filter popover width. The width previously lived in a
+   `min-w-[var(--spacing-6xl)]` utility, which (a) the host UnoCSS pipeline never
+   generated because vue-ui ships from /dist/ (excluded from the content scan) and
+   (b) referenced `--spacing-6xl`, which does not exist in the token scale (max is
+   `5xl`). Scoped CSS ships in dist/vue-ui.css and survives the Popover teleport
+   because the scope attribute travels with the element. */
+.pro-table-filter-popover {
+  min-width: var(--spacing-5xl);
 }
 
 .pro-table-loading-overlay {

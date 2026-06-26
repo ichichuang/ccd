@@ -6,6 +6,13 @@ import { describe, expect, it } from 'vitest'
 const currentDir = dirname(fileURLToPath(import.meta.url))
 const source = readFileSync(join(currentDir, 'ProTable.vue'), 'utf8')
 const toolbarSource = readFileSync(join(currentDir, 'components', 'ProTableToolbar.vue'), 'utf8')
+const paginationSource = readFileSync(
+  join(currentDir, 'components', 'ProTablePagination.vue'),
+  'utf8'
+)
+const localeDir = join(currentDir, '../../../../apps/web-demo/src/locales/lang/core')
+const enLocaleSource = readFileSync(join(localeDir, 'en-US.ts'), 'utf8')
+const zhLocaleSource = readFileSync(join(localeDir, 'zh-CN.ts'), 'utf8')
 
 describe('ProTable overlay surface contract', () => {
   it('uses package-owned CSS for the loading overlay without backdrop blur', () => {
@@ -164,6 +171,17 @@ describe('ProTable overlay surface contract', () => {
     // A clearable control exists.
     expect(source).toContain('data-pro-table-filter-clear')
     expect(source).toContain('clearActiveColumnFilter')
+  })
+
+  it('gives the page-size select a localized accessible name (PT-PAGESIZE-A11Y / D1)', () => {
+    // The page-size Select is an icon-free combobox; without a name it announces
+    // only its current numeric value. It must carry a localized aria-label.
+    expect(paginationSource).toContain(':aria-label="t(\'proTable.pageSizeAria\')"')
+    // The locale key must exist in both core bundles so no missing-key warning fires.
+    expect(enLocaleSource).toContain('pageSizeAria:')
+    expect(enLocaleSource).toContain("pageSizeAria: 'Rows per page'")
+    expect(zhLocaleSource).toContain('pageSizeAria:')
+    expect(zhLocaleSource).toContain("pageSizeAria: '每页行数'")
   })
 
   it('routes the filter popover through Escape-defer + token styling (PT-UI-03)', () => {

@@ -173,6 +173,7 @@ const enUSCore = {
     prevPage: 'Previous page',
     nextPage: 'Next page',
     lastPage: 'Last page',
+    pageSizeAria: 'Rows per page',
   },
   emptyState: {
     noData: 'No data',

@@ -217,6 +217,7 @@ defineExpose({ syncFromParent })
         >
           <ToggleSwitch
             :model-value="row.visible"
+            :aria-label="t('proTable.columnSettingsToggleAria', { title: row.title })"
             @update:model-value="v => setVisible(index, !!v)"
           />
         </div>
