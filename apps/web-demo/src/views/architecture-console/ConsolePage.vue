@@ -281,11 +281,11 @@ const showPrimeVueAdapterDemo = computed(() => page.value?.id === 'UiPrimeVueAda
 </script>
 
 <template>
-  <!-- Missing-model state: safe fallback when route has no page model -->
   <div
     v-if="!page"
     class="layout-screen col-center gap-lg px-xl py-2xl"
   >
+    <!-- Missing-model state: safe fallback when route has no page model -->
     <div
       class="card glass-card col-center gap-xl text-center text-card-foreground w-full max-w-[48ch] rounded-xl p-xl"
     >
@@ -565,10 +565,18 @@ const showPrimeVueAdapterDemo = computed(() => page.value?.id === 'UiPrimeVueAda
       :title="t(demoMessageKey('chart', 'title'))"
       :description="t(demoMessageKey('chart', 'description'))"
     >
-      <UseEcharts
-        :option="chartOption"
-        class="w-full h-[32vh] min-h-260px"
-      />
+      <!-- Size the chart on a wrapping host, not via a class on the UseEcharts adapter: it
+           has inheritAttrs:false and forwards $attrs with v-on, so a `class` passed straight
+           to it is misrouted into an onClass handler (Vue warns) and the height is dropped.
+           Height is set with an explicit style (arbitrary `h-[..vh]` utilities do not resolve
+           on this host); `shrink-0` stops the shell's flex column from collapsing it. -->
+      <div
+        class="w-full shrink-0"
+        style="height: 32vh; min-height: 260px"
+        data-testid="console-chart-region"
+      >
+        <UseEcharts :option="chartOption" />
+      </div>
     </DemoSection>
 
     <DemoSection

@@ -97,6 +97,7 @@ interface ProTableModeConfig {
   ownerFilter?: boolean
   stateControls?: boolean
   columnControls?: boolean
+  columnFilters?: boolean
   eventLog?: boolean
   virtualModeSwitch?: boolean
   showDensityControl?: boolean
@@ -147,6 +148,7 @@ const MODE_CONFIGS: Record<ProTableDemoMode, ProTableModeConfig> = {
   basic: {
     columnPreset: 'standard',
     pageSize: 5,
+    columnFilters: true,
     features: ['typedRows', 'pagination'],
     explanations: ['toolbar', 'states'],
     technical: ['proTableOnly', 'catalogSource'],
@@ -360,9 +362,37 @@ const filteredRows = computed(() => {
   return rows
 })
 
-const tableColumns = computed<ProTableColumn<ProTableDemoRow>[]>(() =>
-  createProTableDemoColumns(t, modeConfig.value.columnPreset)
-)
+// Per-column filtering showcase (PT-UI-03): the ProTable engine already implements
+// `setColumnFilter` + `applyFilter`, but no showcase column opted in, so the header
+// filter UI never rendered in a real route. Modes flagged `columnFilters` surface it
+// on a text column (`capability`) and a select column (`status`) while leaving the
+// remaining columns non-filterable, proving the opt-in contract end to end.
+function withColumnFilters(
+  column: ProTableColumn<ProTableDemoRow>
+): ProTableColumn<ProTableDemoRow> {
+  if (column.id === 'capability') {
+    return { ...column, filterable: true, filterType: 'text' }
+  }
+  if (column.id === 'status') {
+    return {
+      ...column,
+      filterable: true,
+      filterType: 'select',
+      filterOptions: [
+        { label: t('showcase.proTable.status.guarded'), value: 'guarded' },
+        { label: t('showcase.proTable.status.preview'), value: 'preview' },
+        { label: t('showcase.proTable.status.ready'), value: 'ready' },
+        { label: t('showcase.proTable.status.request'), value: 'request' },
+      ],
+    }
+  }
+  return column
+}
+
+const tableColumns = computed<ProTableColumn<ProTableDemoRow>[]>(() => {
+  const columns = createProTableDemoColumns(t, modeConfig.value.columnPreset)
+  return modeConfig.value.columnFilters ? columns.map(withColumnFilters) : columns
+})
 
 const isInfiniteMode = computed(
   () => modeConfig.value.virtualModeSwitch && virtualPresentation.value === 'infinite'

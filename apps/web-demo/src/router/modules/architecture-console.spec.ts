@@ -3,6 +3,12 @@
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { messages } from '@/locales'
 import {
+  appRouteNames,
+  appRoutePaths,
+  routeWhiteNameList,
+  routeWhitePathList,
+} from '@/constants/router'
+import {
   consolePages,
   getConsolePage,
   type ConsolePageModel,
@@ -609,6 +615,43 @@ describe('web-demo architecture console route coverage', () => {
 
     const duplicateRouteNames = [...routesByName.entries()].filter(([, paths]) => paths.length > 1)
     expect(duplicateRouteNames).toEqual([])
+  })
+
+  it('keeps the auth whitelist aligned with mounted routes (ROUTE-01: no unreachable /register)', () => {
+    const registeredPathSet = new Set(flatRegisteredRoutes.map(route => route.path))
+    const registeredNameSet = new Set(
+      flatRegisteredRoutes
+        .map(route => (route.name == null ? '' : String(route.name)))
+        .filter(name => name.length > 0)
+    )
+
+    // Registration is intentionally unsupported in this architecture demo: the route
+    // contract must not advertise a /register path or Register name, because no route
+    // record mounts it — it would only ever resolve through the catch-all to /404.
+    expect(Object.prototype.hasOwnProperty.call(appRoutePaths, 'register')).toBe(false)
+    expect(Object.prototype.hasOwnProperty.call(appRouteNames, 'register')).toBe(false)
+    expect(Object.values(appRoutePaths)).not.toContain('/register')
+    expect(Object.values(appRouteNames)).not.toContain('Register')
+    expect([...routeWhitePathList]).not.toContain('/register')
+    expect([...routeWhiteNameList]).not.toContain('Register')
+
+    // /register is not a mounted route, so it stays unreachable (catch-all → /404).
+    expect(registeredPathSet.has('/register')).toBe(false)
+    expect(registeredNameSet.has('Register')).toBe(false)
+
+    // Positive contract: every whitelisted path/name resolves to a real mounted route.
+    routeWhitePathList.forEach(path => {
+      expect(
+        registeredPathSet.has(path),
+        `whitelisted path ${path} resolves to a mounted route`
+      ).toBe(true)
+    })
+    routeWhiteNameList.forEach(name => {
+      expect(
+        registeredNameSet.has(String(name)),
+        `whitelisted name ${String(name)} resolves to a mounted route`
+      ).toBe(true)
+    })
   })
 
   it('keeps every registered route metadata record valid', () => {

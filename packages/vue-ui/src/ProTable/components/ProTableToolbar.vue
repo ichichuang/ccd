@@ -43,6 +43,8 @@ const emit = defineEmits<{
   refresh: []
   'toggle-fullscreen': []
   export: [mode: 'page' | 'selected']
+  /** Whether any toolbar popover (density / column settings) is currently open. */
+  'popover-toggle': [open: boolean]
 }>()
 
 const { t } = useI18n()
@@ -53,6 +55,7 @@ const densityOptions = computed(() => [
 ])
 
 const densityPanel = ref<{ toggle: (e: Event) => void; hide: () => void } | null>(null)
+const densityExpanded = ref(false)
 
 function pickDensity(mode: SizeMode): void {
   emit('update:density', mode)
@@ -61,6 +64,7 @@ function pickDensity(mode: SizeMode): void {
 
 const filterVal = ref<string | undefined>('')
 const settingsPanel = ref<{ toggle: (e: Event) => void } | null>(null)
+const settingsExpanded = ref(false)
 const columnSettingsRef = ref<InstanceType<typeof ProTableColumnSettings> | null>(null)
 const exportMenu = ref()
 const searchPlaceholder = computed((): string => t('proTable.search') || '')
@@ -75,6 +79,11 @@ function onColumnSettingsPanelShow(): void {
   columnSettingsRef.value?.syncFromParent()
 }
 
+function handleColumnSettingsPanelShow(): void {
+  settingsExpanded.value = true
+  onColumnSettingsPanelShow()
+}
+
 const exportMenuItems = computed(() => {
   const items = [{ label: t('proTable.exportPage'), command: () => emit('export', 'page') }]
   if (props.hasSelection) {
@@ -86,8 +95,41 @@ const exportMenuItems = computed(() => {
   return items
 })
 
+const fullscreenControlLabel = computed(() =>
+  props.isFullscreen ? t('proTable.fullscreenRestore') || '' : t('proTable.fullscreenExpand') || ''
+)
+const densityTogglePt = computed(() => ({
+  root: {
+    'aria-haspopup': 'true',
+    'aria-expanded': densityExpanded.value ? 'true' : 'false',
+  },
+}))
+const columnSettingsTogglePt = computed(() => ({
+  root: {
+    'aria-haspopup': 'true',
+    'aria-expanded': settingsExpanded.value ? 'true' : 'false',
+  },
+}))
+
+/**
+ * Surface popover open/close to the host. The host (ProTable) uses this so that
+ * an Escape which dismisses a popover does not also collapse region fullscreen —
+ * PrimeVue's Popover closes on Escape without calling preventDefault, so the
+ * host cannot rely on `event.defaultPrevented` alone.
+ */
+const anyPopoverOpen = computed(() => densityExpanded.value || settingsExpanded.value)
+watch(anyPopoverOpen, open => emit('popover-toggle', open))
+
+const toolbarButtonStyle = {
+  minWidth: 'var(--control-action-size-sm)',
+  minHeight: 'var(--control-action-size-sm)',
+}
+
 const toolbarBtnClass =
-  'cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-md dark:hover:shadow-lg hover:text-primary p-sm center rounded-sm bg-sidebar'
+  'cursor-pointer border-none outline-none ring-focus-focus duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-md dark:hover:shadow-lg hover:text-primary p-sm center rounded-sm bg-sidebar'
+
+const densityOptionRowClass = 'pro-table-density-option rounded-md px-md py-sm'
+const densityOptionButtonClass = 'w-full justify-start text-left focus-visible:ring-0 outline-none'
 </script>
 
 <template>
@@ -116,20 +158,42 @@ const toolbarBtnClass =
         text
         :class="toolbarBtnClass"
         :aria-label="t('proTable.densityAria')"
+        :pt="densityTogglePt"
+        :style="toolbarButtonStyle"
+        data-pro-table-density-toggle
         @click="densityPanel?.toggle($event)"
       >
         <Icons name="i-lucide-rows-3" />
       </Button>
-      <Popover ref="densityPanel">
-        <div class="col-between gap-xs">
+      <Popover
+        ref="densityPanel"
+        @show="densityExpanded = true"
+        @hide="densityExpanded = false"
+      >
+        <div
+          class="col-between gap-xs"
+          data-pro-table-density-menu
+        >
           <div
             v-for="opt in densityOptions"
             :key="opt.value"
-            class="cursor-pointer px-md py-sm rounded-md hover:bg-muted transition-all duration-md"
-            :class="density === opt.value ? '!bg-primary/20 text-primary font-semibold' : ''"
-            @click="pickDensity(opt.value)"
+            :class="[
+              densityOptionRowClass,
+              density === opt.value ? 'pro-table-density-option--selected' : 'text-foreground',
+            ]"
+            :data-pro-table-density-option="opt.value"
+            :data-pro-table-density-selected="density === opt.value ? 'true' : undefined"
           >
-            <span class="text-sm">{{ opt.label }}</span>
+            <Button
+              text
+              :label="opt.label"
+              :class="[
+                densityOptionButtonClass,
+                density === opt.value ? 'text-primary font-semibold' : 'text-foreground',
+              ]"
+              :aria-pressed="density === opt.value ? 'true' : 'false'"
+              @click="pickDensity(opt.value)"
+            />
           </div>
         </div>
       </Popover>
@@ -139,6 +203,7 @@ const toolbarBtnClass =
         text
         :class="toolbarBtnClass"
         :aria-label="t('proTable.export')"
+        :style="toolbarButtonStyle"
         @click="hasSelection ? exportMenu?.toggle($event) : emit('export', 'page')"
       >
         <Icons name="i-lucide-download" />
@@ -154,9 +219,10 @@ const toolbarBtnClass =
       <Button
         text
         :class="toolbarBtnClass"
-        :aria-label="t('proTable.fullscreen')"
+        :aria-label="fullscreenControlLabel"
         :aria-pressed="isFullscreen ? 'true' : 'false'"
-        :title="t('proTable.fullscreen')"
+        :title="fullscreenControlLabel"
+        :style="toolbarButtonStyle"
         data-pro-table-fullscreen-toggle
         @click="emit('toggle-fullscreen')"
       >
@@ -169,6 +235,7 @@ const toolbarBtnClass =
         text
         :class="toolbarBtnClass"
         :aria-label="t('proTable.refresh')"
+        :style="toolbarButtonStyle"
         @click="emit('refresh')"
       >
         <Icons name="i-lucide-refresh-cw" />
@@ -179,6 +246,8 @@ const toolbarBtnClass =
         text
         :class="toolbarBtnClass"
         :aria-label="t('proTable.columnSettings')"
+        :pt="columnSettingsTogglePt"
+        :style="toolbarButtonStyle"
         @click="settingsPanel?.toggle($event)"
       >
         <Icons name="i-lucide-settings-2" />
@@ -186,7 +255,8 @@ const toolbarBtnClass =
 
       <Popover
         ref="settingsPanel"
-        @show="onColumnSettingsPanelShow"
+        @show="handleColumnSettingsPanelShow"
+        @hide="settingsExpanded = false"
       >
         <ProTableColumnSettings
           ref="columnSettingsRef"
@@ -198,3 +268,27 @@ const toolbarBtnClass =
     </div>
   </div>
 </template>
+
+<style scoped>
+.pro-table-density-option {
+  transition:
+    background-color var(--transition-md) ease,
+    border-color var(--transition-md) ease,
+    box-shadow var(--transition-md) ease,
+    color var(--transition-md) ease;
+}
+
+.pro-table-density-option:hover {
+  background: rgb(var(--muted) / 50%);
+}
+
+.pro-table-density-option:focus-within {
+  box-shadow: 0 0 0 1px rgb(var(--ring));
+}
+
+.pro-table-density-option--selected {
+  background: rgb(var(--primary) / 10%);
+  color: rgb(var(--primary));
+  box-shadow: var(--shadow-sm);
+}
+</style>

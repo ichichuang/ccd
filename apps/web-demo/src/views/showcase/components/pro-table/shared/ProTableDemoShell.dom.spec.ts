@@ -3,6 +3,8 @@
 import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
 import { describe, expect, it } from 'vitest'
+import enUSCore from '../../../../../locales/lang/core/en-US'
+import zhCNCore from '../../../../../locales/lang/core/zh-CN'
 import enUSConsole from '../../../../../locales/lang/console/en-US'
 import ProTableDemoShell from './ProTableDemoShell.vue'
 
@@ -156,5 +158,23 @@ describe('ProTableDemoShell visual foundation', () => {
         code => code.classes().includes('break-all') && code.classes().includes('select-all')
       )
     ).toBe(true)
+  })
+})
+
+describe('ProTable column-filter i18n contract (PT-UI-03 polish)', () => {
+  // ProTable.vue resolves these labels via t('proTable.columnFilter*'); the host app
+  // (web-demo core locales) must register them so the per-column header filter UI renders
+  // localized labels instead of falling back to English and emitting [intlify] missing-key
+  // warnings. Direct property access also makes this a compile-time presence guard.
+  it('registers the column-filter labels in en-US core, with {column} interpolation', () => {
+    expect(enUSCore.proTable.columnFilterAria).toContain('{column}')
+    expect(enUSCore.proTable.columnFilterPlaceholder.length).toBeGreaterThan(0)
+    expect(enUSCore.proTable.columnFilterClear.length).toBeGreaterThan(0)
+  })
+
+  it('registers the column-filter labels in zh-CN core, with {column} interpolation', () => {
+    expect(zhCNCore.proTable.columnFilterAria).toContain('{column}')
+    expect(zhCNCore.proTable.columnFilterPlaceholder.length).toBeGreaterThan(0)
+    expect(zhCNCore.proTable.columnFilterClear.length).toBeGreaterThan(0)
   })
 })

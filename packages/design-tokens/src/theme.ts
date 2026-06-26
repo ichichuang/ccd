@@ -19,7 +19,8 @@ export const THEME_PRESETS: CompleteThemePreset[] = [
         foreground: '#333333',
         neutral: {
           base: '#E0E2E5',
-          bg: '#F8F9FA',
+          // DS-SURFACE-01: card/popover raised above the page so panels float; cool near-white keeps the morandi hue.
+          bg: '#FEFFFF',
           foreground: '#333333',
           secondaryForeground: '#6C757D',
           mutedForeground: '#868E96',
@@ -181,15 +182,20 @@ export const THEME_PRESETS: CompleteThemePreset[] = [
         background: '#F8F0F0',
         foreground: '#333333',
         neutral: {
+          // Card/popover surface raised toward white so panels, cards, table shells,
+          // and popovers float clearly above the warm-rose page (DS-SURFACE-01).
+          // Kept just below the #FFFFFF sidebar so it stays a distinct token.
           base: '#EFE0E0',
-          bg: '#FCF8F8',
+          bg: '#FEFEFE',
           foreground: '#333333',
           secondaryForeground: '#6C757D',
           mutedForeground: '#868E96',
         },
         secondary: '#F5EBEB',
         secondaryForeground: '#333333',
-        muted: '#FCF8F8',
+        // Recessed "muted" fill (wells/code blocks) sits a distinct step below the card
+        // surface instead of collapsing onto it; stays >= 3:1 against muted-foreground.
+        muted: '#FBF6F6',
         mutedForeground: '#868E96',
         border: '#EFE0E0',
         input: '#F2E6E6',
@@ -345,7 +351,8 @@ export const THEME_PRESETS: CompleteThemePreset[] = [
         foreground: '#333333',
         neutral: {
           base: '#EFE5D9',
-          bg: '#FFFBF5',
+          // DS-SURFACE-01: card/popover raised; warm near-white keeps the cream hue, distinct from page + muted.
+          bg: '#FFFEFC',
           foreground: '#333333',
           secondaryForeground: '#6C757D',
           mutedForeground: '#868E96',
@@ -508,14 +515,16 @@ export const THEME_PRESETS: CompleteThemePreset[] = [
         foreground: '#333333',
         neutral: {
           base: '#E8E8D0',
-          bg: '#FCFCF8',
+          // DS-SURFACE-01: card/popover raised; warm near-white keeps the eco beige hue.
+          bg: '#FEFEF8',
           foreground: '#333333',
           secondaryForeground: '#6C757D',
           mutedForeground: '#868E96',
         },
         secondary: '#F0F0E5',
         secondaryForeground: '#333333',
-        muted: '#FCFCF8',
+        // DS-SURFACE-01: eco card sits very high, so recess muted into a distinct beige well (stays >= 3:1 vs muted-fg).
+        muted: '#FAFAF2',
         mutedForeground: '#868E96',
         border: '#E8E8D0',
         input: '#EFEFD8',
@@ -671,7 +680,8 @@ export const THEME_PRESETS: CompleteThemePreset[] = [
         foreground: '#333333',
         neutral: {
           base: '#D0E6EB',
-          bg: '#F0F8FA',
+          // DS-SURFACE-01: card/popover raised; cyan near-white keeps the digital-pastel hue.
+          bg: '#FCFEFF',
           foreground: '#333333',
           secondaryForeground: '#6C757D',
           mutedForeground: '#868E96',
@@ -834,7 +844,8 @@ export const THEME_PRESETS: CompleteThemePreset[] = [
         foreground: '#333333',
         neutral: {
           base: '#F5EED5',
-          bg: '#FFFCEF',
+          // DS-SURFACE-01: card/popover raised; warm near-white keeps the sunset hue.
+          bg: '#FFFEFB',
           foreground: '#333333',
           secondaryForeground: '#6C757D',
           mutedForeground: '#868E96',
