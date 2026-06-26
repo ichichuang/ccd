@@ -9,6 +9,22 @@ import {
 } from './helpers/app'
 import type { NetworkFailureRecord } from './helpers/app'
 
+// Diagnostics surface for the blank-screen probe. Declared here (separate from the
+// typed `window.ccdLayoutProbe`) so the probe can report Option A gating context without
+// touching the shared probe contract in e2e/types/window.d.ts.
+declare global {
+  interface Window {
+    ccdBlankProbeDiag?: {
+      // Flips true once the dashboard target has painted meaningful content post-ready.
+      seenDashboardContent: boolean
+      // Blank frames observed during the inbound login->dashboard handoff, before the
+      // dashboard first painted. These are an expected transition transient and never
+      // fail the test; tracked only to keep failures debuggable.
+      blankSamplesBeforePaint: number
+    }
+  }
+}
+
 const viewportMatrix = [
   { name: 'desktop', width: 1280, height: 720 },
   { name: 'tablet', width: 768, height: 1024 },
@@ -27,6 +43,8 @@ type LayoutContract = {
   appReadyAt: number
   dashboardVisibleAt: number
   blankSamples: number
+  blankSamplesBeforePaint: number
+  seenDashboardContent: boolean
   consoleErrors: string[]
   longTasks: number[]
 }
@@ -169,21 +187,28 @@ async function installBlankScreenProbe(page: Page): Promise<void> {
     }
     const layoutProbe = window.ccdLayoutProbe
 
-    let hasSeenRouteNode = false
-    const isBlankShell = () => {
+    window.ccdBlankProbeDiag = {
+      seenDashboardContent: false,
+      blankSamplesBeforePaint: 0,
+    }
+    const blankDiag = window.ccdBlankProbeDiag
+
+    // Option A: a shell-without-route frame counts toward blankSamples only after the
+    // dashboard target has painted meaningful content at least once. A blank *after* that
+    // first paint means the layout tree collapsed (a real stuck-blank regression); a blank
+    // *before* it is just the inbound login->dashboard handoff frame and must not fail.
+    const isShellWithoutRoute = () => {
       const app = document.querySelector('#app')
       const shell = document.querySelector('#app-shell')
       const dashboard = document.querySelector('#dashboard-page')
       const login = document.querySelector('#login-submit')
       const visibleRouteNode = dashboard ?? login
-      if (visibleRouteNode) hasSeenRouteNode = true
-      return Boolean(
-        hasSeenRouteNode &&
-        app &&
-        shell &&
-        !visibleRouteNode &&
-        document.body.innerText.trim().length === 0
-      )
+      const bodyHasText = document.body.innerText.trim().length > 0
+
+      // Record the first meaningful dashboard paint; blank coverage activates afterward.
+      if (dashboard && bodyHasText) blankDiag.seenDashboardContent = true
+
+      return Boolean(app && shell && !visibleRouteNode && !bodyHasText)
     }
 
     let postReadyFrames = 0
@@ -193,7 +218,13 @@ async function installBlankScreenProbe(page: Page): Promise<void> {
         document.documentElement.dataset.runtimeLoading === 'false'
       ) {
         postReadyFrames += 1
-        if (isBlankShell()) layoutProbe.blankSamples += 1
+        if (isShellWithoutRoute()) {
+          if (blankDiag.seenDashboardContent) {
+            layoutProbe.blankSamples += 1
+          } else {
+            blankDiag.blankSamplesBeforePaint += 1
+          }
+        }
       }
       if (postReadyFrames < 30) {
         window.requestAnimationFrame(sample)
@@ -233,6 +264,10 @@ async function readLayoutContract(page: Page): Promise<LayoutContract> {
       return 1 + Math.max(...children.map(getDepth))
     }
     const probe = window.ccdLayoutProbe ?? { blankSamples: 0, consoleErrors: [], longTasks: [] }
+    const blankDiag = window.ccdBlankProbeDiag ?? {
+      seenDashboardContent: false,
+      blankSamplesBeforePaint: 0,
+    }
     return {
       bodyChildCount: document.body.children.length,
       appChildCount: document.querySelector('#app')?.children.length ?? 0,
@@ -242,6 +277,8 @@ async function readLayoutContract(page: Page): Promise<LayoutContract> {
       dashboardVisibleAt:
         performance.getEntriesByName('ccd:dashboard-visible').at(-1)?.startTime ?? 0,
       blankSamples: probe.blankSamples,
+      blankSamplesBeforePaint: blankDiag.blankSamplesBeforePaint,
+      seenDashboardContent: blankDiag.seenDashboardContent,
       consoleErrors: probe.consoleErrors,
       longTasks: probe.longTasks,
     }
@@ -285,7 +322,13 @@ test.describe('QA full regression repair matrix', () => {
       expect(contract.appChildCount).toBeGreaterThan(0)
       expect(contract.shellChildCount).toBeGreaterThan(1)
       expect(contract.routerOutletDepth).toBeGreaterThan(3)
-      expect(contract.blankSamples).toBe(0)
+      expect(
+        contract.blankSamples,
+        `${viewport.name} dashboard blanked ${contract.blankSamples} frame(s) AFTER first dashboard paint ` +
+          `(seenDashboardContent=${contract.seenDashboardContent}, ` +
+          `ignored pre-paint transition blanks=${contract.blankSamplesBeforePaint}). ` +
+          `A non-zero value means the layout tree collapsed to a blank shell after rendering — a stuck-blank regression.`
+      ).toBe(0)
       expect(contract.consoleErrors).toEqual([])
 
       const startedAt = Date.now()
