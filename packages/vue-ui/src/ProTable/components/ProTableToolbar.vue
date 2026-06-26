@@ -125,10 +125,16 @@ const toolbarButtonStyle = {
   minHeight: 'var(--control-action-size-sm)',
 }
 
+// Flat, consistent toolbar control. Hover/active visuals live in scoped CSS
+// (`pro-table-toolbar-btn`) because variant utilities like `hover:bg-muted` are
+// only referenced inside this dist-shipped package and the host UnoCSS pipeline
+// excludes `/dist/`, so they are never generated. `text-muted-foreground`,
+// `ring-focus-focus`, `rounded-md` and `p-sm` are all used in app source too,
+// so they are safe to keep as utilities.
 const toolbarBtnClass =
-  'cursor-pointer border-none outline-none ring-focus-focus duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-md dark:hover:shadow-lg hover:text-primary p-sm center rounded-sm bg-sidebar'
+  'pro-table-toolbar-btn cursor-pointer border-none outline-none ring-focus-focus duration-sm text-muted-foreground p-sm center rounded-md'
 
-const densityOptionRowClass = 'pro-table-density-option rounded-md px-md py-sm'
+const densityOptionRowClass = 'pro-table-density-option rounded-md px-md py-xs'
 const densityOptionButtonClass = 'w-full justify-start text-left focus-visible:ring-0 outline-none'
 </script>
 
@@ -270,12 +276,45 @@ const densityOptionButtonClass = 'w-full justify-start text-left focus-visible:r
 </template>
 
 <style scoped>
+/* Flat, token-driven toolbar control. Self-contained so it ships in
+   dist/vue-ui.css instead of depending on host-generated `hover:*` variants. */
+.pro-table-toolbar-btn {
+  color: rgb(var(--muted-foreground));
+  background: transparent;
+  transition:
+    color var(--transition-md) ease,
+    background-color var(--transition-md) ease;
+}
+
+.pro-table-toolbar-btn:hover {
+  color: rgb(var(--primary));
+  background: rgb(var(--muted) / 60%);
+}
+
+.pro-table-toolbar-btn:active {
+  background: rgb(var(--muted));
+}
+
 .pro-table-density-option {
   transition:
     background-color var(--transition-md) ease,
     border-color var(--transition-md) ease,
     box-shadow var(--transition-md) ease,
     color var(--transition-md) ease;
+}
+
+/* Neutral non-selected density options: PrimeVue's text Button defaults to the
+   primary color, which made every option read as the active/purple state. */
+.pro-table-density-option :deep(.p-button),
+.pro-table-density-option :deep(.p-button-label) {
+  color: rgb(var(--foreground));
+  font-weight: 400;
+}
+
+.pro-table-density-option--selected :deep(.p-button),
+.pro-table-density-option--selected :deep(.p-button-label) {
+  color: rgb(var(--primary));
+  font-weight: 600;
 }
 
 .pro-table-density-option:hover {
