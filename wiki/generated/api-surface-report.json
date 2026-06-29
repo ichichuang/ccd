@@ -469,6 +469,8 @@
         "ProTableApiMethod",
         "ProTableApiQueryParams",
         "ProTableColumn",
+        "ProTableColumnGroup",
+        "ProTableColumnGroupRow",
         "ProTableCrudFormModalBody",
         "ProTableCrudViewModalBody",
         "ProTableExposed",

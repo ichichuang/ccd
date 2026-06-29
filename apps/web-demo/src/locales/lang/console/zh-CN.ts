@@ -12,6 +12,7 @@ const showcasePageTitles = {
   'components-pro-table-overview': 'ProTable 概览',
   'components-pro-table-basic': '基础表格',
   'components-pro-table-columns': '列配置',
+  'components-pro-table-column-groups': '列分组',
   'components-pro-table-sorting-filtering': '排序与过滤',
   'components-pro-table-pagination': '分页',
   'components-pro-table-server-request': '服务端请求',
@@ -96,6 +97,13 @@ const showcasePageLocaleOverrides: Record<string, ShowcasePageLocaleOverride> = 
     try: '查看列行为。',
     source: '源码路径展示页面路由与共享列配置的归属。',
     technical: '技术说明强调普通列对象与无 TSX 渲染器。',
+  },
+  'components-pro-table-column-groups': {
+    eyebrow: 'ProTable 展示',
+    description: '可选分组表头组织可见叶子列，同时排序、筛选与列控件仍由叶子列持有。',
+    try: '查看列分组。',
+    source: '源码路径展示路由、共享壳、列工厂与 ProTable 包 API。',
+    technical: '技术说明标明 DataTable 路径支持与虚拟滚动延后实现。',
   },
   'components-pro-table-sorting-filtering': {
     eyebrow: 'ProTable 展示',
@@ -318,6 +326,7 @@ const showcaseRouterLocale = createNestedLocaleRecord([
   ['components.proTable.overview', 'ProTable 概览'],
   ['components.proTable.basic', '基础表格'],
   ['components.proTable.columns', '列配置'],
+  ['components.proTable.columnGroups', '列分组'],
   ['components.proTable.sortingFiltering', '排序与过滤'],
   ['components.proTable.pagination', '分页'],
   ['components.proTable.serverRequest', '服务端请求'],
@@ -1552,6 +1561,11 @@ const zhCNConsole = {
           demo: '列控件隐藏或显示所有者列，状态读取会展示隐藏列数量。',
           tableTitle: '列配置',
         },
+        'column-groups': {
+          label: '列分组',
+          demo: '分组表头组织定义与交付列，同时保留叶子列排序与筛选。',
+          tableTitle: '分组能力行',
+        },
         'sorting-filtering': {
           label: '排序与过滤',
           demo: '点击列头排序，使用全局搜索，并通过 PrimeVue 状态过滤收窄行。',
@@ -1617,6 +1631,13 @@ const zhCNConsole = {
         updatedAt: '更新时间',
         workflow: '推荐操作',
         signal: '用户价值',
+      },
+      columnGroups: {
+        definition: '定义',
+        delivery: '交付',
+        ownership: '归属',
+        state: '状态',
+        evidence: '证据',
       },
       status: {
         guarded: '受护栏保护',
@@ -1822,6 +1843,11 @@ const zhCNConsole = {
           description:
             '列预设使用 field、width、alignment、sortable 与 valueEnum，不使用 Vue render helper。',
           tag: '列',
+        },
+        columnGroups: {
+          title: '分组表头',
+          description: '列分组引用叶子列 id，再由 ProTable 根据当前列状态计算可见跨度。',
+          tag: '表头',
         },
         cellValueEnum: {
           title: 'Value enum 渲染',

@@ -16,6 +16,8 @@ export type {
 } from './engine/hooks/useProTableUrlSync'
 export type {
   ProTableColumn,
+  ProTableColumnGroup,
+  ProTableColumnGroupRow,
   ColumnRenderParams,
   ProTableValueEnumItem,
   ProTableValueEnum,

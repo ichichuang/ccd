@@ -104,6 +104,8 @@ export type {
   ProTableApiMethod,
   ProTableApiQueryParams,
   ProTableColumn,
+  ProTableColumnGroup,
+  ProTableColumnGroupRow,
   ProTableExposed,
   ProTableLoadParams,
   ProTableProps,

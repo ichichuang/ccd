@@ -1,4 +1,4 @@
-import type { ProTableColumn } from '@ccd/vue-ui'
+import type { ProTableColumn, ProTableColumnGroupRow } from '@ccd/vue-ui'
 import type { ProTableDemoRow } from './proTableDemoData'
 
 type Translate = (key: string) => string
@@ -117,4 +117,38 @@ export function createProTableDemoColumns(
   }
 
   return columns
+}
+
+export function createProTableDemoColumnGroups(t: Translate): ProTableColumnGroupRow[] {
+  return [
+    [
+      {
+        id: 'definition',
+        title: t('showcase.proTable.columnGroups.definition'),
+        columnIds: ['capability', 'owner', 'status'],
+      },
+      {
+        id: 'delivery',
+        title: t('showcase.proTable.columnGroups.delivery'),
+        columnIds: ['priority', 'records', 'workflow', 'signal'],
+      },
+    ],
+    [
+      {
+        id: 'ownership',
+        title: t('showcase.proTable.columnGroups.ownership'),
+        columnIds: ['capability', 'owner'],
+      },
+      {
+        id: 'state',
+        title: t('showcase.proTable.columnGroups.state'),
+        columnIds: ['status', 'priority'],
+      },
+      {
+        id: 'evidence',
+        title: t('showcase.proTable.columnGroups.evidence'),
+        columnIds: ['records', 'workflow', 'signal'],
+      },
+    ],
+  ]
 }

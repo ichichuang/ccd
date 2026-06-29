@@ -4,12 +4,14 @@ import { objectGet } from '@ccd/shared-utils'
 import { useEventListener } from '@vueuse/core'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
+import ColumnGroup from 'primevue/columngroup'
 import DataTable from 'primevue/datatable'
 import type { DataTableSortEvent, DataTableSortMeta } from 'primevue/datatable'
 import DatePicker from 'primevue/datepicker'
 import InputText from 'primevue/inputtext'
 import Popover from 'primevue/popover'
 import ProgressSpinner from 'primevue/progressspinner'
+import Row from 'primevue/row'
 import Select from 'primevue/select'
 import Tag from 'primevue/tag'
 import {
@@ -32,7 +34,7 @@ import ProTablePagination from './components/ProTablePagination.vue'
 import ProTableToolbar from './components/ProTableToolbar.vue'
 import VirtualGridRenderer from './VirtualGridRenderer.vue'
 import { buildDataTablePt, type DataTablePtOptions } from './presets/dataTablePt'
-import type { ProTableColumn } from './engine/types/column'
+import type { ProTableColumn, ProTableColumnGroup } from './engine/types/column'
 import type { FilterState, ProTableSortMode, SortMeta, SortState } from './engine/types/tableState'
 import type {
   PaginationConfig,
@@ -97,6 +99,7 @@ const props = withDefaults(defineProps<ProTableProps<T>>(), {
   selected: PRO_TABLE_PROPS_DEFAULTS.selected,
   maxSelection: PRO_TABLE_PROPS_DEFAULTS.maxSelection,
   virtualScroll: PRO_TABLE_PROPS_DEFAULTS.virtualScroll,
+  columnGroups: undefined,
   request: undefined,
   api: undefined,
   dataKey: 'data',
@@ -429,6 +432,78 @@ const tablePt = computed<Record<string, unknown>>(() => {
   if (props.tableLayout) options.tableLayout = props.tableLayout
   return buildDataTablePt(options)
 })
+
+type ColumnGroupPinSection = 'left' | 'center' | 'right'
+
+interface ResolvedColumnGroupCell {
+  key: string
+  group: ProTableColumnGroup | null
+  colspan: number
+  pinSection: ColumnGroupPinSection
+}
+
+function getColumnPinSection(col: ProTableColumn<T>): ColumnGroupPinSection {
+  if (col.pinned === 'left') return 'left'
+  if (col.pinned === 'right') return 'right'
+  return 'center'
+}
+
+function findColumnGroup(
+  row: readonly ProTableColumnGroup[],
+  columnId: string
+): ProTableColumnGroup | null {
+  return row.find(group => group.columnIds.includes(columnId)) ?? null
+}
+
+function getColumnGroupIdentity(
+  group: ProTableColumnGroup | null,
+  col: ProTableColumn<T>,
+  pinSection: ColumnGroupPinSection
+): string {
+  return `${group?.id ?? `ungrouped-${col.id}`}:${pinSection}`
+}
+
+function resolveColumnGroupRows(
+  rows: readonly (readonly ProTableColumnGroup[])[],
+  columns: readonly ProTableColumn<T>[]
+): ResolvedColumnGroupCell[][] {
+  return rows
+    .map((row, rowIndex) => {
+      const cells: ResolvedColumnGroupCell[] = []
+      let activeIdentity: string | null = null
+
+      for (const col of columns) {
+        const pinSection = getColumnPinSection(col)
+        const group = findColumnGroup(row, col.id)
+        const identity = getColumnGroupIdentity(group, col, pinSection)
+        const activeCell = cells[cells.length - 1]
+
+        if (activeCell && activeIdentity === identity) {
+          activeCell.colspan += 1
+          continue
+        }
+
+        activeIdentity = identity
+        cells.push({
+          key: `${rowIndex}-${identity}-${cells.length}`,
+          group,
+          colspan: 1,
+          pinSection,
+        })
+      }
+
+      return cells
+    })
+    .filter(row => row.some(cell => cell.group !== null))
+}
+
+const resolvedColumnGroupRows = computed<ResolvedColumnGroupCell[][]>(() => {
+  if (!props.columnGroups || props.columnGroups.length === 0) return []
+  return resolveColumnGroupRows(props.columnGroups, ctrl.visibleColumns.value)
+})
+
+const hasResolvedColumnGroups = computed<boolean>(() => resolvedColumnGroupRows.value.length > 0)
+const groupedHeaderRowspan = computed<number>(() => resolvedColumnGroupRows.value.length + 1)
 
 const rowClassFn = computed<((data: T) => string) | undefined>(() => {
   if (!props.rowClassName) return undefined
@@ -917,6 +992,31 @@ function renderHeader(col: ProTableColumn<T>): VNode | string {
   return col.title ?? col.id
 }
 
+function renderColumnGroupHeader(cell: ResolvedColumnGroupCell): VNode | string {
+  const group = cell.group
+  if (!group) return ''
+  return typeof group.title === 'function' ? group.title() : group.title
+}
+
+function getColumnGroupAlignClass(cell: ResolvedColumnGroupCell): string {
+  if (cell.group?.headerAlign === 'left') return 'justify-start text-left'
+  if (cell.group?.headerAlign === 'right') return 'justify-end text-right'
+  return 'justify-center text-center'
+}
+
+function isColumnGroupCellFrozen(cell: ResolvedColumnGroupCell): boolean {
+  return cell.pinSection === 'left' || cell.pinSection === 'right'
+}
+
+function getColumnGroupCellAlignFrozen(cell: ResolvedColumnGroupCell): 'right' | undefined {
+  return cell.pinSection === 'right' ? 'right' : undefined
+}
+
+function columnGroupHeaderPt(cell: ResolvedColumnGroupCell): Record<string, unknown> {
+  if (!cell.group) return { headerCell: { 'aria-hidden': 'true' } }
+  return { headerCell: { 'data-pro-table-column-group': cell.group.id } }
+}
+
 function renderCell(col: ProTableColumn<T>, row: T, index: number): VNode | string | number | null {
   if (col.render) {
     return col.render({ row, index, column: col })
@@ -1151,6 +1251,127 @@ defineExpose({
               @update:selection="selectable ? (tableSelection = $event) : undefined"
               @row-click="emit('row-click', $event.data)"
             >
+              <ColumnGroup
+                v-if="hasResolvedColumnGroups"
+                type="header"
+              >
+                <Row
+                  v-for="(groupRow, rowIndex) in resolvedColumnGroupRows"
+                  :key="'group-row-' + rowIndex"
+                >
+                  <Column
+                    v-if="
+                      rowIndex === 0 && selectable === 'checkbox' && selectionPinned !== 'right'
+                    "
+                    column-key="selection-left-group"
+                    selection-mode="multiple"
+                    :rowspan="groupedHeaderRowspan"
+                    :header-style="{ width: UI_DEFAULTS.selectionColumnWidth }"
+                    :frozen="selectionPinned === 'left'"
+                    :align-frozen="selectionPinned === 'left' ? 'left' : undefined"
+                  />
+
+                  <Column
+                    v-for="cell in groupRow"
+                    :key="cell.key"
+                    :colspan="cell.colspan"
+                    :frozen="isColumnGroupCellFrozen(cell)"
+                    :align-frozen="getColumnGroupCellAlignFrozen(cell)"
+                    :pt="columnGroupHeaderPt(cell)"
+                  >
+                    <template #header>
+                      <div
+                        :class="[
+                          'flex flex-row items-center min-w-0 gap-xs w-full font-semibold text-muted-foreground',
+                          getColumnGroupAlignClass(cell),
+                        ]"
+                      >
+                        <ProTableCell :node="renderColumnGroupHeader(cell)" />
+                      </div>
+                    </template>
+                  </Column>
+
+                  <Column
+                    v-if="
+                      rowIndex === 0 && selectable === 'checkbox' && selectionPinned === 'right'
+                    "
+                    column-key="selection-right-group"
+                    selection-mode="multiple"
+                    :rowspan="groupedHeaderRowspan"
+                    :header-style="{ width: UI_DEFAULTS.selectionColumnWidth }"
+                    :frozen="true"
+                    align-frozen="right"
+                  />
+                </Row>
+
+                <Row>
+                  <Column
+                    v-for="col in ctrl.visibleColumns.value"
+                    :key="'group-leaf-' + col.id"
+                    :column-key="'group-leaf-' + col.id"
+                    :style="{
+                      width: col.width,
+                      minWidth: col.minWidth,
+                      maxWidth: col.maxWidth,
+                      cursor: col.sortable ? 'pointer' : undefined,
+                    }"
+                    :frozen="col.pinned === 'left' || col.pinned === 'right'"
+                    :align-frozen="col.pinned === 'right' ? 'right' : undefined"
+                    :pt="columnHeaderPt(col)"
+                  >
+                    <template #header>
+                      <div
+                        :class="[
+                          'flex flex-row items-center gap-xs select-none w-full',
+                          getHeaderAlignClass(col),
+                        ]"
+                      >
+                        <div
+                          :class="[
+                            'flex flex-row items-center gap-xs min-w-0',
+                            col.sortable ? 'cursor-pointer rounded-sm ring-focus-focus' : '',
+                          ]"
+                          :role="col.sortable ? 'button' : undefined"
+                          :tabindex="col.sortable ? 0 : undefined"
+                          :aria-label="sortAriaLabel(col)"
+                          :data-pro-table-sort="col.sortable ? 'true' : undefined"
+                          @click="handleSortClick(col)"
+                          @keydown.enter.prevent="handleSortClick(col)"
+                          @keydown.space.prevent="handleSortClick(col)"
+                        >
+                          <ProTableCell :node="renderHeader(col)" />
+                          <Icons
+                            v-if="col.sortable"
+                            :name="sortIcon(col)"
+                            size="xs"
+                            :class="isColumnSorted(col) ? 'text-primary' : 'text-muted-foreground'"
+                          />
+                        </div>
+                        <Button
+                          v-if="isColumnFilterable(col)"
+                          text
+                          rounded
+                          class="shrink-0 cursor-pointer border-none outline-none ring-focus-focus p-xs center rounded-sm hover:text-primary"
+                          :class="isColumnFiltered(col) ? 'text-primary' : 'text-muted-foreground'"
+                          :aria-label="filterAriaLabel(col)"
+                          aria-haspopup="dialog"
+                          :aria-expanded="isFilterPopoverOpenFor(col) ? 'true' : 'false'"
+                          :aria-pressed="isColumnFiltered(col) ? 'true' : 'false'"
+                          data-pro-table-filter-toggle
+                          :data-pro-table-filter-active="isColumnFiltered(col) ? 'true' : undefined"
+                          @click="openColumnFilter(col, $event)"
+                        >
+                          <Icons
+                            name="i-lucide-filter"
+                            size="xs"
+                          />
+                        </Button>
+                      </div>
+                    </template>
+                  </Column>
+                </Row>
+              </ColumnGroup>
+
               <!-- Selection column: left or unpinned (before data columns) -->
               <Column
                 v-if="selectable === 'checkbox' && selectionPinned !== 'right'"
@@ -1176,7 +1397,10 @@ defineExpose({
                 :align-frozen="col.pinned === 'right' ? 'right' : undefined"
                 :pt="columnHeaderPt(col)"
               >
-                <template #header>
+                <template
+                  v-if="!hasResolvedColumnGroups"
+                  #header
+                >
                   <!-- Sortable headers are keyboard-operable button controls inside the
                        columnheader <th> (which carries aria-sort); non-sortable headers
                        stay inert and unannounced. A filterable column adds a sibling

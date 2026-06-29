@@ -14,6 +14,19 @@ export interface ProTableValueEnumItem {
 
 export type ProTableValueEnum = Record<string | number, ProTableValueEnumItem | string>
 
+export interface ProTableColumnGroup {
+  id: string
+  title: string | (() => VNode)
+  /**
+   * Leaf column ids covered by this group. ProTable derives the runtime colspan
+   * from the current visible, ordered columns so visibility/reorder/pinning stay authoritative.
+   */
+  columnIds: string[]
+  headerAlign?: 'left' | 'center' | 'right'
+}
+
+export type ProTableColumnGroupRow = ProTableColumnGroup[]
+
 export interface ProTableColumn<T extends Record<string, unknown> = Record<string, unknown>> {
   id: string
   title: string | (() => VNode)

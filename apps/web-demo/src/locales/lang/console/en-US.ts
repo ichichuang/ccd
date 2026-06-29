@@ -12,6 +12,7 @@ const showcasePageTitles = {
   'components-pro-table-overview': 'ProTable Overview',
   'components-pro-table-basic': 'Basic Table',
   'components-pro-table-columns': 'Columns',
+  'components-pro-table-column-groups': 'Column Groups',
   'components-pro-table-sorting-filtering': 'Sorting and Filtering',
   'components-pro-table-pagination': 'Pagination',
   'components-pro-table-server-request': 'Server Request',
@@ -99,6 +100,14 @@ const showcasePageLocaleOverrides: Record<string, ShowcasePageLocaleOverride> = 
     try: 'Inspect column behavior.',
     source: 'Source paths show where page routing and shared columns are owned.',
     technical: 'Technical notes call out plain column objects and no TSX renderers.',
+  },
+  'components-pro-table-column-groups': {
+    eyebrow: 'ProTable showcase',
+    description:
+      'Opt-in grouped headers organize visible leaf columns while sorting, filtering, and column controls remain leaf-owned.',
+    try: 'Inspect grouped columns.',
+    source: 'Source paths show the route, shared shell, column factory, and ProTable package API.',
+    technical: 'Technical notes call out DataTable-path support and the virtual-scroll deferral.',
   },
   'components-pro-table-sorting-filtering': {
     eyebrow: 'ProTable showcase',
@@ -345,6 +354,7 @@ const showcaseRouterLocale = createNestedLocaleRecord([
   ['components.proTable.overview', 'ProTable Overview'],
   ['components.proTable.basic', 'Basic Table'],
   ['components.proTable.columns', 'Columns'],
+  ['components.proTable.columnGroups', 'Column Groups'],
   ['components.proTable.sortingFiltering', 'Sorting and Filtering'],
   ['components.proTable.pagination', 'Pagination'],
   ['components.proTable.serverRequest', 'Server Request'],
@@ -1733,6 +1743,11 @@ const enUSConsole = {
           demo: 'Column controls hide and reveal the owner column while state reads show the resulting hidden-column count.',
           tableTitle: 'Column configuration',
         },
+        'column-groups': {
+          label: 'Column groups',
+          demo: 'Grouped headers organize definition and delivery columns while leaf sorting and filters remain active.',
+          tableTitle: 'Grouped capability rows',
+        },
         'sorting-filtering': {
           label: 'Sorting and filtering',
           demo: 'Sort column headers, use global search, and narrow rows with a PrimeVue status filter.',
@@ -1798,6 +1813,13 @@ const enUSConsole = {
         updatedAt: 'Updated',
         workflow: 'Recommended action',
         signal: 'User value',
+      },
+      columnGroups: {
+        definition: 'Definition',
+        delivery: 'Delivery',
+        ownership: 'Ownership',
+        state: 'State',
+        evidence: 'Evidence',
       },
       status: {
         guarded: 'Guarded',
@@ -2019,6 +2041,12 @@ const enUSConsole = {
           description:
             'Column presets use field, width, alignment, sortable, and valueEnum instead of Vue render helpers.',
           tag: 'Columns',
+        },
+        columnGroups: {
+          title: 'Grouped headers',
+          description:
+            'Column groups reference leaf column ids, then ProTable derives visible spans from the current column state.',
+          tag: 'Headers',
         },
         cellValueEnum: {
           title: 'Value enum rendering',

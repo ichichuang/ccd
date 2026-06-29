@@ -45,27 +45,27 @@ This table reflects what the component **ships today** and is the source of trut
 for current support. Sections further down describe the broader target
 architecture; where a capability is not yet implemented it is called out inline.
 
-| Feature               | Status | Notes                                                                    |
-| --------------------- | ------ | ------------------------------------------------------------------------ |
-| Row model (flat)      | ✓      | Single flat row list; no tree/hierarchy.                                 |
-| Sorting               | ✓      | Default single column, 3-state (asc → desc → unsorted); client + server. |
-| Global search         | ✓      | Default substring; opt-in local fuzzy ranking via `globalSearchMode`.    |
-| Per-column filtering  | ✓      | `text`, `select`, `number`, and date-only `date` filters.                |
-| Pagination            | ✓      | Client + server; mutually exclusive with virtual/infinite scroll.        |
-| Infinite scroll       | ✓      | Request-mode append; replaces pagination when enabled.                   |
-| Row selection         | ✓      | `single` and `checkbox` (multiple); optional `maxSelection`.             |
-| Column visibility     | ✓      | Toggle + reorder; persisted when `stateKey` is set.                      |
-| Column pinning        | ✓      | Left / right via `pinned` (configured per column).                       |
-| Virtual scroll        | ✓      | Row virtualization (TanStack) with measured row height.                  |
-| CSV export            | ✓      | Current page or selected rows.                                           |
-| Region fullscreen     | ✓      | Scoped pseudo-fullscreen with Escape to exit.                            |
-| Server mode           | ✓      | `request` / `api` / `apiUrl` (+ `apiExecutor`) adapters.                 |
-| Multi-column sorting  | ✓      | Opt-in via `sortMode="multiple"`; DataTable + VirtualGridRenderer paths. |
-| Column grouping       | ✗      | Not implemented.                                                         |
-| Tree table            | ✗      | Not implemented.                                                         |
-| Inline editing        | ✗      | Not implemented (use `render` + your own controls / CRUD modals).        |
-| Range selection       | ✗      | Not implemented.                                                         |
-| Column virtualization | ✗      | Only rows are virtualized.                                               |
+| Feature               | Status | Notes                                                                     |
+| --------------------- | ------ | ------------------------------------------------------------------------- |
+| Row model (flat)      | ✓      | Single flat row list; no tree/hierarchy.                                  |
+| Sorting               | ✓      | Default single column, 3-state (asc → desc → unsorted); client + server.  |
+| Global search         | ✓      | Default substring; opt-in local fuzzy ranking via `globalSearchMode`.     |
+| Per-column filtering  | ✓      | `text`, `select`, `number`, and date-only `date` filters.                 |
+| Pagination            | ✓      | Client + server; mutually exclusive with virtual/infinite scroll.         |
+| Infinite scroll       | ✓      | Request-mode append; replaces pagination when enabled.                    |
+| Row selection         | ✓      | `single` and `checkbox` (multiple); optional `maxSelection`.              |
+| Column visibility     | ✓      | Toggle + reorder; persisted when `stateKey` is set.                       |
+| Column pinning        | ✓      | Left / right via `pinned` (configured per column).                        |
+| Virtual scroll        | ✓      | Row virtualization (TanStack) with measured row height.                   |
+| CSV export            | ✓      | Current page or selected rows.                                            |
+| Region fullscreen     | ✓      | Scoped pseudo-fullscreen with Escape to exit.                             |
+| Server mode           | ✓      | `request` / `api` / `apiUrl` (+ `apiExecutor`) adapters.                  |
+| Multi-column sorting  | ✓      | Opt-in via `sortMode="multiple"`; DataTable + VirtualGridRenderer paths.  |
+| Column grouping       | ◐      | DataTable path only via `columnGroups`; virtual grouped headers deferred. |
+| Tree table            | ✗      | Not implemented.                                                          |
+| Inline editing        | ✗      | Not implemented (use `render` + your own controls / CRUD modals).         |
+| Range selection       | ✗      | Not implemented.                                                          |
+| Column virtualization | ✗      | Only rows are virtualized.                                                |
 
 ## 1.3 Architecture Layers
 
@@ -266,7 +266,58 @@ Pin state:
     pinnedLeft: string[]
     pinnedRight: string[]
 
-## 2.8 Virtual Scroll Engine
+## 2.8 Column Grouping
+
+Column grouping is an opt-in header composition feature for the PrimeVue
+DataTable render path.
+
+API shape:
+
+```ts
+export interface ProTableColumnGroup {
+  id: string
+  title: string | (() => VNode)
+  columnIds: string[]
+  headerAlign?: 'left' | 'center' | 'right'
+}
+
+export type ProTableColumnGroupRow = ProTableColumnGroup[]
+```
+
+Use `columnGroups` as an array of header rows. Each group references leaf column
+ids; ProTable derives `colspan` from the current visible and ordered leaf
+columns:
+
+```ts
+const columnGroups: ProTableColumnGroupRow[] = [
+  [
+    { id: 'identity', title: 'Identity', columnIds: ['name', 'team'] },
+    { id: 'metrics', title: 'Metrics', columnIds: ['score', 'status'] },
+  ],
+]
+```
+
+```vue
+<ProTable :columns="columns" :column-groups="columnGroups" :data="rows" />
+```
+
+Support status:
+
+- DataTable path: supported. Group rows render above the leaf header row, while
+  sortable and filterable controls remain on leaf header cells.
+- Column visibility/order: supported. Group spans are recalculated from
+  `visibleColumns` after hidden columns and user ordering are applied.
+- Column pinning: supported when group spans align with the current pinned
+  sections. If a group becomes non-contiguous or crosses left / center / right
+  sections, ProTable splits that group into separate visible header cells instead
+  of spanning across frozen boundaries.
+- VirtualGridRenderer path: not implemented. `virtualScroll` keeps the existing
+  single leaf header row and ignores `columnGroups` for now.
+
+Footer groups and custom group-row styling beyond `headerAlign` are not
+implemented.
+
+## 2.9 Virtual Scroll Engine
 
 Virtual scrolling ensures performance for large datasets.
 
@@ -277,6 +328,9 @@ Capabilities:
 - overscan rendering
 
 > Column virtualization is **not implemented** — only rows are virtualized.
+> Grouped headers are **not implemented** in VirtualGridRenderer. The virtual
+> grid keeps its existing single-row ARIA header contract even when
+> `columnGroups` is provided.
 
 Benefits:
 
@@ -320,6 +374,15 @@ export interface ProTableColumn<T extends Record<string, unknown> = Record<strin
   headerRender?: () => VNode | string
   meta?: Record<string, unknown>
 }
+
+export interface ProTableColumnGroup {
+  id: string
+  title: string | (() => VNode)
+  columnIds: string[]
+  headerAlign?: 'left' | 'center' | 'right'
+}
+
+export type ProTableColumnGroupRow = ProTableColumnGroup[]
 ```
 
 Column schema supports:
@@ -370,6 +433,7 @@ Example props:
 ```ts
 export interface ProTableProps<T extends Record<string, unknown> = Record<string, unknown>> {
   columns: ProTableColumn<T>[]
+  columnGroups?: ProTableColumnGroupRow[]
   data?: T[]
   loading?: boolean
   pagination?: boolean | PaginationConfig

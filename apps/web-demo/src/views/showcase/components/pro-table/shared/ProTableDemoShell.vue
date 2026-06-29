@@ -5,6 +5,7 @@ import type {
   PaginationConfig,
   ProTableApiExecutor,
   ProTableColumn,
+  ProTableColumnGroupRow,
   ProTableExposed,
   ProTableSortMode,
   RequestConfig,
@@ -24,7 +25,7 @@ import ShowcaseRelatedLinks from '../../../shared/ShowcaseRelatedLinks.vue'
 import ShowcaseSection from '../../../shared/ShowcaseSection.vue'
 import ShowcaseSourceLinks from '../../../shared/ShowcaseSourceLinks.vue'
 import ShowcaseToolbar from '../../../shared/ShowcaseToolbar.vue'
-import { createProTableDemoColumns } from './proTableColumns'
+import { createProTableDemoColumnGroups, createProTableDemoColumns } from './proTableColumns'
 import type { ProTableDemoColumnPreset } from './proTableColumns'
 import {
   createProTableApiExecutor,
@@ -40,6 +41,7 @@ type ProTableDemoMode =
   | 'api-events'
   | 'basic'
   | 'cell-rendering'
+  | 'column-groups'
   | 'columns'
   | 'export-refresh'
   | 'form-composition'
@@ -62,6 +64,7 @@ type ProTableFeatureKey =
   | 'apiEvents'
   | 'catalogSource'
   | 'cellValueEnum'
+  | 'columnGroups'
   | 'columns'
   | 'exportRefresh'
   | 'filters'
@@ -99,6 +102,7 @@ interface ProTableModeConfig {
   ownerFilter?: boolean
   stateControls?: boolean
   columnControls?: boolean
+  columnGroups?: boolean
   columnFilters?: boolean
   dateColumnFilter?: boolean
   fuzzySearch?: boolean
@@ -166,6 +170,17 @@ const MODE_CONFIGS: Record<ProTableDemoMode, ProTableModeConfig> = {
     explanations: ['toolbar', 'stateEvidence'],
     technical: ['noRenderers', 'stateEvidence'],
     relatedIds: ['components-pro-table-basic', 'components-pro-table-cell-rendering'],
+  },
+  'column-groups': {
+    columnPreset: 'wide',
+    pageSize: 5,
+    columnGroups: true,
+    columnFilters: true,
+    sortMode: 'multiple',
+    features: ['columnGroups', 'columns'],
+    explanations: ['filters', 'stateEvidence'],
+    technical: ['proTableOnly', 'i18nCopy'],
+    relatedIds: ['components-pro-table-columns', 'components-pro-table-sorting-filtering'],
   },
   'sorting-filtering': {
     columnPreset: 'standard',
@@ -280,6 +295,7 @@ const FEATURE_ICONS: Record<ProTableFeatureKey, `i-${string}`> = {
   apiEvents: 'i-lucide-radio',
   catalogSource: 'i-lucide-folder-code',
   cellValueEnum: 'i-lucide-tags',
+  columnGroups: 'i-lucide-panels-top-left',
   columns: 'i-lucide-columns-3',
   exportRefresh: 'i-lucide-download',
   filters: 'i-lucide-filter',
@@ -416,6 +432,10 @@ const tableColumns = computed<ProTableColumn<ProTableDemoRow>[]>(() => {
     ? [...filteredColumns, createUpdatedAtFilterColumn()]
     : filteredColumns
 })
+
+const tableColumnGroups = computed<ProTableColumnGroupRow[] | undefined>(() =>
+  modeConfig.value.columnGroups ? createProTableDemoColumnGroups(t) : undefined
+)
 
 const isInfiniteMode = computed(
   () => modeConfig.value.virtualModeSwitch && virtualPresentation.value === 'infinite'
@@ -840,6 +860,7 @@ function handleRequestError(error: Error): void {
                 ref="tableRef"
                 v-model:selected="selectedRows"
                 :columns="tableColumns"
+                :column-groups="tableColumnGroups"
                 :data="tableData"
                 :request="tableRequest"
                 :request-config="tableRequestConfig"
