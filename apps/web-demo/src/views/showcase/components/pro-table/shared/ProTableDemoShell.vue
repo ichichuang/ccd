@@ -176,6 +176,7 @@ const MODE_CONFIGS: Record<ProTableDemoMode, ProTableModeConfig> = {
     pageSize: 5,
     columnGroups: true,
     columnFilters: true,
+    virtualModeSwitch: true,
     sortMode: 'multiple',
     features: ['columnGroups', 'columns'],
     explanations: ['filters', 'stateEvidence'],
