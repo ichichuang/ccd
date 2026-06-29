@@ -136,10 +136,7 @@ defineExpose({ syncFromParent })
     <p class="pcs-hint text-xs leading-relaxed px-xs">
       {{ t('proTable.columnSettingsHint') }}
     </p>
-    <ul
-      class="pcs-list col-stretch"
-      role="list"
-    >
+    <ul class="pcs-list col-stretch">
       <li
         v-for="(row, index) in localRows"
         :key="row.id"

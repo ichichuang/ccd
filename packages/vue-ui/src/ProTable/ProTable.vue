@@ -972,6 +972,7 @@ defineExpose({
       >
         <div
           ref="tableContainerRef"
+          :aria-busy="isLoading ? 'true' : 'false'"
           :class="usesFillLayout ? 'col-fill relative' : 'w-full relative'"
         >
           <template v-if="!virtualScroll">
@@ -1116,6 +1117,7 @@ defineExpose({
               :row-hover="rowHover"
               :row-class-name="rowClassName"
               :selectable="selectable"
+              :loading="isLoading"
               class="col-fill"
               @sort-change="emit('sort-change', $event)"
             />

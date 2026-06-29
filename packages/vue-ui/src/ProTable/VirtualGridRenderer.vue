@@ -3,7 +3,7 @@ import type { SizeMode } from '@ccd/design-tokens'
 import { objectGet } from '@ccd/shared-utils'
 import { useEventListener, useResizeObserver } from '@vueuse/core'
 import Tag from 'primevue/tag'
-import { computed, h, nextTick, ref, useTemplateRef } from 'vue'
+import { computed, h, nextTick, ref, useId, useTemplateRef, watch } from 'vue'
 import type { ComponentPublicInstance, VNode } from 'vue'
 import { useVirtualizer } from '@tanstack/vue-virtual'
 import type { TableController } from './engine/core/TableController'
@@ -28,8 +28,9 @@ const props = withDefaults(
     rowHover?: boolean
     rowClassName?: (row: T, index: number) => string
     selectable?: false | 'single' | 'checkbox'
+    loading?: boolean
   }>(),
-  { density: 'comfortable', rowClassName: undefined, selectable: false }
+  { density: 'comfortable', rowClassName: undefined, selectable: false, loading: false }
 )
 
 const emit = defineEmits<{
@@ -83,6 +84,7 @@ const scrollContainerRef = useTemplateRef<HTMLElement>('scrollContainerRef')
 const centerHeaderScrollRef = useTemplateRef<HTMLElement>('centerHeaderScrollRef')
 const centerBodyScrollRef = useTemplateRef<HTMLElement>('centerBodyScrollRef')
 const processedRows = computed<T[]>(() => props.controller.processedRows.value)
+const virtualGridId = useId()
 
 function getRowByVirtualIndex(index: number): T | undefined {
   return processedRows.value[index]
@@ -114,6 +116,36 @@ const rightPinnedColumns = computed<ProTableColumn<T>[]>(() =>
 const centerColumns = computed<ProTableColumn<T>[]>(() =>
   props.columns.filter(col => col.pinned !== 'left' && col.pinned !== 'right')
 )
+const orderedColumns = computed<ProTableColumn<T>[]>(() => [
+  ...leftPinnedColumns.value,
+  ...centerColumns.value,
+  ...rightPinnedColumns.value,
+])
+const columnPositionByKey = computed<Map<string, number>>(() => {
+  const positions = new Map<string, number>()
+  orderedColumns.value.forEach((col, index) => positions.set(getColumnKey(col), index))
+  return positions
+})
+const ariaRowCount = computed<number>(() => processedRows.value.length + 1)
+const ariaColCount = computed<number | undefined>(() =>
+  orderedColumns.value.length > 0 ? orderedColumns.value.length : undefined
+)
+const primaryAriaSection = computed<VirtualGridSection>(() => {
+  if (centerColumns.value.length > 0) return 'center'
+  if (leftPinnedColumns.value.length > 0) return 'left'
+  return 'right'
+})
+const activeRowIndex = ref(0)
+const activeColumnIndex = ref(0)
+
+const activeColumn = computed<ProTableColumn<T> | undefined>(
+  () => orderedColumns.value[activeColumnIndex.value]
+)
+const activeDescendantId = computed<string | undefined>(() => {
+  const col = activeColumn.value
+  if (!col || processedRows.value.length === 0) return undefined
+  return getBodyCellId(activeRowIndex.value, col)
+})
 
 type VirtualGridSection = 'left' | 'center' | 'right'
 
@@ -177,6 +209,122 @@ const rightGridTemplateColumns = computed<string>(() =>
 
 function getColumnKey(col: ProTableColumn<T>): string {
   return String(col.field ?? col.id)
+}
+
+function getColumnPosition(col: ProTableColumn<T>): number {
+  return columnPositionByKey.value.get(getColumnKey(col)) ?? 0
+}
+
+function getColumnAriaIndex(col: ProTableColumn<T>): number {
+  return getColumnPosition(col) + 1
+}
+
+function getHeaderCellId(col: ProTableColumn<T>): string {
+  return `${virtualGridId}-header-c${getColumnAriaIndex(col)}`
+}
+
+function getBodyCellId(rowIndex: number, col: ProTableColumn<T>): string {
+  return `${virtualGridId}-r${rowIndex + 1}-c${getColumnAriaIndex(col)}`
+}
+
+const headerOwnedCellIds = computed<string>(() =>
+  orderedColumns.value.map(col => getHeaderCellId(col)).join(' ')
+)
+
+function getBodyAriaRowIndex(index: number): number {
+  return index + 2
+}
+
+function getVirtualRowOwnedCellIds(rowIndex: number): string {
+  return orderedColumns.value.map(col => getBodyCellId(rowIndex, col)).join(' ')
+}
+
+function isPrimaryAriaRow(section: VirtualGridSection): boolean {
+  return primaryAriaSection.value === section
+}
+
+function getVirtualRowRole(section: VirtualGridSection): 'row' | 'presentation' {
+  return isPrimaryAriaRow(section) ? 'row' : 'presentation'
+}
+
+function getVirtualRowAriaIndex(section: VirtualGridSection, rowIndex: number): number | undefined {
+  return isPrimaryAriaRow(section) ? getBodyAriaRowIndex(rowIndex) : undefined
+}
+
+function getVirtualRowAriaOwns(section: VirtualGridSection, rowIndex: number): string | undefined {
+  return isPrimaryAriaRow(section) ? getVirtualRowOwnedCellIds(rowIndex) : undefined
+}
+
+function getVirtualRowAriaSelected(
+  section: VirtualGridSection,
+  rowIndex: number
+): boolean | undefined {
+  return isPrimaryAriaRow(section) ? isRowSelectedByVirtualIndex(rowIndex) : undefined
+}
+
+function clampIndex(value: number, max: number): number {
+  if (max <= 0) return 0
+  return Math.min(Math.max(value, 0), max)
+}
+
+function clampActiveCell(): void {
+  activeRowIndex.value = clampIndex(activeRowIndex.value, processedRows.value.length - 1)
+  activeColumnIndex.value = clampIndex(activeColumnIndex.value, orderedColumns.value.length - 1)
+}
+
+function scrollActiveCellIntoView(): void {
+  const id = activeDescendantId.value
+  if (!id) return
+  nextTick(() => {
+    const root = scrollContainerRef.value
+    const cell = root?.ownerDocument.getElementById(id)
+    cell?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+  })
+}
+
+function setActiveCell(rowIndex: number, columnIndex: number): void {
+  activeRowIndex.value = clampIndex(rowIndex, processedRows.value.length - 1)
+  activeColumnIndex.value = clampIndex(columnIndex, orderedColumns.value.length - 1)
+  rowVirtualizer.value.scrollToIndex(activeRowIndex.value, { align: 'auto' })
+  scrollActiveCellIntoView()
+}
+
+function handleVirtualRowClick(rowIndex: number): void {
+  activeRowIndex.value = clampIndex(rowIndex, processedRows.value.length - 1)
+  handleRowClick(rowIndex)
+}
+
+function handleGridKeydown(event: KeyboardEvent): void {
+  if (processedRows.value.length === 0 || orderedColumns.value.length === 0) return
+
+  let nextRow = activeRowIndex.value
+  let nextColumn = activeColumnIndex.value
+
+  if (event.key === 'ArrowUp') {
+    nextRow -= 1
+  } else if (event.key === 'ArrowDown') {
+    nextRow += 1
+  } else if (event.key === 'ArrowLeft') {
+    nextColumn -= 1
+  } else if (event.key === 'ArrowRight') {
+    nextColumn += 1
+  } else if (event.key === 'Home') {
+    nextColumn = 0
+    if (event.ctrlKey || event.metaKey) nextRow = 0
+  } else if (event.key === 'End') {
+    nextColumn = orderedColumns.value.length - 1
+    if (event.ctrlKey || event.metaKey) nextRow = processedRows.value.length - 1
+  } else if (event.key === 'Enter') {
+    if (!props.selectable) return
+    event.preventDefault()
+    handleRowClick(activeRowIndex.value)
+    return
+  } else {
+    return
+  }
+
+  event.preventDefault()
+  setActiveCell(nextRow, nextColumn)
 }
 
 function renderHeader(col: ProTableColumn<T>): VNode | string {
@@ -293,6 +441,10 @@ const rowVirtualizer = useVirtualizer(
   }))
 )
 
+watch([() => processedRows.value.length, () => orderedColumns.value.length], clampActiveCell, {
+  flush: 'post',
+})
+
 /**
  * TanStack updates internal scrollOffset from scroll events only. scrollToOffset() can no-op when DOM
  * is already at the target (no scroll event → stale offset → blank body). Double rAF waits for clamp;
@@ -357,7 +509,14 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
   <div
     ref="scrollContainerRef"
     role="grid"
+    tabindex="0"
+    :aria-rowcount="ariaRowCount"
+    :aria-colcount="ariaColCount"
+    :aria-busy="loading ? 'true' : 'false'"
+    :aria-activedescendant="activeDescendantId"
     class="c-scrollbar-native layout-full overflow-auto"
+    @keydown="handleGridKeydown"
+    @focus="scrollActiveCellIntoView"
   >
     <div class="relative">
       <!-- Header: left / center (x-scroll) / right -->
@@ -365,7 +524,12 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
         :class="[{ 'border-b border-border': showHorizontalLines }]"
         class="sticky top-0 z-layout"
       >
-        <div class="row-start w-full">
+        <div
+          class="row-start w-full"
+          role="row"
+          aria-rowindex="1"
+          :aria-owns="headerOwnedCellIds"
+        >
           <!-- Left pinned header -->
           <div
             v-if="leftPinnedColumns.length"
@@ -374,8 +538,10 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
           >
             <div
               v-for="(col, colIndex) in leftPinnedColumns"
+              :id="getHeaderCellId(col)"
               :key="'lh-' + getColumnKey(col)"
               role="columnheader"
+              :aria-colindex="getColumnAriaIndex(col)"
               :aria-sort="getAriaSort(col)"
               :class="[
                 virtualHeaderShellClass,
@@ -426,8 +592,10 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
             >
               <div
                 v-for="(col, colIndex) in centerColumns"
+                :id="getHeaderCellId(col)"
                 :key="'ch-' + getColumnKey(col)"
                 role="columnheader"
+                :aria-colindex="getColumnAriaIndex(col)"
                 :aria-sort="getAriaSort(col)"
                 :class="[
                   virtualHeaderShellClass,
@@ -470,8 +638,10 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
           >
             <div
               v-for="(col, colIndex) in rightPinnedColumns"
+              :id="getHeaderCellId(col)"
               :key="'rh-' + getColumnKey(col)"
               role="columnheader"
+              :aria-colindex="getColumnAriaIndex(col)"
               :aria-sort="getAriaSort(col)"
               :class="[
                 virtualHeaderShellClass,
@@ -547,15 +717,18 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
                 },
                 getRowClassByVirtualIndex(virtualRow.index),
               ]"
-              role="row"
-              tabindex="0"
-              :aria-selected="isRowSelectedByVirtualIndex(virtualRow.index)"
-              @click="handleRowClick(virtualRow.index)"
-              @keydown.enter.prevent="handleRowClick(virtualRow.index)"
+              :role="getVirtualRowRole('left')"
+              :aria-rowindex="getVirtualRowAriaIndex('left', virtualRow.index)"
+              :aria-owns="getVirtualRowAriaOwns('left', virtualRow.index)"
+              :aria-selected="getVirtualRowAriaSelected('left', virtualRow.index)"
+              @click="handleVirtualRowClick(virtualRow.index)"
             >
               <div
                 v-for="(col, colIndex) in leftPinnedColumns"
+                :id="getBodyCellId(virtualRow.index, col)"
                 :key="'lbc-' + getColumnKey(col)"
+                role="gridcell"
+                :aria-colindex="getColumnAriaIndex(col)"
                 :class="[
                   virtualBodyCellClass,
                   getBodyJustifyClass(col),
@@ -611,15 +784,18 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
                 },
                 getRowClassByVirtualIndex(virtualRow.index),
               ]"
-              role="row"
-              tabindex="0"
-              :aria-selected="isRowSelectedByVirtualIndex(virtualRow.index)"
-              @click="handleRowClick(virtualRow.index)"
-              @keydown.enter.prevent="handleRowClick(virtualRow.index)"
+              :role="getVirtualRowRole('center')"
+              :aria-rowindex="getVirtualRowAriaIndex('center', virtualRow.index)"
+              :aria-owns="getVirtualRowAriaOwns('center', virtualRow.index)"
+              :aria-selected="getVirtualRowAriaSelected('center', virtualRow.index)"
+              @click="handleVirtualRowClick(virtualRow.index)"
             >
               <div
                 v-for="(col, colIndex) in centerColumns"
+                :id="getBodyCellId(virtualRow.index, col)"
                 :key="'cbc-' + getColumnKey(col)"
+                role="gridcell"
+                :aria-colindex="getColumnAriaIndex(col)"
                 :class="[
                   virtualBodyCellClass,
                   getBodyJustifyClass(col),
@@ -673,15 +849,18 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
                 },
                 getRowClassByVirtualIndex(virtualRow.index),
               ]"
-              role="row"
-              tabindex="0"
-              :aria-selected="isRowSelectedByVirtualIndex(virtualRow.index)"
-              @click="handleRowClick(virtualRow.index)"
-              @keydown.enter.prevent="handleRowClick(virtualRow.index)"
+              :role="getVirtualRowRole('right')"
+              :aria-rowindex="getVirtualRowAriaIndex('right', virtualRow.index)"
+              :aria-owns="getVirtualRowAriaOwns('right', virtualRow.index)"
+              :aria-selected="getVirtualRowAriaSelected('right', virtualRow.index)"
+              @click="handleVirtualRowClick(virtualRow.index)"
             >
               <div
                 v-for="(col, colIndex) in rightPinnedColumns"
+                :id="getBodyCellId(virtualRow.index, col)"
                 :key="'rbc-' + getColumnKey(col)"
+                role="gridcell"
+                :aria-colindex="getColumnAriaIndex(col)"
                 :class="[
                   virtualBodyCellClass,
                   getBodyJustifyClass(col),

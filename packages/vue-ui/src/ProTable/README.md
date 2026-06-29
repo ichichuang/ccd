@@ -230,6 +230,14 @@ Benefits:
 - handles large row counts with minimal DOM
 - smooth scrolling
 
+Accessibility contract:
+
+- the virtual grid exposes `aria-rowcount` and `aria-colcount`
+- the header row uses `aria-rowindex="1"`; rendered data rows use the virtual row index plus the header offset
+- body cells expose `role="gridcell"` and 1-based `aria-colindex` across left-pinned, center, and right-pinned columns
+- the grid has one tab stop and uses arrow keys, Home, End, and Enter for deterministic navigation / row activation
+- loading state is surfaced with `aria-busy`
+
 ---
 
 # 3 Column Schema

@@ -2,6 +2,7 @@ import js from '@eslint/js'
 import eslintConfigPrettier from 'eslint-config-prettier'
 import boundaries from 'eslint-plugin-boundaries'
 import pluginVue from 'eslint-plugin-vue'
+import vuejsAccessibility from 'eslint-plugin-vuejs-accessibility'
 import globals from 'globals'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -444,6 +445,27 @@ export default tseslint.config(
     },
   },
 
+  {
+    name: 'app/vue-accessibility-protable-gate',
+    files: [
+      'packages/vue-ui/src/ProTable/**/*.vue',
+      'apps/web-demo/src/views/showcase/components/pro-table/**/*.vue',
+    ],
+    plugins: {
+      'vuejs-accessibility': vuejsAccessibility,
+    },
+    rules: {
+      'vuejs-accessibility/aria-props': 'error',
+      'vuejs-accessibility/aria-role': 'error',
+      'vuejs-accessibility/aria-unsupported-elements': 'error',
+      'vuejs-accessibility/no-aria-hidden-on-focusable': 'error',
+      'vuejs-accessibility/no-redundant-roles': 'error',
+      'vuejs-accessibility/no-role-presentation-on-focusable': 'error',
+      'vuejs-accessibility/role-has-required-aria-props': 'error',
+      'vuejs-accessibility/tabindex-no-positive': 'error',
+    },
+  },
+
   // 8.3 基础设施边界：全局 no-explicit-any 为 error；目标白名单仅保留 typeCasters / adapters / http，其余边界待迁移为 unknown 后移除
   {
     name: 'app/no-explicit-any-infra-overrides',
@@ -495,7 +517,7 @@ export default tseslint.config(
           leadingUnderscore: 'allow',
           filter: {
             regex:
-              '^(@|vue/|app-architecture/|/.*|no-|prefer-|eqeqeq|curly|VITE_|__.*__|drop_|AtRule|content-type|access-control-allow-origin|access-control-allow-methods|access-control-allow-headers|Content-Type|Access-Control-Allow-Origin|Access-Control-Allow-Methods|Access-Control-Allow-Headers|^[0-9]+$|^[a-z-]+$|^-[a-z-]+$|CustomScrollbar|zh-CN|en-US|zh-TW)',
+              '^(@|vue/|vuejs-accessibility/|app-architecture/|/.*|no-|prefer-|eqeqeq|curly|VITE_|__.*__|drop_|AtRule|content-type|access-control-allow-origin|access-control-allow-methods|access-control-allow-headers|Content-Type|Access-Control-Allow-Origin|Access-Control-Allow-Methods|Access-Control-Allow-Headers|^[0-9]+$|^[a-z-]+$|^-[a-z-]+$|CustomScrollbar|zh-CN|en-US|zh-TW)',
             match: false,
           },
         },
