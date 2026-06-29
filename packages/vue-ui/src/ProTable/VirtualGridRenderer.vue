@@ -107,11 +107,11 @@ function isStripedVirtualRow(index: number): boolean {
   return index % 2 !== 0
 }
 
-function handleRowClick(virtualIndex: number): void {
+function handleRowClick(virtualIndex: number, options: { range?: boolean } = {}): void {
   if (!props.selectable) return
   const row = getRowByVirtualIndex(virtualIndex)
   if (!row) return
-  props.controller.selectRow(row, props.selectable === 'checkbox' ? 'checkbox' : 'single')
+  props.controller.selectRow(row, props.selectable === 'checkbox' ? 'checkbox' : 'single', options)
 }
 
 function isRowSelectedByVirtualIndex(virtualIndex: number): boolean {
@@ -358,9 +358,9 @@ function setActiveCell(rowIndex: number, columnIndex: number): void {
   scrollActiveCellIntoView()
 }
 
-function handleVirtualRowClick(rowIndex: number): void {
+function handleVirtualRowClick(rowIndex: number, event: MouseEvent): void {
   activeRowIndex.value = clampIndex(rowIndex, processedRows.value.length - 1)
-  handleRowClick(rowIndex)
+  handleRowClick(rowIndex, { range: event.shiftKey })
 }
 
 function handleGridKeydown(event: KeyboardEvent): void {
@@ -956,7 +956,7 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
               :aria-rowindex="getVirtualRowAriaIndex('left', virtualRow.index)"
               :aria-owns="getVirtualRowAriaOwns('left', virtualRow.index)"
               :aria-selected="getVirtualRowAriaSelected('left', virtualRow.index)"
-              @click="handleVirtualRowClick(virtualRow.index)"
+              @click="handleVirtualRowClick(virtualRow.index, $event)"
             >
               <div
                 v-for="(col, colIndex) in leftPinnedColumns"
@@ -1023,7 +1023,7 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
               :aria-rowindex="getVirtualRowAriaIndex('center', virtualRow.index)"
               :aria-owns="getVirtualRowAriaOwns('center', virtualRow.index)"
               :aria-selected="getVirtualRowAriaSelected('center', virtualRow.index)"
-              @click="handleVirtualRowClick(virtualRow.index)"
+              @click="handleVirtualRowClick(virtualRow.index, $event)"
             >
               <div
                 v-for="(col, colIndex) in centerColumns"
@@ -1088,7 +1088,7 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
               :aria-rowindex="getVirtualRowAriaIndex('right', virtualRow.index)"
               :aria-owns="getVirtualRowAriaOwns('right', virtualRow.index)"
               :aria-selected="getVirtualRowAriaSelected('right', virtualRow.index)"
-              @click="handleVirtualRowClick(virtualRow.index)"
+              @click="handleVirtualRowClick(virtualRow.index, $event)"
             >
               <div
                 v-for="(col, colIndex) in rightPinnedColumns"

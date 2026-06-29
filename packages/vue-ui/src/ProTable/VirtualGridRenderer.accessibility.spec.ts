@@ -321,6 +321,48 @@ describe('VirtualGridRenderer accessibility contract', () => {
     }
   })
 
+  it('selects an inclusive checkbox range with Shift-click', async () => {
+    setVirtualItems([0, 1, 2, 3])
+    const { wrapper, controller } = mountGrid({ selectable: 'checkbox' })
+
+    try {
+      await wrapper.findAll('[role="row"][aria-rowindex="2"]')[0].trigger('click')
+      await wrapper.findAll('[role="row"][aria-rowindex="5"]')[0].trigger('click', {
+        shiftKey: true,
+      })
+
+      expect(controller.state.selection.selectedRowKeys).toEqual([
+        'row-1',
+        'row-2',
+        'row-3',
+        'row-4',
+      ])
+      expect(
+        wrapper.findAll('[role="row"][aria-rowindex="4"]')[0].attributes('aria-selected')
+      ).toBe('true')
+    } finally {
+      wrapper.unmount()
+      controller.destroy()
+    }
+  })
+
+  it('keeps keyboard Enter activation as a plain checkbox toggle', async () => {
+    const { wrapper, controller } = mountGrid({ selectable: 'checkbox' })
+
+    try {
+      const grid = wrapper.get('[role="grid"]')
+      await wrapper.findAll('[role="row"][aria-rowindex="2"]')[0].trigger('click')
+      await grid.trigger('keydown', { key: 'ArrowDown' })
+      await grid.trigger('keydown', { key: 'Enter' })
+
+      expect(controller.state.selection.selectedRowKeys).toEqual(['row-1', 'row-2'])
+      expect(grid.attributes('aria-activedescendant')).toContain('-r2-c1')
+    } finally {
+      wrapper.unmount()
+      controller.destroy()
+    }
+  })
+
   it('supports opt-in multi-column sorting while keeping aria-sort on the primary column', async () => {
     const sortableColumns: ProTableColumn<Row>[] = columns.map(col =>
       col.id === 'name' || col.id === 'status' ? { ...col, sortable: true } : col

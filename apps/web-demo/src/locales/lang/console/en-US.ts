@@ -1896,7 +1896,8 @@ const enUSConsole = {
       },
       selection: {
         title: 'Selection and row focus',
-        summary: '{count} selected. Last focused row: {row}.',
+        summary:
+          '{count} selected. Shift-click extends checkbox ranges from the last plain selection. Last focused row: {row}.',
       },
       events: {
         title: 'Event log',
@@ -2081,7 +2082,7 @@ const enUSConsole = {
         selection: {
           title: 'Selection methods',
           description:
-            'Selection uses checkbox mode, v-model:selected, clearSelection(), and selected-row export.',
+            'Selection uses checkbox mode, Shift-click ranges, v-model:selected, clearSelection(), and selected-row export.',
           tag: 'Selection',
         },
         exportRefresh: {

@@ -46,6 +46,48 @@ export function toggleAllSelection<T extends Record<string, unknown>>(
   }
 }
 
+export function selectRangeSelection<T extends Record<string, unknown>>(
+  state: SelectionState<T>,
+  rows: T[],
+  getKey: (row: T) => string,
+  anchorKey: string,
+  targetKey: string,
+  max?: number
+): SelectionState<T> | null {
+  const anchorIndex = rows.findIndex(row => getKey(row) === anchorKey)
+  const targetIndex = rows.findIndex(row => getKey(row) === targetKey)
+  if (anchorIndex === -1 || targetIndex === -1) return null
+
+  const start = Math.min(anchorIndex, targetIndex)
+  const end = Math.max(anchorIndex, targetIndex)
+  const rangeRows = rows.slice(start, end + 1)
+  const rangeKeys = new Set(rangeRows.map(getKey))
+  const outsideRows: T[] = []
+  const outsideKeys: string[] = []
+
+  state.selectedRows.forEach((row, index) => {
+    const key = state.selectedRowKeys[index]
+    if (key && !rangeKeys.has(key)) {
+      outsideRows.push(row)
+      outsideKeys.push(key)
+    }
+  })
+
+  const maxCount = max != null && max > 0 ? max : undefined
+  const cappedOutsideRows = maxCount ? outsideRows.slice(0, maxCount) : outsideRows
+  const cappedOutsideKeys = maxCount ? outsideKeys.slice(0, maxCount) : outsideKeys
+  const remainingCapacity = maxCount
+    ? Math.max(0, maxCount - cappedOutsideRows.length)
+    : rangeRows.length
+  const cappedRangeRows = rangeRows.slice(0, remainingCapacity)
+  const cappedRangeKeys = cappedRangeRows.map(getKey)
+
+  return {
+    selectedRows: [...cappedOutsideRows, ...cappedRangeRows],
+    selectedRowKeys: [...cappedOutsideKeys, ...cappedRangeKeys],
+  }
+}
+
 export function clearSelection<T extends Record<string, unknown>>(): SelectionState<T> {
   return { selectedRows: [], selectedRowKeys: [] }
 }

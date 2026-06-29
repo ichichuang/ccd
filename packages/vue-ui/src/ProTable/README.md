@@ -64,7 +64,7 @@ architecture; where a capability is not yet implemented it is called out inline.
 | Column grouping       | ✓      | Opt-in via `columnGroups`; DataTable + VirtualGridRenderer paths.        |
 | Tree table            | ✗      | Not implemented.                                                         |
 | Inline editing        | ✗      | Not implemented (use `render` + your own controls / CRUD modals).        |
-| Range selection       | ✗      | Not implemented.                                                         |
+| Range selection       | ✓      | Checkbox mode Shift-click; DataTable + VirtualGridRenderer paths.        |
 | Column virtualization | ✗      | Only rows are virtualized.                                               |
 
 ## 1.3 Architecture Layers
@@ -226,9 +226,20 @@ Selection supports:
 
 - single row selection (`selectable="single"`)
 - multi / checkbox selection (`selectable="checkbox"`)
+- Shift-click range selection in checkbox mode
 - optional `maxSelection` cap
 
-> Range (shift-click) selection is **not implemented**.
+Range selection uses the last plain checkbox / row selection as its anchor and
+selects the inclusive range in the current processed row order after local
+filtering, sorting, and pagination have been applied. It is supported by both
+the PrimeVue DataTable path and the VirtualGridRenderer path.
+
+Keyboard activation remains a plain row toggle. Pressing `Enter` on the active
+virtual-grid row does not start a range selection.
+
+When `maxSelection` is set, range selection keeps existing selected rows outside
+the range and appends range rows in processed order until the remaining capacity
+is full. Overflow range rows are ignored.
 
 Selection state:
 

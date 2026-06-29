@@ -6,7 +6,12 @@ import Button from 'primevue/button'
 import Column from 'primevue/column'
 import ColumnGroup from 'primevue/columngroup'
 import DataTable from 'primevue/datatable'
-import type { DataTableSortEvent, DataTableSortMeta } from 'primevue/datatable'
+import type {
+  DataTableRowClickEvent,
+  DataTableRowSelectEvent,
+  DataTableSortEvent,
+  DataTableSortMeta,
+} from 'primevue/datatable'
 import DatePicker from 'primevue/datepicker'
 import InputText from 'primevue/inputtext'
 import Popover from 'primevue/popover'
@@ -394,7 +399,8 @@ watch(
     ) {
       return
     }
-    ctrl.state.selection = { selectedRows: rows, selectedRowKeys: keys }
+    ctrl.setSelection(rows)
+    ctrl.setSelectionAnchor(rows[rows.length - 1] ?? null)
     if (max != null && max > 0 && rawLen > max) {
       emit('update:selected', rows)
     }
@@ -637,6 +643,34 @@ function handleExport(mode: 'page' | 'selected'): void {
 }
 
 // Native PrimeVue selection bridge
+const pendingDataTableRangeRow = ref<T | null>(null)
+const lastDataTablePointerShiftKey = ref(false)
+
+function normalizeSelectionRows(val: T | T[] | undefined | null): T[] {
+  return !val ? [] : Array.isArray(val) ? val : [val]
+}
+
+function limitSelectionRows(rows: T[]): T[] {
+  const max = props.maxSelection
+  if (max != null && max > 0 && rows.length > max) {
+    return rows.slice(0, max)
+  }
+  return rows
+}
+
+function isShiftSelectionEvent(event: Event): boolean {
+  return event instanceof MouseEvent && event.shiftKey
+}
+
+function handleTableContainerClick(event: MouseEvent): void {
+  if (!props.virtualScroll && props.selectable === 'checkbox') {
+    lastDataTablePointerShiftKey.value = event.shiftKey
+    void nextTick(() => {
+      lastDataTablePointerShiftKey.value = false
+    })
+  }
+}
+
 const tableSelection = computed({
   get: (): T | T[] | undefined => {
     if (props.selectable === 'single') {
@@ -645,20 +679,44 @@ const tableSelection = computed({
     return ctrl.state.selection.selectedRows
   },
   set: (val: T | T[] | undefined | null) => {
-    let rows: T[] = !val ? [] : Array.isArray(val) ? val : [val]
-    const max = props.maxSelection
-    if (max != null && max > 0 && rows.length > max) {
-      rows = rows.slice(0, max)
+    const pendingRangeRow = pendingDataTableRangeRow.value
+    pendingDataTableRangeRow.value = null
+    if (pendingRangeRow && props.selectable === 'checkbox') {
+      lastDataTablePointerShiftKey.value = false
+      ctrl.selectRow(pendingRangeRow, 'checkbox', { range: true })
+      emit('update:selected', [...ctrl.state.selection.selectedRows])
+      return
     }
-    ctrl.state.selection = {
-      selectedRows: rows,
-      selectedRowKeys: rows.map(r =>
-        String(r[String(props.rowKey ?? PRO_TABLE_PROPS_DEFAULTS.rowKey)])
-      ),
-    }
+
+    const rows = limitSelectionRows(normalizeSelectionRows(val))
+    ctrl.setSelection(rows)
     emit('update:selected', rows)
   },
 })
+
+function handleDataTableRowClick(event: DataTableRowClickEvent<T>): void {
+  if (props.selectable === 'checkbox' && isShiftSelectionEvent(event.originalEvent)) {
+    pendingDataTableRangeRow.value = event.data
+  }
+  emit('row-click', event.data)
+}
+
+function handleDataTableRowSelection(event: DataTableRowSelectEvent<T>): void {
+  if (props.selectable !== 'checkbox') return
+
+  const shiftSelection =
+    isShiftSelectionEvent(event.originalEvent) || lastDataTablePointerShiftKey.value
+  lastDataTablePointerShiftKey.value = false
+  if (event.type === 'checkbox' && shiftSelection) {
+    ctrl.selectRow(event.data, 'checkbox', { range: true })
+    emit('update:selected', [...ctrl.state.selection.selectedRows])
+    return
+  }
+
+  if (!shiftSelection) {
+    ctrl.setSelectionAnchor(event.data)
+  }
+}
 
 function handleSortClick(col: ProTableColumn<T>): void {
   if (!col.sortable) return
@@ -1148,6 +1206,7 @@ defineExpose({
           ref="tableContainerRef"
           :aria-busy="isLoading ? 'true' : 'false'"
           :class="usesFillLayout ? 'col-fill relative' : 'w-full relative'"
+          @click.capture="handleTableContainerClick"
         >
           <template v-if="!virtualScroll">
             <DataTable
@@ -1186,7 +1245,9 @@ defineExpose({
               :state-key="stateKey"
               @sort="handleDataTableSort"
               @update:selection="selectable ? (tableSelection = $event) : undefined"
-              @row-click="emit('row-click', $event.data)"
+              @row-click="handleDataTableRowClick"
+              @row-select="handleDataTableRowSelection"
+              @row-unselect="handleDataTableRowSelection"
             >
               <ColumnGroup
                 v-if="hasResolvedColumnGroups"

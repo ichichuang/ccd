@@ -255,6 +255,70 @@ describe('TableController shared renderer contract', () => {
     ctrl.destroy()
   })
 
+  it('keeps single selection behavior unchanged when range is requested', () => {
+    const ctrl = new TableController<Row>({
+      columns,
+      data: [{ id: 'a' }, { id: 'b' }, { id: 'c' }],
+    })
+
+    ctrl.selectRow({ id: 'a' }, 'single')
+    ctrl.selectRow({ id: 'c' }, 'single', { range: true })
+
+    expect(ctrl.state.selection.selectedRowKeys).toEqual(['c'])
+    ctrl.destroy()
+  })
+
+  it('selects an inclusive checkbox range in processed row order', () => {
+    const ctrl = new TableController<Row>({
+      columns,
+      data: [{ id: 'a' }, { id: 'b' }, { id: 'c' }, { id: 'd' }],
+    })
+
+    ctrl.selectRow({ id: 'b' }, 'checkbox')
+    ctrl.selectRow({ id: 'd' }, 'checkbox', { range: true })
+
+    expect(ctrl.state.selection.selectedRowKeys).toEqual(['b', 'c', 'd'])
+    ctrl.destroy()
+  })
+
+  it('uses the current sorted processed row order for checkbox ranges', () => {
+    const ctrl = new TableController<Row & { name: string }>({
+      columns: [
+        { id: 'id', title: 'ID', field: 'id' },
+        { id: 'name', title: 'Name', field: 'name', sortable: true },
+      ],
+      data: [
+        { id: 'a', name: 'Delta' },
+        { id: 'b', name: 'Alpha' },
+        { id: 'c', name: 'Charlie' },
+        { id: 'd', name: 'Bravo' },
+      ],
+    })
+
+    ctrl.updateSort('name')
+    expect(ctrl.processedRows.value.map(row => row.id)).toEqual(['b', 'd', 'c', 'a'])
+
+    ctrl.selectRow({ id: 'b', name: 'Alpha' }, 'checkbox')
+    ctrl.selectRow({ id: 'c', name: 'Charlie' }, 'checkbox', { range: true })
+
+    expect(ctrl.state.selection.selectedRowKeys).toEqual(['b', 'd', 'c'])
+    ctrl.destroy()
+  })
+
+  it('truncates checkbox range additions at maxSelection', () => {
+    const ctrl = new TableController<Row>({
+      columns,
+      data: [{ id: 'a' }, { id: 'b' }, { id: 'c' }, { id: 'd' }],
+      maxSelection: 3,
+    })
+
+    ctrl.selectRow({ id: 'a' }, 'checkbox')
+    ctrl.selectRow({ id: 'd' }, 'checkbox', { range: true })
+
+    expect(ctrl.state.selection.selectedRowKeys).toEqual(['a', 'b', 'c'])
+    ctrl.destroy()
+  })
+
   it('does not slice processed rows when virtual scrolling disables engine pagination', () => {
     const ctrl = new TableController<Row>({
       columns,

@@ -29,7 +29,12 @@ import {
 } from '../engines/sorting'
 import { applyFilter } from '../engines/filtering'
 import { applyPagination } from '../engines/pagination'
-import { toggleRowSelection, toggleAllSelection, clearSelection } from '../engines/selection'
+import {
+  toggleRowSelection,
+  toggleAllSelection,
+  selectRangeSelection,
+  clearSelection,
+} from '../engines/selection'
 import {
   buildVisibleColumns,
   mergeColumnSettingsWithColumns,
@@ -76,6 +81,10 @@ interface SetRequestOptions {
   reload?: boolean
 }
 
+export interface SelectRowOptions {
+  range?: boolean
+}
+
 function normalizeRequestConfig(config?: RequestConfig): Required<RequestConfig> {
   return {
     immediate: config?.immediate ?? REQUEST_DEFAULTS.immediate,
@@ -118,6 +127,7 @@ export class TableController<T extends Record<string, unknown>> {
   private _fetchVersion = 0
   private _abortController: AbortController | null = null
   private _maxSelection: number | undefined
+  private _selectionAnchorKey: string | null = null
   private _onColumnSettingsChange?: (state: ColumnSettingsState) => void
 
   /** True when ProTable is in request mode (autonomous fetch). */
@@ -411,8 +421,23 @@ export class TableController<T extends Record<string, unknown>> {
     this.state.pagination = { ...this.state.pagination, pageSize, page: 1 }
   }
 
-  selectRow(row: T, mode: 'single' | 'checkbox'): void {
+  selectRow(row: T, mode: 'single' | 'checkbox', options: SelectRowOptions = {}): void {
     const key = getRowKey(row, this._rowKey)
+    if (mode === 'checkbox' && options.range && this._selectionAnchorKey) {
+      const rangeSelection = selectRangeSelection(
+        this.state.selection,
+        this.processedRows.value,
+        r => getRowKey(r, this._rowKey),
+        this._selectionAnchorKey,
+        key,
+        this._maxSelection
+      )
+      if (rangeSelection) {
+        this.state.selection = rangeSelection
+        return
+      }
+    }
+
     if (mode === 'checkbox' && this._maxSelection != null && this._maxSelection > 0) {
       const idx = this.state.selection.selectedRowKeys.indexOf(key)
       if (idx === -1 && this.state.selection.selectedRowKeys.length >= this._maxSelection) {
@@ -420,6 +445,9 @@ export class TableController<T extends Record<string, unknown>> {
       }
     }
     this.state.selection = toggleRowSelection(this.state.selection, row, key, mode)
+    if (mode === 'checkbox') {
+      this._selectionAnchorKey = key
+    }
   }
 
   selectAll(): void {
@@ -446,8 +474,20 @@ export class TableController<T extends Record<string, unknown>> {
     return false
   }
 
+  setSelection(rows: T[]): void {
+    this.state.selection = {
+      selectedRows: [...rows],
+      selectedRowKeys: rows.map(row => getRowKey(row, this._rowKey)),
+    }
+  }
+
+  setSelectionAnchor(row: T | null): void {
+    this._selectionAnchorKey = row ? getRowKey(row, this._rowKey) : null
+  }
+
   clearSelection(): void {
     this.state.selection = clearSelection<T>()
+    this._selectionAnchorKey = null
   }
 
   isRowSelected(row: T): boolean {

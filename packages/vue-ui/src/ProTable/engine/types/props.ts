@@ -184,7 +184,7 @@ export interface ProTableProps<T extends Record<string, unknown> = Record<string
   /** Optional controlled selection (v-model:selected). Single mode: T | undefined; checkbox: T[] */
   selected?: T[] | T
   /**
-   * Checkbox 多选时的最大条数；超出时不再追加选中，且从父级同步 / DataTable 回写时会截断。
+   * Checkbox 多选时的最大条数；超出时不再追加选中，且从父级同步 / DataTable 回写 / Shift 范围选择时会截断。
    * 不传则不限制。
    */
   maxSelection?: number

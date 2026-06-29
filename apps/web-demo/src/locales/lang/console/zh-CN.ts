@@ -1710,7 +1710,8 @@ const zhCNConsole = {
       },
       selection: {
         title: '选择与行聚焦',
-        summary: '已选 {count} 条。最后聚焦行：{row}。',
+        summary:
+          '已选 {count} 条。Shift-click 会从上次普通选择扩展 checkbox 范围。最后聚焦行：{row}。',
       },
       events: {
         title: '事件记录',
@@ -1876,7 +1877,8 @@ const zhCNConsole = {
         },
         selection: {
           title: '选择方法',
-          description: '选择使用 checkbox 模式、v-model:selected、clearSelection() 与选中行导出。',
+          description:
+            '选择使用 checkbox 模式、Shift-click 范围选择、v-model:selected、clearSelection() 与选中行导出。',
           tag: '选择',
         },
         exportRefresh: {
