@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import VirtualGridRenderer from './VirtualGridRenderer.vue'
 import { TableController } from './engine/core/TableController'
-import type { ProTableColumn } from './engine/types/column'
+import type { ProTableColumn, ProTableColumnGroupRow } from './engine/types/column'
 
 interface MockVirtualItem {
   key: string
@@ -42,6 +42,17 @@ const columns: ProTableColumn<Row>[] = [
   { id: 'action', field: 'action', title: 'Action', pinned: 'right', minWidth: '100px' },
 ]
 
+const columnGroups: ProTableColumnGroupRow[] = [
+  [
+    { id: 'record', title: 'Record', columnIds: ['locked', 'name', 'status'] },
+    { id: 'operations', title: 'Operations', columnIds: ['action'] },
+  ],
+  [
+    { id: 'identity', title: 'Identity', columnIds: ['locked', 'name'] },
+    { id: 'state', title: 'State', columnIds: ['status', 'action'] },
+  ],
+]
+
 function createRows(count = 10): Row[] {
   return Array.from({ length: count }, (_entry, index) => ({
     id: `row-${index + 1}`,
@@ -69,6 +80,7 @@ function mountGrid(
     selectable?: false | 'single' | 'checkbox'
     columns?: ProTableColumn<Row>[]
     sortMode?: 'single' | 'multiple'
+    columnGroups?: ProTableColumnGroupRow[]
   } = {}
 ) {
   const data = createRows()
@@ -88,6 +100,7 @@ function mountGrid(
       data,
       loading: options.loading ?? false,
       selectable: options.selectable ?? false,
+      columnGroups: options.columnGroups,
     },
     global: {
       stubs: {
@@ -109,6 +122,10 @@ function headerByText(wrapper: ReturnType<typeof mount>, text: string) {
     .find(candidate => candidate.text() === text)
   if (!header) throw new Error(`No virtual header cell containing "${text}"`)
   return header
+}
+
+function groupHeaders(wrapper: ReturnType<typeof mount>, groupId: string) {
+  return wrapper.findAll(`[data-pro-table-column-group="${groupId}"]`)
 }
 
 describe('VirtualGridRenderer accessibility contract', () => {
@@ -143,6 +160,8 @@ describe('VirtualGridRenderer accessibility contract', () => {
       expect(grid.attributes('aria-colcount')).toBe('4')
       expect(grid.attributes('aria-busy')).toBe('true')
       expect(wrapper.findAll('[tabindex="0"]')).toHaveLength(1)
+      expect(wrapper.findAll('[data-pro-table-column-group]')).toHaveLength(0)
+      expect(wrapper.findAll('[role="row"][aria-rowindex="1"]')).toHaveLength(1)
 
       const headers = wrapper.findAll('[role="columnheader"]')
       expect(headers.map(header => header.attributes('aria-colindex'))).toEqual([
@@ -170,6 +189,79 @@ describe('VirtualGridRenderer accessibility contract', () => {
     }
   })
 
+  it('renders grouped headers and offsets data row indexes when columnGroups are provided', () => {
+    setVirtualItems([4, 5])
+    const { wrapper, controller } = mountGrid({ columnGroups })
+
+    try {
+      const grid = wrapper.get('[role="grid"]')
+      expect(grid.attributes('aria-rowcount')).toBe('13')
+      expect(wrapper.findAll('[role="row"][aria-rowindex="1"]')).toHaveLength(1)
+      expect(wrapper.findAll('[role="row"][aria-rowindex="2"]')).toHaveLength(1)
+      expect(wrapper.findAll('[role="row"][aria-rowindex="3"]')).toHaveLength(1)
+
+      expect(groupHeaders(wrapper, 'record')).toHaveLength(2)
+      expect(groupHeaders(wrapper, 'record')[0].attributes('aria-colindex')).toBe('1')
+      expect(groupHeaders(wrapper, 'record')[1].attributes('aria-colindex')).toBe('2')
+      expect(groupHeaders(wrapper, 'record')[1].attributes('aria-colspan')).toBe('2')
+      expect(groupHeaders(wrapper, 'operations')).toHaveLength(1)
+      expect(groupHeaders(wrapper, 'operations')[0].attributes('aria-colindex')).toBe('4')
+
+      expect(wrapper.findAll('[role="row"][aria-rowindex="8"]')).toHaveLength(1)
+      expect(wrapper.findAll('[role="row"][aria-rowindex="9"]')).toHaveLength(1)
+    } finally {
+      wrapper.unmount()
+      controller.destroy()
+    }
+  })
+
+  it('derives grouped spans from ordered visible columns', () => {
+    const reorderedColumns: ProTableColumn<Row>[] = [columns[0], columns[2], columns[1], columns[3]]
+    const orderedGroups: ProTableColumnGroupRow[] = [
+      [{ id: 'identity', title: 'Identity', columnIds: ['name', 'status'] }],
+    ]
+    const { wrapper, controller } = mountGrid({
+      columns: reorderedColumns,
+      columnGroups: orderedGroups,
+    })
+
+    try {
+      const identity = groupHeaders(wrapper, 'identity')
+      expect(identity).toHaveLength(1)
+      expect(identity[0].attributes('aria-colindex')).toBe('2')
+      expect(identity[0].attributes('aria-colspan')).toBe('2')
+
+      const leafHeaders = wrapper
+        .findAll('[role="row"][aria-rowindex="2"] [role="columnheader"]')
+        .map(header => header.text())
+      expect(leafHeaders).toEqual(['Locked', 'Status', 'Name', 'Action'])
+    } finally {
+      wrapper.unmount()
+      controller.destroy()
+    }
+  })
+
+  it('splits pinned group cells across left, center, and right sections', () => {
+    const splitGroups: ProTableColumnGroupRow[] = [
+      [{ id: 'full', title: 'Full row', columnIds: ['locked', 'name', 'status', 'action'] }],
+    ]
+    const { wrapper, controller } = mountGrid({ columnGroups: splitGroups })
+
+    try {
+      const splitCells = groupHeaders(wrapper, 'full')
+      expect(splitCells).toHaveLength(3)
+      expect(splitCells.map(cell => cell.attributes('aria-colindex'))).toEqual(['1', '2', '4'])
+      expect(splitCells.map(cell => cell.attributes('aria-colspan') ?? '1')).toEqual([
+        '1',
+        '2',
+        '1',
+      ])
+    } finally {
+      wrapper.unmount()
+      controller.destroy()
+    }
+  })
+
   it('moves the active grid cell with arrow, Home, and End keys', async () => {
     const { wrapper, controller } = mountGrid()
 
@@ -189,6 +281,24 @@ describe('VirtualGridRenderer accessibility contract', () => {
 
       await grid.trigger('keydown', { key: 'Home' })
       expect(grid.attributes('aria-activedescendant')).toContain('-r2-c1')
+    } finally {
+      wrapper.unmount()
+      controller.destroy()
+    }
+  })
+
+  it('keeps keyboard navigation and active descendant stable under grouped headers', async () => {
+    const { wrapper, controller } = mountGrid({ columnGroups })
+
+    try {
+      const grid = wrapper.get('[role="grid"]')
+      expect(grid.attributes('aria-activedescendant')).toContain('-r1-c1')
+
+      await grid.trigger('keydown', { key: 'ArrowRight' })
+      await grid.trigger('keydown', { key: 'ArrowDown' })
+
+      expect(grid.attributes('aria-activedescendant')).toContain('-r2-c2')
+      expect(virtualizerHarness.scrollToIndex).toHaveBeenLastCalledWith(1, { align: 'auto' })
     } finally {
       wrapper.unmount()
       controller.destroy()
@@ -239,6 +349,27 @@ describe('VirtualGridRenderer accessibility contract', () => {
           .find('[data-pro-table-sort="true"]')
           .attributes('aria-label')
       ).toContain('priority 2')
+    } finally {
+      wrapper.unmount()
+      controller.destroy()
+    }
+  })
+
+  it('keeps leaf sorting active under grouped virtual headers', async () => {
+    const sortableColumns: ProTableColumn<Row>[] = columns.map(col =>
+      col.id === 'name' ? { ...col, sortable: true } : col
+    )
+    const { wrapper, controller } = mountGrid({
+      columns: sortableColumns,
+      columnGroups,
+    })
+
+    try {
+      await headerByText(wrapper, 'Name').find('[data-pro-table-sort="true"]').trigger('click')
+
+      expect(controller.state.sort).toMatchObject({ field: 'name', direction: 'asc' })
+      expect(headerByText(wrapper, 'Name').attributes('aria-sort')).toBe('ascending')
+      expect(groupHeaders(wrapper, 'record')[1].attributes('aria-sort')).toBeUndefined()
     } finally {
       wrapper.unmount()
       controller.destroy()

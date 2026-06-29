@@ -111,10 +111,10 @@ export type ProTableSearchParams = Record<string, unknown>
 export interface ProTableProps<T extends Record<string, unknown> = Record<string, unknown>> {
   columns: ProTableColumn<T>[]
   /**
-   * Optional DataTable grouped-header rows. Each group references leaf column ids;
+   * Optional grouped-header rows. Each group references leaf column ids;
    * ProTable calculates visible colspans after column visibility/order/pinning are resolved.
    *
-   * Supported by the PrimeVue DataTable path only. `virtualScroll` currently ignores grouped headers.
+   * Supported by both PrimeVue DataTable and VirtualGridRenderer paths.
    */
   columnGroups?: ProTableColumnGroupRow[]
   /** Row data array. Required in standard mode, ignored in request mode. */

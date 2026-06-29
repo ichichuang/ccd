@@ -34,7 +34,7 @@ import ProTablePagination from './components/ProTablePagination.vue'
 import ProTableToolbar from './components/ProTableToolbar.vue'
 import VirtualGridRenderer from './VirtualGridRenderer.vue'
 import { buildDataTablePt, type DataTablePtOptions } from './presets/dataTablePt'
-import type { ProTableColumn, ProTableColumnGroup } from './engine/types/column'
+import type { ProTableColumn } from './engine/types/column'
 import type { FilterState, ProTableSortMode, SortMeta, SortState } from './engine/types/tableState'
 import type {
   PaginationConfig,
@@ -57,6 +57,7 @@ import {
   resolveApiUrl,
 } from './engine/config/apiAdapter'
 import { TableController } from './engine/core/TableController'
+import { resolveColumnGroupRows, type ResolvedColumnGroupCell } from './engine/core/columnGroups'
 import { resolveColumnIdOrder } from './engine/engines/columnVisibility'
 import { useProTableColumnSettingsStorage } from './engine/hooks/useProTableColumnSettingsStorage'
 import { useProTableInfiniteScroll } from './engine/hooks/useProTableInfiniteScroll'
@@ -432,70 +433,6 @@ const tablePt = computed<Record<string, unknown>>(() => {
   if (props.tableLayout) options.tableLayout = props.tableLayout
   return buildDataTablePt(options)
 })
-
-type ColumnGroupPinSection = 'left' | 'center' | 'right'
-
-interface ResolvedColumnGroupCell {
-  key: string
-  group: ProTableColumnGroup | null
-  colspan: number
-  pinSection: ColumnGroupPinSection
-}
-
-function getColumnPinSection(col: ProTableColumn<T>): ColumnGroupPinSection {
-  if (col.pinned === 'left') return 'left'
-  if (col.pinned === 'right') return 'right'
-  return 'center'
-}
-
-function findColumnGroup(
-  row: readonly ProTableColumnGroup[],
-  columnId: string
-): ProTableColumnGroup | null {
-  return row.find(group => group.columnIds.includes(columnId)) ?? null
-}
-
-function getColumnGroupIdentity(
-  group: ProTableColumnGroup | null,
-  col: ProTableColumn<T>,
-  pinSection: ColumnGroupPinSection
-): string {
-  return `${group?.id ?? `ungrouped-${col.id}`}:${pinSection}`
-}
-
-function resolveColumnGroupRows(
-  rows: readonly (readonly ProTableColumnGroup[])[],
-  columns: readonly ProTableColumn<T>[]
-): ResolvedColumnGroupCell[][] {
-  return rows
-    .map((row, rowIndex) => {
-      const cells: ResolvedColumnGroupCell[] = []
-      let activeIdentity: string | null = null
-
-      for (const col of columns) {
-        const pinSection = getColumnPinSection(col)
-        const group = findColumnGroup(row, col.id)
-        const identity = getColumnGroupIdentity(group, col, pinSection)
-        const activeCell = cells[cells.length - 1]
-
-        if (activeCell && activeIdentity === identity) {
-          activeCell.colspan += 1
-          continue
-        }
-
-        activeIdentity = identity
-        cells.push({
-          key: `${rowIndex}-${identity}-${cells.length}`,
-          group,
-          colspan: 1,
-          pinSection,
-        })
-      }
-
-      return cells
-    })
-    .filter(row => row.some(cell => cell.group !== null))
-}
 
 const resolvedColumnGroupRows = computed<ResolvedColumnGroupCell[][]>(() => {
   if (!props.columnGroups || props.columnGroups.length === 0) return []
@@ -1487,6 +1424,7 @@ defineExpose({
               :row-class-name="rowClassName"
               :selectable="selectable"
               :loading="isLoading"
+              :column-groups="columnGroups"
               class="col-fill"
               @sort-change="emit('sort-change', $event)"
             />

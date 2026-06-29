@@ -89,8 +89,9 @@ function mountTable(
         ProTableToolbar: true,
         ProTablePagination: true,
         VirtualGridRenderer: {
-          props: ['columns'],
-          template: '<div data-virtual-grid-renderer>{{ columns.length }}</div>',
+          props: ['columns', 'columnGroups'],
+          template:
+            '<div data-virtual-grid-renderer :data-column-groups="columnGroups?.length ?? 0">{{ columns.length }}</div>',
         },
         ProgressSpinner: true,
         EmptyState: true,
@@ -210,11 +211,13 @@ describe('ProTable column grouping baseline (P1-C1)', () => {
     }
   })
 
-  it('leaves VirtualGridRenderer unchanged and does not render grouped headers in virtual mode', async () => {
+  it('passes grouped header rows into VirtualGridRenderer in virtual mode', async () => {
     const wrapper = mountTable({ groups: columnGroups, virtualScroll: true })
     try {
       await settle()
-      expect(wrapper.find('[data-virtual-grid-renderer]').exists()).toBe(true)
+      const virtualRenderer = wrapper.find('[data-virtual-grid-renderer]')
+      expect(virtualRenderer.exists()).toBe(true)
+      expect(virtualRenderer.attributes('data-column-groups')).toBe('2')
       expect(wrapper.find('thead').exists()).toBe(false)
       expect(wrapper.text()).not.toContain('Identity')
       expect(wrapper.text()).not.toContain('Metrics')

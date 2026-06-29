@@ -3,12 +3,17 @@ import type { SizeMode } from '@ccd/design-tokens'
 import { objectGet } from '@ccd/shared-utils'
 import { useEventListener, useResizeObserver } from '@vueuse/core'
 import Tag from 'primevue/tag'
-import { computed, h, nextTick, ref, useId, useTemplateRef, watch } from 'vue'
+import { computed, h, nextTick, onBeforeUpdate, ref, useId, useTemplateRef, watch } from 'vue'
 import type { ComponentPublicInstance, VNode } from 'vue'
 import { useVirtualizer } from '@tanstack/vue-virtual'
 import type { TableController } from './engine/core/TableController'
-import type { ProTableColumn } from './engine/types/column'
+import type { ProTableColumn, ProTableColumnGroupRow } from './engine/types/column'
 import type { SortMeta, SortState } from './engine/types/tableState'
+import {
+  resolveColumnGroupRows,
+  type ColumnGroupPinSection,
+  type ResolvedColumnGroupCell,
+} from './engine/core/columnGroups'
 import ProTableCell from './components/ProTableCell'
 import { VIRTUAL_GRID_DEFAULTS } from './engine/config'
 import { Icons } from '../Icons'
@@ -29,8 +34,15 @@ const props = withDefaults(
     rowClassName?: (row: T, index: number) => string
     selectable?: false | 'single' | 'checkbox'
     loading?: boolean
+    columnGroups?: ProTableColumnGroupRow[]
   }>(),
-  { density: 'comfortable', rowClassName: undefined, selectable: false, loading: false }
+  {
+    density: 'comfortable',
+    rowClassName: undefined,
+    selectable: false,
+    loading: false,
+    columnGroups: undefined,
+  }
 )
 
 const emit = defineEmits<{
@@ -83,6 +95,7 @@ const virtualEstimateRowPx = computed(() => {
 const scrollContainerRef = useTemplateRef<HTMLElement>('scrollContainerRef')
 const centerHeaderScrollRef = useTemplateRef<HTMLElement>('centerHeaderScrollRef')
 const centerBodyScrollRef = useTemplateRef<HTMLElement>('centerBodyScrollRef')
+const centerGroupHeaderScrollRefs = ref<HTMLElement[]>([])
 const processedRows = computed<T[]>(() => props.controller.processedRows.value)
 const virtualGridId = useId()
 
@@ -121,12 +134,21 @@ const orderedColumns = computed<ProTableColumn<T>[]>(() => [
   ...centerColumns.value,
   ...rightPinnedColumns.value,
 ])
+const resolvedColumnGroupRows = computed<ResolvedColumnGroupCell[][]>(() => {
+  if (!props.columnGroups || props.columnGroups.length === 0) return []
+  return resolveColumnGroupRows(props.columnGroups, orderedColumns.value)
+})
+const hasResolvedColumnGroups = computed<boolean>(() => resolvedColumnGroupRows.value.length > 0)
+const headerRowCount = computed<number>(() =>
+  hasResolvedColumnGroups.value ? resolvedColumnGroupRows.value.length + 1 : 1
+)
+const leafHeaderRowIndex = computed<number>(() => headerRowCount.value)
 const columnPositionByKey = computed<Map<string, number>>(() => {
   const positions = new Map<string, number>()
   orderedColumns.value.forEach((col, index) => positions.set(getColumnKey(col), index))
   return positions
 })
-const ariaRowCount = computed<number>(() => processedRows.value.length + 1)
+const ariaRowCount = computed<number>(() => processedRows.value.length + headerRowCount.value)
 const ariaColCount = computed<number | undefined>(() =>
   orderedColumns.value.length > 0 ? orderedColumns.value.length : undefined
 )
@@ -231,8 +253,55 @@ const headerOwnedCellIds = computed<string>(() =>
   orderedColumns.value.map(col => getHeaderCellId(col)).join(' ')
 )
 
+function getColumnGroupRowsForSection(
+  row: ResolvedColumnGroupCell[],
+  section: ColumnGroupPinSection
+): ResolvedColumnGroupCell[] {
+  return row.filter(cell => cell.pinSection === section)
+}
+
+function getColumnGroupCellId(rowIndex: number, cell: ResolvedColumnGroupCell): string | undefined {
+  if (!cell.group) return undefined
+  const stableKey = cell.key.replace(/[^a-zA-Z0-9_-]/g, '-')
+  return `${virtualGridId}-group-r${rowIndex + 1}-c${cell.ariaColIndex}-${stableKey}`
+}
+
+function getColumnGroupRowOwnedCellIds(
+  row: ResolvedColumnGroupCell[],
+  rowIndex: number
+): string | undefined {
+  const ids = row
+    .map(cell => getColumnGroupCellId(rowIndex, cell))
+    .filter((id): id is string => Boolean(id))
+  return ids.length > 0 ? ids.join(' ') : undefined
+}
+
+function getColumnGroupCellStyle(cell: ResolvedColumnGroupCell): Record<string, string> {
+  return { gridColumn: `span ${cell.colspan}` }
+}
+
+function getColumnGroupCellRole(cell: ResolvedColumnGroupCell): 'columnheader' | 'presentation' {
+  return cell.group ? 'columnheader' : 'presentation'
+}
+
+function getColumnGroupAriaColspan(cell: ResolvedColumnGroupCell): number | undefined {
+  return cell.group && cell.colspan > 1 ? cell.colspan : undefined
+}
+
+function renderColumnGroupHeader(cell: ResolvedColumnGroupCell): VNode | string {
+  const group = cell.group
+  if (!group) return ''
+  return typeof group.title === 'function' ? group.title() : group.title
+}
+
+function getColumnGroupAlignClass(cell: ResolvedColumnGroupCell): string {
+  if (cell.group?.headerAlign === 'left') return 'justify-start text-left'
+  if (cell.group?.headerAlign === 'right') return 'justify-end text-right'
+  return 'justify-center text-center'
+}
+
 function getBodyAriaRowIndex(index: number): number {
-  return index + 2
+  return index + headerRowCount.value + 1
 }
 
 function getVirtualRowOwnedCellIds(rowIndex: number): string {
@@ -517,21 +586,52 @@ function setVirtualRowRef(node: Element | ComponentPublicInstance | null, index:
   rowVirtualizer.value.resizeItem(index, height)
 }
 
+onBeforeUpdate(() => {
+  centerGroupHeaderScrollRefs.value = []
+})
+
+function setCenterGroupHeaderScrollRef(
+  node: Element | ComponentPublicInstance | null,
+  index: number
+): void {
+  if (!(node instanceof HTMLElement)) return
+  centerGroupHeaderScrollRefs.value[index] = node
+}
+
+function setElementScrollLeft(target: HTMLElement | null | undefined, scrollLeft: number): void {
+  if (!target) return
+  if (Math.abs(target.scrollLeft - scrollLeft) < 1) return
+  target.scrollLeft = scrollLeft
+}
+
+function syncCenterScrollLeft(scrollLeft: number, source?: HTMLElement): void {
+  const header = centerHeaderScrollRef.value
+  const body = centerBodyScrollRef.value
+
+  if (header !== source) setElementScrollLeft(header, scrollLeft)
+  if (body !== source) setElementScrollLeft(body, scrollLeft)
+  centerGroupHeaderScrollRefs.value.forEach(groupHeader => {
+    if (groupHeader !== source) setElementScrollLeft(groupHeader, scrollLeft)
+  })
+}
+
+function handleCenterGroupHeaderScroll(event: Event): void {
+  const source = event.currentTarget
+  if (!(source instanceof HTMLElement)) return
+  syncCenterScrollLeft(source.scrollLeft, source)
+}
+
 // Sync horizontal scroll between center header and center body.
 useEventListener(centerHeaderScrollRef, 'scroll', () => {
   const header = centerHeaderScrollRef.value
-  const body = centerBodyScrollRef.value
-  if (!header || !body) return
-  if (Math.abs(body.scrollLeft - header.scrollLeft) < 1) return
-  body.scrollLeft = header.scrollLeft
+  if (!header) return
+  syncCenterScrollLeft(header.scrollLeft, header)
 })
 
 useEventListener(centerBodyScrollRef, 'scroll', () => {
-  const header = centerHeaderScrollRef.value
   const body = centerBodyScrollRef.value
-  if (!header || !body) return
-  if (Math.abs(header.scrollLeft - body.scrollLeft) < 1) return
-  header.scrollLeft = body.scrollLeft
+  if (!body) return
+  syncCenterScrollLeft(body.scrollLeft, body)
 })
 </script>
 
@@ -555,9 +655,111 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
         class="sticky top-0 z-layout"
       >
         <div
+          v-for="(groupRow, rowIndex) in resolvedColumnGroupRows"
+          :key="'group-header-row-' + rowIndex"
           class="row-start w-full"
           role="row"
-          aria-rowindex="1"
+          :aria-rowindex="rowIndex + 1"
+          :aria-owns="getColumnGroupRowOwnedCellIds(groupRow, rowIndex)"
+        >
+          <!-- Left pinned grouped header -->
+          <div
+            v-if="leftPinnedColumns.length"
+            class="shrink-0 relative z-layout bg-muted border-r border-border shadow-sm"
+            :style="{ display: 'grid', gridTemplateColumns: leftGridTemplateColumns }"
+          >
+            <div
+              v-for="cell in getColumnGroupRowsForSection(groupRow, 'left')"
+              :id="getColumnGroupCellId(rowIndex, cell)"
+              :key="'lgh-' + cell.key"
+              :role="getColumnGroupCellRole(cell)"
+              :aria-hidden="cell.group ? undefined : 'true'"
+              :aria-colindex="cell.group ? cell.ariaColIndex : undefined"
+              :aria-colspan="getColumnGroupAriaColspan(cell)"
+              :data-pro-table-column-group="cell.group?.id"
+              :style="getColumnGroupCellStyle(cell)"
+              :class="[
+                virtualHeaderShellClass,
+                'border-b border-border',
+                { 'pro-table-v-line': showVerticalLines },
+              ]"
+            >
+              <div :class="[virtualHeaderTitleClass, getColumnGroupAlignClass(cell), 'min-w-0']">
+                <ProTableCell :node="renderColumnGroupHeader(cell)" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Center grouped header -->
+          <div
+            :ref="el => setCenterGroupHeaderScrollRef(el, rowIndex)"
+            class="flex-1 min-w-0 overflow-x-auto scrollbar-none"
+            @scroll="handleCenterGroupHeaderScroll"
+          >
+            <div
+              :style="{
+                display: 'inline-grid',
+                gridTemplateColumns: centerGridTemplateColumns,
+                width: 'max-content',
+                minWidth: '100%',
+              }"
+            >
+              <div
+                v-for="cell in getColumnGroupRowsForSection(groupRow, 'center')"
+                :id="getColumnGroupCellId(rowIndex, cell)"
+                :key="'cgh-' + cell.key"
+                :role="getColumnGroupCellRole(cell)"
+                :aria-hidden="cell.group ? undefined : 'true'"
+                :aria-colindex="cell.group ? cell.ariaColIndex : undefined"
+                :aria-colspan="getColumnGroupAriaColspan(cell)"
+                :data-pro-table-column-group="cell.group?.id"
+                :style="getColumnGroupCellStyle(cell)"
+                :class="[
+                  virtualHeaderShellClass,
+                  'border-b border-border',
+                  { 'pro-table-v-line': showVerticalLines },
+                ]"
+              >
+                <div :class="[virtualHeaderTitleClass, getColumnGroupAlignClass(cell), 'min-w-0']">
+                  <ProTableCell :node="renderColumnGroupHeader(cell)" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right pinned grouped header -->
+          <div
+            v-if="rightPinnedColumns.length"
+            class="shrink-0 relative z-layout bg-muted border-l border-border shadow-sm"
+            :style="{ display: 'grid', gridTemplateColumns: rightGridTemplateColumns }"
+          >
+            <div
+              v-for="cell in getColumnGroupRowsForSection(groupRow, 'right')"
+              :id="getColumnGroupCellId(rowIndex, cell)"
+              :key="'rgh-' + cell.key"
+              :role="getColumnGroupCellRole(cell)"
+              :aria-hidden="cell.group ? undefined : 'true'"
+              :aria-colindex="cell.group ? cell.ariaColIndex : undefined"
+              :aria-colspan="getColumnGroupAriaColspan(cell)"
+              :data-pro-table-column-group="cell.group?.id"
+              :style="getColumnGroupCellStyle(cell)"
+              :class="[
+                virtualHeaderShellClass,
+                'border-b border-border',
+                { 'pro-table-v-line': showVerticalLines },
+              ]"
+            >
+              <div :class="[virtualHeaderTitleClass, getColumnGroupAlignClass(cell), 'min-w-0']">
+                <ProTableCell :node="renderColumnGroupHeader(cell)" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="row-start w-full"
+          role="row"
+          :aria-rowindex="leafHeaderRowIndex"
           :aria-owns="headerOwnedCellIds"
         >
           <!-- Left pinned header -->
