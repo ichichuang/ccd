@@ -3,7 +3,9 @@ import type {
   ProTableApiExecutorContext,
   ProTableLoadParams,
   RequestFn,
+  SortMeta,
 } from '@ccd/vue-ui'
+import { isRecord } from '@ccd/shared-utils'
 
 type Translate = (key: string) => string
 const scheduleDemoRequestDelay = globalThis.setTimeout.bind(globalThis)
@@ -235,20 +237,61 @@ function getSortValue(row: ProTableDemoRow, field: string): string | number {
   return row.id
 }
 
-function applyServerSort(rows: ProTableDemoRow[], params: ProTableLoadParams): ProTableDemoRow[] {
+function getSortMeta(params: ProTableLoadParams): SortMeta[] {
   const { field, direction } = params.sort
-  if (!field || !direction) return rows
+  if (params.sort.multi && params.sort.multi.length > 0) return params.sort.multi
+  if (!field || !direction) return []
+  return [{ field, direction }]
+}
 
-  return [...rows].sort((left, right) => {
-    const leftValue = getSortValue(left, field)
-    const rightValue = getSortValue(right, field)
-    const result =
-      typeof leftValue === 'number' && typeof rightValue === 'number'
-        ? leftValue - rightValue
-        : String(leftValue).localeCompare(String(rightValue))
+function compareServerSortValue(
+  left: ProTableDemoRow,
+  right: ProTableDemoRow,
+  meta: SortMeta
+): number {
+  const leftValue = getSortValue(left, meta.field)
+  const rightValue = getSortValue(right, meta.field)
+  const result =
+    typeof leftValue === 'number' && typeof rightValue === 'number'
+      ? leftValue - rightValue
+      : String(leftValue).localeCompare(String(rightValue))
 
-    return direction === 'asc' ? result : -result
-  })
+  return meta.direction === 'asc' ? result : -result
+}
+
+function applyServerSort(rows: ProTableDemoRow[], params: ProTableLoadParams): ProTableDemoRow[] {
+  const sortMeta = getSortMeta(params)
+  if (sortMeta.length === 0) return rows
+
+  return rows
+    .map((row, index) => ({ row, index }))
+    .sort((left, right) => {
+      for (const meta of sortMeta) {
+        const result = compareServerSortValue(left.row, right.row, meta)
+        if (result !== 0) return result
+      }
+      return left.index - right.index
+    })
+    .map(item => item.row)
+}
+
+function parseMultiSortQuery(value: string): SortMeta[] {
+  if (!value) return []
+
+  try {
+    const parsed: unknown = JSON.parse(value)
+    if (!Array.isArray(parsed)) return []
+
+    return parsed.flatMap(item => {
+      if (!isRecord(item)) return []
+      const field = typeof item.field === 'string' ? item.field : ''
+      const direction =
+        item.direction === 'asc' || item.direction === 'desc' ? item.direction : null
+      return field && direction ? [{ field, direction }] : []
+    })
+  } catch {
+    return []
+  }
 }
 
 function paginateRows(
@@ -330,6 +373,7 @@ function toQueryString(value: string | number | boolean | undefined): string {
 function createLoadParamsFromApiContext(ctx: ProTableApiExecutorContext): ProTableLoadParams {
   const sortField = toQueryString(ctx.query.sortBy)
   const sortDirection = toQueryString(ctx.query.order)
+  const multiSort = parseMultiSortQuery(toQueryString(ctx.query.multiSort))
 
   return {
     page: toPositiveInteger(ctx.query.page, 1),
@@ -337,6 +381,7 @@ function createLoadParamsFromApiContext(ctx: ProTableApiExecutorContext): ProTab
     sort: {
       field: sortField || null,
       direction: sortDirection === 'asc' || sortDirection === 'desc' ? sortDirection : null,
+      ...(multiSort.length > 0 ? { multi: multiSort } : {}),
     },
     filter: {
       global: toQueryString(ctx.query.search),

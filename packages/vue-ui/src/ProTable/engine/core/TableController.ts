@@ -3,9 +3,11 @@ import { computed, effectScope, shallowReactive, shallowRef, watch } from 'vue'
 import type {
   TableState,
   SortState,
+  SortMeta,
   FilterState,
   ColumnSettingsState,
   GlobalSearchMode,
+  ProTableSortMode,
 } from '../types/tableState'
 import type { ProTableColumn } from '../types/column'
 import type { ProTableLoadParams, RequestFn, RequestConfig } from '../types/props'
@@ -17,7 +19,14 @@ import {
   REQUEST_DEFAULTS,
   SORT_DEFAULTS,
 } from '../config'
-import { applySort, nextSortDirection } from '../engines/sorting'
+import {
+  applySort,
+  createMultiSortState,
+  createSingleSortState,
+  nextSortDirection,
+  sortMetaSignature,
+  toMultiSortMeta,
+} from '../engines/sorting'
 import { applyFilter } from '../engines/filtering'
 import { applyPagination } from '../engines/pagination'
 import { toggleRowSelection, toggleAllSelection, clearSelection } from '../engines/selection'
@@ -41,6 +50,7 @@ export interface TableControllerOptions<T extends Record<string, unknown>> {
    */
   paginationEnabled?: boolean
   initialPageSize?: number
+  sortMode?: ProTableSortMode
   onLoad?: (params: ProTableLoadParams) => void
   onSortChange?: (sort: SortState) => void
   onFilterChange?: (filter: FilterState) => void
@@ -99,6 +109,7 @@ export class TableController<T extends Record<string, unknown>> {
   private _serverMode: boolean
   private _rowKey: string
   private _paginationEnabled: ShallowRef<boolean>
+  private _sortMode: ShallowRef<ProTableSortMode>
   private _globalSearchMode: ShallowRef<GlobalSearchMode>
   private _scope: EffectScope
   private _request: ShallowRef<RequestFn<T> | undefined>
@@ -114,6 +125,10 @@ export class TableController<T extends Record<string, unknown>> {
     return !!this._request.value
   }
 
+  get sortMode(): ProTableSortMode {
+    return this._sortMode.value
+  }
+
   filteredAndSorted!: ComputedRef<T[]>
   processedRows!: ComputedRef<T[]>
   visibleColumns!: ComputedRef<ProTableColumn<T>[]>
@@ -127,6 +142,7 @@ export class TableController<T extends Record<string, unknown>> {
     this._paginationEnabled = shallowRef(
       options.paginationEnabled ?? PRO_TABLE_PROPS_DEFAULTS.pagination
     )
+    this._sortMode = shallowRef(options.sortMode ?? PRO_TABLE_PROPS_DEFAULTS.sortMode)
     this._globalSearchMode = shallowRef(
       options.globalSearchMode ?? PRO_TABLE_PROPS_DEFAULTS.globalSearchMode
     )
@@ -143,7 +159,7 @@ export class TableController<T extends Record<string, unknown>> {
     )
 
     this.state = shallowReactive<TableState<T>>({
-      sort: SORT_DEFAULTS.initial,
+      sort: this._sortMode.value === 'multiple' ? createMultiSortState([]) : SORT_DEFAULTS.initial,
       filter: FILTER_DEFAULTS.initial,
       pagination: {
         page: PAGINATION_DEFAULTS.initialPage,
@@ -186,6 +202,7 @@ export class TableController<T extends Record<string, unknown>> {
       const fetchTriggerSources = () => [
         () => this.state.sort.field,
         () => this.state.sort.direction,
+        () => sortMetaSignature(this.state.sort),
         () => this.state.filter.global,
         () => stableColumnFiltersKey(this.state.filter.columns),
         () => this.state.pagination.page,
@@ -218,6 +235,7 @@ export class TableController<T extends Record<string, unknown>> {
         [
           () => this.state.sort.field,
           () => this.state.sort.direction,
+          () => sortMetaSignature(this.state.sort),
           () => this.state.filter.global,
           () => stableColumnFiltersKey(this.state.filter.columns),
         ],
@@ -277,6 +295,20 @@ export class TableController<T extends Record<string, unknown>> {
   }
 
   /**
+   * Switch sort mode at runtime without losing the primary sort.
+   * Multiple mode materializes `sort.multi`; single mode collapses back to
+   * the primary `{ field, direction }` payload.
+   */
+  setSortMode(mode: ProTableSortMode): void {
+    if (this._sortMode.value === mode) return
+    this._sortMode.value = mode
+    this.state.sort =
+      mode === 'multiple'
+        ? createMultiSortState(toMultiSortMeta(this.state.sort))
+        : createSingleSortState(this.state.sort.field, this.state.sort.direction)
+  }
+
+  /**
    * Update local global-search matching without changing the public FilterState payload.
    */
   setGlobalSearchMode(mode: GlobalSearchMode): void {
@@ -307,16 +339,54 @@ export class TableController<T extends Record<string, unknown>> {
     this.state.pagination = { ...this.state.pagination, total }
   }
 
-  updateSort(field: string): void {
+  private updateSingleSort(field: string): void {
     if (this.state.sort.field !== field) {
       this.state.sort = { field, direction: SORT_DEFAULTS.firstDirection }
     } else {
       const dir = nextSortDirection(this.state.sort.direction)
       this.state.sort = { field: dir === null ? null : field, direction: dir }
     }
+  }
+
+  private updateMultiSort(field: string): void {
+    const currentMeta = toMultiSortMeta(this.state.sort)
+    const current = currentMeta.find(meta => meta.field === field)
+    const nextDirection = nextSortDirection(current?.direction ?? null)
+    const nextMeta =
+      nextDirection === null
+        ? currentMeta.filter(meta => meta.field !== field)
+        : current
+          ? currentMeta.map(meta =>
+              meta.field === field ? { field, direction: nextDirection } : meta
+            )
+          : [...currentMeta, { field, direction: nextDirection }]
+
+    this.state.sort = createMultiSortState(nextMeta)
+  }
+
+  updateSort(field: string): void {
+    if (this._sortMode.value === 'multiple') {
+      this.updateMultiSort(field)
+    } else {
+      this.updateSingleSort(field)
+    }
     if (this._serverMode) {
       // watch handles load emit
     }
+  }
+
+  setSort(sort: SortState): void {
+    this.state.sort =
+      this._sortMode.value === 'multiple'
+        ? createMultiSortState(toMultiSortMeta(sort))
+        : createSingleSortState(sort.field, sort.direction)
+  }
+
+  setMultiSort(multi: readonly SortMeta[]): void {
+    this.state.sort =
+      this._sortMode.value === 'multiple'
+        ? createMultiSortState(multi)
+        : createSingleSortState(multi[0]?.field ?? null, multi[0]?.direction ?? null)
   }
 
   setGlobalFilter(value: string): void {

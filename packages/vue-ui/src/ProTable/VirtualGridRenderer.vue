@@ -8,7 +8,7 @@ import type { ComponentPublicInstance, VNode } from 'vue'
 import { useVirtualizer } from '@tanstack/vue-virtual'
 import type { TableController } from './engine/core/TableController'
 import type { ProTableColumn } from './engine/types/column'
-import type { SortState } from './engine/types/tableState'
+import type { SortMeta, SortState } from './engine/types/tableState'
 import ProTableCell from './components/ProTableCell'
 import { VIRTUAL_GRID_DEFAULTS } from './engine/config'
 import { Icons } from '../Icons'
@@ -339,30 +339,60 @@ function handleSortClick(col: ProTableColumn<T>): void {
   emit('sort-change', { ...props.controller.state.sort })
 }
 
+function getColumnSortField(col: ProTableColumn<T>): string {
+  return String(col.field ?? col.id)
+}
+
+function getColumnSortMeta(col: ProTableColumn<T>): SortMeta | null {
+  const field = getColumnSortField(col)
+  const multi = props.controller.state.sort.multi
+  if (multi) return multi.find(meta => meta.field === field) ?? null
+  if (props.controller.state.sort.field === field && props.controller.state.sort.direction) {
+    return { field, direction: props.controller.state.sort.direction }
+  }
+  return null
+}
+
+function getColumnSortPriority(col: ProTableColumn<T>): number | null {
+  const field = getColumnSortField(col)
+  const index = props.controller.state.sort.multi?.findIndex(meta => meta.field === field) ?? -1
+  return index >= 0 ? index + 1 : null
+}
+
 function sortIcon(col: ProTableColumn<T>): string {
-  const field = String(col.field ?? col.id)
-  if (props.controller.state.sort.field !== field) return 'i-lucide-chevrons-up-down'
-  if (props.controller.state.sort.direction === 'asc') return 'i-lucide-chevron-up'
+  const meta = getColumnSortMeta(col)
+  if (!meta) return 'i-lucide-chevrons-up-down'
+  if (meta.direction === 'asc') return 'i-lucide-chevron-up'
   return 'i-lucide-chevron-down'
 }
 
 function getAriaSort(col: ProTableColumn<T>): 'ascending' | 'descending' | 'none' | undefined {
   if (!col.sortable) return undefined
-  const field = String(col.field ?? col.id)
+  const field = getColumnSortField(col)
   if (props.controller.state.sort.field !== field) return 'none'
   if (props.controller.state.sort.direction === 'asc') return 'ascending'
   if (props.controller.state.sort.direction === 'desc') return 'descending'
   return 'none'
 }
 
+function sortAriaLabel(col: ProTableColumn<T>): string | undefined {
+  if (!col.sortable) return undefined
+  const title = typeof col.title === 'string' ? col.title : col.id
+  const meta = getColumnSortMeta(col)
+  if (!meta) return `Sort by ${title}`
+  const directionLabel = meta.direction === 'asc' ? 'ascending' : 'descending'
+  const priority = getColumnSortPriority(col)
+  if (props.controller.sortMode === 'multiple' && priority !== null) {
+    return `Sort by ${title}. Currently ${directionLabel}, priority ${priority}.`
+  }
+  return `Sort by ${title}. Currently ${directionLabel}.`
+}
+
 /** True when this column is the active sort target — drives token-based icon emphasis,
  *  mirroring the DataTable path in ProTable.vue. */
 function isColumnSorted(col: ProTableColumn<T>): boolean {
   if (!col.sortable) return false
-  return (
-    props.controller.state.sort.field === String(col.field ?? col.id) &&
-    props.controller.state.sort.direction !== null
-  )
+  return getColumnSortMeta(col) !== null
 }
 
 function renderCell(col: ProTableColumn<T>, row: T, index: number) {
@@ -558,6 +588,7 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
                 ]"
                 :role="col.sortable ? 'button' : undefined"
                 :tabindex="col.sortable ? 0 : undefined"
+                :aria-label="sortAriaLabel(col)"
                 :data-pro-table-sort="col.sortable ? 'true' : undefined"
                 @click="handleSortClick(col)"
                 @keydown.enter.prevent="handleSortClick(col)"
@@ -610,6 +641,7 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
                   ]"
                   :role="col.sortable ? 'button' : undefined"
                   :tabindex="col.sortable ? 0 : undefined"
+                  :aria-label="sortAriaLabel(col)"
                   :data-pro-table-sort="col.sortable ? 'true' : undefined"
                   @click="handleSortClick(col)"
                   @keydown.enter.prevent="handleSortClick(col)"
@@ -658,6 +690,7 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
                 ]"
                 :role="col.sortable ? 'button' : undefined"
                 :tabindex="col.sortable ? 0 : undefined"
+                :aria-label="sortAriaLabel(col)"
                 :data-pro-table-sort="col.sortable ? 'true' : undefined"
                 @click="handleSortClick(col)"
                 @keydown.enter.prevent="handleSortClick(col)"

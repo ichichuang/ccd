@@ -1,6 +1,20 @@
+export type SortDirection = 'asc' | 'desc' | null
+export type ActiveSortDirection = Exclude<SortDirection, null>
+export type ProTableSortMode = 'single' | 'multiple'
+
+export interface SortMeta {
+  field: string
+  direction: ActiveSortDirection
+}
+
 export interface SortState {
   field: string | null
-  direction: 'asc' | 'desc' | null
+  direction: SortDirection
+  /**
+   * Ordered multi-sort criteria. Undefined in default single-sort mode so
+   * existing `{ field, direction }` consumers keep their exact payload shape.
+   */
+  multi?: SortMeta[]
 }
 
 export interface FilterState {

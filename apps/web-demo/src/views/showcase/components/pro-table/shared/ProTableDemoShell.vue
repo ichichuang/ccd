@@ -6,6 +6,7 @@ import type {
   ProTableApiExecutor,
   ProTableColumn,
   ProTableExposed,
+  ProTableSortMode,
   RequestConfig,
   RequestFn,
   SortState,
@@ -93,6 +94,7 @@ interface ProTableModeConfig {
   pagination?: boolean | PaginationConfig
   selectable?: false | 'checkbox'
   requestMode?: ProTableRequestMode
+  sortMode?: ProTableSortMode
   statusFilter?: boolean
   ownerFilter?: boolean
   stateControls?: boolean
@@ -172,6 +174,7 @@ const MODE_CONFIGS: Record<ProTableDemoMode, ProTableModeConfig> = {
     columnFilters: true,
     dateColumnFilter: true,
     fuzzySearch: true,
+    sortMode: 'multiple',
     features: ['filters', 'typedRows'],
     explanations: ['toolbar', 'pagination'],
     technical: ['stateEvidence', 'i18nCopy'],
@@ -467,6 +470,7 @@ const tableHeight = computed(() => {
 })
 
 const tableSelectable = computed(() => modeConfig.value.selectable ?? false)
+const tableSortMode = computed<ProTableSortMode>(() => modeConfig.value.sortMode ?? 'single')
 const tableLoading = computed(() => Boolean(modeConfig.value.stateControls && localLoading.value))
 const demoTitle = computed(() => t(`${item.value.localeBaseKey}.try`))
 const demoDescription = computed(() => t(`showcase.proTable.modes.${props.mode}.demo`))
@@ -538,6 +542,15 @@ function pushEvent(key: string, detail: string): void {
   eventMessages.value = [t(key, { detail }), ...eventMessages.value].slice(0, 5)
 }
 
+function formatSortState(sort: SortState): string {
+  if (sort.multi && sort.multi.length > 0) {
+    return sort.multi.map(meta => `${meta.field}:${meta.direction}`).join(' > ')
+  }
+  return sort.field
+    ? `${sort.field}:${sort.direction ?? t('showcase.proTable.state.none')}`
+    : t('showcase.proTable.state.none')
+}
+
 function handleReload(): void {
   tableRef.value?.reload()
   actionMessage.value = { key: 'showcase.proTable.actions.reloaded' }
@@ -563,7 +576,7 @@ function handleReadState(): void {
       page: state.pagination.page,
       pageSize: state.pagination.pageSize,
       total: state.pagination.total,
-      sort: state.sort.field ?? t('showcase.proTable.state.none'),
+      sort: formatSortState(state.sort),
       hidden: state.columnSettings.hiddenKeys.length,
       filter: state.filter.global || t('showcase.proTable.state.none'),
     },
@@ -617,12 +630,7 @@ function handleRowClick(row: ProTableDemoRow): void {
 }
 
 function handleSortChange(sort: SortState): void {
-  pushEvent(
-    'showcase.proTable.events.sort',
-    sort.field
-      ? `${sort.field}:${sort.direction ?? t('showcase.proTable.state.none')}`
-      : t('showcase.proTable.state.none')
-  )
+  pushEvent('showcase.proTable.events.sort', formatSortState(sort))
 }
 
 function handleFilterChange(filter: FilterState): void {
@@ -845,6 +853,7 @@ function handleRequestError(error: Error): void {
                 :loading="tableLoading"
                 :pagination="tablePagination"
                 :selectable="tableSelectable"
+                :sort-mode="tableSortMode"
                 :virtual-scroll="isVirtualMode"
                 :infinite-scroll="isInfiniteMode"
                 :height-mode="tableHeightMode"

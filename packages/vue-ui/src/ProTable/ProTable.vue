@@ -5,6 +5,7 @@ import { useEventListener } from '@vueuse/core'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
+import type { DataTableSortEvent, DataTableSortMeta } from 'primevue/datatable'
 import DatePicker from 'primevue/datepicker'
 import InputText from 'primevue/inputtext'
 import Popover from 'primevue/popover'
@@ -32,7 +33,7 @@ import ProTableToolbar from './components/ProTableToolbar.vue'
 import VirtualGridRenderer from './VirtualGridRenderer.vue'
 import { buildDataTablePt, type DataTablePtOptions } from './presets/dataTablePt'
 import type { ProTableColumn } from './engine/types/column'
-import type { SortState, FilterState } from './engine/types/tableState'
+import type { FilterState, ProTableSortMode, SortMeta, SortState } from './engine/types/tableState'
 import type {
   PaginationConfig,
   ProTableApiQueryParams,
@@ -76,6 +77,7 @@ const props = withDefaults(defineProps<ProTableProps<T>>(), {
   pagination: PRO_TABLE_PROPS_DEFAULTS.pagination,
   total: PRO_TABLE_PROPS_DEFAULTS.total,
   serverMode: PRO_TABLE_PROPS_DEFAULTS.serverMode,
+  sortMode: PRO_TABLE_PROPS_DEFAULTS.sortMode,
   globalFilter: PRO_TABLE_PROPS_DEFAULTS.globalFilter,
   globalSearchMode: PRO_TABLE_PROPS_DEFAULTS.globalSearchMode,
   heightMode: PRO_TABLE_PROPS_DEFAULTS.heightMode,
@@ -198,6 +200,10 @@ const pagConfig = computed<PaginationConfig>(() => {
   return props.pagination
 })
 
+const resolvedSortMode = computed<ProTableSortMode>(
+  () => props.sortMode ?? PRO_TABLE_PROPS_DEFAULTS.sortMode
+)
+
 /** Snapshot at init — merged into pageSizeOptions so switching away (e.g. 5→10) does not drop the initial size. */
 const initialPageSizeSnapshot: number = pagConfig.value.pageSize ?? PAGINATION_DEFAULTS.pageSize
 
@@ -212,6 +218,7 @@ const ctrl = new TableController<T>({
   data: props.data,
   rowKey: String(props.rowKey ?? PRO_TABLE_PROPS_DEFAULTS.rowKey),
   serverMode: props.serverMode ?? false,
+  sortMode: resolvedSortMode.value,
   paginationEnabled: enginePaginationEnabled.value,
   initialPageSize: initialPageSizeSnapshot,
   onLoad: params => emit('load', params),
@@ -320,6 +327,7 @@ watch(
 )
 
 watch(enginePaginationEnabled, enabled => ctrl.setPaginationEnabled(enabled))
+watch(resolvedSortMode, mode => ctrl.setSortMode(mode), { immediate: true })
 watch(
   () => props.globalSearchMode,
   mode => ctrl.setGlobalSearchMode(mode),
@@ -646,10 +654,83 @@ function handleSortClick(col: ProTableColumn<T>): void {
   emit('sort-change', { ...ctrl.state.sort })
 }
 
+function toDataTableSortOrder(direction: SortState['direction']): 1 | -1 | undefined {
+  if (direction === 'asc') return 1
+  if (direction === 'desc') return -1
+  return undefined
+}
+
+function toSortDirection(order: DataTableSortMeta['order']): SortState['direction'] {
+  if (order === 1) return 'asc'
+  if (order === -1) return 'desc'
+  return null
+}
+
+function normalizeDataTableSortField(
+  field: DataTableSortMeta['field'] | DataTableSortEvent['sortField']
+): string | null {
+  return typeof field === 'string' ? field : null
+}
+
+function normalizeDataTableSortMeta(meta: DataTableSortMeta): SortMeta | null {
+  const field = normalizeDataTableSortField(meta.field)
+  const direction = toSortDirection(meta.order)
+  if (!field || !direction) return null
+  return { field, direction }
+}
+
+const dataTableSortField = computed<string | undefined>(() => ctrl.state.sort.field ?? undefined)
+const dataTableSortOrder = computed<1 | -1 | undefined>(() =>
+  toDataTableSortOrder(ctrl.state.sort.direction)
+)
+const dataTableMultiSortMeta = computed<DataTableSortMeta[] | undefined>(() => {
+  if (resolvedSortMode.value !== 'multiple') return undefined
+  return (ctrl.state.sort.multi ?? []).map(meta => ({
+    field: meta.field,
+    order: toDataTableSortOrder(meta.direction),
+  }))
+})
+
+function handleDataTableSort(event: DataTableSortEvent): void {
+  if (resolvedSortMode.value === 'multiple') {
+    const multi = (event.multiSortMeta ?? []).flatMap(meta => {
+      const normalized = normalizeDataTableSortMeta(meta)
+      return normalized ? [normalized] : []
+    })
+    ctrl.setMultiSort(multi)
+  } else {
+    ctrl.setSort({
+      field: normalizeDataTableSortField(event.sortField),
+      direction: toSortDirection(event.sortOrder),
+    })
+  }
+  emit('sort-change', { ...ctrl.state.sort })
+}
+
+function getColumnSortField(col: ProTableColumn<T>): string {
+  return String(col.field ?? col.id)
+}
+
+function getColumnSortMeta(col: ProTableColumn<T>): SortMeta | null {
+  const field = getColumnSortField(col)
+  const multi = ctrl.state.sort.multi
+  if (multi) return multi.find(meta => meta.field === field) ?? null
+  if (ctrl.state.sort.field === field && ctrl.state.sort.direction) {
+    return { field, direction: ctrl.state.sort.direction }
+  }
+  return null
+}
+
+function getColumnSortPriority(col: ProTableColumn<T>): number | null {
+  const field = getColumnSortField(col)
+  const index = ctrl.state.sort.multi?.findIndex(meta => meta.field === field) ?? -1
+  return index >= 0 ? index + 1 : null
+}
+
 function sortIcon(col: ProTableColumn<T>): string {
-  const field = String(col.field ?? col.id)
-  if (ctrl.state.sort.field !== field) return 'i-lucide-chevrons-up-down'
-  if (ctrl.state.sort.direction === 'asc') return 'i-lucide-chevron-up'
+  const meta = getColumnSortMeta(col)
+  if (!meta) return 'i-lucide-chevrons-up-down'
+  if (meta.direction === 'asc') return 'i-lucide-chevron-up'
   return 'i-lucide-chevron-down'
 }
 
@@ -660,17 +741,30 @@ function sortIcon(col: ProTableColumn<T>): string {
  */
 function getAriaSort(col: ProTableColumn<T>): 'ascending' | 'descending' | 'none' | undefined {
   if (!col.sortable) return undefined
-  const field = String(col.field ?? col.id)
+  const field = getColumnSortField(col)
   if (ctrl.state.sort.field !== field) return 'none'
   if (ctrl.state.sort.direction === 'asc') return 'ascending'
   if (ctrl.state.sort.direction === 'desc') return 'descending'
   return 'none'
 }
 
+function sortAriaLabel(col: ProTableColumn<T>): string | undefined {
+  if (!col.sortable) return undefined
+  const title = columnTitleText(col)
+  const meta = getColumnSortMeta(col)
+  if (!meta) return `Sort by ${title}`
+  const directionLabel = meta.direction === 'asc' ? 'ascending' : 'descending'
+  const priority = getColumnSortPriority(col)
+  if (resolvedSortMode.value === 'multiple' && priority !== null) {
+    return `Sort by ${title}. Currently ${directionLabel}, priority ${priority}.`
+  }
+  return `Sort by ${title}. Currently ${directionLabel}.`
+}
+
 /** True when this column is the active sort target — drives token-based icon emphasis. */
 function isColumnSorted(col: ProTableColumn<T>): boolean {
   if (!col.sortable) return false
-  return ctrl.state.sort.field === String(col.field ?? col.id) && ctrl.state.sort.direction !== null
+  return getColumnSortMeta(col) !== null
 }
 
 /**
@@ -1030,6 +1124,12 @@ defineExpose({
               :pt="tablePt"
               :striped-rows="stripedRows"
               :row-hover="rowHover"
+              :lazy="true"
+              :sort-mode="resolvedSortMode"
+              :sort-field="dataTableSortField"
+              :sort-order="dataTableSortOrder"
+              :multi-sort-meta="dataTableMultiSortMeta"
+              removable-sort
               :scroll-height="scrollHeightValue"
               :scrollable="usesFillLayout || heightMode !== 'auto'"
               :selection-mode="
@@ -1047,6 +1147,7 @@ defineExpose({
               :reorderable-columns="reorderableColumns"
               :state-storage="stateStorage === false ? undefined : stateStorage"
               :state-key="stateKey"
+              @sort="handleDataTableSort"
               @update:selection="selectable ? (tableSelection = $event) : undefined"
               @row-click="emit('row-click', $event.data)"
             >
@@ -1093,6 +1194,7 @@ defineExpose({
                       ]"
                       :role="col.sortable ? 'button' : undefined"
                       :tabindex="col.sortable ? 0 : undefined"
+                      :aria-label="sortAriaLabel(col)"
                       :data-pro-table-sort="col.sortable ? 'true' : undefined"
                       @click="handleSortClick(col)"
                       @keydown.enter.prevent="handleSortClick(col)"

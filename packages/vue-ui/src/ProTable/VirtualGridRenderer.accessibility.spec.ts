@@ -64,13 +64,19 @@ function setVirtualItems(indexes: number[]): void {
 }
 
 function mountGrid(
-  options: { loading?: boolean; selectable?: false | 'single' | 'checkbox' } = {}
+  options: {
+    loading?: boolean
+    selectable?: false | 'single' | 'checkbox'
+    columns?: ProTableColumn<Row>[]
+    sortMode?: 'single' | 'multiple'
+  } = {}
 ) {
   const data = createRows()
   const controller = new TableController<Row>({
-    columns,
+    columns: options.columns ?? columns,
     data,
     rowKey: 'id',
+    sortMode: options.sortMode,
     paginationEnabled: false,
   })
 
@@ -78,7 +84,7 @@ function mountGrid(
     attachTo: document.body,
     props: {
       controller,
-      columns,
+      columns: options.columns ?? columns,
       data,
       loading: options.loading ?? false,
       selectable: options.selectable ?? false,
@@ -95,6 +101,14 @@ function mountGrid(
   })
 
   return { wrapper, controller }
+}
+
+function headerByText(wrapper: ReturnType<typeof mount>, text: string) {
+  const header = wrapper
+    .findAll('[role="columnheader"]')
+    .find(candidate => candidate.text() === text)
+  if (!header) throw new Error(`No virtual header cell containing "${text}"`)
+  return header
 }
 
 describe('VirtualGridRenderer accessibility contract', () => {
@@ -191,6 +205,40 @@ describe('VirtualGridRenderer accessibility contract', () => {
 
       expect(controller.state.selection.selectedRows).toHaveLength(1)
       expect(controller.state.selection.selectedRows[0]?.id).toBe('row-2')
+    } finally {
+      wrapper.unmount()
+      controller.destroy()
+    }
+  })
+
+  it('supports opt-in multi-column sorting while keeping aria-sort on the primary column', async () => {
+    const sortableColumns: ProTableColumn<Row>[] = columns.map(col =>
+      col.id === 'name' || col.id === 'status' ? { ...col, sortable: true } : col
+    )
+    const { wrapper, controller } = mountGrid({
+      columns: sortableColumns,
+      sortMode: 'multiple',
+    })
+
+    try {
+      await headerByText(wrapper, 'Name').find('[data-pro-table-sort="true"]').trigger('click')
+      await headerByText(wrapper, 'Status').find('[data-pro-table-sort="true"]').trigger('click')
+
+      expect(controller.state.sort).toEqual({
+        field: 'name',
+        direction: 'asc',
+        multi: [
+          { field: 'name', direction: 'asc' },
+          { field: 'status', direction: 'asc' },
+        ],
+      })
+      expect(headerByText(wrapper, 'Name').attributes('aria-sort')).toBe('ascending')
+      expect(headerByText(wrapper, 'Status').attributes('aria-sort')).toBe('none')
+      expect(
+        headerByText(wrapper, 'Status')
+          .find('[data-pro-table-sort="true"]')
+          .attributes('aria-label')
+      ).toContain('priority 2')
     } finally {
       wrapper.unmount()
       controller.destroy()

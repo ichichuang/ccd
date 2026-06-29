@@ -18,6 +18,7 @@ export function formatRequestParams(params: ProTableLoadParams): Record<string, 
   }
   if (sort.field) out.sortBy = sort.field
   if (sort.direction) out.order = sort.direction
+  if (sort.multi && sort.multi.length > 1) out.multiSort = JSON.stringify(sort.multi)
   const q = filter.global?.trim()
   if (q) out.search = q
   return out

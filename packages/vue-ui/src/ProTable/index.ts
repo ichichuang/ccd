@@ -23,6 +23,9 @@ export type {
 export type {
   TableState,
   SortState,
+  SortMeta,
+  SortDirection,
+  ProTableSortMode,
   FilterState,
   GlobalSearchMode,
   PaginationState,

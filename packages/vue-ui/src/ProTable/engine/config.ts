@@ -20,6 +20,7 @@ export const PRO_TABLE_PROPS_DEFAULTS = {
   pagination: true,
   total: undefined,
   serverMode: false,
+  sortMode: 'single',
   globalFilter: true,
   globalSearchMode: 'substring',
   heightMode: 'fill',

@@ -16,6 +16,10 @@ const namedColumns: ProTableColumn<Row>[] = [
   { id: 'id', title: 'ID', field: 'id' },
   { id: 'name', title: 'Name', field: 'name' },
 ]
+const sortableColumns: ProTableColumn<Row>[] = [
+  { id: 'owner', title: 'Owner', field: 'owner', sortable: true },
+  { id: 'records', title: 'Records', field: 'records', sortable: true },
+]
 
 describe('TableController request cancellation', () => {
   it('aborts stale requests and ignores stale results when reloading', async () => {
@@ -119,9 +123,119 @@ describe('TableController dynamic request configuration', () => {
     expect(Object.keys(calls[0].filter)).toEqual(['global', 'columns'])
     ctrl.destroy()
   })
+
+  it('keeps default single-sort request payload compatible', async () => {
+    const calls: ProTableLoadParams[] = []
+    const ctrl = new TableController<Row>({
+      columns: namedColumns,
+      data: [],
+      serverMode: true,
+      requestConfig: { immediate: false },
+      request: async params => {
+        calls.push(params)
+        return { data: [], total: 0 }
+      },
+    })
+
+    ctrl.updateSort('name')
+    await nextTick()
+
+    expect(calls).toHaveLength(1)
+    expect(calls[0].sort).toEqual({ field: 'name', direction: 'asc' })
+    expect(Object.keys(calls[0].sort)).toEqual(['field', 'direction'])
+    ctrl.destroy()
+  })
+
+  it('exposes ordered multi-sort metadata only when multiple mode is opted in', async () => {
+    const calls: ProTableLoadParams[] = []
+    const ctrl = new TableController<Row>({
+      columns: sortableColumns,
+      data: [],
+      serverMode: true,
+      sortMode: 'multiple',
+      requestConfig: { immediate: false },
+      request: async params => {
+        calls.push(params)
+        return { data: [], total: 0 }
+      },
+    })
+
+    ctrl.updateSort('owner')
+    ctrl.updateSort('records')
+    await nextTick()
+
+    expect(calls.at(-1)?.sort).toEqual({
+      field: 'owner',
+      direction: 'asc',
+      multi: [
+        { field: 'owner', direction: 'asc' },
+        { field: 'records', direction: 'asc' },
+      ],
+    })
+    ctrl.destroy()
+  })
 })
 
 describe('TableController shared renderer contract', () => {
+  it('preserves default single-column sorting behavior', () => {
+    const ctrl = new TableController<Row>({
+      columns: sortableColumns,
+      data: [
+        { id: 'a', owner: 'core', records: 2 },
+        { id: 'b', owner: 'app', records: 3 },
+        { id: 'c', owner: 'app', records: 1 },
+      ],
+      paginationEnabled: false,
+    })
+
+    ctrl.updateSort('owner')
+    expect(ctrl.processedRows.value.map(row => row.id)).toEqual(['b', 'c', 'a'])
+    expect(ctrl.state.sort).toEqual({ field: 'owner', direction: 'asc' })
+
+    ctrl.updateSort('records')
+    expect(ctrl.state.sort).toEqual({ field: 'records', direction: 'asc' })
+    expect(ctrl.processedRows.value.map(row => row.id)).toEqual(['c', 'a', 'b'])
+    ctrl.destroy()
+  })
+
+  it('sorts by ordered multi-sort priority and removes a column on the third click', () => {
+    const ctrl = new TableController<Row>({
+      columns: sortableColumns,
+      data: [
+        { id: 'a', owner: 'core', records: 2 },
+        { id: 'b', owner: 'app', records: 3 },
+        { id: 'c', owner: 'app', records: 1 },
+        { id: 'd', owner: 'core', records: 1 },
+      ],
+      sortMode: 'multiple',
+      paginationEnabled: false,
+    })
+
+    ctrl.updateSort('owner')
+    ctrl.updateSort('records')
+
+    expect(ctrl.state.sort).toEqual({
+      field: 'owner',
+      direction: 'asc',
+      multi: [
+        { field: 'owner', direction: 'asc' },
+        { field: 'records', direction: 'asc' },
+      ],
+    })
+    expect(ctrl.processedRows.value.map(row => row.id)).toEqual(['c', 'b', 'd', 'a'])
+
+    ctrl.updateSort('owner')
+    ctrl.updateSort('owner')
+
+    expect(ctrl.state.sort).toEqual({
+      field: 'records',
+      direction: 'asc',
+      multi: [{ field: 'records', direction: 'asc' }],
+    })
+    expect(ctrl.processedRows.value.map(row => row.id)).toEqual(['c', 'd', 'a', 'b'])
+    ctrl.destroy()
+  })
+
   it('uses the same selection state for DataTable and virtual-grid paths', () => {
     const ctrl = new TableController<Row>({
       columns,

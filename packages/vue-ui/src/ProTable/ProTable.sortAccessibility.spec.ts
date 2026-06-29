@@ -3,8 +3,10 @@ import { mount } from '@vue/test-utils'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 import type { ComponentCustomProperties } from 'vue'
 import { nextTick } from 'vue'
+import DataTable from 'primevue/datatable'
 import ProTable from './ProTable.vue'
 import type { ProTableColumn } from './engine/types/column'
+import type { ProTableSortMode } from './engine/types/tableState'
 
 // ProTable only consumes `t` for static labels; a passthrough keeps the mount
 // free of an i18n instance while exercising the real DataTable render path.
@@ -35,7 +37,7 @@ const primeVueGlobalProperties = {
  * the subject and keep the render deterministic. Columns/data use the default
  * `Record<string, unknown>` generic so the mount infers ProTable's `T` cleanly.
  */
-function mountTable(): ReturnType<typeof mount> {
+function mountTable(options: { sortMode?: ProTableSortMode } = {}): ReturnType<typeof mount> {
   const columns: ProTableColumn[] = [
     { id: 'name', title: 'Name', field: 'name', sortable: true },
     { id: 'age', title: 'Age', field: 'age', sortable: true },
@@ -43,6 +45,7 @@ function mountTable(): ReturnType<typeof mount> {
   ]
   const data: Array<Record<string, unknown>> = [
     { name: 'Bravo', age: 2, status: 'on' },
+    { name: 'Alpha', age: 2, status: 'on' },
     { name: 'Alpha', age: 1, status: 'off' },
   ]
   return mount(ProTable, {
@@ -53,6 +56,7 @@ function mountTable(): ReturnType<typeof mount> {
       heightMode: 'auto',
       pagination: false,
       showToolbar: false,
+      sortMode: options.sortMode,
     },
     global: {
       config: { globalProperties: primeVueGlobalProperties },
@@ -72,6 +76,10 @@ function headerByText(wrapper: ReturnType<typeof mount>, text: string) {
   const th = wrapper.findAll('thead th').find(candidate => candidate.text().includes(text))
   if (!th) throw new Error(`No header cell containing "${text}"`)
   return th
+}
+
+function bodyRowTexts(wrapper: ReturnType<typeof mount>): string[] {
+  return wrapper.findAll('tbody tr').map(row => row.text())
 }
 
 describe('ProTable DataTable header sorting accessibility (PT-SORT-A11Y)', () => {
@@ -175,6 +183,99 @@ describe('ProTable DataTable header sorting accessibility (PT-SORT-A11Y)', () =>
       expect(headerByText(wrapper, 'Age').attributes('aria-sort')).toBe('ascending')
       // Single-column truth: the previously-sorted column resets to none.
       expect(headerByText(wrapper, 'Name').attributes('aria-sort')).toBe('none')
+    } finally {
+      wrapper.unmount()
+    }
+  })
+
+  it('supports opt-in multi-column sorting and exposes secondary priority labels', async () => {
+    const wrapper = mountTable({ sortMode: 'multiple' })
+    try {
+      await nextTick()
+      await nextTick()
+
+      await headerByText(wrapper, 'Name').find('[data-pro-table-sort="true"]').trigger('click')
+      await headerByText(wrapper, 'Age').find('[data-pro-table-sort="true"]').trigger('click')
+      await nextTick()
+
+      expect(headerByText(wrapper, 'Name').attributes('aria-sort')).toBe('ascending')
+      expect(headerByText(wrapper, 'Age').attributes('aria-sort')).toBe('none')
+      expect(
+        headerByText(wrapper, 'Age').find('[data-pro-table-sort="true"]').attributes('aria-label')
+      ).toContain('priority 2')
+      expect(bodyRowTexts(wrapper)[0]).toContain('Alpha1off')
+      expect(bodyRowTexts(wrapper)[1]).toContain('Alpha2on')
+
+      const events = wrapper.emitted('sort-change')
+      expect(events?.at(-1)?.[0]).toMatchObject({
+        field: 'name',
+        direction: 'asc',
+        multi: [
+          { field: 'name', direction: 'asc' },
+          { field: 'age', direction: 'asc' },
+        ],
+      })
+    } finally {
+      wrapper.unmount()
+    }
+  })
+
+  it('removes a secondary multi-sort column on the third header activation', async () => {
+    const wrapper = mountTable({ sortMode: 'multiple' })
+    try {
+      await nextTick()
+      await nextTick()
+      const ageControl = () => headerByText(wrapper, 'Age').find('[data-pro-table-sort="true"]')
+
+      await headerByText(wrapper, 'Name').find('[data-pro-table-sort="true"]').trigger('click')
+      await ageControl().trigger('click')
+      await ageControl().trigger('click')
+      await ageControl().trigger('click')
+      await nextTick()
+
+      expect(ageControl().attributes('aria-label')).toBe('Sort by Age')
+      expect(wrapper.emitted('sort-change')?.at(-1)?.[0]).toMatchObject({
+        field: 'name',
+        direction: 'asc',
+        multi: [{ field: 'name', direction: 'asc' }],
+      })
+    } finally {
+      wrapper.unmount()
+    }
+  })
+
+  it('maps PrimeVue DataTable multiple sort events into ProTable sort state', async () => {
+    const wrapper = mountTable({ sortMode: 'multiple' })
+    try {
+      await nextTick()
+      await nextTick()
+
+      wrapper.findComponent(DataTable).vm.$emit('sort', {
+        originalEvent: new Event('click'),
+        first: 0,
+        rows: 10,
+        sortField: 'name',
+        sortOrder: 1,
+        multiSortMeta: [
+          { field: 'name', order: 1 },
+          { field: 'age', order: -1 },
+        ],
+        filters: {},
+        filterMatchModes: undefined,
+      })
+      await nextTick()
+
+      expect(wrapper.emitted('sort-change')?.at(-1)?.[0]).toMatchObject({
+        field: 'name',
+        direction: 'asc',
+        multi: [
+          { field: 'name', direction: 'asc' },
+          { field: 'age', direction: 'desc' },
+        ],
+      })
+      expect(
+        headerByText(wrapper, 'Age').find('[data-pro-table-sort="true"]').attributes('aria-label')
+      ).toContain('descending, priority 2')
     } finally {
       wrapper.unmount()
     }

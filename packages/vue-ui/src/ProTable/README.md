@@ -45,27 +45,27 @@ This table reflects what the component **ships today** and is the source of trut
 for current support. Sections further down describe the broader target
 architecture; where a capability is not yet implemented it is called out inline.
 
-| Feature               | Status | Notes                                                                 |
-| --------------------- | ------ | --------------------------------------------------------------------- |
-| Row model (flat)      | ✓      | Single flat row list; no tree/hierarchy.                              |
-| Sorting               | ✓      | Single column, 3-state (asc → desc → unsorted); client + server.      |
-| Global search         | ✓      | Default substring; opt-in local fuzzy ranking via `globalSearchMode`. |
-| Per-column filtering  | ✓      | `text`, `select`, `number`, and date-only `date` filters.             |
-| Pagination            | ✓      | Client + server; mutually exclusive with virtual/infinite scroll.     |
-| Infinite scroll       | ✓      | Request-mode append; replaces pagination when enabled.                |
-| Row selection         | ✓      | `single` and `checkbox` (multiple); optional `maxSelection`.          |
-| Column visibility     | ✓      | Toggle + reorder; persisted when `stateKey` is set.                   |
-| Column pinning        | ✓      | Left / right via `pinned` (configured per column).                    |
-| Virtual scroll        | ✓      | Row virtualization (TanStack) with measured row height.               |
-| CSV export            | ✓      | Current page or selected rows.                                        |
-| Region fullscreen     | ✓      | Scoped pseudo-fullscreen with Escape to exit.                         |
-| Server mode           | ✓      | `request` / `api` / `apiUrl` (+ `apiExecutor`) adapters.              |
-| Multi-column sorting  | ✗      | Not implemented (single-column only).                                 |
-| Column grouping       | ✗      | Not implemented.                                                      |
-| Tree table            | ✗      | Not implemented.                                                      |
-| Inline editing        | ✗      | Not implemented (use `render` + your own controls / CRUD modals).     |
-| Range selection       | ✗      | Not implemented.                                                      |
-| Column virtualization | ✗      | Only rows are virtualized.                                            |
+| Feature               | Status | Notes                                                                    |
+| --------------------- | ------ | ------------------------------------------------------------------------ |
+| Row model (flat)      | ✓      | Single flat row list; no tree/hierarchy.                                 |
+| Sorting               | ✓      | Default single column, 3-state (asc → desc → unsorted); client + server. |
+| Global search         | ✓      | Default substring; opt-in local fuzzy ranking via `globalSearchMode`.    |
+| Per-column filtering  | ✓      | `text`, `select`, `number`, and date-only `date` filters.                |
+| Pagination            | ✓      | Client + server; mutually exclusive with virtual/infinite scroll.        |
+| Infinite scroll       | ✓      | Request-mode append; replaces pagination when enabled.                   |
+| Row selection         | ✓      | `single` and `checkbox` (multiple); optional `maxSelection`.             |
+| Column visibility     | ✓      | Toggle + reorder; persisted when `stateKey` is set.                      |
+| Column pinning        | ✓      | Left / right via `pinned` (configured per column).                       |
+| Virtual scroll        | ✓      | Row virtualization (TanStack) with measured row height.                  |
+| CSV export            | ✓      | Current page or selected rows.                                           |
+| Region fullscreen     | ✓      | Scoped pseudo-fullscreen with Escape to exit.                            |
+| Server mode           | ✓      | `request` / `api` / `apiUrl` (+ `apiExecutor`) adapters.                 |
+| Multi-column sorting  | ✓      | Opt-in via `sortMode="multiple"`; DataTable + VirtualGridRenderer paths. |
+| Column grouping       | ✗      | Not implemented.                                                         |
+| Tree table            | ✗      | Not implemented.                                                         |
+| Inline editing        | ✗      | Not implemented (use `render` + your own controls / CRUD modals).        |
+| Range selection       | ✗      | Not implemented.                                                         |
+| Column virtualization | ✗      | Only rows are virtualized.                                               |
 
 ## 1.3 Architecture Layers
 
@@ -119,10 +119,44 @@ Provides column sorting.
 
 Supported sorting modes:
 
-- single column, 3-state cycle (ascending → descending → unsorted)
+- default single column, 3-state cycle (ascending → descending → unsorted)
+- opt-in multi-column sorting via `sortMode="multiple"`
 - server sorting (request/api modes)
 
-> Multi-column sorting and per-column custom comparators are **not implemented**.
+Single-column sorting remains the default and preserves the existing state shape:
+
+```ts
+sort: { field: 'name', direction: 'asc' }
+```
+
+Multi-column sorting is opt-in:
+
+```vue
+<ProTable :columns="columns" :data="rows" sort-mode="multiple" />
+```
+
+In multiple mode, each sortable column cycles independently through
+ascending → descending → unsorted. Sort priority follows activation order. The
+primary sort is mirrored to `sort.field` and `sort.direction` for compatibility,
+and the ordered criteria are exposed through `sort.multi`:
+
+```ts
+sort: {
+  field: 'owner',
+  direction: 'asc',
+  multi: [
+    { field: 'owner', direction: 'asc' },
+    { field: 'records', direction: 'desc' },
+  ],
+}
+```
+
+DataTable and VirtualGridRenderer both use the same controller state. For
+accessibility, `aria-sort` is applied to the primary sorted column only; secondary
+sorted columns expose their direction and priority through the sortable header
+control label.
+
+> Per-column custom comparators are **not implemented**.
 > `sortable: 'custom'` is reserved in the type but currently behaves like `true`.
 
 Sorting pipeline:
@@ -156,6 +190,15 @@ Per-column filter types (UI + engine):
 `request`, `api`, and `apiUrl` modes keep the existing `FilterState` payload:
 `filter.global` remains the search string and `filter.columns` remains the
 per-column value map.
+
+Sort payload compatibility is preserved:
+
+- default single-sort mode sends the existing `{ field, direction }` sort object;
+- multi-sort mode keeps `sort.field` and `sort.direction` as the primary sort;
+- multi-sort mode adds `sort.multi` for `request` / `load` consumers;
+- `api` / `apiUrl` formatted query params keep `sortBy` and `order` as the
+  primary sort and add `multiSort` as a JSON string only when multiple active
+  criteria exist.
 
 The built-in date filter UI emits `YYYY-MM-DD` strings. The local filtering
 engine also normalizes `Date`, ISO string, and timestamp values for row data and
@@ -332,6 +375,7 @@ export interface ProTableProps<T extends Record<string, unknown> = Record<string
   pagination?: boolean | PaginationConfig
   total?: number
   serverMode?: boolean
+  sortMode?: 'single' | 'multiple'
   globalFilter?: boolean
   globalSearchMode?: 'substring' | 'fuzzy'
   virtualScroll?: boolean

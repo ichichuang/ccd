@@ -1,4 +1,4 @@
-import type { FilterState, GlobalSearchMode, SortState } from './tableState'
+import type { FilterState, GlobalSearchMode, ProTableSortMode, SortState } from './tableState'
 import type { ProTableColumn } from './column'
 
 export interface PaginationConfig {
@@ -129,6 +129,17 @@ export interface ProTableProps<T extends Record<string, unknown> = Record<string
   pagination?: boolean | PaginationConfig
   total?: number
   serverMode?: boolean
+  /**
+   * Column sorting mode.
+   * @default 'single'
+   *
+   * Single mode preserves the original 3-state single-column cycle:
+   * ascending → descending → unsorted.
+   *
+   * Multiple mode keeps `sort.field` / `sort.direction` as the primary sort
+   * for compatibility and exposes ordered criteria through `sort.multi`.
+   */
+  sortMode?: ProTableSortMode
   globalFilter?: boolean
   /**
    * Local global-search matching strategy.
