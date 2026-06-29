@@ -10,7 +10,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     AutoComplete: typeof import('primevue/autocomplete')['default']
     Button: typeof import('primevue/button')['default']
-    Checkbox: typeof import('primevue/checkbox')['default']
     DatePicker: typeof import('primevue/datepicker')['default']
     EmptyState: typeof import('@ccd/vue-ui')['EmptyState']
     Icons: typeof import('@ccd/vue-ui')['Icons']
