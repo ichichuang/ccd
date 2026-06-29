@@ -45,15 +45,59 @@ function validateNetworkRequest(request: NetworkRequest): void {
   validateHeaders(request.headers)
 }
 
+/**
+ * Tauri IPC commands the desktop backend actually implements.
+ *
+ * The desktop backend is an intentional deny-by-default scaffold: `src-tauri/src/main.rs`
+ * registers no `#[tauri::command]` handler and `src-tauri/capabilities/default.json` grants
+ * no permissions (deny-by-default policy documented in `src-tauri/security-scopes.json`).
+ * Invoking a command in this state would otherwise fail deep inside Tauri with an opaque
+ * "command not found" rejection. We gate every command here so an unimplemented capability
+ * fails fast with a typed, actionable error instead of a silent or cryptic IPC failure.
+ *
+ * This is the TypeScript mirror of `capabilities/default.json` `permissions: []`: add a
+ * command name to this set only once its Rust `#[tauri::command]` handler and a scoped Tauri
+ * capability both exist (see `security-scopes.json` `preEnableRequirements`).
+ */
+const IMPLEMENTED_DESKTOP_COMMANDS: ReadonlySet<DesktopIpcCommandName> =
+  new Set<DesktopIpcCommandName>()
+
+/**
+ * Thrown when the desktop adapter is asked to invoke an IPC command the Tauri backend does
+ * not implement yet. Carries the offending command name so callers can branch on capability.
+ */
+export class DesktopIpcUnsupportedError extends Error {
+  readonly command: DesktopIpcCommandName
+
+  constructor(command: DesktopIpcCommandName) {
+    super(
+      `[DesktopIPC] ${command} is not implemented by the desktop backend. ` +
+        `The Tauri runtime registers no command handler and the capability set is empty ` +
+        `(deny-by-default scaffold; see src-tauri/src/main.rs and src-tauri/security-scopes.json). ` +
+        `Implement the Rust #[tauri::command] handler and grant a scoped capability before invoking it.`
+    )
+    this.name = 'DesktopIpcUnsupportedError'
+    this.command = command
+  }
+}
+
+function assertDesktopCommandImplemented(command: DesktopIpcCommandName): void {
+  if (!IMPLEMENTED_DESKTOP_COMMANDS.has(command)) {
+    throw new DesktopIpcUnsupportedError(command)
+  }
+}
+
 function invokeDesktopCommand<TCommand extends DesktopIpcCommandName>(
   command: TCommand,
   args: DesktopIpcCommandArgs<TCommand>
 ): Promise<DesktopIpcCommandResult<TCommand>> {
+  assertDesktopCommandImplemented(command)
   return invoke<DesktopIpcCommandResult<TCommand>>(command, args)
 }
 
 function invokeDesktopHttpRequest<T>(request: NetworkRequest): Promise<NetworkResponse<T>> {
   validateNetworkRequest(request)
+  assertDesktopCommandImplemented('http_request')
   return invoke<NetworkResponse<T>>('http_request', {
     request,
   } satisfies DesktopIpcCommandArgs<'http_request'>)

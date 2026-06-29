@@ -241,17 +241,19 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
     <!-- Left: Mobile Menu + Logo -->
     <div class="h-full center gap-sm">
       <!-- State 1 only: 抽屉触发按钮（由 LayoutAdmin 传入 showDrawerTrigger） -->
-      <div
+      <button
         v-if="showDrawerTrigger"
+        type="button"
         v-bind="{ 'data-layout-drawer-trigger': 'true' }"
-        class="interactive-card border-none outline-none p-xs sm:p-sm center"
+        class="interactive-card border-none outline-none p-xs sm:p-sm center text-inherit"
+        aria-label="Open navigation menu"
         @click="emit('toggleDrawer', $event)"
       >
         <Icons
           name="i-lucide-menu"
           size="2xl"
         />
-      </div>
+      </button>
       <a
         v-if="showLogo"
         href="/"
@@ -320,19 +322,25 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
 
     <!-- Right: Actions (fullscreen max-lg:hidden, theme max-md:hidden for responsive graceful degradation) -->
     <div class="h-full center gap-sm">
-      <div
+      <button
         v-if="showSidebarToggle"
+        type="button"
         class="cursor-pointer material-elevated border-none outline-none duration-sm center ring-1 ring-border p-sm"
+        aria-label="Toggle sidebar"
+        :aria-pressed="sidebarCollapse ? 'true' : 'false'"
         @click="emit('toggleCollapse', $event)"
       >
         <Icons
           :name="sidebarCollapse ? 'i-lucide-panel-left-open' : 'i-lucide-panel-left-close'"
           size="lg"
         />
-      </div>
-      <div
+      </button>
+      <button
         v-if="showFullscreenAction"
+        type="button"
         class="cursor-pointer material-elevated border-none outline-none duration-sm center ring-1 ring-border p-sm"
+        aria-label="Toggle fullscreen"
+        :aria-pressed="isFullscreen ? 'true' : 'false'"
         @click="toggleFullscreen()"
       >
         <Icons
@@ -343,27 +351,33 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
           "
           size="lg"
         />
-      </div>
-      <div
+      </button>
+      <button
         v-if="showHeaderThemeAction"
+        type="button"
         class="cursor-pointer material-elevated border-none outline-none duration-sm center ring-1 ring-border p-sm"
+        aria-label="Toggle theme"
+        :aria-pressed="isDark ? 'true' : 'false'"
         @click="emit('toggleTheme', $event)"
       >
         <Icons
           :name="isDark ? 'i-solar-moon-bold-duotone' : 'i-solar-sun-2-bold-duotone'"
           size="lg"
         />
-      </div>
-      <div
+      </button>
+      <button
         v-if="showCompactThemeAction && showUserEntry"
+        type="button"
         class="cursor-pointer material-elevated border-none outline-none duration-sm center ring-1 ring-border p-sm"
+        aria-label="Toggle theme"
+        :aria-pressed="isDark ? 'true' : 'false'"
         @click="themeSwitch.toggleThemeWithAnimation($event)"
       >
         <Icons
           :name="isDark ? 'i-solar-moon-bold-duotone' : 'i-solar-sun-2-bold-duotone'"
           size="lg"
         />
-      </div>
+      </button>
       <User v-if="showUserEntry" />
     </div>
   </header>

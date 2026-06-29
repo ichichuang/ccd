@@ -63,6 +63,12 @@ const checks = [
     failure:
       'Documentation references nonexistent package.json scripts. Fix the source documentation, generator source, or policy source — do NOT manually edit generated files.',
   },
+  {
+    name: 'web-demo UI inventory freshness',
+    command: ['node', 'scripts/wiki/check-ui-inventory.mjs'],
+    failure:
+      'wiki/generated/web-demo-ui-inventory.md drifted from the live route surface. Refresh it from the route modules + showcaseCatalog.ts + constants/router.ts and re-run pnpm wiki:ui-inventory:check.',
+  },
 ]
 
 const generatedArtifactPaths = ['wiki/generated', '.ai/generated', '.ai/governance/api-snapshots']

@@ -1,10 +1,14 @@
 <script setup lang="ts" generic="T extends Record<string, unknown>">
 import type { SizeMode } from '@ccd/design-tokens'
 import { objectGet } from '@ccd/shared-utils'
+import { useEventListener } from '@vueuse/core'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
+import InputText from 'primevue/inputtext'
+import Popover from 'primevue/popover'
 import ProgressSpinner from 'primevue/progressspinner'
+import Select from 'primevue/select'
 import Tag from 'primevue/tag'
 import {
   computed,
@@ -249,7 +253,9 @@ const isLoading = computed<boolean>(() =>
 
 // ── Infinite scroll ──────────────────────────────────────────────────────────
 
+const proTableRootRef = useTemplateRef<HTMLDivElement>('proTableRootRef')
 const tableContainerRef = useTemplateRef<HTMLDivElement>('tableContainerRef')
+const proTableRootView = computed(() => proTableRootRef.value?.ownerDocument.defaultView ?? null)
 
 const infiniteScrollCtrl = useProTableInfiniteScroll({
   get enabled() {
@@ -424,8 +430,22 @@ const pageSizeOptions = computed<number[]>(() => {
   return Array.from(merged).sort((a: number, b: number) => a - b)
 })
 
-// Pseudo-fullscreen is intentionally scoped to the table region so app chrome remains usable.
+// Expanded mode is measured against the nearest app-content scroll workspace so app chrome stays usable.
 const isFullscreen = ref(false)
+/** Mirrors whether a toolbar popover (density / column settings) is open, so a
+ *  popover-dismissing Escape does not also collapse fullscreen (see PT-ESC-02). */
+const toolbarPopoverOpen = ref(false)
+/** Mirrors whether the per-column filter popover (PT-UI-03) is open; shares the
+ *  same Escape-defer + popover-open contract as the toolbar popovers. */
+const columnFilterPopoverOpen = ref(false)
+const fullscreenWorkspaceStyle = ref<Record<string, string>>({})
+const fullscreenRootStyle = computed<Record<string, string>>(() =>
+  isFullscreen.value ? fullscreenWorkspaceStyle.value : {}
+)
+/** Dim overlay fills the same workspace to subordinate surrounding content in fullscreen mode. */
+const fullscreenOverlayStyle = computed<Record<string, string>>(() =>
+  isFullscreen.value ? fullscreenWorkspaceStyle.value : {}
+)
 const usesFillLayout = computed<boolean>(() => isFullscreen.value || props.heightMode === 'fill')
 
 const scrollHeightValue = computed<string | undefined>(() => {
@@ -433,6 +453,118 @@ const scrollHeightValue = computed<string | undefined>(() => {
   if (props.heightMode === 'fixed') return props.height ?? UI_DEFAULTS.fixedHeightFallback
   return undefined
 })
+
+function hasNonNoneStyle(value: string): boolean {
+  return value !== '' && value !== 'none'
+}
+
+function isScrollableWorkspace(node: HTMLElement): boolean {
+  const view = node.ownerDocument.defaultView
+  if (!view) return false
+  const style = view.getComputedStyle(node)
+  const scrollableY = style.overflowY === 'auto' || style.overflowY === 'scroll'
+  return scrollableY && node.clientHeight > 0 && node.scrollHeight > node.clientHeight + 1
+}
+
+function findFullscreenWorkspaceElement(root: HTMLElement): HTMLElement {
+  const rootDocument = root.ownerDocument
+  let node = root.parentElement
+  while (node && node !== rootDocument.body) {
+    if (isScrollableWorkspace(node)) return node
+    node = node.parentElement
+  }
+  return rootDocument.documentElement
+}
+
+function findFixedContainingBlock(root: HTMLElement): HTMLElement | null {
+  const rootDocument = root.ownerDocument
+  const view = rootDocument.defaultView
+  if (!view) return null
+
+  let node = root.parentElement
+  while (node && node !== rootDocument.documentElement) {
+    const style = view.getComputedStyle(node)
+    const contain = style.contain
+    const createsFixedBlock =
+      hasNonNoneStyle(style.transform) ||
+      hasNonNoneStyle(style.perspective) ||
+      hasNonNoneStyle(style.filter) ||
+      hasNonNoneStyle(style.getPropertyValue('backdrop-filter')) ||
+      style.willChange.includes('transform') ||
+      contain.includes('paint') ||
+      contain.includes('layout') ||
+      contain.includes('strict') ||
+      contain.includes('content')
+
+    if (createsFixedBlock) return node
+    node = node.parentElement
+  }
+  return null
+}
+
+function toRoundedPx(value: number): string {
+  return `${Math.round(value)}px`
+}
+
+function syncFullscreenWorkspace(): void {
+  const root = proTableRootRef.value
+  const rootView = root?.ownerDocument.defaultView
+  if (!root || !rootView) return
+
+  const workspace = findFullscreenWorkspaceElement(root)
+  const workspaceRect = workspace.getBoundingClientRect()
+  const fixedBlockRect = findFixedContainingBlock(root)?.getBoundingClientRect()
+
+  const viewportLeft = Math.max(workspaceRect.left, 0)
+  const viewportTop = Math.max(workspaceRect.top, 0)
+  const viewportRight = Math.min(workspaceRect.right, rootView.innerWidth)
+  const viewportBottom = Math.min(workspaceRect.bottom, rootView.innerHeight)
+
+  const width = Math.max(0, viewportRight - viewportLeft)
+  const height = Math.max(0, viewportBottom - viewportTop)
+
+  fullscreenWorkspaceStyle.value = {
+    left: toRoundedPx(viewportLeft - (fixedBlockRect?.left ?? 0)),
+    top: toRoundedPx(viewportTop - (fixedBlockRect?.top ?? 0)),
+    width: toRoundedPx(width),
+    height: toRoundedPx(height),
+    maxHeight: toRoundedPx(height),
+  }
+}
+
+function syncFullscreenWorkspaceIfNeeded(): void {
+  if (isFullscreen.value) syncFullscreenWorkspace()
+}
+
+useEventListener(proTableRootView, 'resize', syncFullscreenWorkspaceIfNeeded)
+useEventListener(proTableRootView, 'orientationchange', syncFullscreenWorkspaceIfNeeded)
+
+/**
+ * Escape exits region fullscreen, matching the native Fullscreen affordance.
+ * The listener binds to the table's own window only while fullscreen is active
+ * (the target computes to `null` otherwise), so there is no permanent global
+ * keydown listener — VueUse attaches it on enter and removes it on exit and on
+ * unmount. A keypress already handled by a nested overlay (`defaultPrevented`)
+ * is left untouched so this does not swallow other surfaces' Escape.
+ */
+const fullscreenKeyboardTarget = computed<Window | null>(() =>
+  isFullscreen.value ? proTableRootView.value : null
+)
+function handleFullscreenEscape(event: KeyboardEvent): void {
+  if (event.key !== 'Escape' || event.defaultPrevented) return
+  // An open toolbar popover owns Escape first. PrimeVue's Popover closes on
+  // Escape but does not preventDefault, so a single Escape would otherwise both
+  // dismiss the popover and collapse fullscreen. We listen in the CAPTURE phase
+  // so this runs before PrimeVue's bubble-phase handler flips the popover state:
+  // while a popover is open we defer, letting the next Escape leave fullscreen.
+  if (toolbarPopoverOpen.value) return
+  // A per-column filter popover (PT-UI-03) likewise owns Escape first: PrimeVue
+  // closes it on Escape without preventDefault, so we defer here while it is open
+  // and let the next Escape leave fullscreen — same contract as the toolbar popover.
+  if (columnFilterPopoverOpen.value) return
+  exitFullscreen()
+}
+useEventListener(fullscreenKeyboardTarget, 'keydown', handleFullscreenEscape, { capture: true })
 
 const toolbarColumnSettingsItems = computed(() => {
   const ids = resolveColumnIdOrder(props.columns, ctrl.state.columnSettings.orderedKeys)
@@ -451,8 +583,23 @@ const toolbarColumnSettingsItems = computed(() => {
   })
 })
 
+function enterFullscreen(): void {
+  syncFullscreenWorkspace()
+  isFullscreen.value = true
+  nextTick(syncFullscreenWorkspace)
+}
+
+function exitFullscreen(): void {
+  isFullscreen.value = false
+  fullscreenWorkspaceStyle.value = {}
+}
+
 function toggleFullscreen(): void {
-  isFullscreen.value = !isFullscreen.value
+  if (isFullscreen.value) {
+    exitFullscreen()
+    return
+  }
+  enterFullscreen()
 }
 
 // ── Export ─────────────────────────────────────────────────────────────────────
@@ -498,9 +645,123 @@ function sortIcon(col: ProTableColumn<T>): string {
   return 'i-lucide-chevron-down'
 }
 
+/**
+ * aria-sort for the DataTable path, mirroring the VirtualGridRenderer contract:
+ * `undefined` for non-sortable columns (never announced as sortable), otherwise
+ * `none` | `ascending` | `descending` reflecting the single-column sort state.
+ */
+function getAriaSort(col: ProTableColumn<T>): 'ascending' | 'descending' | 'none' | undefined {
+  if (!col.sortable) return undefined
+  const field = String(col.field ?? col.id)
+  if (ctrl.state.sort.field !== field) return 'none'
+  if (ctrl.state.sort.direction === 'asc') return 'ascending'
+  if (ctrl.state.sort.direction === 'desc') return 'descending'
+  return 'none'
+}
+
+/** True when this column is the active sort target — drives token-based icon emphasis. */
+function isColumnSorted(col: ProTableColumn<T>): boolean {
+  if (!col.sortable) return false
+  return ctrl.state.sort.field === String(col.field ?? col.id) && ctrl.state.sort.direction !== null
+}
+
+/**
+ * Passthrough that places `aria-sort` on the real PrimeVue header `<th>`
+ * (which already carries role="columnheader"). The `headerCell` section is
+ * merged after PrimeVue's own (null) aria-sort, so this wins. Non-sortable
+ * columns contribute no passthrough, leaving their header unannounced.
+ */
+function columnHeaderPt(col: ProTableColumn<T>): Record<string, unknown> {
+  const ariaSort = getAriaSort(col)
+  return ariaSort ? { headerCell: { 'aria-sort': ariaSort } } : {}
+}
+
 function handleGlobalFilterChange(val: string): void {
   ctrl.setGlobalFilter(val)
   emit('filter-change', { ...ctrl.state.filter })
+}
+
+// ── Per-column filtering UI (PT-UI-03) ───────────────────────────────────────
+// The engine already implements per-column filtering (TableController.setColumnFilter
+// + engines/filtering.applyFilter, keyed by column id, local + request-mode aware).
+// This is the missing UI: a header filter trigger + a single shared popover, shown
+// only for columns that explicitly opt in via `filterable: true`.
+const filterPopover = ref<{ toggle: (e: Event) => void; hide: () => void } | null>(null)
+const activeFilterColumn = ref<ProTableColumn<T> | null>(null)
+
+/** A column exposes per-column filter UI only when it opts in and has a bound field. */
+function isColumnFilterable(col: ProTableColumn<T>): boolean {
+  return col.filterable === true && !!col.field
+}
+
+/** True when this column currently has an active (non-empty) per-column filter value. */
+function isColumnFiltered(col: ProTableColumn<T>): boolean {
+  const value = ctrl.state.filter.columns[col.id]
+  return value !== null && value !== undefined && value !== ''
+}
+
+function isFilterPopoverOpenFor(col: ProTableColumn<T>): boolean {
+  return columnFilterPopoverOpen.value && activeFilterColumn.value?.id === col.id
+}
+
+/**
+ * Resolve a filter i18n label, degrading to a sensible default when the host app
+ * has not registered the key. ProTable's `proTable.*` strings live in the app's
+ * locale bundle; this keeps the per-column filter UI usable (and accessible)
+ * even before those entries are added, without inventing app-side files here.
+ */
+function resolveFilterLabel(
+  key: string,
+  fallback: string,
+  named?: Record<string, unknown>
+): string {
+  const resolved = named ? t(key, named) : t(key)
+  return resolved === key || resolved === '' ? fallback : resolved
+}
+
+function columnTitleText(col: ProTableColumn<T>): string {
+  return typeof col.title === 'string' ? col.title : col.id
+}
+
+function filterAriaLabel(col: ProTableColumn<T>): string {
+  const column = columnTitleText(col)
+  return resolveFilterLabel('proTable.columnFilterAria', `Filter ${column}`, { column })
+}
+
+const filterPlaceholderLabel = computed<string>(() =>
+  resolveFilterLabel('proTable.columnFilterPlaceholder', 'Filter…')
+)
+const filterClearLabel = computed<string>(() =>
+  resolveFilterLabel('proTable.columnFilterClear', 'Clear')
+)
+
+/** Current value of the active column's filter (null when none). */
+const activeFilterValue = computed<unknown>(() => {
+  const col = activeFilterColumn.value
+  return col ? (ctrl.state.filter.columns[col.id] ?? null) : null
+})
+
+function handleColumnFilterChange(colId: string, value: unknown): void {
+  // Normalize empty string to null so cleared filters drop out of engine state.
+  ctrl.setColumnFilter(colId, value === '' ? null : value)
+  emit('filter-change', { ...ctrl.state.filter })
+}
+
+function setActiveFilterValue(value: unknown): void {
+  const col = activeFilterColumn.value
+  if (!col) return
+  handleColumnFilterChange(col.id, value)
+}
+
+function openColumnFilter(col: ProTableColumn<T>, event: Event): void {
+  activeFilterColumn.value = col
+  filterPopover.value?.toggle(event)
+}
+
+function clearActiveColumnFilter(): void {
+  const col = activeFilterColumn.value
+  if (!col) return
+  handleColumnFilterChange(col.id, null)
 }
 
 function handlePageChange(page: number): void {
@@ -623,12 +884,27 @@ defineExpose({
 </script>
 
 <template>
+  <!-- Fullscreen dim overlay — fills the measured workspace to
+       visually separate the expanded table from surrounding showcase content. -->
+  <div
+    v-if="isFullscreen"
+    data-pro-table-fullscreen-overlay
+    class="pro-table-fullscreen-overlay fixed z-content pointer-events-none transition-opacity duration-md"
+    :style="fullscreenOverlayStyle"
+    aria-hidden="true"
+  />
+
   <div
     ref="proTableRootRef"
+    data-pro-table-root
     :data-pro-table-fullscreen="isFullscreen ? 'true' : undefined"
+    :data-pro-table-popover-open="
+      toolbarPopoverOpen || columnFilterPopoverOpen ? 'true' : undefined
+    "
+    :style="fullscreenRootStyle"
     :class="[
       isFullscreen
-        ? 'relative z-content h-[calc(100dvh-var(--spacing-2xl))] max-h-[calc(100dvh-var(--spacing-2xl))] w-full col-stretch gap-sm overflow-hidden shadow-md'
+        ? 'fixed z-overlay w-full col-stretch gap-sm overflow-hidden shadow-md'
         : heightMode === 'fill'
           ? 'layout-full flex flex-col gap-sm overflow-hidden'
           : 'w-full flex flex-col gap-sm',
@@ -639,6 +915,8 @@ defineExpose({
       <Transition name="pro-table-fetch-error">
         <div
           v-if="ctrl.requestMode && ctrl.state.fetch.error"
+          role="alert"
+          aria-live="assertive"
           class="shrink-0 row-between gap-sm px-lg py-sm bg-danger/10 mb-sm"
         >
           <div class="row-start gap-sm min-w-0">
@@ -681,6 +959,7 @@ defineExpose({
         @refresh="ctrl.requestMode ? ctrl.requestReload() : emit('refresh')"
         @toggle-fullscreen="toggleFullscreen"
         @export="handleExport"
+        @popover-toggle="toolbarPopoverOpen = $event"
       >
         <template #toolbar-extra>
           <slot name="toolbar-extra" />
@@ -750,22 +1029,58 @@ defineExpose({
                 }"
                 :frozen="col.pinned === 'left' || col.pinned === 'right'"
                 :align-frozen="col.pinned === 'right' ? 'right' : undefined"
+                :pt="columnHeaderPt(col)"
               >
                 <template #header>
+                  <!-- Sortable headers are keyboard-operable button controls inside the
+                       columnheader <th> (which carries aria-sort); non-sortable headers
+                       stay inert and unannounced. A filterable column adds a sibling
+                       filter trigger (PT-UI-03) so the two controls never nest. -->
                   <div
                     :class="[
                       'flex flex-row items-center gap-xs select-none w-full',
                       getHeaderAlignClass(col),
                     ]"
-                    @click="handleSortClick(col)"
                   >
-                    <ProTableCell :node="renderHeader(col)" />
-                    <Icons
-                      v-if="col.sortable"
-                      :name="sortIcon(col)"
-                      size="xs"
-                      class="text-muted-foreground"
-                    />
+                    <div
+                      :class="[
+                        'flex flex-row items-center gap-xs min-w-0',
+                        col.sortable ? 'cursor-pointer rounded-sm ring-focus-focus' : '',
+                      ]"
+                      :role="col.sortable ? 'button' : undefined"
+                      :tabindex="col.sortable ? 0 : undefined"
+                      :data-pro-table-sort="col.sortable ? 'true' : undefined"
+                      @click="handleSortClick(col)"
+                      @keydown.enter.prevent="handleSortClick(col)"
+                      @keydown.space.prevent="handleSortClick(col)"
+                    >
+                      <ProTableCell :node="renderHeader(col)" />
+                      <Icons
+                        v-if="col.sortable"
+                        :name="sortIcon(col)"
+                        size="xs"
+                        :class="isColumnSorted(col) ? 'text-primary' : 'text-muted-foreground'"
+                      />
+                    </div>
+                    <Button
+                      v-if="isColumnFilterable(col)"
+                      text
+                      rounded
+                      class="shrink-0 cursor-pointer border-none outline-none ring-focus-focus p-xs center rounded-sm hover:text-primary"
+                      :class="isColumnFiltered(col) ? 'text-primary' : 'text-muted-foreground'"
+                      :aria-label="filterAriaLabel(col)"
+                      aria-haspopup="dialog"
+                      :aria-expanded="isFilterPopoverOpenFor(col) ? 'true' : 'false'"
+                      :aria-pressed="isColumnFiltered(col) ? 'true' : 'false'"
+                      data-pro-table-filter-toggle
+                      :data-pro-table-filter-active="isColumnFiltered(col) ? 'true' : undefined"
+                      @click="openColumnFilter(col, $event)"
+                    >
+                      <Icons
+                        name="i-lucide-filter"
+                        size="xs"
+                      />
+                    </Button>
                   </div>
                 </template>
                 <template #body="slotProps">
@@ -809,6 +1124,10 @@ defineExpose({
           <!-- Loading overlay — suppressed when infinite-scroll is appending to existing data -->
           <div
             v-if="isLoading && (!infiniteScroll || ctrl.processedRows.value.length === 0)"
+            role="status"
+            aria-live="polite"
+            aria-busy="true"
+            :aria-label="t('common.loading')"
             class="pro-table-loading-overlay absolute inset-0 center z-10"
           >
             <ProgressSpinner />
@@ -817,6 +1136,8 @@ defineExpose({
           <!-- Empty state -->
           <div
             v-if="!isLoading && ctrl.processedRows.value.length === 0"
+            role="status"
+            aria-live="polite"
             class="absolute inset-0 center"
           >
             <slot name="empty">
@@ -848,6 +1169,56 @@ defineExpose({
         />
       </div>
     </div>
+
+    <!-- Per-column filter popover (PT-UI-03): one shared overlay, re-anchored to the
+         clicked header trigger. Routes value changes through TableController.setColumnFilter,
+         so the existing local + request-mode filter contract drives the visible rows. -->
+    <Popover
+      ref="filterPopover"
+      @show="columnFilterPopoverOpen = true"
+      @hide="columnFilterPopoverOpen = false"
+    >
+      <div
+        v-if="activeFilterColumn"
+        class="pro-table-filter-popover flex flex-col gap-sm p-xs"
+        data-pro-table-filter-popover
+      >
+        <Select
+          v-if="activeFilterColumn.filterType === 'select'"
+          :model-value="activeFilterValue"
+          :options="activeFilterColumn.filterOptions ?? []"
+          option-label="label"
+          option-value="value"
+          :placeholder="filterPlaceholderLabel"
+          :aria-label="filterAriaLabel(activeFilterColumn)"
+          class="w-full"
+          show-clear
+          data-pro-table-filter-input
+          @update:model-value="setActiveFilterValue"
+        />
+        <InputText
+          v-else
+          :model-value="activeFilterValue == null ? '' : String(activeFilterValue)"
+          :placeholder="filterPlaceholderLabel"
+          :aria-label="filterAriaLabel(activeFilterColumn)"
+          class="w-full"
+          data-pro-table-filter-input
+          @update:model-value="setActiveFilterValue"
+          @keydown.enter="filterPopover?.hide()"
+        />
+        <div class="flex justify-end">
+          <Button
+            text
+            size="small"
+            :label="filterClearLabel"
+            :disabled="!isColumnFiltered(activeFilterColumn)"
+            class="ring-focus-focus"
+            data-pro-table-filter-clear
+            @click="clearActiveColumnFilter"
+          />
+        </div>
+      </div>
+    </Popover>
   </div>
 </template>
 
@@ -893,9 +1264,28 @@ defineExpose({
   max-height: 0;
 }
 
+/* Per-column filter popover width. The width previously lived in a
+   `min-w-[var(--spacing-6xl)]` utility, which (a) the host UnoCSS pipeline never
+   generated because vue-ui ships from /dist/ (excluded from the content scan) and
+   (b) referenced `--spacing-6xl`, which does not exist in the token scale (max is
+   `5xl`). Scoped CSS ships in dist/vue-ui.css and survives the Popover teleport
+   because the scope attribute travels with the element. */
+.pro-table-filter-popover {
+  min-width: var(--spacing-5xl);
+}
+
 .pro-table-loading-overlay {
   background: rgb(var(--card) / 82%) !important;
   backdrop-filter: none !important;
+}
+
+.pro-table-fullscreen-overlay {
+  background: rgb(var(--foreground) / 24%) !important;
+  backdrop-filter: none !important;
+}
+
+:global(.dark .pro-table-fullscreen-overlay) {
+  background: rgb(var(--background) / 72%) !important;
 }
 
 :global(html.dark .pro-table-loading-overlay),

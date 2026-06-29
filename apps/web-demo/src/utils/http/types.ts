@@ -119,6 +119,11 @@ export interface ConnectionConfig {
   autoReconnect: boolean
   maxReconnectAttempts: number
   reconnectDelay: number
+  /**
+   * 是否启用后端健康检查轮询。无真实后端时（mock/demo 模式）应为 false，
+   * 避免对缺失后端反复探测 /api/health 产生 502/ECONNREFUSED 噪音。
+   */
+  healthCheckEnabled: boolean
   healthCheckUrl?: string
   healthCheckInterval: number
   healthCheckTimeout: number

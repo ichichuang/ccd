@@ -41,24 +41,31 @@ The ProTable architecture is designed with the following principles:
 
 ## 1.2 Feature Matrix
 
-Core capabilities include:
+This table reflects what the component **ships today** and is the source of truth
+for current support. Sections further down describe the broader target
+architecture; where a capability is not yet implemented it is called out inline.
 
-Feature Supported
-
----
-
-Row model ✓
-Sorting ✓
-Filtering ✓
-Pagination ✓
-Row selection ✓
-Column visibility ✓
-Column pinning ✓
-Virtual scroll ✓
-Column grouping ✓
-Server mode ✓
-Inline editing ✓
-Tree table ✓
+| Feature               | Status | Notes                                                             |
+| --------------------- | ------ | ----------------------------------------------------------------- |
+| Row model (flat)      | ✓      | Single flat row list; no tree/hierarchy.                          |
+| Sorting               | ✓      | Single column, 3-state (asc → desc → unsorted); client + server.  |
+| Global search         | ✓      | Case-insensitive substring across searchable columns.             |
+| Per-column filtering  | ✓      | `text` (substring), `select` (exact), `number` (equality).        |
+| Pagination            | ✓      | Client + server; mutually exclusive with virtual/infinite scroll. |
+| Infinite scroll       | ✓      | Request-mode append; replaces pagination when enabled.            |
+| Row selection         | ✓      | `single` and `checkbox` (multiple); optional `maxSelection`.      |
+| Column visibility     | ✓      | Toggle + reorder; persisted when `stateKey` is set.               |
+| Column pinning        | ✓      | Left / right via `pinned` (configured per column).                |
+| Virtual scroll        | ✓      | Row virtualization (TanStack) with measured row height.           |
+| CSV export            | ✓      | Current page or selected rows.                                    |
+| Region fullscreen     | ✓      | Scoped pseudo-fullscreen with Escape to exit.                     |
+| Server mode           | ✓      | `request` / `api` / `apiUrl` (+ `apiExecutor`) adapters.          |
+| Multi-column sorting  | ✗      | Not implemented (single-column only).                             |
+| Column grouping       | ✗      | Not implemented.                                                  |
+| Tree table            | ✗      | Not implemented.                                                  |
+| Inline editing        | ✗      | Not implemented (use `render` + your own controls / CRUD modals). |
+| Range selection       | ✗      | Not implemented.                                                  |
+| Column virtualization | ✗      | Only rows are virtualized.                                        |
 
 ## 1.3 Architecture Layers
 
@@ -95,27 +102,28 @@ Responsible for transforming raw dataset into renderable rows.
 Responsibilities:
 
 - row indexing
-- hierarchical row structure
-- row expansion
 - virtualization compatibility
 
 Core concepts:
 
     Row
     RowModel
-    RowTree
     FlatRowList
+
+> Hierarchical / tree row models and row expansion are part of the target
+> architecture but are **not implemented** today — the row model is flat.
 
 ## 2.2 Sorting Engine
 
-Provides flexible column sorting.
+Provides column sorting.
 
 Supported sorting modes:
 
-- single column
-- multi column
-- server sorting
-- custom comparator
+- single column, 3-state cycle (ascending → descending → unsorted)
+- server sorting (request/api modes)
+
+> Multi-column sorting and per-column custom comparators are **not implemented**.
+> `sortable: 'custom'` is reserved in the type but currently behaves like `true`.
 
 Sorting pipeline:
 
@@ -131,18 +139,19 @@ Sorting pipeline:
 
 Filtering system supports:
 
-- column filtering
-- global search
-- fuzzy search
-- server filtering
+- global search (case-insensitive substring across searchable columns)
+- per-column filtering
+- server filtering (request/api modes)
 
-Filter types:
+Per-column filter types (UI + engine):
 
-    text
-    number
-    select
-    date
-    custom predicate
+    text     — case-insensitive substring match
+    select   — exact match against `filterOptions`
+    number   — equality match
+
+> `filterType: 'date'` is accepted by the column type but renders a plain text
+> input and matches as text. Fuzzy search and custom predicates are **not
+> implemented**.
 
 ## 2.4 Pagination Engine
 
@@ -162,10 +171,11 @@ Pagination state:
 
 Selection supports:
 
-- single row selection
-- multi selection
-- checkbox selection
-- range selection
+- single row selection (`selectable="single"`)
+- multi / checkbox selection (`selectable="checkbox"`)
+- optional `maxSelection` cap
+
+> Range (shift-click) selection is **not implemented**.
 
 Selection state:
 
@@ -179,9 +189,8 @@ Controls column show / hide logic.
 
 Features:
 
-- dynamic column toggle
-- column preference persistence
-- responsive visibility rules
+- dynamic column toggle (column settings panel)
+- column order + visibility persistence (when `stateKey` is set)
 
 Example state:
 
@@ -193,9 +202,11 @@ Column pinning allows fixed columns.
 
 Supported modes:
 
-- left pinned columns
-- right pinned columns
-- dynamic pinning
+- left pinned columns (`pinned: 'left'`)
+- right pinned columns (`pinned: 'right'`)
+
+> Pinning is configured per column. Runtime ("dynamic") pin toggling is **not
+> implemented**.
 
 Pin state:
 
@@ -208,15 +219,15 @@ Virtual scrolling ensures performance for large datasets.
 
 Capabilities:
 
-- row virtualization
-- column virtualization
-- dynamic row height
+- row virtualization (`@tanstack/vue-virtual`)
+- measured (variable) row height
 - overscan rendering
+
+> Column virtualization is **not implemented** — only rows are virtualized.
 
 Benefits:
 
-- handles 100k+ rows
-- minimal DOM usage
+- handles large row counts with minimal DOM
 - smooth scrolling
 
 ---
@@ -252,11 +263,10 @@ export interface ProTableColumn<T extends Record<string, unknown> = Record<strin
 
 Column schema supports:
 
-- custom renderer
-- custom header
-- cell formatter
-- column grouping
-- column metadata
+- custom renderer (`render`)
+- custom header (`headerRender` / functional `title`)
+- enum/tag formatting (`valueEnum`)
+- column metadata (`meta`)
 
 ---
 
@@ -405,22 +415,25 @@ when `height` is omitted.
 
 ---
 
-# 6 Plugin System
+# 6 Extensibility
 
-Plugins allow extending ProTable functionality.
+> There is **no plugin-registration API** (`registerPlugin` / `install` /
+> `extendEngine` are part of the target architecture only). ProTable is extended
+> today through the points below.
 
-Plugin examples:
+Built-in capabilities:
 
-- export plugin
-- column resize plugin
-- row drag plugin
-- clipboard plugin
+- CSV export (current page / selected rows) via the toolbar
+- column resize (PrimeVue `resizableColumns` / `columnResizeMode`)
+- column reorder + visibility persistence (`stateKey`)
 
-Plugin lifecycle:
+Per-instance extension points:
 
-    registerPlugin()
-    install()
-    extendEngine()
+- `render` / `headerRender` column functions for arbitrary cell/header content
+- `valueEnum` for label/severity tag mapping
+- `#toolbar-extra` and `#empty` slots
+- exposed methods (`reload`, `exportData`, `setPage`, `toggleColumnVisibility`,
+  `getState`, `getSelection`, …) via template ref
 
 ---
 
@@ -440,8 +453,8 @@ Rows Strategy
 ---
 
 1k normal render
-10k virtualization
-100k virtualization + worker
+10k virtualization (virtual-scroll mode)
+100k+ virtualization (virtual-scroll mode)
 
 ---
 
@@ -521,8 +534,8 @@ Key strengths:
 
 - headless engine design
 - strong TypeScript support
-- high performance rendering
-- extensible plugin ecosystem
+- high performance rendering (row virtualization)
+- per-instance extension points (render functions, slots, exposed methods)
 - seamless design system integration
 
 This architecture allows teams to build **customized ProTable

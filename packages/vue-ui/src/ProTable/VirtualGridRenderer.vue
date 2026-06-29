@@ -207,6 +207,16 @@ function getAriaSort(col: ProTableColumn<T>): 'ascending' | 'descending' | 'none
   return 'none'
 }
 
+/** True when this column is the active sort target — drives token-based icon emphasis,
+ *  mirroring the DataTable path in ProTable.vue. */
+function isColumnSorted(col: ProTableColumn<T>): boolean {
+  if (!col.sortable) return false
+  return (
+    props.controller.state.sort.field === String(col.field ?? col.id) &&
+    props.controller.state.sort.direction !== null
+  )
+}
+
 function renderCell(col: ProTableColumn<T>, row: T, index: number) {
   if (col.render) {
     return col.render({ row, index, column: col })
@@ -380,7 +390,9 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
                   getHeaderAlignClass(col),
                   { 'cursor-pointer': col.sortable },
                 ]"
-                :tabindex="col.sortable ? 0 : -1"
+                :role="col.sortable ? 'button' : undefined"
+                :tabindex="col.sortable ? 0 : undefined"
+                :data-pro-table-sort="col.sortable ? 'true' : undefined"
                 @click="handleSortClick(col)"
                 @keydown.enter.prevent="handleSortClick(col)"
                 @keydown.space.prevent="handleSortClick(col)"
@@ -390,7 +402,10 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
                   v-if="col.sortable"
                   :name="sortIcon(col)"
                   size="xs"
-                  class="text-muted-foreground shrink-0"
+                  :class="[
+                    isColumnSorted(col) ? 'text-primary' : 'text-muted-foreground',
+                    'shrink-0',
+                  ]"
                 />
               </div>
             </div>
@@ -425,7 +440,9 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
                     getHeaderAlignClass(col),
                     { 'cursor-pointer': col.sortable },
                   ]"
-                  :tabindex="col.sortable ? 0 : -1"
+                  :role="col.sortable ? 'button' : undefined"
+                  :tabindex="col.sortable ? 0 : undefined"
+                  :data-pro-table-sort="col.sortable ? 'true' : undefined"
                   @click="handleSortClick(col)"
                   @keydown.enter.prevent="handleSortClick(col)"
                   @keydown.space.prevent="handleSortClick(col)"
@@ -435,7 +452,10 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
                     v-if="col.sortable"
                     :name="sortIcon(col)"
                     size="xs"
-                    class="text-muted-foreground shrink-0"
+                    :class="[
+                      isColumnSorted(col) ? 'text-primary' : 'text-muted-foreground',
+                      'shrink-0',
+                    ]"
                   />
                 </div>
               </div>
@@ -466,7 +486,9 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
                   getHeaderAlignClass(col),
                   { 'cursor-pointer': col.sortable },
                 ]"
-                :tabindex="col.sortable ? 0 : -1"
+                :role="col.sortable ? 'button' : undefined"
+                :tabindex="col.sortable ? 0 : undefined"
+                :data-pro-table-sort="col.sortable ? 'true' : undefined"
                 @click="handleSortClick(col)"
                 @keydown.enter.prevent="handleSortClick(col)"
                 @keydown.space.prevent="handleSortClick(col)"
@@ -476,7 +498,10 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
                   v-if="col.sortable"
                   :name="sortIcon(col)"
                   size="xs"
-                  class="text-muted-foreground shrink-0"
+                  :class="[
+                    isColumnSorted(col) ? 'text-primary' : 'text-muted-foreground',
+                    'shrink-0',
+                  ]"
                 />
               </div>
             </div>

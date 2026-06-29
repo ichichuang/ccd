@@ -5,7 +5,6 @@
 export const appRoutePaths = {
   root: '/',
   login: '/login',
-  register: '/register',
   dashboard: '/dashboard',
   notFound: '/404',
   forbidden: '/403',
@@ -16,7 +15,6 @@ export const appRoutePaths = {
 export const appRouteNames = {
   root: 'Root',
   login: 'Login',
-  register: 'Register',
   dashboard: 'Dashboard',
   notFound: '404',
   forbidden: '403',
@@ -27,14 +25,8 @@ export const appRouteNames = {
 export type AppRoutePathValue = (typeof appRoutePaths)[keyof typeof appRoutePaths]
 export type AppRouteNameValue = (typeof appRouteNames)[keyof typeof appRouteNames]
 
-export const routeWhitePathList: readonly AppRoutePathValue[] = [
-  appRoutePaths.login,
-  appRoutePaths.register,
-] as const
-export const routeWhiteNameList: readonly AppRouteNameValue[] = [
-  appRouteNames.login,
-  appRouteNames.register,
-] as const
+export const routeWhitePathList: readonly AppRoutePathValue[] = [appRoutePaths.login] as const
+export const routeWhiteNameList: readonly AppRouteNameValue[] = [appRouteNames.login] as const
 
 /**
  * 是否启用登录/鉴权模式

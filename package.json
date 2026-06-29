@@ -81,6 +81,7 @@
     "wiki:refresh": "node scripts/wiki/validate-wiki.mjs --write",
     "wiki:validate": "node scripts/wiki/validate-wiki.mjs",
     "wiki:commands": "node scripts/wiki/check-wiki-commands.mjs",
+    "wiki:ui-inventory:check": "node scripts/wiki/check-ui-inventory.mjs",
     "governance:github-workflows": "node scripts/governance/check-github-workflow-registry.mjs",
     "drift:repair": "node scripts/governance/drift-repair.mjs",
     "protocol:migrate": "node scripts/governance/protocol-migrate.mjs",
