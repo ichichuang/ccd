@@ -85,6 +85,40 @@ describe('TableController dynamic request configuration', () => {
     expect(ctrl.state.fetch.hasMore).toBe(false)
     ctrl.destroy()
   })
+
+  it('keeps request filter payload stable when fuzzy search is enabled', async () => {
+    const calls: ProTableLoadParams[] = []
+    const ctrl = new TableController<Row>({
+      columns: namedColumns,
+      data: [],
+      serverMode: true,
+      globalSearchMode: 'fuzzy',
+      requestConfig: { immediate: false },
+      request: async params => {
+        calls.push(params)
+        return { data: [], total: 0 }
+      },
+    })
+
+    ctrl.setGlobalFilter('protable')
+    await nextTick()
+
+    expect(calls).toHaveLength(1)
+    expect(calls[0].filter).toEqual({ global: 'protable', columns: {} })
+    expect(Object.keys(calls[0].filter)).toEqual(['global', 'columns'])
+
+    calls.length = 0
+    ctrl.setColumnFilter('joinedAt', '2026-01-08')
+    await nextTick()
+
+    expect(calls).toHaveLength(1)
+    expect(calls[0].filter).toEqual({
+      global: 'protable',
+      columns: { joinedAt: '2026-01-08' },
+    })
+    expect(Object.keys(calls[0].filter)).toEqual(['global', 'columns'])
+    ctrl.destroy()
+  })
 })
 
 describe('TableController shared renderer contract', () => {

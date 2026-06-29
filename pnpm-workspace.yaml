@@ -19,6 +19,7 @@ catalog:
   '@primevue/core': ^4.5.5
   '@primevue/forms': ^4.5.5
   '@primevue/icons': ^4.5.5
+  '@tanstack/match-sorter-utils': ^8.19.4
   '@tanstack/vue-virtual': ^3.13.23
   '@tauri-apps/api': ^2.11.0
   '@tauri-apps/cli': ^2.11.2

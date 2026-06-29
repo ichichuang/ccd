@@ -8,6 +8,8 @@ export interface FilterState {
   columns: Record<string, unknown>
 }
 
+export type GlobalSearchMode = 'substring' | 'fuzzy'
+
 export interface PaginationState {
   page: number
   pageSize: number

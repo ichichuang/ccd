@@ -1795,6 +1795,7 @@ const enUSConsole = {
         status: 'Status',
         priority: 'Priority',
         records: 'Records',
+        updatedAt: 'Updated',
         workflow: 'Recommended action',
         signal: 'User value',
       },

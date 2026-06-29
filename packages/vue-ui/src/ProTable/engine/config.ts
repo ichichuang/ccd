@@ -21,6 +21,7 @@ export const PRO_TABLE_PROPS_DEFAULTS = {
   total: undefined,
   serverMode: false,
   globalFilter: true,
+  globalSearchMode: 'substring',
   heightMode: 'fill',
   height: undefined,
   tableLayout: undefined,

@@ -21,6 +21,7 @@ export interface ProTableDemoRow extends Record<string, unknown> {
   status: ProTableDemoStatus
   priority: ProTableDemoPriority
   records: number
+  updatedAt: string
   workflow: string
   signal: string
 }
@@ -148,11 +149,26 @@ const DEMO_ROW_DEFINITIONS: readonly ProTableDemoRowDefinition[] = [
   },
 ]
 
+const DEMO_UPDATED_DATES = [
+  '2026-01-08',
+  '2026-01-16',
+  '2026-02-03',
+  '2026-02-14',
+  '2026-03-02',
+  '2026-03-17',
+  '2026-04-05',
+  '2026-04-19',
+] as const
+
 function rowMessageKey(rowId: string, field: 'capability' | 'signal' | 'workflow'): string {
   return `showcase.proTable.rows.${rowId}.${field}`
 }
 
-function createDemoRow(t: Translate, definition: ProTableDemoRowDefinition): ProTableDemoRow {
+function createDemoRow(
+  t: Translate,
+  definition: ProTableDemoRowDefinition,
+  index: number
+): ProTableDemoRow {
   return {
     id: definition.id,
     capability: t(rowMessageKey(definition.id, 'capability')),
@@ -161,13 +177,14 @@ function createDemoRow(t: Translate, definition: ProTableDemoRowDefinition): Pro
     status: definition.status,
     priority: definition.priority,
     records: definition.records,
+    updatedAt: DEMO_UPDATED_DATES[index % DEMO_UPDATED_DATES.length],
     workflow: t(rowMessageKey(definition.id, 'workflow')),
     signal: t(rowMessageKey(definition.id, 'signal')),
   }
 }
 
 export function createProTableDemoRows(t: Translate): ProTableDemoRow[] {
-  return DEMO_ROW_DEFINITIONS.map(definition => createDemoRow(t, definition))
+  return DEMO_ROW_DEFINITIONS.map((definition, index) => createDemoRow(t, definition, index))
 }
 
 export function createVirtualProTableDemoRows(t: Translate): ProTableDemoRow[] {

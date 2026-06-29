@@ -1,6 +1,12 @@
 import type { ComputedRef, EffectScope, ShallowRef } from 'vue'
 import { computed, effectScope, shallowReactive, shallowRef, watch } from 'vue'
-import type { TableState, SortState, FilterState, ColumnSettingsState } from '../types/tableState'
+import type {
+  TableState,
+  SortState,
+  FilterState,
+  ColumnSettingsState,
+  GlobalSearchMode,
+} from '../types/tableState'
 import type { ProTableColumn } from '../types/column'
 import type { ProTableLoadParams, RequestFn, RequestConfig } from '../types/props'
 import {
@@ -39,6 +45,7 @@ export interface TableControllerOptions<T extends Record<string, unknown>> {
   onSortChange?: (sort: SortState) => void
   onFilterChange?: (filter: FilterState) => void
   onPageChange?: (page: number, pageSize: number) => void
+  globalSearchMode?: GlobalSearchMode
 
   /** Autonomous data-fetching callback. */
   request?: RequestFn<T>
@@ -92,6 +99,7 @@ export class TableController<T extends Record<string, unknown>> {
   private _serverMode: boolean
   private _rowKey: string
   private _paginationEnabled: ShallowRef<boolean>
+  private _globalSearchMode: ShallowRef<GlobalSearchMode>
   private _scope: EffectScope
   private _request: ShallowRef<RequestFn<T> | undefined>
   private _requestConfig: Required<RequestConfig>
@@ -118,6 +126,9 @@ export class TableController<T extends Record<string, unknown>> {
     this._rowKey = String(options.rowKey ?? PRO_TABLE_PROPS_DEFAULTS.rowKey)
     this._paginationEnabled = shallowRef(
       options.paginationEnabled ?? PRO_TABLE_PROPS_DEFAULTS.pagination
+    )
+    this._globalSearchMode = shallowRef(
+      options.globalSearchMode ?? PRO_TABLE_PROPS_DEFAULTS.globalSearchMode
     )
     this._scope = effectScope()
     this._request = shallowRef(options.request)
@@ -147,7 +158,9 @@ export class TableController<T extends Record<string, unknown>> {
     this._scope.run(() => {
       this.filteredAndSorted = computed<T[]>(() => {
         if (this._serverMode) return this._data.value
-        const filtered = applyFilter(this._data.value, this.state.filter, this._columns)
+        const filtered = applyFilter(this._data.value, this.state.filter, this._columns, {
+          globalSearchMode: this._globalSearchMode.value,
+        })
         return applySort(filtered, this.state.sort, (row, field) =>
           field.includes('.') ? objectGet(row, field) : row[field]
         )
@@ -261,6 +274,13 @@ export class TableController<T extends Record<string, unknown>> {
    */
   setPaginationEnabled(enabled: boolean): void {
     this._paginationEnabled.value = enabled
+  }
+
+  /**
+   * Update local global-search matching without changing the public FilterState payload.
+   */
+  setGlobalSearchMode(mode: GlobalSearchMode): void {
+    this._globalSearchMode.value = mode
   }
 
   /**

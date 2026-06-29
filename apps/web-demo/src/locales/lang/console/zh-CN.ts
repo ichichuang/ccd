@@ -1614,6 +1614,7 @@ const zhCNConsole = {
         status: '状态',
         priority: '优先级',
         records: '记录数',
+        updatedAt: '更新时间',
         workflow: '推荐操作',
         signal: '用户价值',
       },

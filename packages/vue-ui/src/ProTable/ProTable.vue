@@ -5,6 +5,7 @@ import { useEventListener } from '@vueuse/core'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
+import DatePicker from 'primevue/datepicker'
 import InputText from 'primevue/inputtext'
 import Popover from 'primevue/popover'
 import ProgressSpinner from 'primevue/progressspinner'
@@ -76,6 +77,7 @@ const props = withDefaults(defineProps<ProTableProps<T>>(), {
   total: PRO_TABLE_PROPS_DEFAULTS.total,
   serverMode: PRO_TABLE_PROPS_DEFAULTS.serverMode,
   globalFilter: PRO_TABLE_PROPS_DEFAULTS.globalFilter,
+  globalSearchMode: PRO_TABLE_PROPS_DEFAULTS.globalSearchMode,
   heightMode: PRO_TABLE_PROPS_DEFAULTS.heightMode,
   height: PRO_TABLE_PROPS_DEFAULTS.height,
   tableLayout: PRO_TABLE_PROPS_DEFAULTS.tableLayout,
@@ -217,6 +219,7 @@ const ctrl = new TableController<T>({
   requestConfig: props.requestConfig,
   onRequestError: err => emit('request-error', err),
   maxSelection: props.maxSelection,
+  globalSearchMode: props.globalSearchMode,
   initialColumnSettings: columnSettingsPersistence.getInitialColumnSettings(props.columns),
   onColumnSettingsChange: columnSettingsPersistence.onColumnSettingsChange,
 })
@@ -317,6 +320,11 @@ watch(
 )
 
 watch(enginePaginationEnabled, enabled => ctrl.setPaginationEnabled(enabled))
+watch(
+  () => props.globalSearchMode,
+  mode => ctrl.setGlobalSearchMode(mode),
+  { immediate: true }
+)
 
 // In request mode, data/total are managed internally.
 watch(
@@ -741,6 +749,38 @@ const activeFilterValue = computed<unknown>(() => {
   return col ? (ctrl.state.filter.columns[col.id] ?? null) : null
 })
 
+function padDateFilterPart(value: number): string {
+  return value < 10 ? `0${value}` : String(value)
+}
+
+function dateToFilterString(value: Date): string | null {
+  const time = value.getTime()
+  if (!Number.isFinite(time)) return null
+  return `${value.getFullYear()}-${padDateFilterPart(value.getMonth() + 1)}-${padDateFilterPart(
+    value.getDate()
+  )}`
+}
+
+function dateFilterStringToDate(value: string): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})(?:$|[T\s])/.exec(value.trim())
+  if (!match) return null
+  return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
+}
+
+function normalizeDateFilterInput(value: unknown): string | null {
+  if (value === null || value === undefined || value === '') return null
+  if (value instanceof Date) return dateToFilterString(value)
+  if (typeof value === 'string') return value
+  return null
+}
+
+const activeDateFilterValue = computed<Date | null>(() => {
+  const value = activeFilterValue.value
+  if (value instanceof Date) return value
+  if (typeof value === 'string') return dateFilterStringToDate(value)
+  return null
+})
+
 function handleColumnFilterChange(colId: string, value: unknown): void {
   // Normalize empty string to null so cleared filters drop out of engine state.
   ctrl.setColumnFilter(colId, value === '' ? null : value)
@@ -750,7 +790,10 @@ function handleColumnFilterChange(colId: string, value: unknown): void {
 function setActiveFilterValue(value: unknown): void {
   const col = activeFilterColumn.value
   if (!col) return
-  handleColumnFilterChange(col.id, value)
+  handleColumnFilterChange(
+    col.id,
+    col.filterType === 'date' ? normalizeDateFilterInput(value) : value
+  )
 }
 
 function openColumnFilter(col: ProTableColumn<T>, event: Event): void {
@@ -1194,6 +1237,18 @@ defineExpose({
           :placeholder="filterPlaceholderLabel"
           :aria-label="filterAriaLabel(activeFilterColumn)"
           class="w-full"
+          show-clear
+          data-pro-table-filter-input
+          @update:model-value="setActiveFilterValue"
+        />
+        <DatePicker
+          v-else-if="activeFilterColumn.filterType === 'date'"
+          :model-value="activeDateFilterValue"
+          :placeholder="filterPlaceholderLabel"
+          :aria-label="filterAriaLabel(activeFilterColumn)"
+          date-format="yy-mm-dd"
+          class="w-full"
+          show-icon
           show-clear
           data-pro-table-filter-input
           @update:model-value="setActiveFilterValue"

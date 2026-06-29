@@ -98,6 +98,8 @@ interface ProTableModeConfig {
   stateControls?: boolean
   columnControls?: boolean
   columnFilters?: boolean
+  dateColumnFilter?: boolean
+  fuzzySearch?: boolean
   eventLog?: boolean
   virtualModeSwitch?: boolean
   showDensityControl?: boolean
@@ -167,6 +169,9 @@ const MODE_CONFIGS: Record<ProTableDemoMode, ProTableModeConfig> = {
     columnPreset: 'standard',
     pageSize: 5,
     statusFilter: true,
+    columnFilters: true,
+    dateColumnFilter: true,
+    fuzzySearch: true,
     features: ['filters', 'typedRows'],
     explanations: ['toolbar', 'pagination'],
     technical: ['stateEvidence', 'i18nCopy'],
@@ -389,9 +394,24 @@ function withColumnFilters(
   return column
 }
 
+function createUpdatedAtFilterColumn(): ProTableColumn<ProTableDemoRow> {
+  return {
+    id: 'updatedAt',
+    field: 'updatedAt',
+    title: t('showcase.proTable.columns.updatedAt'),
+    sortable: true,
+    filterable: true,
+    filterType: 'date',
+    minWidth: '160px',
+  }
+}
+
 const tableColumns = computed<ProTableColumn<ProTableDemoRow>[]>(() => {
   const columns = createProTableDemoColumns(t, modeConfig.value.columnPreset)
-  return modeConfig.value.columnFilters ? columns.map(withColumnFilters) : columns
+  const filteredColumns = modeConfig.value.columnFilters ? columns.map(withColumnFilters) : columns
+  return modeConfig.value.dateColumnFilter
+    ? [...filteredColumns, createUpdatedAtFilterColumn()]
+    : filteredColumns
 })
 
 const isInfiniteMode = computed(
@@ -830,6 +850,7 @@ function handleRequestError(error: Error): void {
                 :height-mode="tableHeightMode"
                 :height="tableHeight"
                 :show-density-control="modeConfig.showDensityControl ?? true"
+                :global-search-mode="modeConfig.fuzzySearch ? 'fuzzy' : 'substring'"
                 show-toolbar
                 global-filter
                 row-hover

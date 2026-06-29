@@ -24,6 +24,7 @@ export type {
   TableState,
   SortState,
   FilterState,
+  GlobalSearchMode,
   PaginationState,
   SelectionState,
   ColumnSettingsState,

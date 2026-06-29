@@ -1,4 +1,4 @@
-import type { FilterState, SortState } from './tableState'
+import type { FilterState, GlobalSearchMode, SortState } from './tableState'
 import type { ProTableColumn } from './column'
 
 export interface PaginationConfig {
@@ -130,6 +130,12 @@ export interface ProTableProps<T extends Record<string, unknown> = Record<string
   total?: number
   serverMode?: boolean
   globalFilter?: boolean
+  /**
+   * Local global-search matching strategy.
+   * Server/request/api modes keep the same `FilterState` payload and receive only `filter.global`.
+   * @default 'substring'
+   */
+  globalSearchMode?: GlobalSearchMode
   heightMode?: HeightMode
   height?: string
   /**

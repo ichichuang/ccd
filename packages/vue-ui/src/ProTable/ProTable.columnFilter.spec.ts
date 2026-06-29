@@ -65,12 +65,13 @@ function mountTable(): ReturnType<typeof mount> {
         { label: 'User', value: 'user' },
       ],
     },
+    { id: 'joinedAt', title: 'Joined', field: 'joinedAt', filterable: true, filterType: 'date' },
     { id: 'status', title: 'Status', field: 'status' },
   ]
   const data: Array<Record<string, unknown>> = [
-    { name: 'Alpha', team: 'Core', role: 'admin', status: 'on' },
-    { name: 'Bravo', team: 'Core', role: 'user', status: 'off' },
-    { name: 'Charlie', team: 'Edge', role: 'user', status: 'on' },
+    { name: 'Alpha', team: 'Core', role: 'admin', joinedAt: '2026-01-08', status: 'on' },
+    { name: 'Bravo', team: 'Core', role: 'user', joinedAt: '2026-01-09', status: 'off' },
+    { name: 'Charlie', team: 'Edge', role: 'user', joinedAt: '2026-01-10', status: 'on' },
   ]
   return mount(ProTable, {
     attachTo: document.body,
@@ -81,6 +82,10 @@ function mountTable(): ReturnType<typeof mount> {
         ProTableToolbar: true,
         ProTablePagination: true,
         VirtualGridRenderer: true,
+        DatePicker: {
+          name: 'DatePicker',
+          template: '<div class="p-datepicker" data-pro-table-filter-input />',
+        },
         ProgressSpinner: true,
         EmptyState: true,
         Icons: true,
@@ -118,6 +123,9 @@ describe('ProTable per-column filtering UI (PT-UI-03)', () => {
         true
       )
       expect(headerByText(wrapper, 'Role').find('[data-pro-table-filter-toggle]').exists()).toBe(
+        true
+      )
+      expect(headerByText(wrapper, 'Joined').find('[data-pro-table-filter-toggle]').exists()).toBe(
         true
       )
       // Non-filterable column must NOT expose any filter affordance.
@@ -265,6 +273,21 @@ describe('ProTable per-column filtering UI (PT-UI-03)', () => {
       await settle()
       // The select-type filter renders a PrimeVue Select, not a text input.
       expect(document.body.querySelector('[data-pro-table-filter-popover] .p-select')).toBeTruthy()
+    } finally {
+      wrapper.unmount()
+    }
+  })
+
+  it('renders a DatePicker control for date-type filter columns', async () => {
+    const wrapper = mountTable()
+    try {
+      await settle()
+      await headerByText(wrapper, 'Joined').find('[data-pro-table-filter-toggle]').trigger('click')
+      await settle()
+      // The date-type filter renders a PrimeVue DatePicker, not the fallback text input.
+      expect(
+        document.body.querySelector('[data-pro-table-filter-popover] .p-datepicker')
+      ).toBeTruthy()
     } finally {
       wrapper.unmount()
     }

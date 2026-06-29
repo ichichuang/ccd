@@ -27,6 +27,7 @@
     "@ccd/design-tokens": "workspace:*",
     "@ccd/shared-utils": "workspace:*",
     "@ccd/vue-hooks": "workspace:*",
+    "@tanstack/match-sorter-utils": "catalog:",
     "@tanstack/vue-virtual": "catalog:",
     "@vueuse/core": "catalog:",
     "overlayscrollbars": "catalog:",

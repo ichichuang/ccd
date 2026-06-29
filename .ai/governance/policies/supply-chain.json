@@ -13,6 +13,7 @@
       "@ccd/design-tokens",
       "@ccd/shared-utils",
       "@ccd/vue-hooks",
+      "@tanstack/match-sorter-utils",
       "@tanstack/vue-virtual",
       "@vueuse/core",
       "overlayscrollbars",

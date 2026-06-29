@@ -45,27 +45,27 @@ This table reflects what the component **ships today** and is the source of trut
 for current support. Sections further down describe the broader target
 architecture; where a capability is not yet implemented it is called out inline.
 
-| Feature               | Status | Notes                                                             |
-| --------------------- | ------ | ----------------------------------------------------------------- |
-| Row model (flat)      | ✓      | Single flat row list; no tree/hierarchy.                          |
-| Sorting               | ✓      | Single column, 3-state (asc → desc → unsorted); client + server.  |
-| Global search         | ✓      | Case-insensitive substring across searchable columns.             |
-| Per-column filtering  | ✓      | `text` (substring), `select` (exact), `number` (equality).        |
-| Pagination            | ✓      | Client + server; mutually exclusive with virtual/infinite scroll. |
-| Infinite scroll       | ✓      | Request-mode append; replaces pagination when enabled.            |
-| Row selection         | ✓      | `single` and `checkbox` (multiple); optional `maxSelection`.      |
-| Column visibility     | ✓      | Toggle + reorder; persisted when `stateKey` is set.               |
-| Column pinning        | ✓      | Left / right via `pinned` (configured per column).                |
-| Virtual scroll        | ✓      | Row virtualization (TanStack) with measured row height.           |
-| CSV export            | ✓      | Current page or selected rows.                                    |
-| Region fullscreen     | ✓      | Scoped pseudo-fullscreen with Escape to exit.                     |
-| Server mode           | ✓      | `request` / `api` / `apiUrl` (+ `apiExecutor`) adapters.          |
-| Multi-column sorting  | ✗      | Not implemented (single-column only).                             |
-| Column grouping       | ✗      | Not implemented.                                                  |
-| Tree table            | ✗      | Not implemented.                                                  |
-| Inline editing        | ✗      | Not implemented (use `render` + your own controls / CRUD modals). |
-| Range selection       | ✗      | Not implemented.                                                  |
-| Column virtualization | ✗      | Only rows are virtualized.                                        |
+| Feature               | Status | Notes                                                                 |
+| --------------------- | ------ | --------------------------------------------------------------------- |
+| Row model (flat)      | ✓      | Single flat row list; no tree/hierarchy.                              |
+| Sorting               | ✓      | Single column, 3-state (asc → desc → unsorted); client + server.      |
+| Global search         | ✓      | Default substring; opt-in local fuzzy ranking via `globalSearchMode`. |
+| Per-column filtering  | ✓      | `text`, `select`, `number`, and date-only `date` filters.             |
+| Pagination            | ✓      | Client + server; mutually exclusive with virtual/infinite scroll.     |
+| Infinite scroll       | ✓      | Request-mode append; replaces pagination when enabled.                |
+| Row selection         | ✓      | `single` and `checkbox` (multiple); optional `maxSelection`.          |
+| Column visibility     | ✓      | Toggle + reorder; persisted when `stateKey` is set.                   |
+| Column pinning        | ✓      | Left / right via `pinned` (configured per column).                    |
+| Virtual scroll        | ✓      | Row virtualization (TanStack) with measured row height.               |
+| CSV export            | ✓      | Current page or selected rows.                                        |
+| Region fullscreen     | ✓      | Scoped pseudo-fullscreen with Escape to exit.                         |
+| Server mode           | ✓      | `request` / `api` / `apiUrl` (+ `apiExecutor`) adapters.              |
+| Multi-column sorting  | ✗      | Not implemented (single-column only).                                 |
+| Column grouping       | ✗      | Not implemented.                                                      |
+| Tree table            | ✗      | Not implemented.                                                      |
+| Inline editing        | ✗      | Not implemented (use `render` + your own controls / CRUD modals).     |
+| Range selection       | ✗      | Not implemented.                                                      |
+| Column virtualization | ✗      | Only rows are virtualized.                                            |
 
 ## 1.3 Architecture Layers
 
@@ -139,7 +139,9 @@ Sorting pipeline:
 
 Filtering system supports:
 
-- global search (case-insensitive substring across searchable columns)
+- global search
+  - default: case-insensitive substring across searchable columns
+  - opt-in: ranked fuzzy matching with `globalSearchMode: 'fuzzy'`
 - per-column filtering
 - server filtering (request/api modes)
 
@@ -148,10 +150,18 @@ Per-column filter types (UI + engine):
     text     — case-insensitive substring match
     select   — exact match against `filterOptions`
     number   — equality match
+    date     — DatePicker input; date-only equality for Date, ISO string, and timestamp values
 
-> `filterType: 'date'` is accepted by the column type but renders a plain text
-> input and matches as text. Fuzzy search and custom predicates are **not
-> implemented**.
+`globalSearchMode` affects client-side/global search ranking only. Server,
+`request`, `api`, and `apiUrl` modes keep the existing `FilterState` payload:
+`filter.global` remains the search string and `filter.columns` remains the
+per-column value map.
+
+The built-in date filter UI emits `YYYY-MM-DD` strings. The local filtering
+engine also normalizes `Date`, ISO string, and timestamp values for row data and
+programmatic filters.
+
+Custom filter predicates are **not implemented**.
 
 ## 2.4 Pagination Engine
 
@@ -323,6 +333,7 @@ export interface ProTableProps<T extends Record<string, unknown> = Record<string
   total?: number
   serverMode?: boolean
   globalFilter?: boolean
+  globalSearchMode?: 'substring' | 'fuzzy'
   virtualScroll?: boolean
   infiniteScroll?: boolean
   selectable?: false | 'single' | 'checkbox'
