@@ -79,7 +79,7 @@ export type SearchPathResolver = (
 
 export type HeightMode = 'fill' | 'auto' | 'fixed'
 
-export type ProTableEditMode = 'cell' | false
+export type ProTableEditMode = 'cell' | 'row' | false
 
 export interface ProTableCellEditCompletePrimeEvent<T extends Record<string, unknown>> {
   /** Browser event from PrimeVue's DataTable cell editor. */
@@ -111,6 +111,59 @@ export interface ProTableCellEditCompletePayload<
   newValue: unknown
   /** Original PrimeVue DataTable cell-edit-complete event. */
   primeEvent: ProTableCellEditCompletePrimeEvent<T>
+}
+
+export interface ProTableRowEditPrimeEvent<T extends Record<string, unknown>> {
+  /** Browser event from PrimeVue's DataTable row editor. */
+  originalEvent: Event
+  /** Original row data. */
+  data: T
+  /** PrimeVue's temporary edited row copy. */
+  newData: T
+  /** Field associated with the row editor action. */
+  field: string
+  /** Row index in the current DataTable value. */
+  index: number
+}
+
+export type ProTableRowEditSavePrimeEvent<T extends Record<string, unknown>> =
+  ProTableRowEditPrimeEvent<T>
+
+export type ProTableRowEditCancelPrimeEvent<T extends Record<string, unknown>> =
+  ProTableRowEditPrimeEvent<T>
+
+export interface ProTableRowEditChangedField<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> {
+  field: string
+  column: ProTableColumn<T>
+  oldValue: unknown
+  newValue: unknown
+}
+
+export interface ProTableRowEditSavePayload<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> {
+  /** Original row data, matching PrimeVue's `data` value. */
+  row: T
+  rowKey: string
+  oldRow: T
+  newRow: T
+  changedFields: ProTableRowEditChangedField<T>[]
+  /** Original PrimeVue DataTable row-edit-save event. */
+  primeEvent: ProTableRowEditSavePrimeEvent<T>
+}
+
+export interface ProTableRowEditCancelPayload<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> {
+  /** Original row data, matching PrimeVue's `data` value. */
+  row: T
+  rowKey: string
+  oldRow: T
+  newRow: T
+  /** Original PrimeVue DataTable row-edit-cancel event. */
+  primeEvent: ProTableRowEditCancelPrimeEvent<T>
 }
 
 export interface ProTableUrlSyncOptions {
@@ -225,9 +278,9 @@ export interface ProTableProps<T extends Record<string, unknown> = Record<string
   /** Enable Virtual Grid engine (bypass PrimeVue DataTable) */
   virtualScroll?: boolean
   /**
-   * Inline editing mode. Only `cell` is supported, only on the PrimeVue
+   * Inline editing mode. `cell` and `row` are supported only on the PrimeVue
    * DataTable path, and only for columns with `editable: true`.
-   * Persistence is caller-owned through `cell-edit-complete`.
+   * Persistence is caller-owned through edit events.
    */
   editMode?: ProTableEditMode
 

@@ -8,6 +8,7 @@ import type {
   ProTableColumn,
   ProTableColumnGroupRow,
   ProTableExposed,
+  ProTableRowEditSavePayload,
   ProTableSortMode,
   RequestConfig,
   RequestFn,
@@ -49,6 +50,7 @@ type ProTableDemoMode =
   | 'inline-editing'
   | 'overview'
   | 'pagination'
+  | 'row-editing'
   | 'selection'
   | 'server-request'
   | 'sorting-filtering'
@@ -110,6 +112,7 @@ interface ProTableModeConfig {
   columnFilters?: boolean
   dateColumnFilter?: boolean
   inlineEditing?: boolean
+  inlineEditMode?: 'cell' | 'row'
   semanticStatusSort?: boolean
   fuzzySearch?: boolean
   eventLog?: boolean
@@ -291,11 +294,25 @@ const MODE_CONFIGS: Record<ProTableDemoMode, ProTableModeConfig> = {
     columnFilters: true,
     dateColumnFilter: true,
     inlineEditing: true,
+    inlineEditMode: 'cell',
     eventLog: true,
     features: ['inlineEditing', 'typedRows'],
     explanations: ['stateEvidence', 'filters'],
     technical: ['callerPersistence', 'proTableOnly'],
     relatedIds: ['components-pro-table-cell-rendering', 'components-pro-table-api-events'],
+  },
+  'row-editing': {
+    columnPreset: 'standard',
+    pageSize: 5,
+    columnFilters: true,
+    dateColumnFilter: true,
+    inlineEditing: true,
+    inlineEditMode: 'row',
+    eventLog: true,
+    features: ['inlineEditing', 'typedRows'],
+    explanations: ['stateEvidence', 'filters'],
+    technical: ['callerPersistence', 'proTableOnly'],
+    relatedIds: ['components-pro-table-inline-editing', 'components-pro-table-api-events'],
   },
   'api-events': {
     columnPreset: 'api',
@@ -762,7 +779,7 @@ function applyInlineCellValue(
 }
 
 function handleCellEditComplete(payload: ProTableCellEditCompletePayload<ProTableDemoRow>): void {
-  if (!modeConfig.value.inlineEditing) return
+  if (!modeConfig.value.inlineEditing || modeConfig.value.inlineEditMode === 'row') return
   editableRows.value = editableRows.value.map(row =>
     row.id === payload.rowKey ? applyInlineCellValue(row, payload.field, payload.newValue) : row
   )
@@ -771,6 +788,24 @@ function handleCellEditComplete(payload: ProTableCellEditCompletePayload<ProTabl
     params: { field: payload.field, row: payload.rowKey },
   }
   pushEvent('showcase.proTable.events.cellEdit', `${payload.field}: ${String(payload.newValue)}`)
+}
+
+function handleRowEditSave(payload: ProTableRowEditSavePayload<ProTableDemoRow>): void {
+  if (!modeConfig.value.inlineEditing || modeConfig.value.inlineEditMode !== 'row') return
+  editableRows.value = editableRows.value.map(row =>
+    row.id === payload.rowKey ? { ...row, ...payload.newRow } : row
+  )
+  actionMessage.value = {
+    key: 'showcase.proTable.actions.rowEdited',
+    params: {
+      row: payload.rowKey,
+      count: payload.changedFields.length,
+    },
+  }
+  pushEvent(
+    'showcase.proTable.events.rowEdit',
+    `${payload.rowKey}: ${payload.changedFields.map(item => item.field).join(', ') || 'no changes'}`
+  )
 }
 </script>
 
@@ -987,7 +1022,9 @@ function handleCellEditComplete(payload: ProTableCellEditCompletePayload<ProTabl
                 :infinite-scroll="isInfiniteMode"
                 :height-mode="tableHeightMode"
                 :height="tableHeight"
-                :edit-mode="modeConfig.inlineEditing ? 'cell' : false"
+                :edit-mode="
+                  modeConfig.inlineEditing ? (modeConfig.inlineEditMode ?? 'cell') : false
+                "
                 :show-density-control="modeConfig.showDensityControl ?? true"
                 :global-search-mode="modeConfig.fuzzySearch ? 'fuzzy' : 'substring'"
                 show-toolbar
@@ -1002,6 +1039,7 @@ function handleCellEditComplete(payload: ProTableCellEditCompletePayload<ProTabl
                 @page-change="handlePageChange"
                 @request-error="handleRequestError"
                 @cell-edit-complete="handleCellEditComplete"
+                @row-edit-save="handleRowEditSave"
               >
                 <template #empty>
                   <ShowcaseEmptyState

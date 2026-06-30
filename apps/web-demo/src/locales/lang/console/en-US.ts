@@ -23,6 +23,7 @@ const showcasePageTitles = {
   'components-pro-table-export-refresh': 'Export and Refresh',
   'components-pro-table-cell-rendering': 'Cell Rendering',
   'components-pro-table-inline-editing': 'Inline Editing',
+  'components-pro-table-row-editing': 'Row Editing',
   'components-pro-table-form-composition': 'Form Composition',
   'components-pro-table-api-events': 'API and Events',
   'components-pro-form-overview': 'ProForm Overview',
@@ -190,6 +191,15 @@ const showcasePageLocaleOverrides: Record<string, ShowcasePageLocaleOverride> = 
     try: 'Edit local cells.',
     source: 'Source paths show the route, typed edit payload, and local row update handler.',
     technical: 'Technical notes explain DataTable-only support and caller-owned persistence.',
+  },
+  'components-pro-table-row-editing': {
+    eyebrow: 'ProTable showcase',
+    description:
+      'DataTable-path row editing reuses column-scoped editors and emits a row save payload for caller-owned persistence.',
+    try: 'Edit local rows.',
+    source:
+      'Source paths show the route, typed row edit payload, and local row replacement handler.',
+    technical: 'Technical notes explain DataTable-only row editing and caller-owned persistence.',
   },
   'components-pro-table-form-composition': {
     eyebrow: 'ProTable showcase',
@@ -374,6 +384,7 @@ const showcaseRouterLocale = createNestedLocaleRecord([
   ['components.proTable.exportRefresh', 'Export and Refresh'],
   ['components.proTable.cellRendering', 'Cell Rendering'],
   ['components.proTable.inlineEditing', 'Inline Editing'],
+  ['components.proTable.rowEditing', 'Row Editing'],
   ['components.proTable.formComposition', 'Form Composition'],
   ['components.proTable.apiEvents', 'API and Events'],
   ['components.proForm.root', 'ProForm'],
@@ -1808,6 +1819,11 @@ const enUSConsole = {
           demo: 'Enable DataTable cell editing for selected columns, then update local rows from the emitted payload.',
           tableTitle: 'Editable local rows',
         },
+        'row-editing': {
+          label: 'Row editing',
+          demo: 'Enable DataTable row editing for selected columns, then replace local rows from row-edit-save.',
+          tableTitle: 'Row-editable local rows',
+        },
         'form-composition': {
           label: 'Form composition',
           demo: 'A PrimeVue owner filter composes around ProTable while this page remains a ProTable showcase, not a ProForm route.',
@@ -1892,6 +1908,8 @@ const enUSConsole = {
         ownerColumnShown: 'The owner column is visible again.',
         ownerColumnHidden: 'The owner column is hidden through toggleColumnVisibility().',
         cellEdited: 'Edited {field} on row {row}. The page updated its own local row copy.',
+        rowEdited:
+          'Saved row {row} with {count} changed field(s). The page replaced its own local row copy.',
       },
       state: {
         title: 'Table state',
@@ -1929,6 +1947,7 @@ const enUSConsole = {
         page: 'page-change: {detail}',
         requestError: 'request-error: {detail}',
         cellEdit: 'cell-edit-complete: {detail}',
+        rowEdit: 'row-edit-save: {detail}',
       },
       empty: {
         title: 'No ProTable rows match',
@@ -2073,9 +2092,9 @@ const enUSConsole = {
           tag: 'Cells',
         },
         inlineEditing: {
-          title: 'Opt-in cell editors',
+          title: 'Opt-in editors',
           description:
-            'Only columns with editable: true render text, number, select, or date editors in DataTable cell mode.',
+            'Only columns with editable: true render text, number, select, or date editors in DataTable cell or row mode.',
           tag: 'Editing',
         },
         filters: {
@@ -2167,7 +2186,7 @@ const enUSConsole = {
         callerPersistence: {
           title: 'Caller-owned persistence',
           description:
-            'The demo listens for cell-edit-complete and replaces its own local row copy; ProTable does not mutate source data.',
+            'The demo listens for edit events and replaces its own local row copy; ProTable does not mutate source data.',
         },
       },
     },

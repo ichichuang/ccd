@@ -48,6 +48,11 @@ import type {
   ProTableCellEditCompletePrimeEvent,
   ProTableApiQueryParams,
   ProTableProps,
+  ProTableRowEditCancelPayload,
+  ProTableRowEditCancelPrimeEvent,
+  ProTableRowEditChangedField,
+  ProTableRowEditSavePayload,
+  ProTableRowEditSavePrimeEvent,
   ProTableSearchParams,
   RequestFn,
 } from './engine/types/props'
@@ -135,6 +140,8 @@ const emit = defineEmits<{
   'row-click': [row: T]
   'request-error': [error: Error]
   'cell-edit-complete': [payload: ProTableCellEditCompletePayload<T>]
+  'row-edit-save': [payload: ProTableRowEditSavePayload<T>]
+  'row-edit-cancel': [payload: ProTableRowEditCancelPayload<T>]
 }>()
 
 const { t } = useI18n()
@@ -209,26 +216,34 @@ if (isDev && props.apiUrl && !props.apiExecutor) {
   )
 }
 
-const dataTableEditMode = computed<'cell' | undefined>(() =>
-  props.editMode === 'cell' && !props.virtualScroll ? 'cell' : undefined
+const dataTableEditMode = computed<'cell' | 'row' | undefined>(() =>
+  (props.editMode === 'cell' || props.editMode === 'row') && !props.virtualScroll
+    ? props.editMode
+    : undefined
 )
-const dataTableCellEditingEnabled = computed<boolean>(() => dataTableEditMode.value === 'cell')
+const dataTableEditingEnabled = computed<boolean>(() => dataTableEditMode.value !== undefined)
+const dataTableRowEditingEnabled = computed<boolean>(() => dataTableEditMode.value === 'row')
+const dataTableEditingRows = ref<T[]>([])
 const hasWarnedVirtualCellEditing = ref(false)
 
 watch(
   () => [props.editMode, props.virtualScroll] as const,
   ([editMode, virtualScroll]) => {
     if (!isDev || hasWarnedVirtualCellEditing.value) return
-    if (editMode === 'cell' && virtualScroll) {
+    if ((editMode === 'cell' || editMode === 'row') && virtualScroll) {
       hasWarnedVirtualCellEditing.value = true
       console.warn(
-        '[ProTable] editMode="cell" is supported only on the PrimeVue DataTable path. ' +
+        '[ProTable] editMode="cell" and editMode="row" are supported only on the PrimeVue DataTable path. ' +
           'VirtualGridRenderer ignores inline editing for now.'
       )
     }
   },
   { immediate: true }
 )
+
+watch(dataTableRowEditingEnabled, enabled => {
+  if (!enabled) dataTableEditingRows.value = []
+})
 
 const pagConfig = computed<PaginationConfig>(() => {
   if (!props.pagination || props.pagination === true) return {}
@@ -1103,7 +1118,7 @@ interface DataTableCellEditorSlotProps {
 }
 
 function isColumnEditable(col: ProTableColumn<T>): boolean {
-  return dataTableCellEditingEnabled.value && col.editable === true && !!col.field
+  return dataTableEditingEnabled.value && col.editable === true && !!col.field
 }
 
 function getColumnEditorType(col: ProTableColumn<T>): ProTableColumnEditorType {
@@ -1158,6 +1173,10 @@ function getRowKeyValue(row: T): string {
   return String(keyValue ?? '')
 }
 
+function handleDataTableEditingRowsUpdate(value: T[] | Record<string, boolean>): void {
+  dataTableEditingRows.value = Array.isArray(value) ? value : []
+}
+
 function handleDataTableCellEditComplete(event: ProTableCellEditCompletePrimeEvent<T>): void {
   const column = getEditableColumnByField(event.field)
   if (!column?.field) return
@@ -1169,6 +1188,42 @@ function handleDataTableCellEditComplete(event: ProTableCellEditCompletePrimeEve
     field: event.field,
     oldValue: event.value,
     newValue: event.newValue,
+    primeEvent: event,
+  })
+}
+
+function getRowEditChangedFields(oldRow: T, newRow: T): ProTableRowEditChangedField<T>[] {
+  return ctrl.visibleColumns.value
+    .filter(col => col.editable === true && !!col.field)
+    .map(column => {
+      const field = String(column.field)
+      return {
+        field,
+        column,
+        oldValue: oldRow[field],
+        newValue: newRow[field],
+      }
+    })
+    .filter(change => !Object.is(change.oldValue, change.newValue))
+}
+
+function handleDataTableRowEditSave(event: ProTableRowEditSavePrimeEvent<T>): void {
+  emit('row-edit-save', {
+    row: event.data,
+    rowKey: getRowKeyValue(event.data),
+    oldRow: event.data,
+    newRow: event.newData,
+    changedFields: getRowEditChangedFields(event.data, event.newData),
+    primeEvent: event,
+  })
+}
+
+function handleDataTableRowEditCancel(event: ProTableRowEditCancelPrimeEvent<T>): void {
+  emit('row-edit-cancel', {
+    row: event.data,
+    rowKey: getRowKeyValue(event.data),
+    oldRow: event.data,
+    newRow: event.newData,
     primeEvent: event,
   })
 }
@@ -1340,6 +1395,7 @@ defineExpose({
               :meta-key-selection="false"
               :data-key="String(rowKey)"
               :edit-mode="dataTableEditMode"
+              :editing-rows="dataTableRowEditingEnabled ? dataTableEditingRows : undefined"
               :row-class="rowClassFn ?? undefined"
               :resizable-columns="resizableColumns"
               :column-resize-mode="columnResizeMode"
@@ -1348,10 +1404,13 @@ defineExpose({
               :state-key="stateKey"
               @sort="handleDataTableSort"
               @update:selection="selectable ? (tableSelection = $event) : undefined"
+              @update:editing-rows="handleDataTableEditingRowsUpdate"
               @row-click="handleDataTableRowClick"
               @row-select="handleDataTableRowSelection"
               @row-unselect="handleDataTableRowSelection"
               @cell-edit-complete="handleDataTableCellEditComplete"
+              @row-edit-save="handleDataTableRowEditSave"
+              @row-edit-cancel="handleDataTableRowEditCancel"
             >
               <ColumnGroup
                 v-if="hasResolvedColumnGroups"
@@ -1392,6 +1451,13 @@ defineExpose({
                       </div>
                     </template>
                   </Column>
+
+                  <Column
+                    v-if="rowIndex === 0 && dataTableRowEditingEnabled"
+                    column-key="row-editor-group"
+                    :rowspan="groupedHeaderRowspan"
+                    :header-style="{ width: UI_DEFAULTS.rowEditorColumnWidth }"
+                  />
 
                   <Column
                     v-if="
@@ -1601,6 +1667,14 @@ defineExpose({
                   />
                 </template>
               </Column>
+
+              <Column
+                v-if="dataTableRowEditingEnabled"
+                column-key="row-editor"
+                :row-editor="true"
+                :header-style="{ width: UI_DEFAULTS.rowEditorColumnWidth }"
+                :body-style="{ textAlign: 'center' }"
+              />
 
               <!-- Selection column: right-pinned (after data columns) -->
               <Column

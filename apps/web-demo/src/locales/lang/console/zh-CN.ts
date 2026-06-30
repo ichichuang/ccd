@@ -23,6 +23,7 @@ const showcasePageTitles = {
   'components-pro-table-export-refresh': '导出与刷新',
   'components-pro-table-cell-rendering': '单元格渲染',
   'components-pro-table-inline-editing': '内联编辑',
+  'components-pro-table-row-editing': '行编辑',
   'components-pro-table-form-composition': '表单组合',
   'components-pro-table-api-events': 'API 与事件',
   'components-pro-form-overview': 'ProForm 概览',
@@ -175,6 +176,13 @@ const showcasePageLocaleOverrides: Record<string, ShowcasePageLocaleOverride> = 
     try: '编辑本地单元格。',
     source: '源码路径展示路由、类型化编辑载荷与本地行更新处理。',
     technical: '技术说明解释仅 DataTable 支持和调用方持久化边界。',
+  },
+  'components-pro-table-row-editing': {
+    eyebrow: 'ProTable 展示',
+    description: 'DataTable 路径行编辑复用按列启用的编辑器，并通过行保存载荷交给调用方持久化。',
+    try: '编辑本地行。',
+    source: '源码路径展示路由、类型化行编辑载荷与本地行替换处理。',
+    technical: '技术说明解释仅 DataTable 支持行编辑和调用方持久化边界。',
   },
   'components-pro-table-form-composition': {
     eyebrow: 'ProTable 展示',
@@ -345,6 +353,7 @@ const showcaseRouterLocale = createNestedLocaleRecord([
   ['components.proTable.exportRefresh', '导出与刷新'],
   ['components.proTable.cellRendering', '单元格渲染'],
   ['components.proTable.inlineEditing', '内联编辑'],
+  ['components.proTable.rowEditing', '行编辑'],
   ['components.proTable.formComposition', '表单组合'],
   ['components.proTable.apiEvents', 'API 与事件'],
   ['components.proForm.root', 'ProForm'],
@@ -1625,6 +1634,11 @@ const zhCNConsole = {
           demo: '只为选定列启用 DataTable 单元格编辑，并由页面根据事件载荷更新本地行。',
           tableTitle: '可编辑本地行',
         },
+        'row-editing': {
+          label: '行编辑',
+          demo: '只为选定列启用 DataTable 行编辑，并由页面根据 row-edit-save 替换本地行。',
+          tableTitle: '可行编辑本地行',
+        },
         'form-composition': {
           label: '表单组合',
           demo: 'PrimeVue 所有者过滤围绕 ProTable 组合，但该页面仍是 ProTable 展示，不是 ProForm 路由。',
@@ -1705,6 +1719,7 @@ const zhCNConsole = {
         ownerColumnShown: '所有者列已重新显示。',
         ownerColumnHidden: '已通过 toggleColumnVisibility() 隐藏所有者列。',
         cellEdited: '已编辑第 {row} 行的 {field}。页面更新的是自己的本地行副本。',
+        rowEdited: '已保存第 {row} 行，变更 {count} 个字段。页面替换的是自己的本地行副本。',
       },
       state: {
         title: '表格状态',
@@ -1741,6 +1756,7 @@ const zhCNConsole = {
         page: 'page-change：{detail}',
         requestError: 'request-error：{detail}',
         cellEdit: 'cell-edit-complete：{detail}',
+        rowEdit: 'row-edit-save：{detail}',
       },
       empty: {
         title: '没有匹配的 ProTable 行',
@@ -1874,7 +1890,7 @@ const zhCNConsole = {
         inlineEditing: {
           title: '按列启用编辑器',
           description:
-            '只有 editable: true 的列会在 DataTable cell 模式下渲染 text、number、select 或 date 编辑器。',
+            '只有 editable: true 的列会在 DataTable cell 或 row 模式下渲染 text、number、select 或 date 编辑器。',
           tag: '编辑',
         },
         filters: {
@@ -1952,8 +1968,7 @@ const zhCNConsole = {
         },
         callerPersistence: {
           title: '调用方持久化',
-          description:
-            '演示监听 cell-edit-complete 并替换自己的本地行副本；ProTable 不修改源数据。',
+          description: '演示监听编辑事件并替换自己的本地行副本；ProTable 不修改源数据。',
         },
       },
     },

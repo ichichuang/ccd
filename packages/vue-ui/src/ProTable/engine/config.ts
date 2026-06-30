@@ -94,6 +94,7 @@ export const TOOLBAR_DEFAULTS = {
 
 export const UI_DEFAULTS = {
   selectionColumnWidth: '48px',
+  rowEditorColumnWidth: '88px',
   fixedHeightFallback: '400px',
 } as const
 

@@ -13,6 +13,7 @@ type ProTableDemoShellMode =
   | 'basic'
   | 'columns'
   | 'inline-editing'
+  | 'row-editing'
   | 'server-request'
   | 'selection'
   | 'sorting-filtering'
@@ -56,7 +57,7 @@ const globalMountOptions = {
     ProTable: {
       name: 'ProTable',
       props: ['title', 'columns', 'data', 'editMode'],
-      emits: ['cell-edit-complete'],
+      emits: ['cell-edit-complete', 'row-edit-save'],
       template:
         '<section class="pro-table-stub"><strong>{{ title }}</strong><slot name="empty" /></section>',
     },
@@ -179,6 +180,48 @@ describe('ProTableDemoShell visual foundation', () => {
     >
     expect(updatedRows[0].capability).toBe('Edited capability')
     expect(wrapper.text()).toContain('cell-edit-complete: capability: Edited capability')
+  })
+
+  it('proves row editing updates local demo rows through the emitted save event', async () => {
+    const wrapper = mountShell({
+      id: 'components-pro-table-row-editing',
+      mode: 'row-editing',
+    })
+
+    const table = wrapper.findComponent({ name: 'ProTable' })
+    expect(table.props('editMode')).toBe('row')
+
+    const rows = table.props('data') as Array<Record<string, unknown>>
+    table.vm.$emit('row-edit-save', {
+      row: rows[0],
+      rowKey: rows[0].id,
+      oldRow: rows[0],
+      newRow: { ...rows[0], capability: 'Edited row capability', records: 99 },
+      changedFields: [
+        {
+          field: 'capability',
+          column: {},
+          oldValue: rows[0].capability,
+          newValue: 'Edited row capability',
+        },
+        { field: 'records', column: {}, oldValue: rows[0].records, newValue: 99 },
+      ],
+      primeEvent: {
+        originalEvent: new Event('click'),
+        data: rows[0],
+        newData: { ...rows[0], capability: 'Edited row capability', records: 99 },
+        field: 'capability',
+        index: 0,
+      },
+    })
+    await wrapper.vm.$nextTick()
+
+    const updatedRows = wrapper.findComponent({ name: 'ProTable' }).props('data') as Array<
+      Record<string, unknown>
+    >
+    expect(updatedRows[0].capability).toBe('Edited row capability')
+    expect(updatedRows[0].records).toBe(99)
+    expect(wrapper.text()).toContain('row-edit-save:')
   })
 
   it('renders the API event result area and readable wrapping source paths', () => {
