@@ -15,6 +15,10 @@ The P2-B backlog, acceptance criteria, rollback plan, and future feature gates l
 P2-B1 records the filtering contract decision. `filterable` remains typed but unwired; it does not
 enable PrimeVue TreeTable filters, filter UI, local data filtering, or server requests.
 
+P2-B2 records the server/lazy adapter contract decision. The current `loadChildren` contract remains
+the local child-loading path; real root/server adapters, retry UI, URL/state persistence, and public
+server-mode props/events remain deferred.
+
 This README does not approve production readiness or new runtime behavior. Filtering, real server
 adapters, editing, virtualization, tree range selection, a shared headless hierarchy engine, and
 `ProTable` integration each require a separate decision gate before implementation.
@@ -135,6 +139,25 @@ baseline.
 - Any future filtering task must preserve caller-owned `expandedKeys` and define descendant,
   collapsed-branch, lazy-unloaded-child, clear/reset, and accessibility behavior before runtime
   wiring.
+
+## Server / Lazy Adapter Status
+
+P2-B2 is a documented future contract, not a runtime feature in the current experimental baseline.
+
+- Current `lazy` and `loadChildren` stay unchanged as the local child-loading contract.
+- `loadChildren` must not be overloaded into root loading or a full server adapter.
+- Future root/server loading should use a separate tree-specific `treeDataSource` or `treeRequest`
+  adapter with explicit root and child load scopes.
+- Future server requests may include the P2-B1 tree filter state only after filtering runtime is
+  explicitly approved.
+- Future pagination is root-only by default; child-level pagination, cursors, and URL/state
+  persistence remain deferred.
+- Durable root and child node persistence remains caller/adapter-owned. The wrapper owns only
+  documented transient loading/error/rendering state.
+- Future public events must remain CCD-owned payloads and must not expose raw PrimeVue events.
+- `ProTableLoadParams` remains rejected for tree server/lazy contracts because it is a flat-row
+  request payload and cannot represent root-versus-child loading, parent keys, expansion/selection
+  snapshots, child persistence, or node-key-scoped stale response handling.
 
 ## Column Compatibility
 

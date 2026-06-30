@@ -25,6 +25,18 @@ wiki_owner: LLM-maintained CCD architecture wiki
 
 # Wiki Log
 
+## [2026-06-30] decisions | ProTreeTable server/lazy adapter contract decision
+
+- Updated [[adr-009-pro-tree-table-api-decision]] with the P2-B2 server/lazy adapter contract decision.
+- Preserved current `lazy` and `loadChildren` behavior as the local child-loading contract.
+- Documented future root/server adapter shape, root and child load payloads, error/retry context,
+  root-only pagination ownership, filter/sort ownership, selection/expansion snapshots, durable child
+  persistence ownership, stale response handling, and CCD-owned event payload rules.
+- Rejected `ProTableLoadParams` reuse for tree server/lazy contracts and kept `ProTable treeMode`
+  rejected.
+- Synchronized the ProTreeTable README server/lazy status note without changing runtime source,
+  generated reports, dependencies, or flat `ProTable` files.
+
 ## [2026-06-30] decisions | ProTreeTable filtering contract decision
 
 - Updated [[adr-009-pro-tree-table-api-decision]] with the P2-B1 filtering contract research and docs-only decision.

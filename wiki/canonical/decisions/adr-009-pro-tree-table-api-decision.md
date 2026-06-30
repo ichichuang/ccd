@@ -59,6 +59,9 @@ This page now owns the P2-B0 stabilization status sync and issue list. P2-B0 is 
 
 P2-B1 records the filtering contract research and docs-only decision. It does not wire runtime filtering.
 
+P2-B2 records the server/lazy adapter contract design. It does not implement a server adapter,
+add runtime props or events, or change the current local `loadChildren` behavior.
+
 ## Decision Summary
 
 CCD should continue tree table support as an independent experimental `ProTreeTable` wrapper inside `@ccd/vue-ui`, backed by PrimeVue `TreeTable`.
@@ -517,6 +520,269 @@ A future local filtering implementation is acceptable only when it:
 - Leaves `ProTable.vue`, `VirtualGridRenderer.vue`, and the flat `TableController` untouched.
 - Updates generated API reports only if the public export surface changes in that runtime task.
 
+## P2-B2 Server/Lazy Adapter Contract Decision
+
+P2-B2 is a docs-only decision gate. The current runtime remains unchanged:
+
+- `lazy` and `loadChildren` remain the local child-loading contract.
+- `loadChildren` is still called only for a known expanded node with no current children, `leaf !== true`,
+  no transient cached children, and no pending load for the same key.
+- `ProTreeTableLazyLoadParams` still contains only `key`, `node`, `expandedKeys`, and `selectionKeys`.
+- `ProTreeTableLazyLoadResult` still returns child nodes only.
+- `lazy-load` still emits `{ key, node, children }`.
+- `lazy-load-error` still emits `{ key, node, error }`.
+- Loaded children remain in the wrapper's transient clone. Durable node persistence remains caller-owned.
+- No root loader, server adapter, retry event, page event, filter event, sort event, URL persistence, or
+  public export change is added in P2-B2.
+- `ProTreeTable` remains independent and experimental.
+- `ProTable treeMode` remains rejected.
+
+### Server/Lazy Research Findings
+
+PrimeVue `TreeTable` lazy mode is useful input, but it is not the CCD public contract:
+
+- Installed PrimeVue 4.5.5 `TreeNode` exposes `key`, `children`, `leaf`, and `loading`; `leaf` is the
+  lazy hint and `loading` is a node-level visual state.
+- PrimeVue `TreeTable` exposes `lazy`, `loading`, `first`, `rows`, `totalRecords`, `paginator`,
+  `sortField`, `sortOrder`, `multiSortMeta`, `filters`, and `filterMode`.
+- PrimeVue page and sort events carry a lazy-load style payload with `first`, `rows`, `sortField`,
+  `sortOrder`, `multiSortMeta`, `filters`, and optional field match modes.
+- PrimeVue filtering emits `filteredValue` only in non-lazy mode; its type surface states the filter event
+  is not triggered in lazy mode.
+- In lazy mode, PrimeVue `processedData` returns the supplied `value` without local sort/filter work.
+- In lazy mode with pagination, PrimeVue renders `value.slice(0, rows)` and expects the caller/server to
+  supply the current page records and `totalRecords`.
+- PrimeVue `onPage` resets its internal `expandedKeys`. A CCD server adapter must not expose that raw
+  behavior as an implicit public ownership rule; `expandedKeys` remains caller-controlled.
+- PrimeVue raw event objects are implementation detail. `ProTreeTable` public events must continue to use
+  CCD-owned payloads.
+
+The flat `ProTable` request path is also input for contrast only:
+
+- `ProTableLoadParams` is `{ page, pageSize, sort, filter, signal }` for a flat row pipeline.
+- `TableController` owns flat request loading, total, error, stale response checks, and aborting previous
+  request-mode fetches.
+- That shape does not describe root-versus-child loads, parent keys, node snapshots, child persistence,
+  partial checkbox selection, collapsed descendants, unloaded lazy children, or node-key-scoped stale
+  response handling.
+
+### Options Compared
+
+| Option                                         | API clarity                                                                  | Separation from flat `ProTable`                                                          | Root loading support | Child loading support       | Error and retry handling                                             | Pagination ownership                                                             | Filter/sort ownership                                                      | Selection/expansion ownership                                             | Child persistence ownership                        | Accessibility and UI state implications                                                 | Rollback risk |
+| ---------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | -------------------- | --------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------- | ------------- |
+| A. Keep only current local `loadChildren`      | Clear for local child expansion, incomplete for server workflows.            | Strong separation.                                                                       | None.                | Good for local child loads. | Current `lazy-load-error` only; retry remains caller-specific.       | None.                                                                            | None beyond current payload snapshots.                                     | Preserves current controlled maps.                                        | Transient cache only; durable state caller-owned.  | No new UI states.                                                                       | Lowest.       |
+| B. Future `treeRequest` root + child adapter   | Clear single adapter entrypoint with explicit `scope: 'root' \| 'children'`. | Strong separation when it uses tree-specific params and does not import ProTable params. | Yes.                 | Yes, via child scope.       | Can standardize request id, error context, and retry reason.         | Root pagination can be first-class; child pagination can be deferred explicitly. | Can include P2-B1 filter state and tree sort state only in server mode.    | Payload snapshots only; caller keeps controlled state.                    | Caller/adapter owns durable root and child nodes.  | Requires later loading/error/empty state and keyboard validation before runtime wiring. | Medium.       |
+| C. Separate `loadRootNodes` and `loadChildren` | Verbose but explicit.                                                        | Strong separation.                                                                       | Yes.                 | Yes.                        | Duplicates error/retry behavior across two callbacks unless wrapped. | Root-only pagination is easy; child paging still needs another contract.         | Must duplicate state payload rules across callbacks.                       | Payload snapshots only; caller keeps controlled state.                    | Caller owns both returned roots and children.      | Similar to B, with more API surface to test.                                            | Medium.       |
+| D. Generic adapter object with many hooks      | Most flexible, but over-designed for the next slice.                         | Could stay separate but risks recreating a second table engine prematurely.              | Yes.                 | Yes.                        | Richest hook surface, highest coordination cost.                     | Can model root and child pagination, but invites scope creep.                    | Can model local/server/filter/sort/page/retry hooks, but too much at once. | Easy to over-centralize selection and expansion into adapter-owned state. | Could own persistence, but weakens caller control. | Highest UI/test/accessibility surface; risks premature headless hierarchy design.       | Medium-high.  |
+
+### Recommendation
+
+Keep Option A as the current runtime boundary and adopt Option B as the documented future path.
+
+The next server-facing runtime task, if approved, should add a separate tree-specific
+`treeDataSource` or `treeRequest` adapter for root/server workflows. It must not overload the current
+local `loadChildren` callback into a full server adapter, and it must not reuse `ProTableLoadParams`.
+
+`loadChildren` remains valuable as the simple local child-loading contract. A future server adapter may
+include a child-loading method with a similar child response shape, but it should live under explicit
+server data mode so root loading, retry, cancellation, pagination, and state ownership are visible in the
+API.
+
+### Proposed Future Contract
+
+These type sketches are design-only and must not be exported until a separate runtime task approves them:
+
+```ts
+type ProTreeTableDataMode = 'local' | 'server'
+
+type ProTreeTableLoadScope = 'root' | 'children'
+
+type ProTreeTableLoadReason =
+  | 'initial'
+  | 'refresh'
+  | 'retry'
+  | 'page'
+  | 'sort'
+  | 'filter'
+  | 'expand'
+
+interface ProTreeTablePageState {
+  page: number
+  pageSize: number
+}
+
+interface ProTreeTableSortState {
+  field: string | null
+  direction: 'asc' | 'desc' | null
+  multi?: { field: string; direction: 'asc' | 'desc' }[]
+}
+
+interface ProTreeTableLoadBaseParams<T extends Record<string, unknown>> {
+  requestId: string
+  reason: ProTreeTableLoadReason
+  expandedKeys: ProTreeTableExpandedKeys
+  selectionKeys: ProTreeTableSelectionKeys
+  sortState?: ProTreeTableSortState
+  filterState?: ProTreeTableFilterState
+  signal?: AbortSignal
+}
+
+interface ProTreeTableRootLoadParams<
+  T extends Record<string, unknown>,
+> extends ProTreeTableLoadBaseParams<T> {
+  scope: 'root'
+  page?: ProTreeTablePageState
+}
+
+interface ProTreeTableChildLoadParams<
+  T extends Record<string, unknown>,
+> extends ProTreeTableLoadBaseParams<T> {
+  scope: 'children'
+  key: string
+  node: ProTreeTableNode<T>
+  parentPath?: string[]
+}
+
+type ProTreeTableLoadParams<T extends Record<string, unknown>> =
+  | ProTreeTableRootLoadParams<T>
+  | ProTreeTableChildLoadParams<T>
+
+type ProTreeTableLoadResult<T extends Record<string, unknown>> =
+  | {
+      scope: 'root'
+      nodes: ProTreeTableNode<T>[]
+      totalRootNodes?: number
+    }
+  | {
+      scope: 'children'
+      key: string
+      children: ProTreeTableNode<T>[]
+    }
+
+interface ProTreeTableLoadError<T extends Record<string, unknown>> {
+  requestId: string
+  scope: ProTreeTableLoadScope
+  reason: ProTreeTableLoadReason
+  key?: string
+  node?: ProTreeTableNode<T>
+  error: unknown
+  retryable?: boolean
+}
+
+interface ProTreeTableRetryContext<T extends Record<string, unknown>> {
+  error: ProTreeTableLoadError<T>
+  attempt: number
+  params: ProTreeTableLoadParams<T>
+}
+
+interface ProTreeTableDataSource<T extends Record<string, unknown>> {
+  load(params: ProTreeTableLoadParams<T>): Promise<ProTreeTableLoadResult<T>>
+}
+```
+
+`ProTreeTableFilterState` is the P2-B1 future filtering state shape. P2-B2 does not add it to runtime,
+but server-mode requests should use that tree-owned state if filtering is implemented later.
+
+### Ownership Rules
+
+Root loading:
+
+- A future server adapter owns root request execution and returns root `nodes`.
+- Root load reasons include `initial`, `refresh`, `retry`, `page`, `sort`, and `filter`.
+- The component may own transient root loading UI after a future runtime task, but durable root nodes are
+  caller/adapter-owned.
+
+Child loading:
+
+- Current local `loadChildren` remains child-only and unchanged.
+- Future server child loading uses `scope: 'children'`, `key`, `node`, and optional `parentPath`.
+- Child results attach to the caller-owned tree when the caller accepts the result. The component must not
+  become the durable node store.
+
+Error and retry:
+
+- Errors surface through CCD-owned payloads. Raw PrimeVue events and raw adapter internals are not public
+  API.
+- A future retry must be triggered by caller intent or a future explicit retry UI/event. The component must
+  not silently loop retries.
+- Retry requests use the original params plus `reason: 'retry'` and an incremented attempt count in retry
+  context.
+- `retryable` is advisory; callers may still suppress retry for authorization, validation, or destructive
+  server errors.
+
+Pagination:
+
+- First server adapter pagination is root-only.
+- `page` and `pageSize` refer to root records, not visible flattened rows and not child records.
+- `totalRootNodes` is the root total. It must not include expanded children.
+- Child-level pagination, cursors, and partial child totals are deferred to a later decision gate.
+- URL/state persistence for page, sort, filters, expansion, and selection is deferred.
+
+Filter and sort:
+
+- Server requests may include `filterState` only after the P2-B1 filtering runtime contract exists.
+- Server requests may include tree-owned `sortState`; it must not import flat `SortState` unless a later
+  compatibility review proves the boundary is exact.
+- Server mode delegates returned shape, ancestor context, matching descendants, totals, and unloaded-child
+  semantics to the caller/server.
+- Local filtering remains unwired after P2-B2.
+
+Selection and expansion:
+
+- `expandedKeys` and `selectionKeys` remain caller-controlled state.
+- Request params include snapshots of those maps so the adapter can make server decisions.
+- Request params do not transfer ownership of selection, expansion, or checkbox partial state to the
+  adapter.
+- Unknown keys returned from stale server responses must be ignored or reconciled by caller-owned state.
+
+Child persistence:
+
+- Current transient child cache is a rendering convenience only.
+- Future server mode must treat durable root and child node persistence as caller/adapter-owned.
+- Remounts, identity changes, and root reloads may invalidate component transient state.
+
+Cancellation and stale responses:
+
+- Future request params include `requestId` and optional `AbortSignal`.
+- Root requests may cancel or supersede previous root requests.
+- Child requests are stale independently by node key and request id.
+- A response whose request id is no longer current must be ignored.
+- Abort handling should be silent unless the caller explicitly asks to surface cancellation.
+
+Event payload ownership:
+
+- Public events must remain CCD-owned payloads with stable keys and CCD node wrappers.
+- Raw PrimeVue page/sort/filter/node events are internal implementation detail.
+- Future server events should carry request params, request ids, result/error summaries, and ownership
+  snapshots, not raw transport responses.
+
+### Explicit Rejection Of `ProTableLoadParams`
+
+`ProTableLoadParams` must not be reused for tree server/lazy contracts.
+
+It is a flat table request payload for `page`, `pageSize`, `sort`, `filter`, and `signal`. Reusing it for
+tree loading would either hide tree-only requirements or overload flat semantics with parent keys and
+node state. The tree contract needs an explicit load scope, root-versus-child result shape, parent key,
+node snapshot, expansion and selection snapshots, root-only pagination semantics, node-key stale handling,
+and caller-owned child persistence rules.
+
+### Future Runtime Acceptance Criteria
+
+A future server/lazy runtime task is acceptable only when it:
+
+- Adds an explicit `server` data mode or adapter prop rather than changing local `loadChildren` semantics.
+- Implements root loading and child loading through tree-specific params and CCD-owned events.
+- Keeps durable nodes caller/adapter-owned and transient loading/error state component-owned only where
+  explicitly documented.
+- Defines root-only pagination and keeps child pagination deferred unless a separate decision approves it.
+- Includes current P2-B1 filter state only if filtering runtime has been approved.
+- Covers stale responses, aborts, retry, errors, root reloads, child reloads, and expansion/selection
+  snapshots with focused tests.
+- Adds route-level accessibility checks if new loading, error, empty, retry, filter, sort, or pagination UI
+  is introduced.
+- Leaves `ProTable.vue`, `VirtualGridRenderer.vue`, and the flat `TableController` untouched.
+- Updates generated API reports only if the public export surface changes in that runtime task.
+
 ## Future Feature Decision Gates
 
 The following features require separate decision records or explicitly scoped follow-up tasks before any runtime implementation:
@@ -533,7 +799,9 @@ Until those gates pass, `ProTreeTable` must remain independent and experimental,
 
 ## P2-B Rollback And Validation Gates
 
-P2-B0 and P2-B1 rollback is documentation-only: revert the ADR-009 status/backlog/filtering-decision changes, the package README status note, and any index/log updates made with the same docs task.
+P2-B0, P2-B1, and P2-B2 rollback is documentation-only: revert the ADR-009
+status/backlog/filtering/server-lazy decision changes, the package README status note, and any
+index/log updates made with the same docs task.
 
 Before any new runtime feature is approved, the implementing task must define rollback and run at least:
 
@@ -563,7 +831,9 @@ P2-A1 is acceptable only when:
 
 ## Current Impact
 
-This ADR creates the design boundary for future Tree table work. P2-B1 documents the filtering contract decision only. It does not change runtime behavior, public exports, generated API reports, dependencies, or ProTable implementation files.
+This ADR creates the design boundary for future Tree table work. P2-B1 documents the filtering
+contract decision and P2-B2 documents the server/lazy adapter contract decision only. Neither changes
+runtime behavior, public exports, generated API reports, dependencies, or ProTable implementation files.
 
 ## Related Pages
 
