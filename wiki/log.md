@@ -25,6 +25,14 @@ wiki_owner: LLM-maintained CCD architecture wiki
 
 # Wiki Log
 
+## [2026-06-30] decisions | ProTreeTable P2-A closure and P2-B stabilization
+
+- Updated [[adr-009-pro-tree-table-api-decision]] as the P2-B0 stabilization status sync and issue list.
+- Recorded P2-A1 through P2-A6 as complete, with P2-A6 as a read-only decision gate.
+- Preserved the decision to keep `ProTreeTable` as an independent experimental wrapper and continue rejecting `ProTable treeMode` for now.
+- Added the prioritized P2-B stabilization backlog, acceptance criteria, rollback plan, and future runtime feature decision gates.
+- Synchronized the ProTreeTable README status note and decision indexes without changing runtime source, generated reports, dependencies, or flat `ProTable` files.
+
 ## [2026-06-30] decisions | ProTreeTable API decision
 
 - Added [[adr-009-pro-tree-table-api-decision]] as the P2-A0 design-only decision for future Tree table support.

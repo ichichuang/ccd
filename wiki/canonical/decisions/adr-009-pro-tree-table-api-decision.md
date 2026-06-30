@@ -19,8 +19,8 @@ tags_zh:
   - 架构
   - Vue UI
   - ProTable
-status: draft
-confidence: 0.86
+status: verified
+confidence: 0.90
 source_langs:
   - en
 source_paths:
@@ -30,7 +30,16 @@ source_paths:
   - packages/vue-ui/src/ProTable/VirtualGridRenderer.vue
   - packages/vue-ui/src/ProTable/engine/types/props.ts
   - packages/vue-ui/src/ProTable/engine/core/TableController.ts
+  - packages/vue-ui/src/ProTreeTable/README.md
+  - packages/vue-ui/src/ProTreeTable/index.ts
+  - packages/vue-ui/src/ProTreeTable/types.ts
+  - packages/vue-ui/src/ProTreeTable/ProTreeTable.vue
+  - packages/vue-ui/src/ProTreeTable/ProTreeTable.spec.ts
+  - apps/web-demo/src/views/showcase/components/pro-tree-table/overview/index.vue
+  - apps/web-demo/src/views/showcase/components/pro-tree-table/shared/proTreeTableDemoData.ts
+  - e2e/pro-tree-table-accessibility.spec.ts
   - wiki/generated/api-surface-report.json
+  - wiki/generated/web-demo-ui-inventory.md
   - https://primevue.org/treetable
 last_reviewed: '2026-06-30'
 wiki_owner: LLM-maintained CCD architecture wiki
@@ -40,15 +49,19 @@ wiki_owner: LLM-maintained CCD architecture wiki
 
 ## Status
 
-Proposed / P2-A0.
+Verified / P2-A closed / P2-B stabilization active.
 
-This page is a design-only decision note. The type sketches below are not runtime code and must not be added to package exports during P2-A0.
+P2-A1 through P2-A6 are complete as of 2026-06-30. The latest runtime and test baseline is `562beb0436bdda7d848ec54b37e4cbcb75f98b89`; P2-A6 was a read-only decision gate and produced no commit.
+
+This page now owns the P2-B0 stabilization status sync and issue list. P2-B0 is documentation and governance only: it does not approve new runtime features, exports, generated reports, dependencies, or changes to the flat `ProTable` implementation.
 
 ## Decision Summary
 
-CCD should add future tree table support as an experimental `ProTreeTable` wrapper inside `@ccd/vue-ui`, backed by PrimeVue `TreeTable`, before considering any `treeMode` extension in the existing flat `ProTable` engine.
+CCD should continue tree table support as an independent experimental `ProTreeTable` wrapper inside `@ccd/vue-ui`, backed by PrimeVue `TreeTable`.
 
-The first implementation slice after this note is P2-A1: a static-data demo wrapper with no lazy loading, no editing, no virtual scrolling, and no package export churn beyond the reviewed component/API work for that slice.
+Do not merge `ProTreeTable` into `ProTable`, do not add `treeMode` or `treeData` to `ProTable`, and do not route tree semantics through the flat `ProTable` row engine at this stage.
+
+The completed P2-A baseline is sufficient to start P2-B stabilization. It is not sufficient to promote `ProTreeTable` out of experimental status.
 
 ## Background
 
@@ -247,12 +260,16 @@ The following are explicitly deferred:
 
 - `ProTable` `treeMode`.
 - Shared headless hierarchical row engine.
-- `VirtualGridRenderer` tree virtualization.
+- `VirtualGridRenderer` tree virtualization and tree virtual scrolling.
 - Tree row editing.
 - Shift-click tree range selection.
 - Footer groups.
 - Advanced tree group styling.
 - Server persistence implementation.
+- Real server adapters.
+- TreeTable filtering from `filterable`.
+- VNode or component column render output.
+- Advanced column compatibility beyond the ADR-009 subset.
 - URL synchronization for tree expansion and selection state.
 - Column group parity with flat `ProTable`.
 - Tree-aware export behavior.
@@ -310,14 +327,89 @@ Future implementation rollback should remain additive and simple:
 
 ## Staged Roadmap
 
-- P2-A1: Minimal `ProTreeTable` wrapper demo with local static tree data. No lazy loading, editing, or virtual scroll.
-- P2-A2: Shared column/schema compatibility for the approved `ProTableColumn<T>` subset.
-- P2-A3: Controlled expansion and selection with `v-model:expandedKeys`, `v-model:selectionKeys`, and node events.
-- P2-A4: Lazy loading/request adapter using `loadChildren` or a tree-specific request contract.
-- P2-A5: Accessibility and E2E gates: keyboard smoke, axe smoke, screenshots, and no `ProTable` regressions.
-- P2-A6: Decision gate: keep `ProTreeTable`, extract a shared headless hierarchy engine, or stop at the wrapper.
+### Completed P2-A Baseline
 
-## P2-A1 Acceptance Criteria
+- P2-A0: ADR-009 recorded the ProTreeTable API decision.
+- P2-A1: Experimental static `ProTreeTable` wrapper and showcase route.
+- P2-A2: Column compatibility baseline for the approved ADR-009 subset.
+- P2-A3: Controlled expansion and selection contract.
+- P2-A4: Tree-specific lazy `loadChildren` contract.
+- P2-A5: ProTreeTable accessibility and E2E validation gates.
+- P2-A6: Read-only decision gate.
+
+### P2-A6 Decision Gate Result
+
+P2-A6 compares three options:
+
+| Option                          | Result   | Reason                                                                                                                |
+| ------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------- |
+| Continue `ProTreeTable` wrapper | Accepted | Best current balance: additive, isolated, testable, and already backed by a package README, unit tests, and E2E gate. |
+| Extract headless hierarchy core | Deferred | Useful only after filtering, server, and selection semantics stabilize enough to justify shared engine work.          |
+| Stop at P2-A wrapper            | Rejected | The wrapper has enough evidence to justify stabilization, but not production promotion.                               |
+
+The accepted path is to continue `ProTreeTable` as an independent experimental wrapper and start P2-B stabilization. The rejected path remains `ProTable treeMode` for now.
+
+### Current Supported Capability Baseline
+
+The current experimental baseline supports:
+
+- `nodes`, `columns`, `loading`, and `disabled`.
+- `selectionMode`.
+- Controlled `expandedKeys` and `selectionKeys` updates.
+- `node-expand`, `node-collapse`, `node-select`, and `node-unselect` events.
+- `lazy`, `loadChildren`, `lazy-load`, and `lazy-load-error`.
+- One expander column, always the first configured column.
+- Text cell output from field values and simple `valueEnum` label mapping.
+- The ADR-009 column subset: `id`, `field`, `title`, `width`, `minWidth`, `align`, `pinned`, `sortable`, `filterable` as a typed but unwired flag, `valueEnum`, and text-only `render`.
+- Route-level accessibility smoke for the experimental showcase route, including console/page-error smoke, axe smoke, treegrid marker checks, keyboard expansion, deterministic local lazy-load evidence, row selection evidence, and screenshot attachment.
+
+This baseline remains experimental. It is a tested smoke baseline, not a production-readiness or full-accessibility claim.
+
+## P2-B Stabilization Backlog
+
+P2-B work must stay behind separate decision gates. P2-B0 is this documentation/status sync.
+
+| Priority | Item                                     | Scope                                                                                      | Acceptance criteria                                                                                                                                                                                                                                                                                         |
+| -------- | ---------------------------------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P2-B0    | Stabilization status sync and issue list | Docs/governance only.                                                                      | ADR-009 records P2-A closure, P2-A6 decision result, current supported capabilities, deferred scope, P2-B backlog, rollback, and validation gates. README status is synchronized without claiming production readiness. No runtime files, generated reports, dependencies, or flat `ProTable` files change. |
+| P2-B1    | Filtering contract research/decision     | Research or docs-only decision for `filterable` and TreeTable filtering semantics.         | Document whether filtering remains deferred, maps to a tree-specific state shape, or needs a future server contract. Compare visible-node, descendant, collapsed-node, and lazy-child behavior. Do not wire runtime filtering.                                                                              |
+| P2-B2    | Server/lazy adapter contract design      | Design the server/lazy adapter contract without implementing real adapters.                | Specify root loading, child loading, error/retry shape, pagination ownership, child persistence ownership, and event payload ownership. Preserve `loadChildren` as the current local contract until a later task explicitly changes runtime.                                                                |
+| P2-B3    | Visual polish and state inventory        | Token/state design for empty, loading, and error states.                                   | Produce a state inventory and acceptance checklist for tokenized empty/loading/error states. Any UI change must be a separate runtime task with screenshots and must not add editing, virtualization, filtering, or server behavior.                                                                        |
+| P2-B4    | Selection/expansion edge-case audit      | Audit controlled state edge cases before adding new behavior.                              | Cover disabled mode, `node.selectable=false`, unknown keys, collapsed selected descendants, lazy children, checkbox partial state, duplicate key risks, and remount/transient-cache behavior. Output either docs-only findings or a test-only follow-up plan.                                               |
+| P2-B5    | Accessibility hardening follow-up        | Required if P2-B3 changes UI states or interaction surfaces.                               | Re-run and extend keyboard, axe, screenshot, and manual ARIA checks for new states. Preserve the statement that accessibility is smoke-tested, not globally certified.                                                                                                                                      |
+| P2-B6    | Experimental-versus-beta decision gate   | Decide whether to keep experimental status or promote to beta after B1-B5 evidence exists. | Record pass/fail status for B1-B5, unresolved API risks, required validation evidence, rollback path, and recommendation. Promotion to beta requires a separate docs decision and must not imply `ProTable` integration.                                                                                    |
+
+## Future Feature Decision Gates
+
+The following features require separate decision records or explicitly scoped follow-up tasks before any runtime implementation:
+
+- Filtering.
+- Real server adapters.
+- Editing.
+- Virtualization.
+- Tree range selection.
+- Shared headless hierarchy engine.
+- ProTable integration.
+
+Until those gates pass, `ProTreeTable` must remain independent and experimental, and `ProTable treeMode` remains rejected.
+
+## P2-B Rollback And Validation Gates
+
+P2-B0 rollback is documentation-only: revert the ADR-009 status/backlog changes, the package README status note, and any index/log updates made with the same docs task.
+
+Before any new runtime feature is approved, the implementing task must define rollback and run at least:
+
+- `git diff --check`.
+- Focused `ProTreeTable` unit tests for the changed contract.
+- `mise exec -- pnpm wiki:validate` when wiki files change.
+- `mise exec -- pnpm type-check` or the narrower repo-approved equivalent for public type changes.
+- `mise exec -- pnpm lint:check` when source files change.
+- ProTreeTable route E2E/accessibility checks when UI states or interactions change.
+- Flat `ProTable` regression checks whenever shared package exports, table contracts, or table internals are touched.
+- `mise exec -- pnpm api:report` only when public export surface changes.
+- UI inventory generation/check only when route topology changes.
+
+## Historical P2-A1 Acceptance Criteria
 
 P2-A1 is acceptable only when:
 

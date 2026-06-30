@@ -1,10 +1,22 @@
 # ProTreeTable
 
-Status: experimental, P2-A5 accessibility and E2E validation gate baseline.
+Status: experimental, P2-A closed; P2-B stabilization planning is active.
 
 `ProTreeTable` is an additive wrapper around PrimeVue `TreeTable` for tree-shaped data. It exists separately from `ProTable` so TreeTable semantics do not enter the flat ProTable row engine before ADR-009 follow-up gates.
 
-## Supported in P2-A4
+## Roadmap / Stabilization Status
+
+P2-A1 through P2-A6 are complete. P2-A6 keeps `ProTreeTable` as an independent
+experimental wrapper and starts P2-B stabilization.
+
+The P2-B backlog, acceptance criteria, rollback plan, and future feature gates live in
+`wiki/canonical/decisions/adr-009-pro-tree-table-api-decision.md`.
+
+This README does not approve production readiness or new runtime behavior. Filtering, real server
+adapters, editing, virtualization, tree range selection, a shared headless hierarchy engine, and
+`ProTable` integration each require a separate decision gate before implementation.
+
+## Supported Baseline
 
 - `nodes`, `columns`, `loading`, `disabled`
 - `selectionMode`
