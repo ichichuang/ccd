@@ -105,7 +105,7 @@ const showcasePageLocaleOverrides: Record<string, ShowcasePageLocaleOverride> = 
     description: '可选分组表头组织可见叶子列，同时排序、筛选与列控件仍由叶子列持有。',
     try: '查看列分组。',
     source: '源码路径展示路由、共享壳、列工厂与 ProTable 包 API。',
-    technical: '技术说明标明 DataTable 路径支持与虚拟滚动延后实现。',
+    technical: '技术说明标明 DataTable 与 VirtualGridRenderer 路径均支持分组表头。',
   },
   'components-pro-table-sorting-filtering': {
     eyebrow: 'ProTable 展示',

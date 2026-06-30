@@ -109,7 +109,8 @@ const showcasePageLocaleOverrides: Record<string, ShowcasePageLocaleOverride> = 
       'Opt-in grouped headers organize visible leaf columns while sorting, filtering, and column controls remain leaf-owned.',
     try: 'Inspect grouped columns.',
     source: 'Source paths show the route, shared shell, column factory, and ProTable package API.',
-    technical: 'Technical notes call out DataTable-path support and the virtual-scroll deferral.',
+    technical:
+      'Technical notes call out grouped-header support in both DataTable and VirtualGridRenderer paths.',
   },
   'components-pro-table-sorting-filtering': {
     eyebrow: 'ProTable showcase',

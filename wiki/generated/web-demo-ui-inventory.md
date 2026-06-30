@@ -23,7 +23,7 @@ source_paths:
   - apps/web-demo/src/views/**
   - apps/web-demo/src/locales/**
   - e2e/**
-last_reviewed: '2026-06-24'
+last_reviewed: '2026-06-30'
 wiki_owner: LLM-maintained CCD architecture wiki
 ---
 
@@ -54,21 +54,21 @@ that this file used to carry.
 
 ## Route surface overview
 
-| Section      | Top path                          | Registered records | Entry / redirect                   |
-| ------------ | --------------------------------- | -----------------: | ---------------------------------- |
-| core         | `/`, `/login`                     |                  2 | `/` → `VITE_ROOT_REDIRECT`         |
-| dashboard    | `/dashboard`                      |                  1 | leaf (fixed tag, keep-alive)       |
-| architecture | `/architecture`                   |                  5 | root + 4 console pages             |
-| runtime      | `/runtime`                        |                  5 | root + 4 console pages             |
-| ui           | `/ui`                             |                  6 | root + 5 console pages             |
-| system       | `/system`                         |                  6 | root + 5 console pages             |
-| desktop      | `/desktop`                        |                  1 | single boundary console page       |
-| error/catch  | `/404`, `/403`, `/500`, catch-all |                  4 | catch-all → `/404`                 |
-| showcase     | `/showcase`                       |                 70 | root + 7 group parents + 62 leaves |
+| Section      | Top path                          | Registered records | Entry / redirect                            |
+| ------------ | --------------------------------- | -----------------: | ------------------------------------------- |
+| core         | `/`, `/login`                     |                  2 | `/` → `VITE_ROOT_REDIRECT`                  |
+| dashboard    | `/dashboard`                      |                  1 | leaf (fixed tag, keep-alive)                |
+| architecture | `/architecture`                   |                  5 | root + 4 console pages                      |
+| runtime      | `/runtime`                        |                  5 | root + 4 console pages                      |
+| ui           | `/ui`                             |                  6 | root + 5 console pages                      |
+| system       | `/system`                         |                  6 | root + 5 console pages                      |
+| desktop      | `/desktop`                        |                  1 | single boundary console page                |
+| error/catch  | `/404`, `/403`, `/500`, catch-all |                  4 | catch-all → `/404`                          |
+| showcase     | `/showcase`                       |                 73 | root + 7 group parents + 65 catalog records |
 
 Console route records (architecture + runtime + ui + system + desktop) total **23**.
 Base registered records (everything except `/showcase`) total **30**. The full
-registered surface is **100** records.
+registered surface is **103** records.
 
 ## Base / static routes (30 registered records)
 
@@ -108,11 +108,13 @@ the console page model. `(redirect)` rows do not render a component of their own
 | error        | `/500`                             | 500                           | leaf                     | `router.error.serverError`                      | views/notfound/500.vue          |
 | error        | `/:pathMatch(.*)*`                 | CatchAll                      | → /404                   | `router.error.notFound`                         | (redirect)                      |
 
-## Showcase routes (70 records: 1 root + 7 group parents + 62 catalog leaves)
+## Showcase routes (73 records: 1 root + 7 group parents + 65 catalog records)
 
 Showcase routes are computed at runtime by `createShowcaseRoutes()` from
 `showcaseCatalog.ts`. The root and the seven group parents are redirect-only
-container records; the 62 catalog items are the navigable/leaf records.
+container records. `showcaseCatalog.ts` contributes 65 catalog records:
+`/showcase/components` is a catalog-owned redirect group parent, and the
+remaining 64 records are navigable/leaf records.
 
 ### Root and group parents
 
@@ -127,7 +129,7 @@ container records; the 62 catalog items are the navigable/leaf records.
 | `/showcase/runtime`              | ShowcaseRuntime            | → …/overview         | `router.showcase.runtime.root`             |
 | `/showcase/design`               | ShowcaseDesign             | → …/tokens           | `router.showcase.design.root`              |
 
-### Showcase catalog leaves (62)
+### Showcase catalog records (65)
 
 `/showcase/components` (`ShowcaseComponentsRoot`) is itself a catalog item that acts
 as a redirect group parent (→ `/showcase/components/primevue-adapter`).
@@ -143,6 +145,7 @@ as a redirect group parent (→ `/showcase/components/primevue-adapter`).
 | tables          | `/showcase/components/pro-table/overview`              | ShowcaseComponentsProTableOverview             | `router.showcase.components.proTable.overview`             |
 | tables          | `/showcase/components/pro-table/basic`                 | ShowcaseComponentsProTableBasic                | `router.showcase.components.proTable.basic`                |
 | tables          | `/showcase/components/pro-table/columns`               | ShowcaseComponentsProTableColumns              | `router.showcase.components.proTable.columns`              |
+| tables          | `/showcase/components/pro-table/column-groups`         | ShowcaseComponentsProTableColumnGroups         | `router.showcase.components.proTable.columnGroups`         |
 | tables          | `/showcase/components/pro-table/sorting-filtering`     | ShowcaseComponentsProTableSortingFiltering     | `router.showcase.components.proTable.sortingFiltering`     |
 | tables          | `/showcase/components/pro-table/pagination`            | ShowcaseComponentsProTablePagination           | `router.showcase.components.proTable.pagination`           |
 | tables          | `/showcase/components/pro-table/server-request`        | ShowcaseComponentsProTableServerRequest        | `router.showcase.components.proTable.serverRequest`        |
@@ -152,6 +155,8 @@ as a redirect group parent (→ `/showcase/components/primevue-adapter`).
 | tables          | `/showcase/components/pro-table/virtual-infinite`      | ShowcaseComponentsProTableVirtualInfinite      | `router.showcase.components.proTable.virtualInfinite`      |
 | tables          | `/showcase/components/pro-table/export-refresh`        | ShowcaseComponentsProTableExportRefresh        | `router.showcase.components.proTable.exportRefresh`        |
 | tables          | `/showcase/components/pro-table/cell-rendering`        | ShowcaseComponentsProTableCellRendering        | `router.showcase.components.proTable.cellRendering`        |
+| tables          | `/showcase/components/pro-table/inline-editing`        | ShowcaseComponentsProTableInlineEditing        | `router.showcase.components.proTable.inlineEditing`        |
+| tables          | `/showcase/components/pro-table/row-editing`           | ShowcaseComponentsProTableRowEditing           | `router.showcase.components.proTable.rowEditing`           |
 | tables          | `/showcase/components/pro-table/form-composition`      | ShowcaseComponentsProTableFormComposition      | `router.showcase.components.proTable.formComposition`      |
 | tables          | `/showcase/components/pro-table/api-events`            | ShowcaseComponentsProTableApiEvents            | `router.showcase.components.proTable.apiEvents`            |
 | forms           | `/showcase/components/pro-form/overview`               | ShowcaseComponentsProFormOverview              | `router.showcase.components.proForm.overview`              |
