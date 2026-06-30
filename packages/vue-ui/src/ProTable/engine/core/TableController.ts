@@ -187,7 +187,7 @@ export class TableController<T extends Record<string, unknown>> {
         const filtered = applyFilter(this._data.value, this.state.filter, this._columns, {
           globalSearchMode: this._globalSearchMode.value,
         })
-        return applySort(filtered, this.state.sort, (row, field) =>
+        return applySort(filtered, this.state.sort, this._columns, (row, field) =>
           field.includes('.') ? objectGet(row, field) : row[field]
         )
       })

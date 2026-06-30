@@ -1,4 +1,5 @@
 import type { ActiveSortDirection, SortMeta, SortState } from '../types/tableState'
+import type { ProTableColumn } from '../types/column'
 import { SORT_DEFAULTS } from '../config'
 
 function isActiveDirection(direction: SortState['direction']): direction is ActiveSortDirection {
@@ -32,6 +33,20 @@ export function sortMetaSignature(state: SortState): string {
   return toMultiSortMeta(state)
     .map(meta => `${meta.field}:${meta.direction}`)
     .join('|')
+}
+
+function getColumnSortField<T extends Record<string, unknown>>(column: ProTableColumn<T>): string {
+  return String(column.field ?? column.id)
+}
+
+function resolveSortColumn<T extends Record<string, unknown>>(
+  columns: readonly ProTableColumn<T>[],
+  field: string
+): ProTableColumn<T> | undefined {
+  return (
+    columns.find(column => getColumnSortField(column) === field) ??
+    columns.find(column => column.id === field)
+  )
 }
 
 function compareLegacySingle<T extends Record<string, unknown>>(
@@ -69,14 +84,57 @@ function compareMultiValue<T extends Record<string, unknown>>(
   return meta.direction === 'asc' ? result : -result
 }
 
+function compareCustomValue<T extends Record<string, unknown>>(
+  left: T,
+  right: T,
+  meta: SortMeta,
+  column: ProTableColumn<T>,
+  getField: (row: T, field: string) => unknown
+): number {
+  const leftValue = getField(left, meta.field)
+  const rightValue = getField(right, meta.field)
+  const result = column.sortCompare?.(leftValue, rightValue, {
+    field: meta.field,
+    column,
+    leftRow: left,
+    rightRow: right,
+  })
+  return meta.direction === 'asc' ? (result ?? 0) : -(result ?? 0)
+}
+
+function compareSortableValue<T extends Record<string, unknown>>(
+  left: T,
+  right: T,
+  meta: SortMeta,
+  columns: readonly ProTableColumn<T>[],
+  getField: (row: T, field: string) => unknown
+): number {
+  const column = resolveSortColumn(columns, meta.field)
+  if (column?.sortCompare) {
+    return compareCustomValue(left, right, meta, column, getField)
+  }
+  return compareMultiValue(left, right, meta, getField)
+}
+
 export function applySort<T extends Record<string, unknown>>(
   rows: T[],
   state: SortState,
+  columns: readonly ProTableColumn<T>[],
   getField: (row: T, field: string) => unknown
 ): T[] {
   const criteria = toMultiSortMeta(state)
   if (criteria.length === 0) return rows
   if (criteria.length === 1 && !state.multi) {
+    const column = resolveSortColumn(columns, criteria[0].field)
+    if (column?.sortCompare) {
+      return rows
+        .map((row, index) => ({ row, index }))
+        .sort((left, right) => {
+          const result = compareCustomValue(left.row, right.row, criteria[0], column, getField)
+          return result !== 0 ? result : left.index - right.index
+        })
+        .map(item => item.row)
+    }
     return [...rows].sort((a, b) => compareLegacySingle(a, b, criteria[0], getField))
   }
 
@@ -84,7 +142,7 @@ export function applySort<T extends Record<string, unknown>>(
     .map((row, index) => ({ row, index }))
     .sort((left, right) => {
       for (const meta of criteria) {
-        const result = compareMultiValue(left.row, right.row, meta, getField)
+        const result = compareSortableValue(left.row, right.row, meta, columns, getField)
         if (result !== 0) return result
       }
       return left.index - right.index

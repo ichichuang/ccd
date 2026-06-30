@@ -478,6 +478,8 @@
         "ProTableProps",
         "ProTableRequestResult",
         "ProTableSearchParams",
+        "ProTableSortCompare",
+        "ProTableSortCompareContext",
         "ProTableSortMode",
         "ProTableUrlSyncAdapter",
         "ProTableUrlSyncOptions",

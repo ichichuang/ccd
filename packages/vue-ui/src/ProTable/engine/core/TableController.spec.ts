@@ -20,6 +20,18 @@ const sortableColumns: ProTableColumn<Row>[] = [
   { id: 'owner', title: 'Owner', field: 'owner', sortable: true },
   { id: 'records', title: 'Records', field: 'records', sortable: true },
 ]
+const statusSortOrder = ['guarded', 'request', 'preview', 'ready'] as const
+const prioritySortOrder = ['P0', 'P1', 'P2', 'P3'] as const
+
+function getOrderedRank(value: unknown, order: readonly string[]): number {
+  if (typeof value !== 'string') return order.length
+  const index = order.indexOf(value)
+  return index >= 0 ? index : order.length
+}
+
+function compareByOrder(left: unknown, right: unknown, order: readonly string[]): number {
+  return getOrderedRank(left, order) - getOrderedRank(right, order)
+}
 
 describe('TableController request cancellation', () => {
   it('aborts stale requests and ignores stale results when reloading', async () => {
@@ -146,6 +158,36 @@ describe('TableController dynamic request configuration', () => {
     ctrl.destroy()
   })
 
+  it('keeps custom comparator functions out of server request sort payloads', async () => {
+    const calls: ProTableLoadParams[] = []
+    const ctrl = new TableController<Row>({
+      columns: [
+        {
+          id: 'status',
+          title: 'Status',
+          field: 'status',
+          sortable: 'custom',
+          sortCompare: (left, right) => compareByOrder(left, right, statusSortOrder),
+        },
+      ],
+      data: [],
+      serverMode: true,
+      requestConfig: { immediate: false },
+      request: async params => {
+        calls.push(params)
+        return { data: [], total: 0 }
+      },
+    })
+
+    ctrl.updateSort('status')
+    await nextTick()
+
+    expect(calls).toHaveLength(1)
+    expect(calls[0].sort).toEqual({ field: 'status', direction: 'asc' })
+    expect(Object.keys(calls[0].sort)).toEqual(['field', 'direction'])
+    ctrl.destroy()
+  })
+
   it('exposes ordered multi-sort metadata only when multiple mode is opted in', async () => {
     const calls: ProTableLoadParams[] = []
     const ctrl = new TableController<Row>({
@@ -195,6 +237,131 @@ describe('TableController shared renderer contract', () => {
     ctrl.updateSort('records')
     expect(ctrl.state.sort).toEqual({ field: 'records', direction: 'asc' })
     expect(ctrl.processedRows.value.map(row => row.id)).toEqual(['c', 'a', 'b'])
+    ctrl.destroy()
+  })
+
+  it('keeps the default single-column 3-state sort cycle without a comparator', () => {
+    const ctrl = new TableController<Row>({
+      columns: sortableColumns,
+      data: [
+        { id: 'a', owner: 'core', records: 2 },
+        { id: 'b', owner: 'app', records: 3 },
+        { id: 'c', owner: 'app', records: 1 },
+      ],
+      paginationEnabled: false,
+    })
+
+    ctrl.updateSort('owner')
+    expect(ctrl.processedRows.value.map(row => row.id)).toEqual(['b', 'c', 'a'])
+    expect(ctrl.state.sort).toEqual({ field: 'owner', direction: 'asc' })
+
+    ctrl.updateSort('owner')
+    expect(ctrl.processedRows.value.map(row => row.id)).toEqual(['a', 'b', 'c'])
+    expect(ctrl.state.sort).toEqual({ field: 'owner', direction: 'desc' })
+
+    ctrl.updateSort('owner')
+    expect(ctrl.processedRows.value.map(row => row.id)).toEqual(['a', 'b', 'c'])
+    expect(ctrl.state.sort).toEqual({ field: null, direction: null })
+    ctrl.destroy()
+  })
+
+  it('uses a column custom comparator for single-sort ascending and descending order', () => {
+    const ctrl = new TableController<Row>({
+      columns: [
+        {
+          id: 'status',
+          title: 'Status',
+          field: 'status',
+          sortable: 'custom',
+          sortCompare: (left, right) => compareByOrder(left, right, statusSortOrder),
+        },
+      ],
+      data: [
+        { id: 'a', status: 'ready' },
+        { id: 'b', status: 'guarded' },
+        { id: 'c', status: 'request' },
+        { id: 'd', status: 'preview' },
+      ],
+      paginationEnabled: false,
+    })
+
+    ctrl.updateSort('status')
+    expect(ctrl.processedRows.value.map(row => row.id)).toEqual(['b', 'c', 'd', 'a'])
+
+    ctrl.updateSort('status')
+    expect(ctrl.processedRows.value.map(row => row.id)).toEqual(['a', 'd', 'c', 'b'])
+    ctrl.destroy()
+  })
+
+  it('preserves original row order when custom comparator results are equal', () => {
+    const ctrl = new TableController<Row>({
+      columns: [
+        {
+          id: 'records',
+          title: 'Records',
+          field: 'records',
+          sortable: true,
+          sortCompare: (left, right) => {
+            const leftGroup = typeof left === 'number' ? left % 2 : 0
+            const rightGroup = typeof right === 'number' ? right % 2 : 0
+            return leftGroup - rightGroup
+          },
+        },
+      ],
+      data: [
+        { id: 'a', records: 3 },
+        { id: 'b', records: 2 },
+        { id: 'c', records: 4 },
+        { id: 'd', records: 1 },
+      ],
+      paginationEnabled: false,
+    })
+
+    ctrl.updateSort('records')
+    expect(ctrl.processedRows.value.map(row => row.id)).toEqual(['b', 'c', 'a', 'd'])
+    ctrl.destroy()
+  })
+
+  it('uses each column custom comparator independently in multi-sort mode', () => {
+    const ctrl = new TableController<Row>({
+      columns: [
+        {
+          id: 'status',
+          title: 'Status',
+          field: 'status',
+          sortable: true,
+          sortCompare: (left, right) => compareByOrder(left, right, statusSortOrder),
+        },
+        {
+          id: 'priority',
+          title: 'Priority',
+          field: 'priority',
+          sortable: true,
+          sortCompare: (left, right) => compareByOrder(left, right, prioritySortOrder),
+        },
+      ],
+      data: [
+        { id: 'a', status: 'ready', priority: 'P2' },
+        { id: 'b', status: 'request', priority: 'P2' },
+        { id: 'c', status: 'request', priority: 'P0' },
+        { id: 'd', status: 'ready', priority: 'P1' },
+      ],
+      sortMode: 'multiple',
+      paginationEnabled: false,
+    })
+
+    ctrl.updateSort('status')
+    ctrl.updateSort('priority')
+
+    expect(ctrl.state.sort).toEqual({
+      field: 'status',
+      direction: 'asc',
+      multi: [
+        { field: 'status', direction: 'asc' },
+        { field: 'priority', direction: 'asc' },
+      ],
+    })
+    expect(ctrl.processedRows.value.map(row => row.id)).toEqual(['c', 'b', 'd', 'a'])
     ctrl.destroy()
   })
 

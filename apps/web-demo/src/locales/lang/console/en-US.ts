@@ -1750,7 +1750,7 @@ const enUSConsole = {
         },
         'sorting-filtering': {
           label: 'Sorting and filtering',
-          demo: 'Sort column headers, use global search, and narrow rows with a PrimeVue status filter.',
+          demo: 'Sort column headers, including semantic status order, use global search, and narrow rows with a PrimeVue status filter.',
           tableTitle: 'Sortable filtered rows',
         },
         pagination: {

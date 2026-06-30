@@ -37,13 +37,27 @@ const primeVueGlobalProperties = {
  * the subject and keep the render deterministic. Columns/data use the default
  * `Record<string, unknown>` generic so the mount infers ProTable's `T` cleanly.
  */
-function mountTable(options: { sortMode?: ProTableSortMode } = {}): ReturnType<typeof mount> {
-  const columns: ProTableColumn[] = [
+const semanticStatusOrder = ['guarded', 'request', 'preview', 'ready'] as const
+
+function getOrderedRank(value: unknown, order: readonly string[]): number {
+  if (typeof value !== 'string') return order.length
+  const index = order.indexOf(value)
+  return index >= 0 ? index : order.length
+}
+
+function mountTable(
+  options: {
+    sortMode?: ProTableSortMode
+    columns?: ProTableColumn[]
+    data?: Array<Record<string, unknown>>
+  } = {}
+): ReturnType<typeof mount> {
+  const columns: ProTableColumn[] = options.columns ?? [
     { id: 'name', title: 'Name', field: 'name', sortable: true },
     { id: 'age', title: 'Age', field: 'age', sortable: true },
     { id: 'status', title: 'Status', field: 'status' },
   ]
-  const data: Array<Record<string, unknown>> = [
+  const data: Array<Record<string, unknown>> = options.data ?? [
     { name: 'Bravo', age: 2, status: 'on' },
     { name: 'Alpha', age: 2, status: 'on' },
     { name: 'Alpha', age: 1, status: 'off' },
@@ -276,6 +290,40 @@ describe('ProTable DataTable header sorting accessibility (PT-SORT-A11Y)', () =>
       expect(
         headerByText(wrapper, 'Age').find('[data-pro-table-sort="true"]').attributes('aria-label')
       ).toContain('descending, priority 2')
+    } finally {
+      wrapper.unmount()
+    }
+  })
+
+  it('renders DataTable rows using the shared custom comparator sort result', async () => {
+    const wrapper = mountTable({
+      columns: [
+        { id: 'name', title: 'Name', field: 'name' },
+        {
+          id: 'status',
+          title: 'Status',
+          field: 'status',
+          sortable: 'custom',
+          sortCompare: (left, right) =>
+            getOrderedRank(left, semanticStatusOrder) - getOrderedRank(right, semanticStatusOrder),
+        },
+      ],
+      data: [
+        { name: 'Ready row', status: 'ready' },
+        { name: 'Guarded row', status: 'guarded' },
+        { name: 'Request row', status: 'request' },
+      ],
+    })
+    try {
+      await nextTick()
+      await nextTick()
+
+      await headerByText(wrapper, 'Status').find('[data-pro-table-sort="true"]').trigger('click')
+      await nextTick()
+
+      expect(bodyRowTexts(wrapper)[0]).toContain('Guarded row')
+      expect(bodyRowTexts(wrapper)[1]).toContain('Request row')
+      expect(bodyRowTexts(wrapper)[2]).toContain('Ready row')
     } finally {
       wrapper.unmount()
     }

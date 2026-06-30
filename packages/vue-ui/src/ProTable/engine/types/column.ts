@@ -27,6 +27,19 @@ export interface ProTableColumnGroup {
 
 export type ProTableColumnGroupRow = ProTableColumnGroup[]
 
+export interface ProTableSortCompareContext<T extends Record<string, unknown>> {
+  field: string
+  column: ProTableColumn<T>
+  leftRow: T
+  rightRow: T
+}
+
+export type ProTableSortCompare<T extends Record<string, unknown> = Record<string, unknown>> = (
+  leftValue: unknown,
+  rightValue: unknown,
+  context: ProTableSortCompareContext<T>
+) => number
+
 export interface ProTableColumn<T extends Record<string, unknown> = Record<string, unknown>> {
   id: string
   title: string | (() => VNode)
@@ -35,6 +48,12 @@ export interface ProTableColumn<T extends Record<string, unknown> = Record<strin
   minWidth?: string
   maxWidth?: string
   sortable?: boolean | 'custom'
+  /**
+   * Client-side sort comparator for this column. Request/server/API modes keep
+   * serializing only sort field/direction metadata; comparator functions are not
+   * included in request payloads.
+   */
+  sortCompare?: ProTableSortCompare<T>
   filterable?: boolean
   filterType?: 'text' | 'select' | 'date' | 'number'
   filterOptions?: SelectOption[]

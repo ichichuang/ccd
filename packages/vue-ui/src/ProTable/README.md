@@ -49,6 +49,7 @@ architecture; where a capability is not yet implemented it is called out inline.
 | --------------------- | ------ | ------------------------------------------------------------------------ |
 | Row model (flat)      | ✓      | Single flat row list; no tree/hierarchy.                                 |
 | Sorting               | ✓      | Default single column, 3-state (asc → desc → unsorted); client + server. |
+| Custom sort compare   | ✓      | Per-column client-side comparator via `sortCompare`.                     |
 | Global search         | ✓      | Default substring; opt-in local fuzzy ranking via `globalSearchMode`.    |
 | Per-column filtering  | ✓      | `text`, `select`, `number`, and date-only `date` filters.                |
 | Pagination            | ✓      | Client + server; mutually exclusive with virtual/infinite scroll.        |
@@ -122,6 +123,7 @@ Supported sorting modes:
 - default single column, 3-state cycle (ascending → descending → unsorted)
 - opt-in multi-column sorting via `sortMode="multiple"`
 - server sorting (request/api modes)
+- per-column client-side comparators via `sortCompare`
 
 Single-column sorting remains the default and preserves the existing state shape:
 
@@ -156,8 +158,50 @@ accessibility, `aria-sort` is applied to the primary sorted column only; seconda
 sorted columns expose their direction and priority through the sortable header
 control label.
 
-> Per-column custom comparators are **not implemented**.
-> `sortable: 'custom'` is reserved in the type but currently behaves like `true`.
+Per-column custom comparators are client-side only:
+
+```ts
+const statusOrder = ['guarded', 'request', 'preview', 'ready'] as const
+
+const columns: ProTableColumn<Row>[] = [
+  {
+    id: 'status',
+    field: 'status',
+    title: 'Status',
+    sortable: 'custom',
+    sortCompare: (leftValue, rightValue, context) => {
+      const leftRank = statusOrder.findIndex(item => item === leftValue)
+      const rightRank = statusOrder.findIndex(item => item === rightValue)
+      const safeLeftRank = leftRank < 0 ? statusOrder.length : leftRank
+      const safeRightRank = rightRank < 0 ? statusOrder.length : rightRank
+      return safeLeftRank - safeRightRank
+    },
+  },
+]
+```
+
+`sortCompare(leftValue, rightValue, context)` receives the resolved column values
+plus typed row context:
+
+```ts
+interface ProTableSortCompareContext<T extends Record<string, unknown>> {
+  field: string
+  column: ProTableColumn<T>
+  leftRow: T
+  rightRow: T
+}
+```
+
+Comparator return values follow the standard `Array.prototype.sort` contract:
+negative means the left row sorts first in ascending order, positive means the
+right row sorts first, and `0` keeps the original row order as the stable
+fallback. Descending order inverts the comparator result.
+
+`sortable: 'custom'` documents that a column is intended to use a custom
+comparator. For backward compatibility, a sortable column without `sortCompare`
+still uses the default comparator. Columns with `sortable: true` may also provide
+`sortCompare`; the comparator is selected by the sorted column, not by the
+literal sortable flag value.
 
 Sorting pipeline:
 
@@ -199,6 +243,8 @@ Sort payload compatibility is preserved:
 - `api` / `apiUrl` formatted query params keep `sortBy` and `order` as the
   primary sort and add `multiSort` as a JSON string only when multiple active
   criteria exist.
+- `sortCompare` functions are never serialized into `request`, `api`, `apiUrl`,
+  or `load` payloads. Remote sorting receives only field/direction metadata.
 
 The built-in date filter UI emits `YYYY-MM-DD` strings. The local filtering
 engine also normalizes `Date`, ISO string, and timestamp values for row data and
@@ -377,6 +423,11 @@ export interface ProTableColumn<T extends Record<string, unknown> = Record<strin
   minWidth?: string
   maxWidth?: string
   sortable?: boolean | 'custom'
+  sortCompare?: (
+    leftValue: unknown,
+    rightValue: unknown,
+    context: ProTableSortCompareContext<T>
+  ) => number
   filterable?: boolean
   filterType?: 'text' | 'select' | 'date' | 'number'
   pinned?: 'left' | 'right' | false
@@ -386,6 +437,13 @@ export interface ProTableColumn<T extends Record<string, unknown> = Record<strin
   render?: (params: ColumnRenderParams<T>) => VNode | string | number | null
   headerRender?: () => VNode | string
   meta?: Record<string, unknown>
+}
+
+export interface ProTableSortCompareContext<T extends Record<string, unknown>> {
+  field: string
+  column: ProTableColumn<T>
+  leftRow: T
+  rightRow: T
 }
 
 export interface ProTableColumnGroup {

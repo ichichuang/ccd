@@ -105,6 +105,7 @@ interface ProTableModeConfig {
   columnGroups?: boolean
   columnFilters?: boolean
   dateColumnFilter?: boolean
+  semanticStatusSort?: boolean
   fuzzySearch?: boolean
   eventLog?: boolean
   virtualModeSwitch?: boolean
@@ -189,6 +190,7 @@ const MODE_CONFIGS: Record<ProTableDemoMode, ProTableModeConfig> = {
     statusFilter: true,
     columnFilters: true,
     dateColumnFilter: true,
+    semanticStatusSort: true,
     fuzzySearch: true,
     sortMode: 'multiple',
     features: ['filters', 'typedRows'],
@@ -414,6 +416,25 @@ function withColumnFilters(
   return column
 }
 
+const statusSortOrder: readonly ProTableDemoStatus[] = ['guarded', 'request', 'preview', 'ready']
+
+function getStatusSortRank(value: unknown): number {
+  if (typeof value !== 'string') return statusSortOrder.length
+  const index = statusSortOrder.findIndex(item => item === value)
+  return index >= 0 ? index : statusSortOrder.length
+}
+
+function withSemanticStatusSort(
+  column: ProTableColumn<ProTableDemoRow>
+): ProTableColumn<ProTableDemoRow> {
+  if (column.id !== 'status') return column
+  return {
+    ...column,
+    sortable: 'custom',
+    sortCompare: (left, right) => getStatusSortRank(left) - getStatusSortRank(right),
+  }
+}
+
 function createUpdatedAtFilterColumn(): ProTableColumn<ProTableDemoRow> {
   return {
     id: 'updatedAt',
@@ -429,9 +450,12 @@ function createUpdatedAtFilterColumn(): ProTableColumn<ProTableDemoRow> {
 const tableColumns = computed<ProTableColumn<ProTableDemoRow>[]>(() => {
   const columns = createProTableDemoColumns(t, modeConfig.value.columnPreset)
   const filteredColumns = modeConfig.value.columnFilters ? columns.map(withColumnFilters) : columns
-  return modeConfig.value.dateColumnFilter
-    ? [...filteredColumns, createUpdatedAtFilterColumn()]
+  const sortedColumns = modeConfig.value.semanticStatusSort
+    ? filteredColumns.map(withSemanticStatusSort)
     : filteredColumns
+  return modeConfig.value.dateColumnFilter
+    ? [...sortedColumns, createUpdatedAtFilterColumn()]
+    : sortedColumns
 })
 
 const tableColumnGroups = computed<ProTableColumnGroupRow[] | undefined>(() =>

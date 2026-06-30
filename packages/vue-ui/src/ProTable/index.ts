@@ -18,6 +18,8 @@ export type {
   ProTableColumn,
   ProTableColumnGroup,
   ProTableColumnGroupRow,
+  ProTableSortCompare,
+  ProTableSortCompareContext,
   ColumnRenderParams,
   ProTableValueEnumItem,
   ProTableValueEnum,

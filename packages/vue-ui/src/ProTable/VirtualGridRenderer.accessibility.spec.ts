@@ -52,6 +52,13 @@ const columnGroups: ProTableColumnGroupRow[] = [
     { id: 'state', title: 'State', columnIds: ['status', 'action'] },
   ],
 ]
+const semanticStatusOrder = ['guarded', 'request', 'preview', 'ready'] as const
+
+function getOrderedRank(value: unknown, order: readonly string[]): number {
+  if (typeof value !== 'string') return order.length
+  const index = order.indexOf(value)
+  return index >= 0 ? index : order.length
+}
 
 function createRows(count = 10): Row[] {
   return Array.from({ length: count }, (_entry, index) => ({
@@ -81,9 +88,10 @@ function mountGrid(
     columns?: ProTableColumn<Row>[]
     sortMode?: 'single' | 'multiple'
     columnGroups?: ProTableColumnGroupRow[]
+    data?: Row[]
   } = {}
 ) {
-  const data = createRows()
+  const data = options.data ?? createRows()
   const controller = new TableController<Row>({
     columns: options.columns ?? columns,
     data,
@@ -412,6 +420,46 @@ describe('VirtualGridRenderer accessibility contract', () => {
       expect(controller.state.sort).toMatchObject({ field: 'name', direction: 'asc' })
       expect(headerByText(wrapper, 'Name').attributes('aria-sort')).toBe('ascending')
       expect(groupHeaders(wrapper, 'record')[1].attributes('aria-sort')).toBeUndefined()
+    } finally {
+      wrapper.unmount()
+      controller.destroy()
+    }
+  })
+
+  it('renders virtual rows using the shared custom comparator sort result', async () => {
+    const sortableColumns: ProTableColumn<Row>[] = columns.map(col =>
+      col.id === 'status'
+        ? {
+            ...col,
+            sortable: 'custom',
+            sortCompare: (left, right) =>
+              getOrderedRank(left, semanticStatusOrder) -
+              getOrderedRank(right, semanticStatusOrder),
+          }
+        : col
+    )
+    const data: Row[] = [
+      { id: 'row-ready', locked: 'L1', name: 'Ready row', status: 'ready', action: 'A1' },
+      {
+        id: 'row-guarded',
+        locked: 'L2',
+        name: 'Guarded row',
+        status: 'guarded',
+        action: 'A2',
+      },
+      { id: 'row-request', locked: 'L3', name: 'Request row', status: 'request', action: 'A3' },
+    ]
+    const { wrapper, controller } = mountGrid({ columns: sortableColumns, data })
+
+    try {
+      await headerByText(wrapper, 'Status').find('[data-pro-table-sort="true"]').trigger('click')
+
+      expect(controller.processedRows.value.map(row => row.id)).toEqual([
+        'row-guarded',
+        'row-request',
+        'row-ready',
+      ])
+      expect(wrapper.get('[role="row"][aria-rowindex="2"]').text()).toContain('Guarded row')
     } finally {
       wrapper.unmount()
       controller.destroy()

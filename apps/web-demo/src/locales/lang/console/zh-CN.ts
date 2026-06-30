@@ -1568,7 +1568,7 @@ const zhCNConsole = {
         },
         'sorting-filtering': {
           label: '排序与过滤',
-          demo: '点击列头排序，使用全局搜索，并通过 PrimeVue 状态过滤收窄行。',
+          demo: '点击列头排序（包括语义化状态顺序），使用全局搜索，并通过 PrimeVue 状态过滤收窄行。',
           tableTitle: '可排序过滤行',
         },
         pagination: {

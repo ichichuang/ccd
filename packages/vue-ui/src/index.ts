@@ -106,6 +106,8 @@ export type {
   ProTableColumn,
   ProTableColumnGroup,
   ProTableColumnGroupRow,
+  ProTableSortCompare,
+  ProTableSortCompareContext,
   ProTableExposed,
   ProTableLoadParams,
   ProTableProps,
