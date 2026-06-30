@@ -84,6 +84,14 @@ vi.mock('primevue/treetable', () => ({
         type: Boolean,
         default: false,
       },
+      tableProps: {
+        type: Object as PropType<Record<string, string>>,
+        default: undefined,
+      },
+      pt: {
+        type: Object as PropType<Record<string, Record<string, string>>>,
+        default: undefined,
+      },
     },
     emits: [
       'update:expandedKeys',
@@ -111,6 +119,7 @@ vi.mock('primevue/treetable', () => ({
         :data-lazy="String(lazy)"
         :data-scrollable="String(Boolean($attrs.scrollable))"
         :data-selection-mode="selectionMode || ''"
+        :data-table-aria-label="pt?.table?.['aria-label'] || tableProps?.['aria-label'] || ''"
       >
         <slot />
         <button
@@ -258,12 +267,25 @@ vi.mock('primevue/column', () => ({
         type: Boolean,
         default: false,
       },
+      pt: {
+        type: Object as PropType<Record<string, unknown>>,
+        default: undefined,
+      },
     },
-    setup() {
+    setup(props) {
       const injectedNodes = inject<ComputedRef<PrimeTreeNodeStub[]>>(treeNodesInjectionKey)
       const renderedNodes = computed(() => injectedNodes?.value ?? [])
+      const hasNodeToggleLabel = computed(() => {
+        const nodeToggleButton = props.pt?.nodeToggleButton
 
-      return { renderedNodes }
+        return (
+          typeof nodeToggleButton === 'object' &&
+          nodeToggleButton !== null &&
+          'aria-label' in nodeToggleButton
+        )
+      })
+
+      return { hasNodeToggleLabel, renderedNodes }
     },
     template: `
       <div
@@ -279,6 +301,7 @@ vi.mock('primevue/column', () => ({
         :data-header-class="headerClass || ''"
         :data-body-class="bodyClass || ''"
         :data-filter="String(Boolean(filter))"
+        :data-node-toggle-label="String(hasNodeToggleLabel)"
       >
         <span
           v-for="node in renderedNodes"
@@ -367,6 +390,21 @@ function stripComments(source: string): string {
 }
 
 describe('ProTreeTable', () => {
+  it('exposes experimental root markers and baseline treegrid labels', () => {
+    const wrapper = mountTreeTable()
+
+    const root = wrapper.get('[data-pro-tree-table-root]')
+
+    expect(root.attributes('data-pro-tree-table-experimental')).toBe('true')
+    expect(root.attributes('data-pro-tree-table-disabled')).toBe('false')
+    expect(
+      wrapper.get('[data-testid="prime-tree-table-stub"]').attributes('data-table-aria-label')
+    ).toBe('ProTreeTable experimental treegrid')
+    expect(
+      wrapper.findAll('[data-testid="prime-tree-column"]')[0]?.attributes('data-node-toggle-label')
+    ).toBe('true')
+  })
+
   it('renders static tree nodes through PrimeVue TreeTable without ProTable flat data', () => {
     const wrapper = mountTreeTable()
 

@@ -1,6 +1,6 @@
 # ProTreeTable
 
-Status: experimental, P2-A4 lazy loading contract baseline.
+Status: experimental, P2-A5 accessibility and E2E validation gate baseline.
 
 `ProTreeTable` is an additive wrapper around PrimeVue `TreeTable` for tree-shaped data. It exists separately from `ProTable` so TreeTable semantics do not enter the flat ProTable row engine before ADR-009 follow-up gates.
 
@@ -15,6 +15,27 @@ Status: experimental, P2-A4 lazy loading contract baseline.
 - `lazy-load`, `lazy-load-error`
 - one expander column, always the first configured column
 - text cell output from field values, with simple `valueEnum` label mapping
+
+## P2-A5 Validation Gates
+
+P2-A5 adds validation infrastructure for the experimental showcase route. It does not expand the
+runtime feature set.
+
+The route-level Playwright gate covers:
+
+- `/showcase/components/pro-tree-table/overview` render smoke.
+- client-side console and page error smoke.
+- axe smoke on the ProTreeTable demo region.
+- a visible PrimeVue `treegrid` with wrapper experimental markers.
+- keyboard row focus plus `ArrowRight` expansion of the lazy demo node.
+- deterministic local lazy-load evidence for loaded children.
+- row selection evidence after keyboard activation.
+- deferred-scope copy that keeps unsupported features visible.
+- screenshot evidence attached to the Playwright run.
+
+The wrapper also exposes baseline accessibility metadata for the tested route: a TreeTable
+`aria-label` and labels for the expander toggle buttons. This is a tested smoke baseline only, not a
+claim that ProTreeTable is fully accessible for all future TreeTable configurations.
 
 ## Controlled Expansion
 

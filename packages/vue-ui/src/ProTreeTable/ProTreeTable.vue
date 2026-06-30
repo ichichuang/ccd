@@ -1,7 +1,9 @@
 <script setup lang="ts" generic="T extends Record<string, unknown>">
 import Column from 'primevue/column'
+import type { ColumnPassThroughOptions } from 'primevue/column'
 import type { TreeNode } from 'primevue/treenode'
 import TreeTable from 'primevue/treetable'
+import type { TreeTablePassThroughOptions } from 'primevue/treetable'
 import { computed, shallowRef } from 'vue'
 import type {
   ProTreeTableCheckboxSelectionState,
@@ -48,6 +50,24 @@ const emit = defineEmits<{
   (event: 'lazy-load', payload: ProTreeTableLazyLoadEvent<T>): void
   (event: 'lazy-load-error', payload: ProTreeTableLazyLoadErrorEvent<T>): void
 }>()
+
+const treeTableProps = {
+  'aria-label': 'ProTreeTable experimental treegrid',
+} as const
+const treeTablePassThrough: TreeTablePassThroughOptions = {
+  table: {
+    'aria-label': treeTableProps['aria-label'],
+  },
+}
+const expanderColumnPassThrough: ColumnPassThroughOptions = {
+  nodeToggleButton: {
+    'aria-label': 'Toggle tree row',
+    title: 'Toggle tree row',
+  },
+  nodeToggleIcon: {
+    'aria-hidden': 'true',
+  },
+}
 
 const loadedLazyChildrenByKey = shallowRef<Record<string, ProTreeTableNode<T>[]>>({})
 const loadingLazyNodeKeys = shallowRef<ReadonlySet<string>>(new Set())
@@ -354,6 +374,10 @@ function getFrozenAlign(column: ProTreeTableColumn<T>): 'left' | 'right' {
   return column.pinned === 'right' ? 'right' : 'left'
 }
 
+function getColumnPassThrough(index: number): ColumnPassThroughOptions | undefined {
+  return index === 0 ? expanderColumnPassThrough : undefined
+}
+
 function resolveCellText(
   primeNode: TreeNode | undefined,
   column: ProTreeTableColumn<T>
@@ -437,6 +461,8 @@ function isRecord(value: unknown): value is Record<string, unknown> {
       :lazy="props.lazy"
       :loading="props.loading"
       :scrollable="hasPinnedColumns"
+      :table-props="treeTableProps"
+      :pt="treeTablePassThrough"
       class="pro-tree-table__prime min-w-0"
       @update:expanded-keys="handleExpandedKeysUpdate"
       @update:selection-keys="handleSelectionKeysUpdate"
@@ -455,6 +481,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
         :frozen="isPinnedColumn(column)"
         :align-frozen="getFrozenAlign(column)"
         :style="getColumnStyle(column)"
+        :pt="getColumnPassThrough(index)"
         :header-class="getColumnAlignClass(column)"
         :body-class="getColumnAlignClass(column)"
       >
