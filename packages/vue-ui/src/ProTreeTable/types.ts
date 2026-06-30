@@ -30,6 +30,40 @@ export interface ProTreeTableNode<T extends Record<string, unknown> = Record<str
   selectable?: boolean
 }
 
+export interface ProTreeTableLazyLoadParams<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> {
+  key: string
+  node: ProTreeTableNode<T>
+  expandedKeys: ProTreeTableExpandedKeys
+  selectionKeys: ProTreeTableSelectionKeys
+}
+
+export interface ProTreeTableLazyLoadResult<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> {
+  children: ProTreeTableNode<T>[]
+}
+
+export type ProTreeTableLoadChildren<T extends Record<string, unknown> = Record<string, unknown>> =
+  (params: ProTreeTableLazyLoadParams<T>) => Promise<ProTreeTableLazyLoadResult<T>>
+
+export interface ProTreeTableLazyLoadEvent<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> {
+  key: string
+  node: ProTreeTableNode<T>
+  children: ProTreeTableNode<T>[]
+}
+
+export interface ProTreeTableLazyLoadErrorEvent<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> {
+  key: string
+  node: ProTreeTableNode<T>
+  error: unknown
+}
+
 export interface ProTreeTableColumnRenderParams<
   T extends Record<string, unknown> = Record<string, unknown>,
 > {
@@ -67,6 +101,8 @@ export interface ProTreeTableProps<T extends Record<string, unknown> = Record<st
   selectionMode?: ProTreeTableSelectionMode
   expandedKeys?: ProTreeTableExpandedKeys
   selectionKeys?: ProTreeTableSelectionKeys
+  lazy?: boolean
+  loadChildren?: ProTreeTableLoadChildren<T>
 }
 
 export interface ProTreeTableNodeEvent<

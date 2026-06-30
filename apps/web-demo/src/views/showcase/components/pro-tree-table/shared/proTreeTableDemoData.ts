@@ -63,7 +63,12 @@ export function createProTreeTableDemoColumns(
   ]
 }
 
-export function createProTreeTableDemoNodes(t: Translate): ProTreeTableNode<ProTreeTableDemoRow>[] {
+export function createProTreeTableDemoNodes(
+  t: Translate,
+  lazyChildren: ProTreeTableNode<ProTreeTableDemoRow>[] = []
+): ProTreeTableNode<ProTreeTableDemoRow>[] {
+  const hasLazyChildren = lazyChildren.length > 0
+
   return [
     {
       key: 'wrapper',
@@ -97,8 +102,9 @@ export function createProTreeTableDemoNodes(t: Translate): ProTreeTableNode<ProT
       children: [
         {
           key: 'deferred.lazy',
-          data: createRow(t, 'lazy', 'deferred', 7),
-          leaf: true,
+          data: createRow(t, 'lazy', 'baseline', 7),
+          children: hasLazyChildren ? lazyChildren : undefined,
+          leaf: hasLazyChildren ? undefined : false,
         },
         {
           key: 'deferred.editing',
@@ -117,6 +123,23 @@ export function createProTreeTableDemoNodes(t: Translate): ProTreeTableNode<ProT
           selectable: false,
         },
       ],
+    },
+  ]
+}
+
+export function createProTreeTableLazyDemoChildren(
+  t: Translate
+): ProTreeTableNode<ProTreeTableDemoRow>[] {
+  return [
+    {
+      key: 'deferred.lazy.contract',
+      data: createRow(t, 'lazyContract', 'baseline', 11),
+      leaf: true,
+    },
+    {
+      key: 'deferred.lazy.local',
+      data: createRow(t, 'lazyLocal', 'baseline', 12),
+      leaf: true,
     },
   ]
 }

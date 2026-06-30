@@ -1,16 +1,18 @@
 # ProTreeTable
 
-Status: experimental, P2-A3 controlled expansion and selection baseline.
+Status: experimental, P2-A4 lazy loading contract baseline.
 
-`ProTreeTable` is an additive wrapper around PrimeVue `TreeTable` for static local tree data. It exists separately from `ProTable` so TreeTable semantics do not enter the flat ProTable row engine before ADR-009 follow-up gates.
+`ProTreeTable` is an additive wrapper around PrimeVue `TreeTable` for tree-shaped data. It exists separately from `ProTable` so TreeTable semantics do not enter the flat ProTable row engine before ADR-009 follow-up gates.
 
-## Supported in P2-A3
+## Supported in P2-A4
 
 - `nodes`, `columns`, `loading`, `disabled`
 - `selectionMode`
 - `expandedKeys` with `update:expandedKeys`
 - `selectionKeys` with `update:selectionKeys`
 - `node-expand`, `node-collapse`, `node-select`, `node-unselect`
+- `lazy`, `loadChildren`
+- `lazy-load`, `lazy-load-error`
 - one expander column, always the first configured column
 - text cell output from field values, with simple `valueEnum` label mapping
 
@@ -43,6 +45,47 @@ not synthesize selection for non-selectable nodes.
 
 `node-select` and `node-unselect` emit only CCD-owned `{ key, node }` payloads for known nodes.
 
+## Lazy Loading
+
+Lazy loading uses a tree-specific contract and intentionally does not reuse `ProTableLoadParams`.
+
+```ts
+type ProTreeTableLoadChildren<T extends Record<string, unknown>> = (
+  params: ProTreeTableLazyLoadParams<T>
+) => Promise<ProTreeTableLazyLoadResult<T>>
+```
+
+`ProTreeTableLazyLoadParams<T>` contains:
+
+- `key`: the expanded node key.
+- `node`: the known `ProTreeTableNode<T>`.
+- `expandedKeys`: normalized current expansion state.
+- `selectionKeys`: current selection state in the P2-A3 public shape.
+
+`ProTreeTableLazyLoadResult<T>` returns child nodes only:
+
+```ts
+interface ProTreeTableLazyLoadResult<T extends Record<string, unknown>> {
+  children: ProTreeTableNode<T>[]
+}
+```
+
+When `lazy=false`, `loadChildren` is never called. When `lazy=true`, the wrapper calls
+`loadChildren` only for a known expanded node whose `children` are absent, `leaf` is not `true`,
+and the node has not already been loaded by the wrapper.
+
+Loaded children are held in an internal transient clone so the row can render immediately without
+mutating the caller's `nodes` array. Consumers that need durable state or server persistence should
+listen to `lazy-load` and update their own `nodes` source. Remounting the component or changing node
+identity may clear the transient cache; long-term persistence is application-owned.
+
+During a pending load, the wrapper passes `loading=true` on the target PrimeVue `TreeNode` while
+preserving any caller-provided `node.loading` state.
+
+`lazy-load` emits `{ key, node, children }`. `lazy-load-error` emits `{ key, node, error }` and
+does not throw through the component event handler. Both events are CCD-owned payloads; raw PrimeVue
+event objects are not public API.
+
 ## Column Compatibility
 
 `ProTreeTableColumn<T>` intentionally implements only the ADR-009 approved subset:
@@ -63,7 +106,6 @@ not synthesize selection for non-selectable nodes.
 
 ## Deferred
 
-- lazy loading and request adapters
 - editing
 - virtual scrolling
 - Shift-click tree range selection
@@ -73,5 +115,6 @@ not synthesize selection for non-selectable nodes.
 - TreeTable filtering from `filterable`
 - advanced column compatibility beyond the ADR-009 subset
 - server persistence
+- real server request adapters and URL/state persistence
 
 The public type sketches are implemented locally in `types.ts` and exported through the package root only as the experimental component API. They are not ProTable props and must not be added to `ProTable.vue`.

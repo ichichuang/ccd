@@ -2,6 +2,9 @@
 import {
   ProTreeTable,
   type ProTreeTableExpandedKeys,
+  type ProTreeTableLazyLoadErrorEvent,
+  type ProTreeTableLazyLoadEvent,
+  type ProTreeTableLoadChildren,
   type ProTreeTableNodeEvent,
   type ProTreeTableSelectionKeys,
 } from '@ccd/vue-ui'
@@ -13,12 +16,22 @@ import ShowcasePageShell from '../../../shared/ShowcasePageShell.vue'
 import {
   createProTreeTableDemoColumns,
   createProTreeTableDemoNodes,
+  createProTreeTableLazyDemoChildren,
   type ProTreeTableDemoRow,
 } from '../shared/proTreeTableDemoData'
 
 defineOptions({ name: 'ShowcaseComponentsProTreeTableOverview' })
 
-type ProTreeTableEventKey = 'ready' | 'expand' | 'collapse' | 'select' | 'unselect'
+type ProTreeTableEventKey =
+  | 'ready'
+  | 'expand'
+  | 'collapse'
+  | 'select'
+  | 'unselect'
+  | 'load'
+  | 'loadError'
+
+const LAZY_DEMO_NODE_KEY = 'deferred.lazy'
 
 const { t } = useI18n()
 const item = showcaseCatalog.find(entry => entry.id === 'components-pro-tree-table-overview')
@@ -28,7 +41,13 @@ if (!item) {
 }
 
 const columns = computed(() => createProTreeTableDemoColumns(t))
-const nodes = computed(() => createProTreeTableDemoNodes(t))
+const loadedLazyKeys = ref<Record<string, boolean>>({})
+const lazyLoadCount = ref(0)
+const lazyLoadedChildCount = ref(0)
+const lazyChildren = computed(() =>
+  loadedLazyKeys.value[LAZY_DEMO_NODE_KEY] ? createProTreeTableLazyDemoChildren(t) : []
+)
+const nodes = computed(() => createProTreeTableDemoNodes(t, lazyChildren.value))
 const expandedKeys = ref<ProTreeTableExpandedKeys>({
   wrapper: true,
   deferred: true,
@@ -36,12 +55,21 @@ const expandedKeys = ref<ProTreeTableExpandedKeys>({
 const selectionKeys = ref<ProTreeTableSelectionKeys>(null)
 const lastEventKey = ref<ProTreeTableEventKey>('ready')
 const lastEventNodeKey = ref('')
+const loadChildren: ProTreeTableLoadChildren<ProTreeTableDemoRow> = async ({ key }) => {
+  await Promise.resolve()
+
+  return {
+    children: key === LAZY_DEMO_NODE_KEY ? createProTreeTableLazyDemoChildren(t) : [],
+  }
+}
 const selectedKeyText = computed(() => formatSelectionKeys(selectionKeys.value))
 const expandedKeyText = computed(() => {
   const keys = Object.keys(expandedKeys.value).filter(key => expandedKeys.value[key])
   return keys.length > 0 ? keys.join(', ') : t('showcase.proTreeTable.state.none')
 })
 const selectionModeText = computed(() => t('showcase.proTreeTable.state.singleMode'))
+const lazyLoadCountText = computed(() => String(lazyLoadCount.value))
+const lazyLoadedChildCountText = computed(() => String(lazyLoadedChildCount.value))
 const lastEventText = computed(() =>
   lastEventKey.value === 'ready'
     ? t('showcase.proTreeTable.events.ready')
@@ -55,6 +83,22 @@ function recordTreeEvent(
   payload: ProTreeTableNodeEvent<ProTreeTableDemoRow>
 ): void {
   lastEventKey.value = eventKey
+  lastEventNodeKey.value = payload.key
+}
+
+function recordLazyLoad(payload: ProTreeTableLazyLoadEvent<ProTreeTableDemoRow>): void {
+  loadedLazyKeys.value = {
+    ...loadedLazyKeys.value,
+    [payload.key]: true,
+  }
+  lazyLoadCount.value += 1
+  lazyLoadedChildCount.value = payload.children.length
+  lastEventKey.value = 'load'
+  lastEventNodeKey.value = payload.key
+}
+
+function recordLazyLoadError(payload: ProTreeTableLazyLoadErrorEvent<ProTreeTableDemoRow>): void {
+  lastEventKey.value = 'loadError'
   lastEventNodeKey.value = payload.key
 }
 
@@ -93,14 +137,18 @@ function formatSelectionKeys(value: ProTreeTableSelectionKeys): string {
             :nodes="nodes"
             :columns="columns"
             selection-mode="single"
+            lazy
+            :load-children="loadChildren"
             data-testid="showcase-pro-tree-table"
             @node-expand="recordTreeEvent('expand', $event)"
             @node-collapse="recordTreeEvent('collapse', $event)"
             @node-select="recordTreeEvent('select', $event)"
             @node-unselect="recordTreeEvent('unselect', $event)"
+            @lazy-load="recordLazyLoad"
+            @lazy-load-error="recordLazyLoadError"
           />
 
-          <div class="grid min-w-0 grid-cols-1 gap-sm lg:grid-cols-4">
+          <div class="grid min-w-0 grid-cols-1 gap-sm md:grid-cols-2 xl:grid-cols-6">
             <article
               data-testid="showcase-pro-tree-table-expanded"
               class="material-elevated col-stretch min-w-0 gap-xs p-md"
@@ -134,6 +182,30 @@ function formatSelectionKeys(value: ProTreeTableSelectionKeys): string {
               </span>
               <span class="text-sm font-medium text-foreground text-ellipsis-2">
                 {{ selectedKeyText }}
+              </span>
+            </article>
+
+            <article
+              data-testid="showcase-pro-tree-table-lazy-loads"
+              class="material-elevated col-stretch min-w-0 gap-xs p-md"
+            >
+              <span class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {{ $t('showcase.proTreeTable.state.lazyLoads') }}
+              </span>
+              <span class="text-sm font-medium text-foreground text-ellipsis-2">
+                {{ lazyLoadCountText }}
+              </span>
+            </article>
+
+            <article
+              data-testid="showcase-pro-tree-table-lazy-children"
+              class="material-elevated col-stretch min-w-0 gap-xs p-md"
+            >
+              <span class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {{ $t('showcase.proTreeTable.state.loadedChildren') }}
+              </span>
+              <span class="text-sm font-medium text-foreground text-ellipsis-2">
+                {{ lazyLoadedChildCountText }}
               </span>
             </article>
 

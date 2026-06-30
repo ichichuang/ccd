@@ -190,6 +190,7 @@ interface ProTreeTableProps<T extends Record<string, unknown>> {
 - `node-select`: emitted when a selectable node is selected.
 - `node-unselect`: emitted when a selectable node is unselected.
 - `lazy-load`: emitted when a lazy node requires children.
+- `lazy-load-error`: emitted when a lazy child loader rejects.
 - `sort-change`: emitted when sort state changes.
 - `filter-change`: emitted when filter state changes.
 - `page-change`: emitted when root-level pagination changes.
@@ -217,6 +218,8 @@ type ProTreeTableLoadChildren<T extends Record<string, unknown>> = (
 The loader receives the expanded node, stable key, current sort state, current filter state, expansion state, and selection state. It returns child nodes only. Root loading, root pagination, and server persistence remain separate concerns.
 
 Do not overload `ProTableLoadParams`. Flat table request semantics cannot describe parent keys, child loading, partial selection, collapsed descendants, or root-versus-visible pagination without weakening the existing `ProTable` API.
+
+Implementation note for P2-A4: the wrapper may keep loaded children in an internal transient clone for immediate rendering, but durable persistence remains caller-owned. Public success and failure events must use CCD-owned payloads such as `{ key, node, children }` and `{ key, node, error }`, not raw PrimeVue event objects.
 
 ## ProTableColumn Compatibility
 

@@ -2,7 +2,7 @@
 import Column from 'primevue/column'
 import type { TreeNode } from 'primevue/treenode'
 import TreeTable from 'primevue/treetable'
-import { computed } from 'vue'
+import { computed, shallowRef } from 'vue'
 import type {
   ProTreeTableCheckboxSelectionState,
   ProTreeTableColumn,
@@ -10,6 +10,8 @@ import type {
   ProTreeTableColumnRenderResult,
   ProTreeTableColumnSize,
   ProTreeTableExpandedKeys,
+  ProTreeTableLazyLoadErrorEvent,
+  ProTreeTableLazyLoadEvent,
   ProTreeTableNode,
   ProTreeTableNodeEvent,
   ProTreeTableProps,
@@ -32,6 +34,8 @@ const props = withDefaults(defineProps<ProTreeTableProps<T>>(), {
   selectionMode: false,
   expandedKeys: undefined,
   selectionKeys: null,
+  lazy: false,
+  loadChildren: undefined,
 })
 
 const emit = defineEmits<{
@@ -41,8 +45,13 @@ const emit = defineEmits<{
   (event: 'node-collapse', payload: ProTreeTableNodeEvent<T>): void
   (event: 'node-select', payload: ProTreeTableNodeEvent<T>): void
   (event: 'node-unselect', payload: ProTreeTableNodeEvent<T>): void
+  (event: 'lazy-load', payload: ProTreeTableLazyLoadEvent<T>): void
+  (event: 'lazy-load-error', payload: ProTreeTableLazyLoadErrorEvent<T>): void
 }>()
 
+const loadedLazyChildrenByKey = shallowRef<Record<string, ProTreeTableNode<T>[]>>({})
+const loadingLazyNodeKeys = shallowRef<ReadonlySet<string>>(new Set())
+const displayNodes = computed(() => props.nodes.map(resolveDisplayNode))
 const nodeByKey = computed(() => {
   const map = new Map<string, ProTreeTableNode<T>>()
 
@@ -51,11 +60,11 @@ const nodeByKey = computed(() => {
     node.children?.forEach(visit)
   }
 
-  props.nodes.forEach(visit)
+  displayNodes.value.forEach(visit)
   return map
 })
 
-const primeNodes = computed(() => props.nodes.map(toPrimeTreeNode))
+const primeNodes = computed(() => displayNodes.value.map(toPrimeTreeNode))
 const activeSelectionMode = computed<ActiveSelectionMode | undefined>(() =>
   props.disabled || props.selectionMode === false ? undefined : props.selectionMode
 )
@@ -65,6 +74,45 @@ const primeSelectionKeys = computed(() => {
   return mode ? toPrimeSelectionKeys(props.selectionKeys, mode) : undefined
 })
 const hasPinnedColumns = computed(() => props.columns.some(column => isPinnedColumn(column)))
+
+function resolveDisplayNode(node: ProTreeTableNode<T>): ProTreeTableNode<T> {
+  const loadedChildren = getLoadedLazyChildren(node.key)
+  const sourceChildren = loadedChildren ?? node.children
+  const children = sourceChildren ? resolveDisplayNodeList(sourceChildren) : undefined
+  const loading = node.loading || isLazyNodeLoading(node.key)
+
+  if (!loadedChildren && !loading && children === node.children) return node
+
+  return {
+    ...node,
+    children,
+    leaf: loadedChildren ? loadedChildren.length === 0 : node.leaf,
+    loading,
+  }
+}
+
+function resolveDisplayNodeList(nodes: ProTreeTableNode<T>[]): ProTreeTableNode<T>[] {
+  let changed = false
+  const resolvedNodes = nodes.map(node => {
+    const resolvedNode = resolveDisplayNode(node)
+    if (resolvedNode !== node) changed = true
+    return resolvedNode
+  })
+
+  return changed ? resolvedNodes : nodes
+}
+
+function getLoadedLazyChildren(key: string): ProTreeTableNode<T>[] | undefined {
+  return loadedLazyChildrenByKey.value[key]
+}
+
+function hasLoadedLazyChildren(key: string): boolean {
+  return Object.prototype.hasOwnProperty.call(loadedLazyChildrenByKey.value, key)
+}
+
+function isLazyNodeLoading(key: string): boolean {
+  return loadingLazyNodeKeys.value.has(key)
+}
 
 function toPrimeTreeNode(node: ProTreeTableNode<T>): TreeNode {
   return {
@@ -196,7 +244,10 @@ function handleNodeEvent(event: ProTreeTableNodeEventName, primeNode: TreeNode):
 
   const payload = { key: node.key, node }
 
-  if (event === 'node-expand') emit('node-expand', payload)
+  if (event === 'node-expand') {
+    emit('node-expand', payload)
+    void loadChildrenForNode(node)
+  }
   if (event === 'node-collapse') emit('node-collapse', payload)
   if (event === 'node-select') emit('node-select', payload)
   if (event === 'node-unselect') emit('node-unselect', payload)
@@ -204,6 +255,68 @@ function handleNodeEvent(event: ProTreeTableNodeEventName, primeNode: TreeNode):
 
 function isSelectionEvent(event: ProTreeTableNodeEventName): boolean {
   return event === 'node-select' || event === 'node-unselect'
+}
+
+async function loadChildrenForNode(node: ProTreeTableNode<T>): Promise<void> {
+  const loadChildren = props.loadChildren
+  if (!canLoadChildren(node, loadChildren)) return
+
+  addLoadingLazyNodeKey(node.key)
+
+  try {
+    const result = await loadChildren({
+      key: node.key,
+      node,
+      expandedKeys: primeExpandedKeys.value,
+      selectionKeys: getCurrentSelectionKeys(),
+    })
+    loadedLazyChildrenByKey.value = {
+      ...loadedLazyChildrenByKey.value,
+      [node.key]: result.children,
+    }
+    emit('lazy-load', {
+      key: node.key,
+      node,
+      children: result.children,
+    })
+  } catch (error: unknown) {
+    emit('lazy-load-error', {
+      key: node.key,
+      node,
+      error,
+    })
+  } finally {
+    removeLoadingLazyNodeKey(node.key)
+  }
+}
+
+function canLoadChildren(
+  node: ProTreeTableNode<T>,
+  loadChildren: ProTreeTableProps<T>['loadChildren']
+): loadChildren is NonNullable<ProTreeTableProps<T>['loadChildren']> {
+  return Boolean(
+    props.lazy &&
+    loadChildren &&
+    node.leaf !== true &&
+    !node.children &&
+    !hasLoadedLazyChildren(node.key) &&
+    !isLazyNodeLoading(node.key)
+  )
+}
+
+function getCurrentSelectionKeys(): ProTreeTableSelectionKeys {
+  const mode = activeSelectionMode.value
+  return mode
+    ? normalizeSelectionKeysForMode(props.selectionKeys, mode)
+    : (props.selectionKeys ?? null)
+}
+
+function addLoadingLazyNodeKey(key: string): void {
+  loadingLazyNodeKeys.value = new Set([...loadingLazyNodeKeys.value, key])
+}
+
+function removeLoadingLazyNodeKey(key: string): void {
+  loadingLazyNodeKeys.value = new Set([...loadingLazyNodeKeys.value].filter(item => item !== key))
 }
 
 function getColumnStyle(column: ProTreeTableColumn<T>): Record<string, string> | undefined {
@@ -312,7 +425,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
     class="pro-tree-table min-w-0"
   >
     <!--
-      P2-A3 intentionally excludes lazy loading, editing, virtual scrolling, range selection,
+      P2-A4 intentionally excludes editing, virtual scrolling, range selection,
       ProTable treeMode, server persistence, TreeTable filtering, VNode render output,
       and a headless hierarchical engine.
     -->
@@ -321,6 +434,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
       :expanded-keys="primeExpandedKeys"
       :selection-keys="primeSelectionKeys"
       :selection-mode="activeSelectionMode"
+      :lazy="props.lazy"
       :loading="props.loading"
       :scrollable="hasPinnedColumns"
       class="pro-tree-table__prime min-w-0"

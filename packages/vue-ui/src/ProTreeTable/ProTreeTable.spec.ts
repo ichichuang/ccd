@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 /// <reference types="vite/client" />
 /* eslint-disable vue/one-component-per-file -- PrimeVue stubs stay local to this focused component spec. */
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import {
   computed,
   defineComponent,
@@ -18,6 +18,11 @@ import proTreeTableSource from './ProTreeTable.vue?raw'
 import type {
   ProTreeTableColumn,
   ProTreeTableExpandedKeys,
+  ProTreeTableLazyLoadErrorEvent,
+  ProTreeTableLazyLoadEvent,
+  ProTreeTableLazyLoadParams,
+  ProTreeTableLazyLoadResult,
+  ProTreeTableLoadChildren,
   ProTreeTableNode,
   ProTreeTableSelectionKeys,
   ProTreeTableSelectionMode,
@@ -33,6 +38,7 @@ interface PrimeTreeNodeStub {
   key: string
   data?: TreeDemoRow
   children?: PrimeTreeNodeStub[]
+  loading?: boolean
   selectable?: boolean
 }
 
@@ -46,6 +52,8 @@ interface ProTreeTableTestProps {
   selectionMode: ProTreeTableSelectionMode
   expandedKeys: ProTreeTableExpandedKeys
   selectionKeys: ProTreeTableSelectionKeys
+  lazy: boolean
+  loadChildren?: ProTreeTableLoadChildren<TreeDemoRow>
 }
 
 vi.mock('primevue/treetable', () => ({
@@ -69,6 +77,10 @@ vi.mock('primevue/treetable', () => ({
         default: undefined,
       },
       loading: {
+        type: Boolean,
+        default: false,
+      },
+      lazy: {
         type: Boolean,
         default: false,
       },
@@ -96,6 +108,7 @@ vi.mock('primevue/treetable', () => ({
       <section
         data-testid="prime-tree-table-stub"
         :data-loading="String(loading)"
+        :data-lazy="String(lazy)"
         :data-scrollable="String(Boolean($attrs.scrollable))"
         :data-selection-mode="selectionMode || ''"
       >
@@ -189,6 +202,7 @@ vi.mock('primevue/treetable', () => ({
           :key="node.key"
           data-testid="tree-row"
           :data-key="node.key"
+          :data-node-loading="String(Boolean(node.loading))"
           :data-selectable="String(node.selectable ?? true)"
         >
           <span>{{ node.data?.name }}</span>
@@ -307,6 +321,30 @@ const nodes: ProTreeTableNode<TreeDemoRow>[] = [
   },
 ]
 
+const lazyNodes: ProTreeTableNode<TreeDemoRow>[] = [
+  {
+    key: 'lazy-root',
+    data: {
+      name: 'Lazy root',
+      owner: 'Runtime',
+      status: 'Pending',
+    },
+    leaf: false,
+  },
+]
+
+const loadedLazyChildren: ProTreeTableNode<TreeDemoRow>[] = [
+  {
+    key: 'lazy-root.child',
+    data: {
+      name: 'Loaded child',
+      owner: 'Runtime',
+      status: 'Ready',
+    },
+    leaf: true,
+  },
+]
+
 function mountTreeTable(extraProps: Partial<ProTreeTableTestProps> = {}) {
   return mount(ProTreeTable as unknown as Component, {
     props: {
@@ -315,6 +353,7 @@ function mountTreeTable(extraProps: Partial<ProTreeTableTestProps> = {}) {
       selectionMode: 'checkbox',
       expandedKeys: { operations: true },
       selectionKeys: {},
+      lazy: false,
       ...extraProps,
     },
   })
@@ -519,6 +558,165 @@ describe('ProTreeTable', () => {
     expect(wrapper.emitted('update:expandedKeys')?.[0]).toEqual([{}])
   })
 
+  it('does not call loadChildren when lazy mode is disabled', async () => {
+    const loadChildren = vi.fn<ProTreeTableLoadChildren<TreeDemoRow>>(async () => ({
+      children: loadedLazyChildren,
+    }))
+    const wrapper = mountTreeTable({
+      nodes: lazyNodes,
+      lazy: false,
+      loadChildren,
+    })
+
+    expect(wrapper.get('[data-testid="prime-tree-table-stub"]').attributes('data-lazy')).toBe(
+      'false'
+    )
+
+    await wrapper.get('[data-testid="emit-expanded"]').trigger('click')
+    await flushPromises()
+
+    expect(loadChildren).not.toHaveBeenCalled()
+    expect(wrapper.text()).not.toContain('Loaded child')
+  })
+
+  it('calls loadChildren with a tree-specific contract for known lazy node expansion', async () => {
+    const loadChildren = vi.fn<ProTreeTableLoadChildren<TreeDemoRow>>(async () => ({
+      children: loadedLazyChildren,
+    }))
+    const wrapper = mountTreeTable({
+      nodes: lazyNodes,
+      lazy: true,
+      loadChildren,
+      expandedKeys: { ['lazy-root']: true },
+      selectionMode: 'single',
+      selectionKeys: 'lazy-root',
+    })
+
+    await wrapper.get('[data-testid="emit-expanded"]').trigger('click')
+    await flushPromises()
+
+    expect(loadChildren).toHaveBeenCalledTimes(1)
+    expect(loadChildren).toHaveBeenCalledWith({
+      key: 'lazy-root',
+      node: lazyNodes[0],
+      expandedKeys: { ['lazy-root']: true },
+      selectionKeys: 'lazy-root',
+    } satisfies ProTreeTableLazyLoadParams<TreeDemoRow>)
+    expect(wrapper.text()).toContain('Loaded child')
+    expect(wrapper.emitted('lazy-load')?.[0]?.[0]).toEqual({
+      key: 'lazy-root',
+      node: lazyNodes[0],
+      children: loadedLazyChildren,
+    } satisfies ProTreeTableLazyLoadEvent<TreeDemoRow>)
+  })
+
+  it('marks a lazy node as loading while loadChildren is pending', async () => {
+    let resolveLoad: ((value: ProTreeTableLazyLoadResult<TreeDemoRow>) => void) | undefined
+    const loadChildren = vi.fn<ProTreeTableLoadChildren<TreeDemoRow>>(
+      () =>
+        new Promise(resolve => {
+          resolveLoad = resolve
+        })
+    )
+    const wrapper = mountTreeTable({
+      nodes: lazyNodes,
+      lazy: true,
+      loadChildren,
+    })
+
+    await wrapper.get('[data-testid="emit-expanded"]').trigger('click')
+
+    expect(
+      wrapper.get('[data-testid="tree-row"][data-key="lazy-root"]').attributes('data-node-loading')
+    ).toBe('true')
+
+    resolveLoad?.({ children: loadedLazyChildren })
+    await flushPromises()
+
+    expect(
+      wrapper.get('[data-testid="tree-row"][data-key="lazy-root"]').attributes('data-node-loading')
+    ).toBe('false')
+    expect(wrapper.text()).toContain('Loaded child')
+  })
+
+  it('does not call loadChildren for unknown expanded nodes', async () => {
+    const loadChildren = vi.fn<ProTreeTableLoadChildren<TreeDemoRow>>(async () => ({
+      children: loadedLazyChildren,
+    }))
+    const wrapper = mountTreeTable({
+      nodes: lazyNodes,
+      lazy: true,
+      loadChildren,
+    })
+
+    await wrapper.get('[data-testid="emit-expand-unknown"]').trigger('click')
+    await flushPromises()
+
+    expect(loadChildren).not.toHaveBeenCalled()
+    expect(wrapper.emitted('lazy-load')).toBeUndefined()
+  })
+
+  it('does not call loadChildren for nodes with existing children', async () => {
+    const loadChildren = vi.fn<ProTreeTableLoadChildren<TreeDemoRow>>(async () => ({
+      children: loadedLazyChildren,
+    }))
+    const wrapper = mountTreeTable({
+      lazy: true,
+      loadChildren,
+    })
+
+    await wrapper.get('[data-testid="emit-expanded"]').trigger('click')
+    await flushPromises()
+
+    expect(loadChildren).not.toHaveBeenCalled()
+  })
+
+  it('does not reload an already loaded lazy node', async () => {
+    const loadChildren = vi.fn<ProTreeTableLoadChildren<TreeDemoRow>>(async () => ({
+      children: loadedLazyChildren,
+    }))
+    const wrapper = mountTreeTable({
+      nodes: lazyNodes,
+      lazy: true,
+      loadChildren,
+    })
+
+    await wrapper.get('[data-testid="emit-expanded"]').trigger('click')
+    await flushPromises()
+    await wrapper.get('[data-testid="emit-expanded"]').trigger('click')
+    await flushPromises()
+
+    expect(loadChildren).toHaveBeenCalledTimes(1)
+    expect(
+      wrapper.findAll('[data-testid="tree-row"]').map(row => row.attributes('data-key'))
+    ).toEqual(['lazy-root', 'lazy-root.child'])
+  })
+
+  it('emits a typed lazy-load-error payload when loadChildren rejects', async () => {
+    const error = new Error('load failed')
+    const loadChildren = vi.fn<ProTreeTableLoadChildren<TreeDemoRow>>(async () => {
+      throw error
+    })
+    const wrapper = mountTreeTable({
+      nodes: lazyNodes,
+      lazy: true,
+      loadChildren,
+    })
+
+    await wrapper.get('[data-testid="emit-expanded"]').trigger('click')
+    await flushPromises()
+
+    const payload = wrapper.emitted('lazy-load-error')?.[0]?.[0]
+
+    expect(wrapper.emitted('lazy-load')).toBeUndefined()
+    expect(payload).toEqual({
+      key: 'lazy-root',
+      node: lazyNodes[0],
+      error,
+    } satisfies ProTreeTableLazyLoadErrorEvent<TreeDemoRow>)
+    expect(wrapper.text()).not.toContain('Loaded child')
+  })
+
   it('disables selection updates when selectionMode is false', async () => {
     const wrapper = mountTreeTable({ selectionMode: false })
 
@@ -631,6 +829,7 @@ describe('ProTreeTable', () => {
     expect(implementationSource).not.toContain('TableController')
     expect(implementationSource).not.toContain('VirtualGridRenderer')
     expect(implementationSource).not.toContain('ProTable.vue')
+    expect(implementationSource).not.toContain('ProTableLoadParams')
     expect(implementationSource).not.toContain('treeMode')
     expect(proTreeTableSource).toContain('ProTable treeMode')
   })
@@ -638,9 +837,13 @@ describe('ProTreeTable', () => {
   it('is available from the package root export with public design types', () => {
     const expanded: ProTreeTableExpandedKeys = { operations: true }
     const selection: ProTreeTableSelectionKeys = { operations: true }
+    const loadChildren: ProTreeTableLoadChildren<TreeDemoRow> = async () => ({
+      children: loadedLazyChildren,
+    })
 
     expect(RootProTreeTable).toBe(ProTreeTable)
     expect(expanded.operations).toBe(true)
     expect(selection).toEqual({ operations: true })
+    expect(loadChildren).toBeTypeOf('function')
   })
 })

@@ -2207,7 +2207,7 @@ const enUSConsole = {
     proTreeTable: {
       demo: {
         description:
-          'Static local nodes demonstrate controlled expansion, controlled selection, and the P2-A3 contract boundary.',
+          'Static local nodes demonstrate controlled state plus deterministic local lazy child loading for the P2-A4 contract boundary.',
       },
       columns: {
         name: 'Capability',
@@ -2217,7 +2217,7 @@ const enUSConsole = {
         evidence: 'Evidence',
       },
       status: {
-        baseline: 'P2-A3 baseline',
+        baseline: 'P2-A4 baseline',
         deferred: 'Deferred',
         planned: 'Later architecture',
       },
@@ -2227,6 +2227,8 @@ const enUSConsole = {
         selection: 'Selection keys',
         selectionMode: 'Selection mode',
         singleMode: 'single -> string | null',
+        lazyLoads: 'Lazy loads',
+        loadedChildren: 'Loaded children',
         lastEvent: 'Last event',
       },
       events: {
@@ -2235,6 +2237,8 @@ const enUSConsole = {
         collapse: 'Collapsed {key}.',
         select: 'Selected {key}.',
         unselect: 'Unselected {key}.',
+        load: 'Loaded children for {key}.',
+        loadError: 'Failed to load children for {key}.',
       },
       tags: {
         experimental: 'Experimental',
@@ -2250,9 +2254,9 @@ const enUSConsole = {
             'The demo imports ProTreeTable directly and leaves the existing ProTable flat row engine untouched.',
         },
         static: {
-          title: 'Static hierarchy',
+          title: 'Local lazy hierarchy',
           description:
-            'Rows are local ProTreeTableNode objects, including one non-selectable node, which keeps the slice deterministic and reversible.',
+            'Rows are local ProTreeTableNode objects; one expandable node loads deterministic local children without network requests.',
         },
         columns: {
           title: 'Column compatibility',
@@ -2267,7 +2271,7 @@ const enUSConsole = {
         deferred: {
           title: 'Deferred scope',
           description:
-            'Lazy loading, editing, virtual scroll, Shift-click ranges, server persistence, and a headless tree engine remain outside this slice.',
+            'Editing, virtual scroll, Shift-click ranges, server persistence, and a headless tree engine remain outside this slice.',
         },
       },
       rows: {
@@ -2308,7 +2312,19 @@ const enUSConsole = {
           name: 'Lazy child loading',
           owner: 'P2-A4',
           evidence:
-            'Future request adapters need a tree-specific contract, not ProTableLoadParams.',
+            'Expanding this row calls loadChildren with a tree-specific contract, not ProTableLoadParams.',
+        },
+        lazyContract: {
+          name: 'Tree-specific loadChildren contract',
+          owner: "{'@'}ccd/vue-ui",
+          evidence:
+            'The loader receives node, key, expandedKeys, and selectionKeys, then returns child nodes only.',
+        },
+        lazyLocal: {
+          name: 'Deterministic local async data',
+          owner: 'web-demo',
+          evidence:
+            'The showcase resolves local children from a Promise and performs no real network request.',
         },
         editing: {
           name: 'Tree row editing',

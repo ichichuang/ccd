@@ -1985,7 +1985,7 @@ const zhCNConsole = {
     },
     proTreeTable: {
       demo: {
-        description: '静态本地节点演示受控展开、受控选择与 P2-A3 契约边界。',
+        description: '静态本地节点演示受控状态与确定性本地懒加载子节点的 P2-A4 契约边界。',
       },
       columns: {
         name: '能力',
@@ -1995,7 +1995,7 @@ const zhCNConsole = {
         evidence: '证据',
       },
       status: {
-        baseline: 'P2-A3 基线',
+        baseline: 'P2-A4 基线',
         deferred: '延期',
         planned: '后续架构',
       },
@@ -2005,6 +2005,8 @@ const zhCNConsole = {
         selection: '选择 key',
         selectionMode: '选择模式',
         singleMode: 'single -> string | null',
+        lazyLoads: '懒加载次数',
+        loadedChildren: '已加载子节点',
         lastEvent: '最近事件',
       },
       events: {
@@ -2013,6 +2015,8 @@ const zhCNConsole = {
         collapse: '已折叠 {key}。',
         select: '已选择 {key}。',
         unselect: '已取消选择 {key}。',
+        load: '已加载 {key} 的子节点。',
+        loadError: '加载 {key} 的子节点失败。',
       },
       tags: {
         experimental: '实验性',
@@ -2027,9 +2031,9 @@ const zhCNConsole = {
           description: '演示直接导入 ProTreeTable，并保持现有 ProTable flat row engine 不变。',
         },
         static: {
-          title: '静态层级数据',
+          title: '本地懒加载层级',
           description:
-            '行数据是本地 ProTreeTableNode 对象，并包含一个不可选节点，让本切片确定、可回滚。',
+            '行数据是本地 ProTreeTableNode 对象；其中一个可展开节点会加载确定性本地子节点，不发起网络请求。',
         },
         columns: {
           title: '列兼容能力',
@@ -2043,7 +2047,7 @@ const zhCNConsole = {
         deferred: {
           title: '延期范围',
           description:
-            'lazy loading、editing、virtual scroll、Shift-click 范围选择、server persistence 与 headless tree engine 均不在本切片内。',
+            'editing、virtual scroll、Shift-click 范围选择、server persistence 与 headless tree engine 均不在本切片内。',
         },
       },
       rows: {
@@ -2081,7 +2085,17 @@ const zhCNConsole = {
         lazy: {
           name: '子节点懒加载',
           owner: 'P2-A4',
-          evidence: '后续请求适配器需要树专用 contract，而不是 ProTableLoadParams。',
+          evidence: '展开该行会调用树专用 loadChildren contract，而不是 ProTableLoadParams。',
+        },
+        lazyContract: {
+          name: '树专用 loadChildren contract',
+          owner: "{'@'}ccd/vue-ui",
+          evidence: 'loader 接收 node、key、expandedKeys 与 selectionKeys，并只返回子节点。',
+        },
+        lazyLocal: {
+          name: '确定性本地异步数据',
+          owner: 'web-demo',
+          evidence: 'showcase 通过 Promise 解析本地子节点，不执行真实网络请求。',
         },
         editing: {
           name: '树行编辑',
