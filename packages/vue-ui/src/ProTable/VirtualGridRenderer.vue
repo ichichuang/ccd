@@ -2,12 +2,21 @@
 import type { SizeMode } from '@ccd/design-tokens'
 import { objectGet } from '@ccd/shared-utils'
 import { useEventListener, useResizeObserver } from '@vueuse/core'
+import DatePicker from 'primevue/datepicker'
+import InputNumber from 'primevue/inputnumber'
+import InputText from 'primevue/inputtext'
+import Select from 'primevue/select'
 import Tag from 'primevue/tag'
 import { computed, h, nextTick, onBeforeUpdate, ref, useId, useTemplateRef, watch } from 'vue'
 import type { ComponentPublicInstance, VNode } from 'vue'
 import { useVirtualizer } from '@tanstack/vue-virtual'
 import type { TableController } from './engine/core/TableController'
-import type { ProTableColumn, ProTableColumnGroupRow } from './engine/types/column'
+import type {
+  ProTableColumn,
+  ProTableColumnEditorType,
+  ProTableColumnGroupRow,
+} from './engine/types/column'
+import type { ProTableCellEditCompletePrimeEvent, ProTableEditMode } from './engine/types/props'
 import type { SortMeta, SortState } from './engine/types/tableState'
 import {
   resolveColumnGroupRows,
@@ -35,6 +44,7 @@ const props = withDefaults(
     selectable?: false | 'single' | 'checkbox'
     loading?: boolean
     columnGroups?: ProTableColumnGroupRow[]
+    editMode?: ProTableEditMode
   }>(),
   {
     density: 'comfortable',
@@ -42,11 +52,13 @@ const props = withDefaults(
     selectable: false,
     loading: false,
     columnGroups: undefined,
+    editMode: false,
   }
 )
 
 const emit = defineEmits<{
   'sort-change': [sort: SortState]
+  'cell-edit-complete': [event: ProTableCellEditCompletePrimeEvent<T>]
 }>()
 
 const virtualHeaderShellClass = computed(() => {
@@ -170,6 +182,17 @@ const activeDescendantId = computed<string | undefined>(() => {
 })
 
 type VirtualGridSection = 'left' | 'center' | 'right'
+
+interface VirtualEditingCell {
+  rowIndex: number
+  columnKey: string
+  field: string
+  oldValue: unknown
+}
+
+const editingCell = ref<VirtualEditingCell | null>(null)
+const editingValue = ref<unknown>(null)
+const virtualCellEditingEnabled = computed<boolean>(() => props.editMode === 'cell')
 
 function buildFixedGridTrack(col: ProTableColumn<T>): string {
   if (col.width) return col.width
@@ -358,12 +381,184 @@ function setActiveCell(rowIndex: number, columnIndex: number): void {
   scrollActiveCellIntoView()
 }
 
+function focusGridRoot(): void {
+  nextTick(() => {
+    scrollContainerRef.value?.focus()
+  })
+}
+
+function focusActiveEditor(): void {
+  const id = activeDescendantId.value
+  if (!id) return
+  nextTick(() => {
+    const root = scrollContainerRef.value
+    const cell = root?.ownerDocument.getElementById(id)
+    const editor = cell?.querySelector<HTMLElement>(
+      '[data-pro-table-cell-editor] input, [data-pro-table-cell-editor] [tabindex], [data-pro-table-cell-editor]'
+    )
+    editor?.focus()
+  })
+}
+
 function handleVirtualRowClick(rowIndex: number, event: MouseEvent): void {
   activeRowIndex.value = clampIndex(rowIndex, processedRows.value.length - 1)
   handleRowClick(rowIndex, { range: event.shiftKey })
 }
 
+function handleVirtualCellClick(rowIndex: number, col: ProTableColumn<T>): void {
+  activeRowIndex.value = clampIndex(rowIndex, processedRows.value.length - 1)
+  activeColumnIndex.value = clampIndex(getColumnPosition(col), orderedColumns.value.length - 1)
+}
+
+function isColumnEditable(col: ProTableColumn<T>): boolean {
+  return virtualCellEditingEnabled.value && col.editable === true && !!col.field
+}
+
+function isCellEditing(rowIndex: number, col: ProTableColumn<T>): boolean {
+  const cell = editingCell.value
+  return Boolean(cell && cell.rowIndex === rowIndex && cell.columnKey === getColumnKey(col))
+}
+
+function getColumnEditorType(col: ProTableColumn<T>): ProTableColumnEditorType {
+  return col.editorType ?? 'text'
+}
+
+function getColumnEditorOptions(
+  col: ProTableColumn<T>
+): NonNullable<ProTableColumn<T>['filterOptions']> {
+  return col.editorOptions ?? col.filterOptions ?? []
+}
+
+function getFieldValue(row: T, field: string): unknown {
+  return row[field]
+}
+
+function cloneRowWithField(row: T, field: string, value: unknown): T {
+  return { ...row, [field]: value }
+}
+
+function getColumnTitleText(col: ProTableColumn<T>): string {
+  return typeof col.title === 'string' ? col.title : col.id
+}
+
+function getEditorAriaLabel(col: ProTableColumn<T>): string {
+  return `Edit ${getColumnTitleText(col)}`
+}
+
+function startCellEdit(rowIndex: number, col: ProTableColumn<T>, event?: Event): void {
+  if (!isColumnEditable(col) || !col.field) return
+  const row = getRowByVirtualIndex(rowIndex)
+  if (!row) return
+
+  if (event) event.preventDefault()
+  setActiveCell(rowIndex, getColumnPosition(col))
+
+  editingCell.value = {
+    rowIndex,
+    columnKey: getColumnKey(col),
+    field: col.field,
+    oldValue: getFieldValue(row, col.field),
+  }
+  editingValue.value = editingCell.value.oldValue
+  focusActiveEditor()
+}
+
+function stopCellEdit(restoreGridFocus = false): void {
+  editingCell.value = null
+  editingValue.value = null
+  if (restoreGridFocus) focusGridRoot()
+}
+
+function cancelCellEdit(restoreGridFocus = false): void {
+  stopCellEdit(restoreGridFocus)
+}
+
+function commitCellEdit(originalEvent: Event, type: string, restoreGridFocus = false): void {
+  const cell = editingCell.value
+  if (!cell) return
+  const row = getRowByVirtualIndex(cell.rowIndex)
+  if (!row) {
+    stopCellEdit(restoreGridFocus)
+    return
+  }
+
+  const newValue = editingValue.value
+  emit('cell-edit-complete', {
+    originalEvent,
+    data: row,
+    newData: cloneRowWithField(row, cell.field, newValue),
+    value: cell.oldValue,
+    newValue,
+    field: cell.field,
+    index: cell.rowIndex,
+    type,
+  })
+  stopCellEdit(restoreGridFocus)
+}
+
+function updateCellEditorValue(value: unknown): void {
+  editingValue.value = value
+}
+
+function getEditorTextValue(): string {
+  const value = editingValue.value
+  return value === null || value === undefined ? '' : String(value)
+}
+
+function getEditorNumberValue(): number | null {
+  const value = editingValue.value
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null
+  if (value === null || value === undefined || value === '') return null
+  const numericValue = Number(value)
+  return Number.isFinite(numericValue) ? numericValue : null
+}
+
+function dateFilterStringToDate(value: string): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})(?:$|[T\s])/.exec(value.trim())
+  if (!match) return null
+  return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
+}
+
+function getEditorDateValue(): Date | null {
+  const value = editingValue.value
+  if (value instanceof Date) return value
+  if (typeof value === 'string') return dateFilterStringToDate(value)
+  return null
+}
+
+function handleCellEditorKeydown(event: Event): void {
+  if (!(event instanceof KeyboardEvent)) return
+  if (event.key === 'Escape') {
+    event.preventDefault()
+    cancelCellEdit(true)
+    return
+  }
+  if (event.key === 'Enter') {
+    event.preventDefault()
+    commitCellEdit(event, 'enter', true)
+  }
+}
+
+function handleCellEditorFocusout(event: FocusEvent): void {
+  const currentTarget = event.currentTarget
+  const relatedTarget = event.relatedTarget
+  if (
+    currentTarget instanceof HTMLElement &&
+    relatedTarget instanceof Node &&
+    currentTarget.contains(relatedTarget)
+  ) {
+    return
+  }
+  commitCellEdit(event, 'outside')
+}
+
+function isEventFromCellEditor(event: Event): boolean {
+  const target = event.target
+  return target instanceof Element && Boolean(target.closest('[data-pro-table-cell-editor]'))
+}
+
 function handleGridKeydown(event: KeyboardEvent): void {
+  if (editingCell.value || isEventFromCellEditor(event)) return
   if (processedRows.value.length === 0 || orderedColumns.value.length === 0) return
 
   let nextRow = activeRowIndex.value
@@ -383,7 +578,19 @@ function handleGridKeydown(event: KeyboardEvent): void {
   } else if (event.key === 'End') {
     nextColumn = orderedColumns.value.length - 1
     if (event.ctrlKey || event.metaKey) nextRow = processedRows.value.length - 1
+  } else if (event.key === 'F2') {
+    const col = activeColumn.value
+    if (!col || !isColumnEditable(col)) return
+    event.preventDefault()
+    startCellEdit(activeRowIndex.value, col, event)
+    return
   } else if (event.key === 'Enter') {
+    const col = activeColumn.value
+    if (col && isColumnEditable(col)) {
+      event.preventDefault()
+      startCellEdit(activeRowIndex.value, col, event)
+      return
+    }
     if (!props.selectable) return
     event.preventDefault()
     handleRowClick(activeRowIndex.value)
@@ -964,6 +1171,10 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
                 :key="'lbc-' + getColumnKey(col)"
                 role="gridcell"
                 :aria-colindex="getColumnAriaIndex(col)"
+                :data-pro-table-cell-editable="isColumnEditable(col) ? 'true' : undefined"
+                :data-pro-table-cell-editing="
+                  isCellEditing(virtualRow.index, col) ? 'true' : undefined
+                "
                 :class="[
                   virtualBodyCellClass,
                   getBodyJustifyClass(col),
@@ -972,8 +1183,62 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
                       showVerticalLines && colIndex < leftPinnedColumns.length - 1,
                   },
                 ]"
+                @click="handleVirtualCellClick(virtualRow.index, col)"
+                @dblclick.stop="startCellEdit(virtualRow.index, col, $event)"
               >
+                <template v-if="isCellEditing(virtualRow.index, col)">
+                  <InputNumber
+                    v-if="getColumnEditorType(col) === 'number'"
+                    :model-value="getEditorNumberValue()"
+                    class="w-full"
+                    :aria-label="getEditorAriaLabel(col)"
+                    data-pro-table-cell-editor
+                    @update:model-value="updateCellEditorValue"
+                    @keydown.stop="handleCellEditorKeydown"
+                    @focusout="handleCellEditorFocusout"
+                    @click.stop
+                  />
+                  <Select
+                    v-else-if="getColumnEditorType(col) === 'select'"
+                    :model-value="editingValue"
+                    :options="getColumnEditorOptions(col)"
+                    option-label="label"
+                    option-value="value"
+                    class="w-full"
+                    :aria-label="getEditorAriaLabel(col)"
+                    data-pro-table-cell-editor
+                    @update:model-value="updateCellEditorValue"
+                    @keydown.stop="handleCellEditorKeydown"
+                    @focusout="handleCellEditorFocusout"
+                    @click.stop
+                  />
+                  <DatePicker
+                    v-else-if="getColumnEditorType(col) === 'date'"
+                    :model-value="getEditorDateValue()"
+                    date-format="yy-mm-dd"
+                    class="w-full"
+                    show-icon
+                    :aria-label="getEditorAriaLabel(col)"
+                    data-pro-table-cell-editor
+                    @update:model-value="updateCellEditorValue"
+                    @keydown.stop="handleCellEditorKeydown"
+                    @focusout="handleCellEditorFocusout"
+                    @click.stop
+                  />
+                  <InputText
+                    v-else
+                    :model-value="getEditorTextValue()"
+                    class="w-full"
+                    :aria-label="getEditorAriaLabel(col)"
+                    data-pro-table-cell-editor
+                    @update:model-value="updateCellEditorValue"
+                    @keydown.stop="handleCellEditorKeydown"
+                    @focusout="handleCellEditorFocusout"
+                    @click.stop
+                  />
+                </template>
                 <ProTableCell
+                  v-else
                   class="w-full"
                   :node="getBodyCellNodeByIndex(col, virtualRow.index)"
                   :align-class="getAlignClass(col)"
@@ -1031,13 +1296,71 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
                 :key="'cbc-' + getColumnKey(col)"
                 role="gridcell"
                 :aria-colindex="getColumnAriaIndex(col)"
+                :data-pro-table-cell-editable="isColumnEditable(col) ? 'true' : undefined"
+                :data-pro-table-cell-editing="
+                  isCellEditing(virtualRow.index, col) ? 'true' : undefined
+                "
                 :class="[
                   virtualBodyCellClass,
                   getBodyJustifyClass(col),
                   { 'pro-table-v-line': showVerticalLines && colIndex < centerColumns.length - 1 },
                 ]"
+                @click="handleVirtualCellClick(virtualRow.index, col)"
+                @dblclick.stop="startCellEdit(virtualRow.index, col, $event)"
               >
+                <template v-if="isCellEditing(virtualRow.index, col)">
+                  <InputNumber
+                    v-if="getColumnEditorType(col) === 'number'"
+                    :model-value="getEditorNumberValue()"
+                    class="w-full"
+                    :aria-label="getEditorAriaLabel(col)"
+                    data-pro-table-cell-editor
+                    @update:model-value="updateCellEditorValue"
+                    @keydown.stop="handleCellEditorKeydown"
+                    @focusout="handleCellEditorFocusout"
+                    @click.stop
+                  />
+                  <Select
+                    v-else-if="getColumnEditorType(col) === 'select'"
+                    :model-value="editingValue"
+                    :options="getColumnEditorOptions(col)"
+                    option-label="label"
+                    option-value="value"
+                    class="w-full"
+                    :aria-label="getEditorAriaLabel(col)"
+                    data-pro-table-cell-editor
+                    @update:model-value="updateCellEditorValue"
+                    @keydown.stop="handleCellEditorKeydown"
+                    @focusout="handleCellEditorFocusout"
+                    @click.stop
+                  />
+                  <DatePicker
+                    v-else-if="getColumnEditorType(col) === 'date'"
+                    :model-value="getEditorDateValue()"
+                    date-format="yy-mm-dd"
+                    class="w-full"
+                    show-icon
+                    :aria-label="getEditorAriaLabel(col)"
+                    data-pro-table-cell-editor
+                    @update:model-value="updateCellEditorValue"
+                    @keydown.stop="handleCellEditorKeydown"
+                    @focusout="handleCellEditorFocusout"
+                    @click.stop
+                  />
+                  <InputText
+                    v-else
+                    :model-value="getEditorTextValue()"
+                    class="w-full"
+                    :aria-label="getEditorAriaLabel(col)"
+                    data-pro-table-cell-editor
+                    @update:model-value="updateCellEditorValue"
+                    @keydown.stop="handleCellEditorKeydown"
+                    @focusout="handleCellEditorFocusout"
+                    @click.stop
+                  />
+                </template>
                 <ProTableCell
+                  v-else
                   class="w-full"
                   :node="getBodyCellNodeByIndex(col, virtualRow.index)"
                   :align-class="getAlignClass(col)"
@@ -1096,6 +1419,10 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
                 :key="'rbc-' + getColumnKey(col)"
                 role="gridcell"
                 :aria-colindex="getColumnAriaIndex(col)"
+                :data-pro-table-cell-editable="isColumnEditable(col) ? 'true' : undefined"
+                :data-pro-table-cell-editing="
+                  isCellEditing(virtualRow.index, col) ? 'true' : undefined
+                "
                 :class="[
                   virtualBodyCellClass,
                   getBodyJustifyClass(col),
@@ -1104,8 +1431,62 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
                       showVerticalLines && colIndex < rightPinnedColumns.length - 1,
                   },
                 ]"
+                @click="handleVirtualCellClick(virtualRow.index, col)"
+                @dblclick.stop="startCellEdit(virtualRow.index, col, $event)"
               >
+                <template v-if="isCellEditing(virtualRow.index, col)">
+                  <InputNumber
+                    v-if="getColumnEditorType(col) === 'number'"
+                    :model-value="getEditorNumberValue()"
+                    class="w-full"
+                    :aria-label="getEditorAriaLabel(col)"
+                    data-pro-table-cell-editor
+                    @update:model-value="updateCellEditorValue"
+                    @keydown.stop="handleCellEditorKeydown"
+                    @focusout="handleCellEditorFocusout"
+                    @click.stop
+                  />
+                  <Select
+                    v-else-if="getColumnEditorType(col) === 'select'"
+                    :model-value="editingValue"
+                    :options="getColumnEditorOptions(col)"
+                    option-label="label"
+                    option-value="value"
+                    class="w-full"
+                    :aria-label="getEditorAriaLabel(col)"
+                    data-pro-table-cell-editor
+                    @update:model-value="updateCellEditorValue"
+                    @keydown.stop="handleCellEditorKeydown"
+                    @focusout="handleCellEditorFocusout"
+                    @click.stop
+                  />
+                  <DatePicker
+                    v-else-if="getColumnEditorType(col) === 'date'"
+                    :model-value="getEditorDateValue()"
+                    date-format="yy-mm-dd"
+                    class="w-full"
+                    show-icon
+                    :aria-label="getEditorAriaLabel(col)"
+                    data-pro-table-cell-editor
+                    @update:model-value="updateCellEditorValue"
+                    @keydown.stop="handleCellEditorKeydown"
+                    @focusout="handleCellEditorFocusout"
+                    @click.stop
+                  />
+                  <InputText
+                    v-else
+                    :model-value="getEditorTextValue()"
+                    class="w-full"
+                    :aria-label="getEditorAriaLabel(col)"
+                    data-pro-table-cell-editor
+                    @update:model-value="updateCellEditorValue"
+                    @keydown.stop="handleCellEditorKeydown"
+                    @focusout="handleCellEditorFocusout"
+                    @click.stop
+                  />
+                </template>
                 <ProTableCell
+                  v-else
                   class="w-full"
                   :node="getBodyCellNodeByIndex(col, virtualRow.index)"
                   :align-class="getAlignClass(col)"

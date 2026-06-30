@@ -45,28 +45,28 @@ This table reflects what the component **ships today** and is the source of trut
 for current support. Sections further down describe the broader target
 architecture; where a capability is not yet implemented it is called out inline.
 
-| Feature               | Status | Notes                                                                         |
-| --------------------- | ------ | ----------------------------------------------------------------------------- |
-| Row model (flat)      | ✓      | Single flat row list; no tree/hierarchy.                                      |
-| Sorting               | ✓      | Default single column, 3-state (asc → desc → unsorted); client + server.      |
-| Custom sort compare   | ✓      | Per-column client-side comparator via `sortCompare`.                          |
-| Global search         | ✓      | Default substring; opt-in local fuzzy ranking via `globalSearchMode`.         |
-| Per-column filtering  | ✓      | `text`, `select`, `number`, and date-only `date` filters.                     |
-| Pagination            | ✓      | Client + server; mutually exclusive with virtual/infinite scroll.             |
-| Infinite scroll       | ✓      | Request-mode append; replaces pagination when enabled.                        |
-| Row selection         | ✓      | `single` and `checkbox` (multiple); optional `maxSelection`.                  |
-| Column visibility     | ✓      | Toggle + reorder; persisted when `stateKey` is set.                           |
-| Column pinning        | ✓      | Left / right via `pinned` (configured per column).                            |
-| Virtual scroll        | ✓      | Row virtualization (TanStack) with measured row height.                       |
-| CSV export            | ✓      | Current page or selected rows.                                                |
-| Region fullscreen     | ✓      | Scoped pseudo-fullscreen with Escape to exit.                                 |
-| Server mode           | ✓      | `request` / `api` / `apiUrl` (+ `apiExecutor`) adapters.                      |
-| Multi-column sorting  | ✓      | Opt-in via `sortMode="multiple"`; DataTable + VirtualGridRenderer paths.      |
-| Column grouping       | ✓      | Opt-in via `columnGroups`; DataTable + VirtualGridRenderer paths.             |
-| Tree table            | ✗      | Not implemented.                                                              |
-| Inline editing        | ◐      | DataTable-path cell + row editing only; VirtualGridRenderer editing deferred. |
-| Range selection       | ✓      | Checkbox mode Shift-click; DataTable + VirtualGridRenderer paths.             |
-| Column virtualization | ✗      | Only rows are virtualized.                                                    |
+| Feature               | Status | Notes                                                                    |
+| --------------------- | ------ | ------------------------------------------------------------------------ |
+| Row model (flat)      | ✓      | Single flat row list; no tree/hierarchy.                                 |
+| Sorting               | ✓      | Default single column, 3-state (asc → desc → unsorted); client + server. |
+| Custom sort compare   | ✓      | Per-column client-side comparator via `sortCompare`.                     |
+| Global search         | ✓      | Default substring; opt-in local fuzzy ranking via `globalSearchMode`.    |
+| Per-column filtering  | ✓      | `text`, `select`, `number`, and date-only `date` filters.                |
+| Pagination            | ✓      | Client + server; mutually exclusive with virtual/infinite scroll.        |
+| Infinite scroll       | ✓      | Request-mode append; replaces pagination when enabled.                   |
+| Row selection         | ✓      | `single` and `checkbox` (multiple); optional `maxSelection`.             |
+| Column visibility     | ✓      | Toggle + reorder; persisted when `stateKey` is set.                      |
+| Column pinning        | ✓      | Left / right via `pinned` (configured per column).                       |
+| Virtual scroll        | ✓      | Row virtualization (TanStack) with measured row height.                  |
+| CSV export            | ✓      | Current page or selected rows.                                           |
+| Region fullscreen     | ✓      | Scoped pseudo-fullscreen with Escape to exit.                            |
+| Server mode           | ✓      | `request` / `api` / `apiUrl` (+ `apiExecutor`) adapters.                 |
+| Multi-column sorting  | ✓      | Opt-in via `sortMode="multiple"`; DataTable + VirtualGridRenderer paths. |
+| Column grouping       | ✓      | Opt-in via `columnGroups`; DataTable + VirtualGridRenderer paths.        |
+| Tree table            | ✗      | Not implemented.                                                         |
+| Inline editing        | ◐      | DataTable cell + row editing; VirtualGridRenderer cell editing only.     |
+| Range selection       | ✓      | Checkbox mode Shift-click; DataTable + VirtualGridRenderer paths.        |
+| Column virtualization | ✗      | Only rows are virtualized.                                               |
 
 ## 1.3 Architecture Layers
 
@@ -378,14 +378,20 @@ implemented.
 
 ## 2.9 Inline Cell and Row Editing
 
-Inline editing is an opt-in PrimeVue DataTable editing baseline.
+Inline editing is opt-in and column-scoped.
 
 Support status:
 
 - DataTable path: supported for cell editing and row editing.
-- VirtualGridRenderer path: not implemented. When `editMode="cell"` or
-  `editMode="row"` is used with `virtualScroll`, editing is ignored and the
-  runtime keeps rendering the virtual grid; dev mode emits a warning.
+- VirtualGridRenderer path: supported for cell editing only when
+  `editMode="cell"` and the target column has `editable: true` plus a bound
+  `field`.
+- VirtualGridRenderer row editing: not implemented. When `editMode="row"` is
+  used with `virtualScroll`, row editing is ignored, the runtime keeps
+  rendering the virtual grid, and dev mode emits a warning.
+- VirtualGridRenderer interaction: double-click an editable gridcell, or press
+  Enter / F2 while the editable gridcell is active. Escape cancels. Enter or
+  editor blur commits.
 - Persistence: caller-owned. ProTable emits an event and does not mutate
   `props.data` internally.
 - Request / server / `api` / `apiUrl` modes: compatible, but persistence still
@@ -436,6 +442,7 @@ interface ProTableCellEditCompletePayload<T extends Record<string, unknown>> {
   field: string
   oldValue: unknown
   newValue: unknown
+  // PrimeVue-compatible event context. VirtualGridRenderer emits the same shape.
   primeEvent: ProTableCellEditCompletePrimeEvent<T>
 }
 ```
@@ -562,7 +569,8 @@ Column schema supports:
 - custom renderer (`render`)
 - custom header (`headerRender` / functional `title`)
 - enum/tag formatting (`valueEnum`)
-- DataTable-path cell/row editing (`editable`, `editorType`, `editorOptions`)
+- DataTable-path cell/row editing and VirtualGridRenderer cell editing
+  (`editable`, `editorType`, `editorOptions`)
 - column metadata (`meta`)
 
 ---

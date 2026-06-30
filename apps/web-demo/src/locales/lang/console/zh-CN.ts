@@ -1688,6 +1688,7 @@ const zhCNConsole = {
         allOwners: '全部所有者',
       },
       virtualModes: {
+        datatable: 'DataTable',
         virtual: '虚拟滚动',
         infinite: '无限请求',
       },
@@ -1890,7 +1891,7 @@ const zhCNConsole = {
         inlineEditing: {
           title: '按列启用编辑器',
           description:
-            '只有 editable: true 的列会在 DataTable cell 或 row 模式下渲染 text、number、select 或 date 编辑器。',
+            '只有 editable: true 的列会在 DataTable cell/row 模式或虚拟 cell 模式下渲染 text、number、select 或 date 编辑器。',
           tag: '编辑',
         },
         filters: {

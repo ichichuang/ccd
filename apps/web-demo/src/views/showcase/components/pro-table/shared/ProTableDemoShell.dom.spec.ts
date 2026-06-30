@@ -56,7 +56,7 @@ const globalMountOptions = {
     },
     ProTable: {
       name: 'ProTable',
-      props: ['title', 'columns', 'data', 'editMode'],
+      props: ['title', 'columns', 'data', 'editMode', 'virtualScroll'],
       emits: ['cell-edit-complete', 'row-edit-save'],
       template:
         '<section class="pro-table-stub"><strong>{{ title }}</strong><slot name="empty" /></section>',
@@ -66,8 +66,11 @@ const globalMountOptions = {
       template: '<a class="router-link-stub" :href="to"><slot /></a>',
     },
     Select: {
+      name: 'Select',
       props: ['modelValue', 'options', 'optionLabel', 'optionValue'],
-      template: '<div class="select-stub" />',
+      emits: ['update:modelValue'],
+      template:
+        '<select class="select-stub" :value="modelValue" @change="$emit(\'update:modelValue\', $event.target.value)"><option v-for="option in options" :key="String(option.value)" :value="option.value">{{ option.label }}</option></select>',
     },
     Tag: {
       props: ['value', 'severity'],
@@ -180,6 +183,33 @@ describe('ProTableDemoShell visual foundation', () => {
     >
     expect(updatedRows[0].capability).toBe('Edited capability')
     expect(wrapper.text()).toContain('cell-edit-complete: capability: Edited capability')
+  })
+
+  it('lets the inline editing route switch to virtual cell editing', async () => {
+    const wrapper = mountShell({
+      id: 'components-pro-table-inline-editing',
+      mode: 'inline-editing',
+    })
+
+    expect(wrapper.text()).toContain('DataTable')
+    expect(wrapper.text()).toContain('Virtual scroll')
+    expect(wrapper.findComponent({ name: 'ProTable' }).props('virtualScroll')).toBe(false)
+
+    const virtualModeSelect = wrapper
+      .findAllComponents({ name: 'Select' })
+      .find(select =>
+        (select.props('options') as Array<Record<string, unknown>>).some(
+          option => option.value === 'virtual'
+        )
+      )
+    if (!virtualModeSelect) throw new Error('Missing inline editing virtual mode selector')
+
+    virtualModeSelect.vm.$emit('update:modelValue', 'virtual')
+    await wrapper.vm.$nextTick()
+
+    const table = wrapper.findComponent({ name: 'ProTable' })
+    expect(table.props('editMode')).toBe('cell')
+    expect(table.props('virtualScroll')).toBe(true)
   })
 
   it('proves row editing updates local demo rows through the emitted save event', async () => {

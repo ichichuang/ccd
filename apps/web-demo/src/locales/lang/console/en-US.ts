@@ -1873,6 +1873,7 @@ const enUSConsole = {
         allOwners: 'All owners',
       },
       virtualModes: {
+        datatable: 'DataTable',
         virtual: 'Virtual scroll',
         infinite: 'Infinite request',
       },
@@ -2094,7 +2095,7 @@ const enUSConsole = {
         inlineEditing: {
           title: 'Opt-in editors',
           description:
-            'Only columns with editable: true render text, number, select, or date editors in DataTable cell or row mode.',
+            'Only columns with editable: true render text, number, select, or date editors in DataTable cell/row mode or virtual cell mode.',
           tag: 'Editing',
         },
         filters: {

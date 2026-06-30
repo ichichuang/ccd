@@ -82,21 +82,21 @@ export type HeightMode = 'fill' | 'auto' | 'fixed'
 export type ProTableEditMode = 'cell' | 'row' | false
 
 export interface ProTableCellEditCompletePrimeEvent<T extends Record<string, unknown>> {
-  /** Browser event from PrimeVue's DataTable cell editor. */
+  /** Browser event from PrimeVue's DataTable cell editor or VirtualGridRenderer inline editor. */
   originalEvent: Event
   /** Original row data. */
   data: T
-  /** PrimeVue's temporary edited row copy. */
+  /** PrimeVue-compatible temporary edited row copy. */
   newData: T
   /** Previous field value from the original row. */
   value: unknown
-  /** New field value from PrimeVue's edited row copy. */
+  /** New field value from the edited row copy. */
   newValue: unknown
   /** Edited field name. */
   field: string
-  /** Row index in the current DataTable value. */
+  /** Row index in the current rendered value. */
   index: number
-  /** Completion type reported by PrimeVue, e.g. enter, outside, or tab. */
+  /** Completion type, e.g. enter, outside, or tab. */
   type: string
 }
 
@@ -109,7 +109,7 @@ export interface ProTableCellEditCompletePayload<
   field: string
   oldValue: unknown
   newValue: unknown
-  /** Original PrimeVue DataTable cell-edit-complete event. */
+  /** PrimeVue-compatible cell-edit-complete event context. */
   primeEvent: ProTableCellEditCompletePrimeEvent<T>
 }
 
@@ -278,8 +278,9 @@ export interface ProTableProps<T extends Record<string, unknown> = Record<string
   /** Enable Virtual Grid engine (bypass PrimeVue DataTable) */
   virtualScroll?: boolean
   /**
-   * Inline editing mode. `cell` and `row` are supported only on the PrimeVue
-   * DataTable path, and only for columns with `editable: true`.
+   * Inline editing mode. DataTable supports cell and row editing.
+   * VirtualGridRenderer supports cell editing only; row editing is deferred.
+   * Both paths require columns with `editable: true` and a bound `field`.
    * Persistence is caller-owned through edit events.
    */
   editMode?: ProTableEditMode

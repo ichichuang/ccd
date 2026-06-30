@@ -60,8 +60,9 @@ export interface ProTableColumn<T extends Record<string, unknown> = Record<strin
   filterType?: 'text' | 'select' | 'date' | 'number'
   filterOptions?: SelectOption[]
   /**
-   * DataTable-path inline editing opt-in. Requires `ProTable` `editMode="cell"`
-   * or `editMode="row"` and a bound `field`. Ignored by `VirtualGridRenderer`.
+   * Inline editing opt-in. Requires a bound `field`.
+   * DataTable supports `editMode="cell"` and `editMode="row"`;
+   * VirtualGridRenderer supports `editMode="cell"` only.
    */
   editable?: boolean
   /** PrimeVue editor control used for editable cells/rows. @default 'text' */

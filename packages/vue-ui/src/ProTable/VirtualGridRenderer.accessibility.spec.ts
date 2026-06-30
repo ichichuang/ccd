@@ -89,6 +89,7 @@ function mountGrid(
     sortMode?: 'single' | 'multiple'
     columnGroups?: ProTableColumnGroupRow[]
     data?: Row[]
+    editMode?: 'cell' | 'row' | false
   } = {}
 ) {
   const data = options.data ?? createRows()
@@ -109,13 +110,42 @@ function mountGrid(
       loading: options.loading ?? false,
       selectable: options.selectable ?? false,
       columnGroups: options.columnGroups,
+      editMode: options.editMode ?? false,
     },
     global: {
       stubs: {
+        DatePicker: {
+          name: 'DatePicker',
+          props: ['modelValue', 'ariaLabel'],
+          emits: ['update:modelValue'],
+          template:
+            '<input data-pro-table-cell-editor :aria-label="ariaLabel" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
+        },
         Icons: true,
+        InputNumber: {
+          name: 'InputNumber',
+          props: ['modelValue', 'ariaLabel'],
+          emits: ['update:modelValue'],
+          template:
+            '<input data-pro-table-cell-editor :aria-label="ariaLabel" :value="modelValue" @input="$emit(\'update:modelValue\', Number($event.target.value))" />',
+        },
+        InputText: {
+          name: 'InputText',
+          props: ['modelValue', 'ariaLabel'],
+          emits: ['update:modelValue'],
+          template:
+            '<input data-pro-table-cell-editor :aria-label="ariaLabel" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
+        },
         ProTableCell: {
           props: ['node', 'alignClass', 'extraClass'],
           template: '<span class="pro-table-cell-stub">{{ node }}</span>',
+        },
+        Select: {
+          name: 'Select',
+          props: ['modelValue', 'options', 'optionLabel', 'optionValue', 'ariaLabel'],
+          emits: ['update:modelValue'],
+          template:
+            '<select data-pro-table-cell-editor :aria-label="ariaLabel" :value="modelValue" @change="$emit(\'update:modelValue\', $event.target.value)"><option v-for="option in options" :key="String(option.value)" :value="option.value">{{ option.label }}</option></select>',
         },
       },
     },
@@ -134,6 +164,18 @@ function headerByText(wrapper: ReturnType<typeof mount>, text: string) {
 
 function groupHeaders(wrapper: ReturnType<typeof mount>, groupId: string) {
   return wrapper.findAll(`[data-pro-table-column-group="${groupId}"]`)
+}
+
+function bodyCellByGridPosition(
+  wrapper: ReturnType<typeof mount>,
+  rowIndex: number,
+  columnIndex: number
+) {
+  const cell = wrapper
+    .findAll('[role="gridcell"]')
+    .find(candidate => candidate.attributes('id')?.includes(`-r${rowIndex}-c${columnIndex}`))
+  if (!cell) throw new Error(`No virtual body cell at row ${rowIndex}, column ${columnIndex}`)
+  return cell
 }
 
 describe('VirtualGridRenderer accessibility contract', () => {
@@ -365,6 +407,171 @@ describe('VirtualGridRenderer accessibility contract', () => {
 
       expect(controller.state.selection.selectedRowKeys).toEqual(['row-1', 'row-2'])
       expect(grid.attributes('aria-activedescendant')).toContain('-r2-c1')
+    } finally {
+      wrapper.unmount()
+      controller.destroy()
+    }
+  })
+
+  it('keeps virtual cells non-editable by default', async () => {
+    const editableColumns = columns.map(col =>
+      col.id === 'locked' ? { ...col, editable: true, editorType: 'text' as const } : col
+    )
+    const { wrapper, controller } = mountGrid({ columns: editableColumns })
+
+    try {
+      const grid = wrapper.get('[role="grid"]')
+      await grid.trigger('keydown', { key: 'F2' })
+      expect(wrapper.find('[data-pro-table-cell-editor]').exists()).toBe(false)
+
+      await bodyCellByGridPosition(wrapper, 1, 1).trigger('dblclick')
+      expect(wrapper.find('[data-pro-table-cell-editor]').exists()).toBe(false)
+    } finally {
+      wrapper.unmount()
+      controller.destroy()
+    }
+  })
+
+  it('enters editable virtual cells with Enter and commits without mutating source data', async () => {
+    const editableColumns = columns.map(col =>
+      col.id === 'locked' ? { ...col, editable: true, editorType: 'text' as const } : col
+    )
+    const data = createRows(2)
+    const { wrapper, controller } = mountGrid({
+      columns: editableColumns,
+      data,
+      editMode: 'cell',
+      selectable: 'single',
+    })
+
+    try {
+      const grid = wrapper.get('[role="grid"]')
+      await grid.trigger('keydown', { key: 'Enter' })
+      await wrapper.vm.$nextTick()
+
+      const editor = wrapper.get('[data-pro-table-cell-editor]')
+      expect(editor.attributes('aria-label')).toBe('Edit Locked')
+      await editor.setValue('Edited lock')
+      await editor.trigger('keydown', { key: 'ArrowRight' })
+      expect(grid.attributes('aria-activedescendant')).toContain('-r1-c1')
+
+      await editor.trigger('keydown', { key: 'Enter' })
+
+      expect(data[0].locked).toBe('L1')
+      expect(controller.state.selection.selectedRows).toHaveLength(0)
+      expect(wrapper.emitted('cell-edit-complete')?.[0]?.[0]).toMatchObject({
+        data: data[0],
+        field: 'locked',
+        value: 'L1',
+        newValue: 'Edited lock',
+        newData: { locked: 'Edited lock' },
+        index: 0,
+        type: 'enter',
+      })
+    } finally {
+      wrapper.unmount()
+      controller.destroy()
+    }
+  })
+
+  it('keeps Enter row activation for non-editable virtual cells in cell edit mode', async () => {
+    const { wrapper, controller } = mountGrid({ editMode: 'cell', selectable: 'single' })
+
+    try {
+      const grid = wrapper.get('[role="grid"]')
+      await grid.trigger('keydown', { key: 'Enter' })
+
+      expect(wrapper.find('[data-pro-table-cell-editor]').exists()).toBe(false)
+      expect(controller.state.selection.selectedRows).toHaveLength(1)
+      expect(controller.state.selection.selectedRows[0]?.id).toBe('row-1')
+    } finally {
+      wrapper.unmount()
+      controller.destroy()
+    }
+  })
+
+  it('cancels virtual cell editing with Escape without emitting completion', async () => {
+    const editableColumns = columns.map(col =>
+      col.id === 'locked' ? { ...col, editable: true, editorType: 'text' as const } : col
+    )
+    const data = createRows(1)
+    const { wrapper, controller } = mountGrid({ columns: editableColumns, data, editMode: 'cell' })
+
+    try {
+      await bodyCellByGridPosition(wrapper, 1, 1).trigger('dblclick')
+      await wrapper.vm.$nextTick()
+      const editor = wrapper.get('[data-pro-table-cell-editor]')
+      await editor.setValue('Cancelled lock')
+      await editor.trigger('keydown', { key: 'Escape' })
+
+      expect(data[0].locked).toBe('L1')
+      expect(wrapper.find('[data-pro-table-cell-editor]').exists()).toBe(false)
+      expect(wrapper.emitted('cell-edit-complete')).toBeUndefined()
+    } finally {
+      wrapper.unmount()
+      controller.destroy()
+    }
+  })
+
+  it('covers number, select, and date virtual editor paths', async () => {
+    setVirtualItems([0])
+    const editorColumns: ProTableColumn<Row>[] = [
+      { ...columns[0], editable: true, editorType: 'number' },
+      columns[1],
+      {
+        ...columns[2],
+        editable: true,
+        editorType: 'select',
+        editorOptions: [
+          { label: 'Ready', value: 'ready' },
+          { label: 'Request', value: 'request' },
+        ],
+      },
+      { ...columns[3], editable: true, editorType: 'date' },
+    ]
+    const data: Row[] = [
+      { id: 'row-1', locked: 1, name: 'Name 1', status: 'ready', action: '2026-06-01' },
+    ]
+    const { wrapper, controller } = mountGrid({
+      columns: editorColumns,
+      data,
+      editMode: 'cell',
+    })
+
+    try {
+      await bodyCellByGridPosition(wrapper, 1, 1).trigger('dblclick')
+      expect(wrapper.findComponent({ name: 'InputNumber' }).exists()).toBe(true)
+      await wrapper.get('[data-pro-table-cell-editor]').setValue('42')
+      await wrapper.get('[data-pro-table-cell-editor]').trigger('keydown', { key: 'Enter' })
+      expect(wrapper.emitted('cell-edit-complete')?.[0]?.[0]).toMatchObject({
+        field: 'locked',
+        newValue: 42,
+      })
+
+      await bodyCellByGridPosition(wrapper, 1, 3).trigger('dblclick')
+      expect(wrapper.findComponent({ name: 'Select' }).exists()).toBe(true)
+      await wrapper.get('[data-pro-table-cell-editor]').setValue('request')
+      await wrapper.get('[data-pro-table-cell-editor]').trigger('focusout')
+      expect(wrapper.emitted('cell-edit-complete')?.[1]?.[0]).toMatchObject({
+        field: 'status',
+        newValue: 'request',
+        type: 'outside',
+      })
+
+      await bodyCellByGridPosition(wrapper, 1, 4).trigger('dblclick')
+      expect(wrapper.findComponent({ name: 'DatePicker' }).exists()).toBe(true)
+      await wrapper.get('[data-pro-table-cell-editor]').setValue('2026-06-30')
+      await wrapper.get('[data-pro-table-cell-editor]').trigger('keydown', { key: 'Enter' })
+      expect(wrapper.emitted('cell-edit-complete')?.[2]?.[0]).toMatchObject({
+        field: 'action',
+        newValue: '2026-06-30',
+      })
+
+      expect(data[0]).toMatchObject({
+        locked: 1,
+        status: 'ready',
+        action: '2026-06-01',
+      })
     } finally {
       wrapper.unmount()
       controller.destroy()

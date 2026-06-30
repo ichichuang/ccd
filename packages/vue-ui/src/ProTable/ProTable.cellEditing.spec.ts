@@ -120,8 +120,11 @@ function mountTable(
         ProTableToolbar: true,
         ProTablePagination: true,
         VirtualGridRenderer: {
-          props: ['columns'],
-          template: '<div data-virtual-grid-renderer>{{ columns.length }}</div>',
+          name: 'VirtualGridRenderer',
+          props: ['columns', 'editMode'],
+          emits: ['cell-edit-complete'],
+          template:
+            '<div data-virtual-grid-renderer :data-edit-mode="String(editMode)">{{ columns.length }}</div>',
         },
         DatePicker: {
           name: 'DatePicker',
@@ -410,16 +413,50 @@ describe('ProTable DataTable editing baseline (P1-F1/P1-F2)', () => {
     }
   })
 
-  it('keeps VirtualGridRenderer stable and ignores editing with a dev warning', async () => {
+  it('passes virtual cell editing through to VirtualGridRenderer without a dev warning', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const data = rows.map(row => ({ ...row }))
+    const wrapper = mountTable({
+      columns: editableColumns,
+      data,
+      editMode: 'cell',
+      virtualScroll: true,
+    })
+    try {
+      await settle()
+      expect(wrapper.findComponent(DataTable).exists()).toBe(false)
+      const virtualGrid = wrapper.findComponent({ name: 'VirtualGridRenderer' })
+      expect(virtualGrid.props('editMode')).toBe('cell')
+      expect(warnSpy).not.toHaveBeenCalled()
+
+      const primeEvent = createPrimeCellEvent(data[0], 'name', 'Bravo', 'Charlie')
+      virtualGrid.vm.$emit('cell-edit-complete', primeEvent)
+      await settle()
+
+      expect(data[0].name).toBe('Bravo')
+      expect(wrapper.emitted('cell-edit-complete')?.[0]?.[0]).toMatchObject({
+        row: data[0],
+        rowKey: '1',
+        field: 'name',
+        oldValue: 'Bravo',
+        newValue: 'Charlie',
+        primeEvent,
+      })
+    } finally {
+      wrapper.unmount()
+      warnSpy.mockRestore()
+    }
+  })
+
+  it('keeps VirtualGridRenderer row editing explicitly unsupported', async () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const wrapper = mountTable({ columns: editableColumns, editMode: 'row', virtualScroll: true })
     try {
       await settle()
       expect(wrapper.findComponent(DataTable).exists()).toBe(false)
-      expect(wrapper.find('[data-virtual-grid-renderer]').exists()).toBe(true)
-      expect(warnSpy).toHaveBeenCalledWith(
-        expect.stringContaining('editMode="cell" and editMode="row" are supported only')
-      )
+      const virtualGrid = wrapper.findComponent({ name: 'VirtualGridRenderer' })
+      expect(virtualGrid.props('editMode')).toBe(false)
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('editMode="row"'))
     } finally {
       wrapper.unmount()
       warnSpy.mockRestore()

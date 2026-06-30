@@ -224,17 +224,20 @@ const dataTableEditMode = computed<'cell' | 'row' | undefined>(() =>
 const dataTableEditingEnabled = computed<boolean>(() => dataTableEditMode.value !== undefined)
 const dataTableRowEditingEnabled = computed<boolean>(() => dataTableEditMode.value === 'row')
 const dataTableEditingRows = ref<T[]>([])
-const hasWarnedVirtualCellEditing = ref(false)
+const virtualGridEditMode = computed<'cell' | false>(() =>
+  props.virtualScroll && props.editMode === 'cell' ? 'cell' : false
+)
+const hasWarnedVirtualRowEditing = ref(false)
 
 watch(
   () => [props.editMode, props.virtualScroll] as const,
   ([editMode, virtualScroll]) => {
-    if (!isDev || hasWarnedVirtualCellEditing.value) return
-    if ((editMode === 'cell' || editMode === 'row') && virtualScroll) {
-      hasWarnedVirtualCellEditing.value = true
+    if (!isDev || hasWarnedVirtualRowEditing.value) return
+    if (editMode === 'row' && virtualScroll) {
+      hasWarnedVirtualRowEditing.value = true
       console.warn(
-        '[ProTable] editMode="cell" and editMode="row" are supported only on the PrimeVue DataTable path. ' +
-          'VirtualGridRenderer ignores inline editing for now.'
+        '[ProTable] editMode="row" is supported only on the PrimeVue DataTable path. ' +
+          'VirtualGridRenderer supports editMode="cell" only; row editing remains deferred.'
       )
     }
   },
@@ -1702,7 +1705,9 @@ defineExpose({
               :selectable="selectable"
               :loading="isLoading"
               :column-groups="columnGroups"
+              :edit-mode="virtualGridEditMode"
               class="col-fill"
+              @cell-edit-complete="handleDataTableCellEditComplete"
               @sort-change="emit('sort-change', $event)"
             />
           </template>

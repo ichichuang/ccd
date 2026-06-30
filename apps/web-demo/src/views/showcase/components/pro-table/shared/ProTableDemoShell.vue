@@ -59,7 +59,7 @@ type ProTableDemoMode =
   | 'virtual-infinite'
 
 type ProTableRequestMode = 'apiExecutor' | 'localRequest'
-type VirtualPresentationMode = 'infinite' | 'virtual'
+type VirtualPresentationMode = 'datatable' | 'infinite' | 'virtual'
 type StatusFilter = ProTableDemoStatus | 'all'
 type OwnerFilter = ProTableDemoOwner | 'all'
 
@@ -117,6 +117,8 @@ interface ProTableModeConfig {
   fuzzySearch?: boolean
   eventLog?: boolean
   virtualModeSwitch?: boolean
+  virtualModes?: readonly VirtualPresentationMode[]
+  virtualModeDefault?: VirtualPresentationMode
   showDensityControl?: boolean
   heightMode?: HeightMode
   height?: string
@@ -295,6 +297,9 @@ const MODE_CONFIGS: Record<ProTableDemoMode, ProTableModeConfig> = {
     dateColumnFilter: true,
     inlineEditing: true,
     inlineEditMode: 'cell',
+    virtualModeSwitch: true,
+    virtualModes: ['datatable', 'virtual'],
+    virtualModeDefault: 'datatable',
     eventLog: true,
     features: ['inlineEditing', 'typedRows'],
     explanations: ['stateEvidence', 'filters'],
@@ -325,6 +330,10 @@ const MODE_CONFIGS: Record<ProTableDemoMode, ProTableModeConfig> = {
     technical: ['apiBoundary', 'catalogSource'],
     relatedIds: ['components-pro-table-server-request', 'components-pro-table-export-refresh'],
   },
+}
+
+function resolveDefaultVirtualPresentation(config: ProTableModeConfig): VirtualPresentationMode {
+  return config.virtualModeDefault ?? config.virtualModes?.[0] ?? 'virtual'
 }
 
 const FEATURE_ICONS: Record<ProTableFeatureKey, `i-${string}`> = {
@@ -365,7 +374,9 @@ const ownerFilter = ref<OwnerFilter>('all')
 const localLoading = ref(false)
 const localEmpty = ref(false)
 const ownerColumnVisible = ref(true)
-const virtualPresentation = ref<VirtualPresentationMode>('virtual')
+const virtualPresentation = ref<VirtualPresentationMode>(
+  resolveDefaultVirtualPresentation(MODE_CONFIGS[props.mode])
+)
 const activeRow = ref<ProTableDemoRow | null>(null)
 const editableRows = ref<ProTableDemoRow[]>([])
 const eventMessages = ref<string[]>([])
@@ -405,19 +416,29 @@ const ownerOptions = computed<SelectOption<OwnerFilter>[]>(() => [
   { label: t('showcase.proTable.owners.webDemo'), value: 'webDemo' },
 ])
 
-const virtualModeOptions = computed<SelectOption<VirtualPresentationMode>[]>(() => [
-  { label: t('showcase.proTable.virtualModes.virtual'), value: 'virtual' },
-  { label: t('showcase.proTable.virtualModes.infinite'), value: 'infinite' },
-])
+const virtualModeOptions = computed<SelectOption<VirtualPresentationMode>[]>(() =>
+  (modeConfig.value.virtualModes ?? ['virtual', 'infinite']).map(value => ({
+    label: t(`showcase.proTable.virtualModes.${value}`),
+    value,
+  }))
+)
+
+const usesVirtualDataset = computed(() =>
+  Boolean(
+    modeConfig.value.virtualModeSwitch &&
+    virtualPresentation.value !== 'datatable' &&
+    !modeConfig.value.inlineEditing
+  )
+)
 
 const requestSourceRows = computed(() =>
-  modeConfig.value.virtualModeSwitch ? virtualRows.value : baseRows.value
+  usesVirtualDataset.value ? virtualRows.value : baseRows.value
 )
 
 const filteredRows = computed(() => {
   if (localEmpty.value && modeConfig.value.stateControls) return []
 
-  let rows = modeConfig.value.virtualModeSwitch ? virtualRows.value : baseRows.value
+  let rows = usesVirtualDataset.value ? virtualRows.value : baseRows.value
 
   if (modeConfig.value.statusFilter && statusFilter.value !== 'all') {
     rows = rows.filter(row => row.status === statusFilter.value)
@@ -627,7 +648,7 @@ watch(
     localLoading.value = false
     localEmpty.value = false
     ownerColumnVisible.value = true
-    virtualPresentation.value = 'virtual'
+    virtualPresentation.value = resolveDefaultVirtualPresentation(MODE_CONFIGS[props.mode])
     activeRow.value = null
     editableRows.value = cloneDemoRows(baseRows.value)
     eventMessages.value = []
