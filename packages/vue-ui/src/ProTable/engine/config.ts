@@ -40,6 +40,7 @@ export const PRO_TABLE_PROPS_DEFAULTS = {
   selected: undefined,
   maxSelection: undefined,
   virtualScroll: false,
+  editMode: false,
 } as const
 
 export const PAGINATION_DEFAULTS = {

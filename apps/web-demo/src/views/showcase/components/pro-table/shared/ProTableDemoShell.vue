@@ -4,6 +4,7 @@ import type {
   HeightMode,
   PaginationConfig,
   ProTableApiExecutor,
+  ProTableCellEditCompletePayload,
   ProTableColumn,
   ProTableColumnGroupRow,
   ProTableExposed,
@@ -45,6 +46,7 @@ type ProTableDemoMode =
   | 'columns'
   | 'export-refresh'
   | 'form-composition'
+  | 'inline-editing'
   | 'overview'
   | 'pagination'
   | 'selection'
@@ -69,6 +71,7 @@ type ProTableFeatureKey =
   | 'exportRefresh'
   | 'filters'
   | 'formComposition'
+  | 'inlineEditing'
   | 'pagination'
   | 'request'
   | 'selection'
@@ -83,6 +86,7 @@ type ProTableTechnicalKey =
   | 'catalogSource'
   | 'i18nCopy'
   | 'noRenderers'
+  | 'callerPersistence'
   | 'proTableOnly'
   | 'stateEvidence'
 
@@ -105,6 +109,7 @@ interface ProTableModeConfig {
   columnGroups?: boolean
   columnFilters?: boolean
   dateColumnFilter?: boolean
+  inlineEditing?: boolean
   semanticStatusSort?: boolean
   fuzzySearch?: boolean
   eventLog?: boolean
@@ -280,6 +285,18 @@ const MODE_CONFIGS: Record<ProTableDemoMode, ProTableModeConfig> = {
     technical: ['proTableOnly', 'i18nCopy'],
     relatedIds: ['components-pro-table-sorting-filtering', 'components-pro-form-basic-schema'],
   },
+  'inline-editing': {
+    columnPreset: 'standard',
+    pageSize: 5,
+    columnFilters: true,
+    dateColumnFilter: true,
+    inlineEditing: true,
+    eventLog: true,
+    features: ['inlineEditing', 'typedRows'],
+    explanations: ['stateEvidence', 'filters'],
+    technical: ['callerPersistence', 'proTableOnly'],
+    relatedIds: ['components-pro-table-cell-rendering', 'components-pro-table-api-events'],
+  },
   'api-events': {
     columnPreset: 'api',
     pageSize: 5,
@@ -303,6 +320,7 @@ const FEATURE_ICONS: Record<ProTableFeatureKey, `i-${string}`> = {
   exportRefresh: 'i-lucide-download',
   filters: 'i-lucide-filter',
   formComposition: 'i-lucide-list-filter',
+  inlineEditing: 'i-lucide-pencil-line',
   pagination: 'i-lucide-list-end',
   request: 'i-lucide-webhook',
   selection: 'i-lucide-check-square',
@@ -317,6 +335,7 @@ const TECHNICAL_ICONS: Record<ProTableTechnicalKey, `i-${string}`> = {
   apiBoundary: 'i-lucide-shield-check',
   catalogSource: 'i-lucide-folder-code',
   i18nCopy: 'i-lucide-languages',
+  callerPersistence: 'i-lucide-send',
   noRenderers: 'i-lucide-code-2',
   proTableOnly: 'i-lucide-table',
   stateEvidence: 'i-lucide-activity',
@@ -331,6 +350,7 @@ const localEmpty = ref(false)
 const ownerColumnVisible = ref(true)
 const virtualPresentation = ref<VirtualPresentationMode>('virtual')
 const activeRow = ref<ProTableDemoRow | null>(null)
+const editableRows = ref<ProTableDemoRow[]>([])
 const eventMessages = ref<string[]>([])
 const actionMessage = ref<SummaryMessage>({ key: 'showcase.proTable.actions.ready' })
 const stateMessage = ref<SummaryMessage | null>(null)
@@ -340,6 +360,10 @@ const modeConfig = computed(() => MODE_CONFIGS[props.mode])
 const item = computed(() => requireCatalogItem(props.id))
 const baseRows = computed(() => createProTableDemoRows(t))
 const virtualRows = computed(() => createVirtualProTableDemoRows(t))
+
+function cloneDemoRows(rows: readonly ProTableDemoRow[]): ProTableDemoRow[] {
+  return rows.map(row => ({ ...row }))
+}
 
 const sourcePaths = computed(() => [...item.value.sourcePaths, ...SHARED_SOURCE_PATHS])
 const relatedIds = computed(() => modeConfig.value.relatedIds)
@@ -447,15 +471,44 @@ function createUpdatedAtFilterColumn(): ProTableColumn<ProTableDemoRow> {
   }
 }
 
+function withInlineEditing(
+  column: ProTableColumn<ProTableDemoRow>
+): ProTableColumn<ProTableDemoRow> {
+  if (column.id === 'capability') {
+    return { ...column, editable: true, editorType: 'text' }
+  }
+  if (column.id === 'status') {
+    return {
+      ...column,
+      editable: true,
+      editorType: 'select',
+      editorOptions: [
+        { label: t('showcase.proTable.status.guarded'), value: 'guarded' },
+        { label: t('showcase.proTable.status.preview'), value: 'preview' },
+        { label: t('showcase.proTable.status.ready'), value: 'ready' },
+        { label: t('showcase.proTable.status.request'), value: 'request' },
+      ],
+    }
+  }
+  if (column.id === 'records') {
+    return { ...column, editable: true, editorType: 'number' }
+  }
+  if (column.id === 'updatedAt') {
+    return { ...column, editable: true, editorType: 'date' }
+  }
+  return column
+}
+
 const tableColumns = computed<ProTableColumn<ProTableDemoRow>[]>(() => {
   const columns = createProTableDemoColumns(t, modeConfig.value.columnPreset)
   const filteredColumns = modeConfig.value.columnFilters ? columns.map(withColumnFilters) : columns
   const sortedColumns = modeConfig.value.semanticStatusSort
     ? filteredColumns.map(withSemanticStatusSort)
     : filteredColumns
-  return modeConfig.value.dateColumnFilter
+  const datedColumns = modeConfig.value.dateColumnFilter
     ? [...sortedColumns, createUpdatedAtFilterColumn()]
     : sortedColumns
+  return modeConfig.value.inlineEditing ? datedColumns.map(withInlineEditing) : datedColumns
 })
 
 const tableColumnGroups = computed<ProTableColumnGroupRow[] | undefined>(() =>
@@ -485,6 +538,7 @@ const tableApiExecutor = computed<ProTableApiExecutor | undefined>(() => {
 
 const tableData = computed(() => {
   if (usesLocalRequest.value || usesApiExecutor.value) return []
+  if (modeConfig.value.inlineEditing) return editableRows.value
   return filteredRows.value
 })
 
@@ -558,11 +612,20 @@ watch(
     ownerColumnVisible.value = true
     virtualPresentation.value = 'virtual'
     activeRow.value = null
+    editableRows.value = cloneDemoRows(baseRows.value)
     eventMessages.value = []
     actionMessage.value = { key: 'showcase.proTable.actions.ready' }
     stateMessage.value = null
     fetchMessage.value = null
   }
+)
+
+watch(
+  baseRows,
+  rows => {
+    if (modeConfig.value.inlineEditing) editableRows.value = cloneDemoRows(rows)
+  },
+  { immediate: true }
 )
 
 function requireCatalogItem(id: string): ShowcaseCatalogItem {
@@ -688,6 +751,26 @@ function handlePageChange(page: number, pageSize: number): void {
 
 function handleRequestError(error: Error): void {
   pushEvent('showcase.proTable.events.requestError', error.message)
+}
+
+function applyInlineCellValue(
+  row: ProTableDemoRow,
+  field: string,
+  value: unknown
+): ProTableDemoRow {
+  return { ...row, [field]: value }
+}
+
+function handleCellEditComplete(payload: ProTableCellEditCompletePayload<ProTableDemoRow>): void {
+  if (!modeConfig.value.inlineEditing) return
+  editableRows.value = editableRows.value.map(row =>
+    row.id === payload.rowKey ? applyInlineCellValue(row, payload.field, payload.newValue) : row
+  )
+  actionMessage.value = {
+    key: 'showcase.proTable.actions.cellEdited',
+    params: { field: payload.field, row: payload.rowKey },
+  }
+  pushEvent('showcase.proTable.events.cellEdit', `${payload.field}: ${String(payload.newValue)}`)
 }
 </script>
 
@@ -904,6 +987,7 @@ function handleRequestError(error: Error): void {
                 :infinite-scroll="isInfiniteMode"
                 :height-mode="tableHeightMode"
                 :height="tableHeight"
+                :edit-mode="modeConfig.inlineEditing ? 'cell' : false"
                 :show-density-control="modeConfig.showDensityControl ?? true"
                 :global-search-mode="modeConfig.fuzzySearch ? 'fuzzy' : 'substring'"
                 show-toolbar
@@ -917,6 +1001,7 @@ function handleRequestError(error: Error): void {
                 @filter-change="handleFilterChange"
                 @page-change="handlePageChange"
                 @request-error="handleRequestError"
+                @cell-edit-complete="handleCellEditComplete"
               >
                 <template #empty>
                   <ShowcaseEmptyState

@@ -13,6 +13,7 @@ import type {
   DataTableSortMeta,
 } from 'primevue/datatable'
 import DatePicker from 'primevue/datepicker'
+import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
 import Popover from 'primevue/popover'
 import ProgressSpinner from 'primevue/progressspinner'
@@ -39,10 +40,12 @@ import ProTablePagination from './components/ProTablePagination.vue'
 import ProTableToolbar from './components/ProTableToolbar.vue'
 import VirtualGridRenderer from './VirtualGridRenderer.vue'
 import { buildDataTablePt, type DataTablePtOptions } from './presets/dataTablePt'
-import type { ProTableColumn } from './engine/types/column'
+import type { ProTableColumn, ProTableColumnEditorType } from './engine/types/column'
 import type { FilterState, ProTableSortMode, SortMeta, SortState } from './engine/types/tableState'
 import type {
   PaginationConfig,
+  ProTableCellEditCompletePayload,
+  ProTableCellEditCompletePrimeEvent,
   ProTableApiQueryParams,
   ProTableProps,
   ProTableSearchParams,
@@ -105,6 +108,7 @@ const props = withDefaults(defineProps<ProTableProps<T>>(), {
   selected: PRO_TABLE_PROPS_DEFAULTS.selected,
   maxSelection: PRO_TABLE_PROPS_DEFAULTS.maxSelection,
   virtualScroll: PRO_TABLE_PROPS_DEFAULTS.virtualScroll,
+  editMode: PRO_TABLE_PROPS_DEFAULTS.editMode,
   columnGroups: undefined,
   request: undefined,
   api: undefined,
@@ -130,6 +134,7 @@ const emit = defineEmits<{
   'load-more': []
   'row-click': [row: T]
   'request-error': [error: Error]
+  'cell-edit-complete': [payload: ProTableCellEditCompletePayload<T>]
 }>()
 
 const { t } = useI18n()
@@ -203,6 +208,27 @@ if (isDev && props.apiUrl && !props.apiExecutor) {
       'Provide a function that wraps your HTTP client.'
   )
 }
+
+const dataTableEditMode = computed<'cell' | undefined>(() =>
+  props.editMode === 'cell' && !props.virtualScroll ? 'cell' : undefined
+)
+const dataTableCellEditingEnabled = computed<boolean>(() => dataTableEditMode.value === 'cell')
+const hasWarnedVirtualCellEditing = ref(false)
+
+watch(
+  () => [props.editMode, props.virtualScroll] as const,
+  ([editMode, virtualScroll]) => {
+    if (!isDev || hasWarnedVirtualCellEditing.value) return
+    if (editMode === 'cell' && virtualScroll) {
+      hasWarnedVirtualCellEditing.value = true
+      console.warn(
+        '[ProTable] editMode="cell" is supported only on the PrimeVue DataTable path. ' +
+          'VirtualGridRenderer ignores inline editing for now.'
+      )
+    }
+  },
+  { immediate: true }
+)
 
 const pagConfig = computed<PaginationConfig>(() => {
   if (!props.pagination || props.pagination === true) return {}
@@ -1071,6 +1097,82 @@ function getBodyColumnClass(
   return getColumnClass(col, slotProps.data)
 }
 
+interface DataTableCellEditorSlotProps {
+  data: Record<string, unknown>
+  field: string
+}
+
+function isColumnEditable(col: ProTableColumn<T>): boolean {
+  return dataTableCellEditingEnabled.value && col.editable === true && !!col.field
+}
+
+function getColumnEditorType(col: ProTableColumn<T>): ProTableColumnEditorType {
+  return col.editorType ?? 'text'
+}
+
+function getColumnEditorOptions(
+  col: ProTableColumn<T>
+): NonNullable<ProTableColumn<T>['filterOptions']> {
+  return col.editorOptions ?? col.filterOptions ?? []
+}
+
+function getEditorSlotValue(slotProps: DataTableCellEditorSlotProps): unknown {
+  return slotProps.data[slotProps.field]
+}
+
+function getEditorTextValue(slotProps: DataTableCellEditorSlotProps): string {
+  const value = getEditorSlotValue(slotProps)
+  return value === null || value === undefined ? '' : String(value)
+}
+
+function getEditorNumberValue(slotProps: DataTableCellEditorSlotProps): number | null {
+  const value = getEditorSlotValue(slotProps)
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null
+  if (value === null || value === undefined || value === '') return null
+  const numericValue = Number(value)
+  return Number.isFinite(numericValue) ? numericValue : null
+}
+
+function getEditorDateValue(slotProps: DataTableCellEditorSlotProps): Date | null {
+  const value = getEditorSlotValue(slotProps)
+  if (value instanceof Date) return value
+  if (typeof value === 'string') return dateFilterStringToDate(value)
+  return null
+}
+
+function setEditorSlotValue(slotProps: DataTableCellEditorSlotProps, value: unknown): void {
+  slotProps.data[slotProps.field] = value
+}
+
+function getEditableColumnByField(field: string): ProTableColumn<T> | null {
+  return (
+    ctrl.visibleColumns.value.find(col => col.editable === true && col.field === field) ??
+    ctrl.visibleColumns.value.find(col => col.editable === true && col.id === field) ??
+    null
+  )
+}
+
+function getRowKeyValue(row: T): string {
+  const keyField = String(props.rowKey ?? PRO_TABLE_PROPS_DEFAULTS.rowKey)
+  const keyValue = keyField.includes('.') ? objectGet(row, keyField) : row[keyField]
+  return String(keyValue ?? '')
+}
+
+function handleDataTableCellEditComplete(event: ProTableCellEditCompletePrimeEvent<T>): void {
+  const column = getEditableColumnByField(event.field)
+  if (!column?.field) return
+
+  emit('cell-edit-complete', {
+    row: event.data,
+    rowKey: getRowKeyValue(event.data),
+    column,
+    field: event.field,
+    oldValue: event.value,
+    newValue: event.newValue,
+    primeEvent: event,
+  })
+}
+
 // --- API Exposure ---
 defineExpose({
   /** Force the table to reload data. In request mode, re-executes the request. Otherwise emits refresh. */
@@ -1237,6 +1339,7 @@ defineExpose({
               "
               :meta-key-selection="false"
               :data-key="String(rowKey)"
+              :edit-mode="dataTableEditMode"
               :row-class="rowClassFn ?? undefined"
               :resizable-columns="resizableColumns"
               :column-resize-mode="columnResizeMode"
@@ -1248,6 +1351,7 @@ defineExpose({
               @row-click="handleDataTableRowClick"
               @row-select="handleDataTableRowSelection"
               @row-unselect="handleDataTableRowSelection"
+              @cell-edit-complete="handleDataTableCellEditComplete"
             >
               <ColumnGroup
                 v-if="hasResolvedColumnGroups"
@@ -1456,6 +1560,44 @@ defineExpose({
                     :node="getBodyCellNode(col, slotProps)"
                     :align-class="getAlignClass(col)"
                     :extra-class="getBodyColumnClass(col, slotProps)"
+                  />
+                </template>
+                <template
+                  v-if="isColumnEditable(col)"
+                  #editor="slotProps"
+                >
+                  <InputNumber
+                    v-if="getColumnEditorType(col) === 'number'"
+                    :model-value="getEditorNumberValue(slotProps)"
+                    class="w-full"
+                    data-pro-table-cell-editor
+                    @update:model-value="setEditorSlotValue(slotProps, $event)"
+                  />
+                  <Select
+                    v-else-if="getColumnEditorType(col) === 'select'"
+                    :model-value="getEditorSlotValue(slotProps)"
+                    :options="getColumnEditorOptions(col)"
+                    option-label="label"
+                    option-value="value"
+                    class="w-full"
+                    data-pro-table-cell-editor
+                    @update:model-value="setEditorSlotValue(slotProps, $event)"
+                  />
+                  <DatePicker
+                    v-else-if="getColumnEditorType(col) === 'date'"
+                    :model-value="getEditorDateValue(slotProps)"
+                    date-format="yy-mm-dd"
+                    class="w-full"
+                    show-icon
+                    data-pro-table-cell-editor
+                    @update:model-value="setEditorSlotValue(slotProps, $event)"
+                  />
+                  <InputText
+                    v-else
+                    :model-value="getEditorTextValue(slotProps)"
+                    class="w-full"
+                    data-pro-table-cell-editor
+                    @update:model-value="setEditorSlotValue(slotProps, $event)"
                   />
                 </template>
               </Column>

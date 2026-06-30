@@ -71,6 +71,7 @@ const PLANNED_ROUTE_PATHS = [
   '/showcase/components/pro-table/virtual-infinite',
   '/showcase/components/pro-table/export-refresh',
   '/showcase/components/pro-table/cell-rendering',
+  '/showcase/components/pro-table/inline-editing',
   '/showcase/components/pro-table/form-composition',
   '/showcase/components/pro-table/column-groups',
   '/showcase/components/pro-table/api-events',
@@ -525,6 +526,7 @@ describe('showcase catalog', () => {
       'components-pro-table-virtual-infinite',
       'components-pro-table-export-refresh',
       'components-pro-table-cell-rendering',
+      'components-pro-table-inline-editing',
       'components-pro-table-form-composition',
       'components-pro-table-api-events',
     ]

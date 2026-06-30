@@ -362,8 +362,9 @@ const proTableItems = [
   ['virtual-infinite', 'VirtualInfinite', 'virtualInfinite', 30, 'preview'],
   ['export-refresh', 'ExportRefresh', 'exportRefresh', 31, 'preview'],
   ['cell-rendering', 'CellRendering', 'cellRendering', 32, 'preview'],
-  ['form-composition', 'FormComposition', 'formComposition', 33, 'preview'],
-  ['api-events', 'ApiEvents', 'apiEvents', 34, 'preview'],
+  ['inline-editing', 'InlineEditing', 'inlineEditing', 33, 'preview'],
+  ['form-composition', 'FormComposition', 'formComposition', 34, 'preview'],
+  ['api-events', 'ApiEvents', 'apiEvents', 35, 'preview'],
 ] as const
 
 const proTableCatalogItems = proTableItems.map(

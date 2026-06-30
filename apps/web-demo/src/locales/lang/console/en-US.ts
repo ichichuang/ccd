@@ -22,6 +22,7 @@ const showcasePageTitles = {
   'components-pro-table-virtual-infinite': 'Virtual and Infinite',
   'components-pro-table-export-refresh': 'Export and Refresh',
   'components-pro-table-cell-rendering': 'Cell Rendering',
+  'components-pro-table-inline-editing': 'Inline Editing',
   'components-pro-table-form-composition': 'Form Composition',
   'components-pro-table-api-events': 'API and Events',
   'components-pro-form-overview': 'ProForm Overview',
@@ -181,6 +182,14 @@ const showcasePageLocaleOverrides: Record<string, ShowcasePageLocaleOverride> = 
     try: 'Inspect cell presentation.',
     source: 'Source paths show the route and plain column presets.',
     technical: 'Technical notes explain why no Vue h or TSX renderer is needed.',
+  },
+  'components-pro-table-inline-editing': {
+    eyebrow: 'ProTable showcase',
+    description:
+      'DataTable-path cell editors are opt-in per table and per column, with persistence owned by the caller.',
+    try: 'Edit local cells.',
+    source: 'Source paths show the route, typed edit payload, and local row update handler.',
+    technical: 'Technical notes explain DataTable-only support and caller-owned persistence.',
   },
   'components-pro-table-form-composition': {
     eyebrow: 'ProTable showcase',
@@ -364,6 +373,7 @@ const showcaseRouterLocale = createNestedLocaleRecord([
   ['components.proTable.virtualInfinite', 'Virtual and Infinite'],
   ['components.proTable.exportRefresh', 'Export and Refresh'],
   ['components.proTable.cellRendering', 'Cell Rendering'],
+  ['components.proTable.inlineEditing', 'Inline Editing'],
   ['components.proTable.formComposition', 'Form Composition'],
   ['components.proTable.apiEvents', 'API and Events'],
   ['components.proForm.root', 'ProForm'],
@@ -1793,6 +1803,11 @@ const enUSConsole = {
           demo: 'Cell presentation uses valueEnum status chips, alignment, numeric fields, and text columns without custom renderers.',
           tableTitle: 'Cell presentation rows',
         },
+        'inline-editing': {
+          label: 'Inline editing',
+          demo: 'Enable DataTable cell editing for selected columns, then update local rows from the emitted payload.',
+          tableTitle: 'Editable local rows',
+        },
         'form-composition': {
           label: 'Form composition',
           demo: 'A PrimeVue owner filter composes around ProTable while this page remains a ProTable showcase, not a ProForm route.',
@@ -1876,6 +1891,7 @@ const enUSConsole = {
         exportedSelected: 'exportData("selected") was called for {count} selected rows.',
         ownerColumnShown: 'The owner column is visible again.',
         ownerColumnHidden: 'The owner column is hidden through toggleColumnVisibility().',
+        cellEdited: 'Edited {field} on row {row}. The page updated its own local row copy.',
       },
       state: {
         title: 'Table state',
@@ -1912,6 +1928,7 @@ const enUSConsole = {
         filter: 'filter-change: {detail}',
         page: 'page-change: {detail}',
         requestError: 'request-error: {detail}',
+        cellEdit: 'cell-edit-complete: {detail}',
       },
       empty: {
         title: 'No ProTable rows match',
@@ -2055,6 +2072,12 @@ const enUSConsole = {
             'Status cells render through valueEnum labels and severities while the page stays renderer-free.',
           tag: 'Cells',
         },
+        inlineEditing: {
+          title: 'Opt-in cell editors',
+          description:
+            'Only columns with editable: true render text, number, select, or date editors in DataTable cell mode.',
+          tag: 'Editing',
+        },
         filters: {
           title: 'Filter composition',
           description:
@@ -2140,6 +2163,11 @@ const enUSConsole = {
           title: 'Injected request boundary',
           description:
             'Request and apiExecutor demos operate on deterministic local data and do not use raw fetch.',
+        },
+        callerPersistence: {
+          title: 'Caller-owned persistence',
+          description:
+            'The demo listens for cell-edit-complete and replaces its own local row copy; ProTable does not mutate source data.',
         },
       },
     },

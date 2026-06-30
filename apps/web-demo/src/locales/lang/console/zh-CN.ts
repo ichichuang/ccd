@@ -22,6 +22,7 @@ const showcasePageTitles = {
   'components-pro-table-virtual-infinite': '虚拟与无限滚动',
   'components-pro-table-export-refresh': '导出与刷新',
   'components-pro-table-cell-rendering': '单元格渲染',
+  'components-pro-table-inline-editing': '内联编辑',
   'components-pro-table-form-composition': '表单组合',
   'components-pro-table-api-events': 'API 与事件',
   'components-pro-form-overview': 'ProForm 概览',
@@ -167,6 +168,13 @@ const showcasePageLocaleOverrides: Record<string, ShowcasePageLocaleOverride> = 
     try: '查看单元格展示。',
     source: '源码路径展示路由与普通列预设。',
     technical: '技术说明解释为什么不需要 Vue h 或 TSX renderer。',
+  },
+  'components-pro-table-inline-editing': {
+    eyebrow: 'ProTable 展示',
+    description: 'DataTable 路径单元格编辑同时按表格和列启用，持久化由调用方负责。',
+    try: '编辑本地单元格。',
+    source: '源码路径展示路由、类型化编辑载荷与本地行更新处理。',
+    technical: '技术说明解释仅 DataTable 支持和调用方持久化边界。',
   },
   'components-pro-table-form-composition': {
     eyebrow: 'ProTable 展示',
@@ -336,6 +344,7 @@ const showcaseRouterLocale = createNestedLocaleRecord([
   ['components.proTable.virtualInfinite', '虚拟与无限滚动'],
   ['components.proTable.exportRefresh', '导出与刷新'],
   ['components.proTable.cellRendering', '单元格渲染'],
+  ['components.proTable.inlineEditing', '内联编辑'],
   ['components.proTable.formComposition', '表单组合'],
   ['components.proTable.apiEvents', 'API 与事件'],
   ['components.proForm.root', 'ProForm'],
@@ -1611,6 +1620,11 @@ const zhCNConsole = {
           demo: '单元格展示使用 valueEnum 状态标签、对齐、数字字段与文本列，不使用自定义渲染器。',
           tableTitle: '单元格展示行',
         },
+        'inline-editing': {
+          label: '内联编辑',
+          demo: '只为选定列启用 DataTable 单元格编辑，并由页面根据事件载荷更新本地行。',
+          tableTitle: '可编辑本地行',
+        },
         'form-composition': {
           label: '表单组合',
           demo: 'PrimeVue 所有者过滤围绕 ProTable 组合，但该页面仍是 ProTable 展示，不是 ProForm 路由。',
@@ -1690,6 +1704,7 @@ const zhCNConsole = {
         exportedSelected: '已针对 {count} 条选中行调用 exportData("selected")。',
         ownerColumnShown: '所有者列已重新显示。',
         ownerColumnHidden: '已通过 toggleColumnVisibility() 隐藏所有者列。',
+        cellEdited: '已编辑第 {row} 行的 {field}。页面更新的是自己的本地行副本。',
       },
       state: {
         title: '表格状态',
@@ -1725,6 +1740,7 @@ const zhCNConsole = {
         filter: 'filter-change：{detail}',
         page: 'page-change：{detail}',
         requestError: 'request-error：{detail}',
+        cellEdit: 'cell-edit-complete：{detail}',
       },
       empty: {
         title: '没有匹配的 ProTable 行',
@@ -1855,6 +1871,12 @@ const zhCNConsole = {
           description: '状态单元格通过 valueEnum 标签与 severity 渲染，页面不需要 renderer。',
           tag: '单元格',
         },
+        inlineEditing: {
+          title: '按列启用编辑器',
+          description:
+            '只有 editable: true 的列会在 DataTable cell 模式下渲染 text、number、select 或 date 编辑器。',
+          tag: '编辑',
+        },
         filters: {
           title: '过滤组合',
           description: 'PrimeVue Select 控件收窄本地行，同时保留 ProTable 全局搜索。',
@@ -1927,6 +1949,11 @@ const zhCNConsole = {
         apiBoundary: {
           title: '注入式请求边界',
           description: 'request 与 apiExecutor 演示都操作确定性本地数据，不使用 raw fetch。',
+        },
+        callerPersistence: {
+          title: '调用方持久化',
+          description:
+            '演示监听 cell-edit-complete 并替换自己的本地行副本；ProTable 不修改源数据。',
         },
       },
     },

@@ -12,6 +12,7 @@ type ProTableDemoShellMode =
   | 'api-events'
   | 'basic'
   | 'columns'
+  | 'inline-editing'
   | 'server-request'
   | 'selection'
   | 'sorting-filtering'
@@ -53,7 +54,9 @@ const globalMountOptions = {
       template: '<span class="icon-stub" :data-name="name" />',
     },
     ProTable: {
-      props: ['title'],
+      name: 'ProTable',
+      props: ['title', 'columns', 'data', 'editMode'],
+      emits: ['cell-edit-complete'],
       template:
         '<section class="pro-table-stub"><strong>{{ title }}</strong><slot name="empty" /></section>',
     },
@@ -138,6 +141,44 @@ describe('ProTableDemoShell visual foundation', () => {
     expect(wrapper.text()).toContain('Plain column objects')
     expect(wrapper.text()).toContain('Value enum rendering')
     expect(wrapper.text()).toContain('Status cells render through valueEnum')
+  })
+
+  it('proves inline editing updates local demo rows through the emitted event', async () => {
+    const wrapper = mountShell({
+      id: 'components-pro-table-inline-editing',
+      mode: 'inline-editing',
+    })
+
+    const table = wrapper.findComponent({ name: 'ProTable' })
+    expect(table.props('editMode')).toBe('cell')
+
+    const rows = table.props('data') as Array<Record<string, unknown>>
+    const columns = table.props('columns') as Array<Record<string, unknown>>
+    table.vm.$emit('cell-edit-complete', {
+      row: rows[0],
+      rowKey: rows[0].id,
+      column: columns[0],
+      field: 'capability',
+      oldValue: rows[0].capability,
+      newValue: 'Edited capability',
+      primeEvent: {
+        originalEvent: new Event('keydown'),
+        data: rows[0],
+        newData: { ...rows[0], capability: 'Edited capability' },
+        value: rows[0].capability,
+        newValue: 'Edited capability',
+        field: 'capability',
+        index: 0,
+        type: 'enter',
+      },
+    })
+    await wrapper.vm.$nextTick()
+
+    const updatedRows = wrapper.findComponent({ name: 'ProTable' }).props('data') as Array<
+      Record<string, unknown>
+    >
+    expect(updatedRows[0].capability).toBe('Edited capability')
+    expect(wrapper.text()).toContain('cell-edit-complete: capability: Edited capability')
   })
 
   it('renders the API event result area and readable wrapping source paths', () => {

@@ -79,6 +79,40 @@ export type SearchPathResolver = (
 
 export type HeightMode = 'fill' | 'auto' | 'fixed'
 
+export type ProTableEditMode = 'cell' | false
+
+export interface ProTableCellEditCompletePrimeEvent<T extends Record<string, unknown>> {
+  /** Browser event from PrimeVue's DataTable cell editor. */
+  originalEvent: Event
+  /** Original row data. */
+  data: T
+  /** PrimeVue's temporary edited row copy. */
+  newData: T
+  /** Previous field value from the original row. */
+  value: unknown
+  /** New field value from PrimeVue's edited row copy. */
+  newValue: unknown
+  /** Edited field name. */
+  field: string
+  /** Row index in the current DataTable value. */
+  index: number
+  /** Completion type reported by PrimeVue, e.g. enter, outside, or tab. */
+  type: string
+}
+
+export interface ProTableCellEditCompletePayload<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> {
+  row: T
+  rowKey: string
+  column: ProTableColumn<T>
+  field: string
+  oldValue: unknown
+  newValue: unknown
+  /** Original PrimeVue DataTable cell-edit-complete event. */
+  primeEvent: ProTableCellEditCompletePrimeEvent<T>
+}
+
 export interface ProTableUrlSyncOptions {
   /**
    * 是否启用 URL query 同步（分页/排序/关键字）
@@ -190,6 +224,12 @@ export interface ProTableProps<T extends Record<string, unknown> = Record<string
   maxSelection?: number
   /** Enable Virtual Grid engine (bypass PrimeVue DataTable) */
   virtualScroll?: boolean
+  /**
+   * Inline editing mode. Only `cell` is supported, only on the PrimeVue
+   * DataTable path, and only for columns with `editable: true`.
+   * Persistence is caller-owned through `cell-edit-complete`.
+   */
+  editMode?: ProTableEditMode
 
   /**
    * Autonomous data-fetching callback.

@@ -14,6 +14,8 @@ export interface ProTableValueEnumItem {
 
 export type ProTableValueEnum = Record<string | number, ProTableValueEnumItem | string>
 
+export type ProTableColumnEditorType = 'text' | 'number' | 'select' | 'date'
+
 export interface ProTableColumnGroup {
   id: string
   title: string | (() => VNode)
@@ -57,6 +59,15 @@ export interface ProTableColumn<T extends Record<string, unknown> = Record<strin
   filterable?: boolean
   filterType?: 'text' | 'select' | 'date' | 'number'
   filterOptions?: SelectOption[]
+  /**
+   * DataTable-path cell editing opt-in. Requires `ProTable` `editMode="cell"`
+   * and a bound `field`. Ignored by `VirtualGridRenderer`.
+   */
+  editable?: boolean
+  /** PrimeVue editor control used for editable cells. @default 'text' */
+  editorType?: ProTableColumnEditorType
+  /** Select editor options. Falls back to `filterOptions` when omitted. */
+  editorOptions?: SelectOption[]
   pinned?: 'left' | 'right' | false
   /**
    * Virtual grid only (`VirtualGridRenderer`): this column’s track uses `minmax(base, 1fr)` in its

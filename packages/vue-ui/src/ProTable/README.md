@@ -64,7 +64,7 @@ architecture; where a capability is not yet implemented it is called out inline.
 | Multi-column sorting  | ✓      | Opt-in via `sortMode="multiple"`; DataTable + VirtualGridRenderer paths. |
 | Column grouping       | ✓      | Opt-in via `columnGroups`; DataTable + VirtualGridRenderer paths.        |
 | Tree table            | ✗      | Not implemented.                                                         |
-| Inline editing        | ✗      | Not implemented (use `render` + your own controls / CRUD modals).        |
+| Inline editing        | ◐      | DataTable-path cell editing only; VirtualGridRenderer editing deferred.  |
 | Range selection       | ✓      | Checkbox mode Shift-click; DataTable + VirtualGridRenderer paths.        |
 | Column virtualization | ✗      | Only rows are virtualized.                                               |
 
@@ -376,7 +376,80 @@ Support status:
 Footer groups and custom group-row styling beyond `headerAlign` are not
 implemented.
 
-## 2.9 Virtual Scroll Engine
+## 2.9 Inline Cell Editing
+
+Inline editing is an opt-in PrimeVue DataTable cell-editing baseline.
+
+Support status:
+
+- DataTable path: supported for cell editing only.
+- Row editing: not implemented.
+- VirtualGridRenderer path: not implemented. When `editMode="cell"` is used
+  with `virtualScroll`, editing is ignored and the runtime keeps rendering the
+  virtual grid; dev mode emits a warning.
+- Persistence: caller-owned. ProTable emits an event and does not mutate
+  `props.data` internally.
+- Request / server / `api` / `apiUrl` modes: compatible, but persistence still
+  belongs to the application layer. Save the emitted change through your own
+  adapter/API flow, then refresh or update caller-owned rows.
+
+Table opt-in:
+
+```vue
+<ProTable
+  :columns="columns"
+  :data="rows"
+  edit-mode="cell"
+  @cell-edit-complete="handleCellEditComplete"
+/>
+```
+
+Column opt-in:
+
+```ts
+const columns: ProTableColumn<UserRow>[] = [
+  { id: 'name', field: 'name', title: 'Name', editable: true, editorType: 'text' },
+  { id: 'age', field: 'age', title: 'Age', editable: true, editorType: 'number' },
+  {
+    id: 'status',
+    field: 'status',
+    title: 'Status',
+    editable: true,
+    editorType: 'select',
+    editorOptions: [
+      { label: 'Ready', value: 'ready' },
+      { label: 'Draft', value: 'draft' },
+    ],
+  },
+  { id: 'dueAt', field: 'dueAt', title: 'Due', editable: true, editorType: 'date' },
+]
+```
+
+Event payload:
+
+```ts
+interface ProTableCellEditCompletePayload<T extends Record<string, unknown>> {
+  row: T
+  rowKey: string
+  column: ProTableColumn<T>
+  field: string
+  oldValue: unknown
+  newValue: unknown
+  primeEvent: ProTableCellEditCompletePrimeEvent<T>
+}
+```
+
+Caller-owned local persistence example:
+
+```ts
+function handleCellEditComplete(payload: ProTableCellEditCompletePayload<UserRow>) {
+  rows.value = rows.value.map(row =>
+    row.id === payload.rowKey ? { ...row, [payload.field]: payload.newValue } : row
+  )
+}
+```
+
+## 2.10 Virtual Scroll Engine
 
 Virtual scrolling ensures performance for large datasets.
 
@@ -430,6 +503,9 @@ export interface ProTableColumn<T extends Record<string, unknown> = Record<strin
   ) => number
   filterable?: boolean
   filterType?: 'text' | 'select' | 'date' | 'number'
+  editable?: boolean
+  editorType?: 'text' | 'number' | 'select' | 'date'
+  editorOptions?: SelectOption[]
   pinned?: 'left' | 'right' | false
   hidden?: boolean
   headerAlign?: 'left' | 'center' | 'right'
@@ -461,6 +537,7 @@ Column schema supports:
 - custom renderer (`render`)
 - custom header (`headerRender` / functional `title`)
 - enum/tag formatting (`valueEnum`)
+- DataTable-path cell editing (`editable`, `editorType`, `editorOptions`)
 - column metadata (`meta`)
 
 ---
@@ -513,6 +590,7 @@ export interface ProTableProps<T extends Record<string, unknown> = Record<string
   sortMode?: 'single' | 'multiple'
   globalFilter?: boolean
   globalSearchMode?: 'substring' | 'fuzzy'
+  editMode?: 'cell' | false
   virtualScroll?: boolean
   infiniteScroll?: boolean
   selectable?: false | 'single' | 'checkbox'
