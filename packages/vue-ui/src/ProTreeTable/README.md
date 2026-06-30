@@ -12,6 +12,9 @@ experimental wrapper and starts P2-B stabilization.
 The P2-B backlog, acceptance criteria, rollback plan, and future feature gates live in
 `wiki/canonical/decisions/adr-009-pro-tree-table-api-decision.md`.
 
+P2-B1 records the filtering contract decision. `filterable` remains typed but unwired; it does not
+enable PrimeVue TreeTable filters, filter UI, local data filtering, or server requests.
+
 This README does not approve production readiness or new runtime behavior. Filtering, real server
 adapters, editing, virtualization, tree range selection, a shared headless hierarchy engine, and
 `ProTable` integration each require a separate decision gate before implementation.
@@ -119,6 +122,20 @@ preserving any caller-provided `node.loading` state.
 does not throw through the component event handler. Both events are CCD-owned payloads; raw PrimeVue
 event objects are not public API.
 
+## Filtering Status
+
+Filtering is a documented future contract, not a runtime feature in the current experimental
+baseline.
+
+- `filterable` remains an eligibility flag only.
+- The wrapper does not expose `filterState`, filtering mode, or filter events.
+- The wrapper does not pass PrimeVue `filters`, `filterMode`, or `Column.filter`.
+- Future local filtering requires a separate P2-B1R runtime task.
+- Future server/lazy filtering remains behind the P2-B2 server/lazy adapter decision.
+- Any future filtering task must preserve caller-owned `expandedKeys` and define descendant,
+  collapsed-branch, lazy-unloaded-child, clear/reset, and accessibility behavior before runtime
+  wiring.
+
 ## Column Compatibility
 
 `ProTreeTableColumn<T>` intentionally implements only the ADR-009 approved subset:
@@ -135,7 +152,7 @@ event objects are not public API.
 | `sortable`   | Supported            | Boolean passthrough to PrimeVue `Column.sortable`.                                                                                                             |
 | `valueEnum`  | Supported            | Text-only labels from strings or `{ label }` entries.                                                                                                          |
 | `render`     | Supported, text-only | Callback may return `string`, `number`, `null`, or `undefined`; VNode/component render output is deferred because this wrapper must not use Vue `h()` helpers. |
-| `filterable` | Deferred             | The flag remains typed for compatibility, but TreeTable filter state, filter UI, and server/lazy filtering semantics are not wired in P2-A2.                   |
+| `filterable` | Deferred             | P2-B1 keeps this as typed-but-unwired eligibility metadata. It does not enable PrimeVue filters, local filtering, or server/lazy filtering.                    |
 
 ## Deferred
 

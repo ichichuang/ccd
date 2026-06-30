@@ -25,6 +25,13 @@ wiki_owner: LLM-maintained CCD architecture wiki
 
 # Wiki Log
 
+## [2026-06-30] decisions | ProTreeTable filtering contract decision
+
+- Updated [[adr-009-pro-tree-table-api-decision]] with the P2-B1 filtering contract research and docs-only decision.
+- Recorded that `filterable` remains typed but unwired and does not enable PrimeVue filters, local filtering, or server/lazy filtering.
+- Documented local/server filtering options, parent/descendant semantics, collapsed-branch reveal behavior, lazy-unloaded child boundaries, future filter state shape, and runtime acceptance criteria.
+- Synchronized the ProTreeTable README filtering status note without changing runtime source, generated reports, dependencies, or flat `ProTable` files.
+
 ## [2026-06-30] decisions | ProTreeTable P2-A closure and P2-B stabilization
 
 - Updated [[adr-009-pro-tree-table-api-decision]] as the P2-B0 stabilization status sync and issue list.

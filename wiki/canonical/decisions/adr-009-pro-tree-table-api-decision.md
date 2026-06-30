@@ -29,6 +29,8 @@ source_paths:
   - packages/vue-ui/src/ProTable/ProTable.vue
   - packages/vue-ui/src/ProTable/VirtualGridRenderer.vue
   - packages/vue-ui/src/ProTable/engine/types/props.ts
+  - packages/vue-ui/src/ProTable/engine/types/tableState.ts
+  - packages/vue-ui/src/ProTable/engine/engines/filtering.ts
   - packages/vue-ui/src/ProTable/engine/core/TableController.ts
   - packages/vue-ui/src/ProTreeTable/README.md
   - packages/vue-ui/src/ProTreeTable/index.ts
@@ -54,6 +56,8 @@ Verified / P2-A closed / P2-B stabilization active.
 P2-A1 through P2-A6 are complete as of 2026-06-30. The latest runtime and test baseline is `562beb0436bdda7d848ec54b37e4cbcb75f98b89`; P2-A6 was a read-only decision gate and produced no commit.
 
 This page now owns the P2-B0 stabilization status sync and issue list. P2-B0 is documentation and governance only: it does not approve new runtime features, exports, generated reports, dependencies, or changes to the flat `ProTable` implementation.
+
+P2-B1 records the filtering contract research and docs-only decision. It does not wire runtime filtering.
 
 ## Decision Summary
 
@@ -267,7 +271,7 @@ The following are explicitly deferred:
 - Advanced tree group styling.
 - Server persistence implementation.
 - Real server adapters.
-- TreeTable filtering from `filterable`.
+- TreeTable runtime filtering from `filterable`; P2-B1 documents the contract only.
 - VNode or component column render output.
 - Advanced column compatibility beyond the ADR-009 subset.
 - URL synchronization for tree expansion and selection state.
@@ -372,18 +376,152 @@ P2-B work must stay behind separate decision gates. P2-B0 is this documentation/
 | Priority | Item                                     | Scope                                                                                      | Acceptance criteria                                                                                                                                                                                                                                                                                         |
 | -------- | ---------------------------------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | P2-B0    | Stabilization status sync and issue list | Docs/governance only.                                                                      | ADR-009 records P2-A closure, P2-A6 decision result, current supported capabilities, deferred scope, P2-B backlog, rollback, and validation gates. README status is synchronized without claiming production readiness. No runtime files, generated reports, dependencies, or flat `ProTable` files change. |
-| P2-B1    | Filtering contract research/decision     | Research or docs-only decision for `filterable` and TreeTable filtering semantics.         | Document whether filtering remains deferred, maps to a tree-specific state shape, or needs a future server contract. Compare visible-node, descendant, collapsed-node, and lazy-child behavior. Do not wire runtime filtering.                                                                              |
+| P2-B1    | Filtering contract research/decision     | Completed docs-only decision for `filterable` and TreeTable filtering semantics.           | ADR-009 records the runtime boundary, option comparison, recommended future contract, local/server split, collapsed-descendant behavior, lazy-child behavior, relation to flat `FilterState`, and future runtime acceptance criteria. No runtime filtering is wired.                                        |
 | P2-B2    | Server/lazy adapter contract design      | Design the server/lazy adapter contract without implementing real adapters.                | Specify root loading, child loading, error/retry shape, pagination ownership, child persistence ownership, and event payload ownership. Preserve `loadChildren` as the current local contract until a later task explicitly changes runtime.                                                                |
 | P2-B3    | Visual polish and state inventory        | Token/state design for empty, loading, and error states.                                   | Produce a state inventory and acceptance checklist for tokenized empty/loading/error states. Any UI change must be a separate runtime task with screenshots and must not add editing, virtualization, filtering, or server behavior.                                                                        |
 | P2-B4    | Selection/expansion edge-case audit      | Audit controlled state edge cases before adding new behavior.                              | Cover disabled mode, `node.selectable=false`, unknown keys, collapsed selected descendants, lazy children, checkbox partial state, duplicate key risks, and remount/transient-cache behavior. Output either docs-only findings or a test-only follow-up plan.                                               |
 | P2-B5    | Accessibility hardening follow-up        | Required if P2-B3 changes UI states or interaction surfaces.                               | Re-run and extend keyboard, axe, screenshot, and manual ARIA checks for new states. Preserve the statement that accessibility is smoke-tested, not globally certified.                                                                                                                                      |
 | P2-B6    | Experimental-versus-beta decision gate   | Decide whether to keep experimental status or promote to beta after B1-B5 evidence exists. | Record pass/fail status for B1-B5, unresolved API risks, required validation evidence, rollback path, and recommendation. Promotion to beta requires a separate docs decision and must not imply `ProTable` integration.                                                                                    |
 
+## P2-B1 Filtering Contract Decision
+
+P2-B1 is a docs-only decision gate. The current runtime remains unchanged:
+
+- `ProTreeTableColumn.filterable` remains typed but unwired.
+- `ProTreeTableProps` does not expose filter state, filter mode, or filter events.
+- `ProTreeTable.vue` does not pass PrimeVue `filters`, `filterMode`, or `Column.filter`.
+- The unit suite keeps the guard that `filterable: true` does not enable PrimeVue filters.
+- `ProTreeTable` remains experimental.
+- `ProTable treeMode` remains rejected.
+
+### Filtering Research Findings
+
+PrimeVue `TreeTable` has its own filtering model:
+
+- Public docs expose `filters` and `filterMode` on `TreeTable`, with filter inputs supplied through `Column` filter templates.
+- PrimeVue supports a `global` filter key and per-field filter entries.
+- PrimeVue `filterMode` is `lenient` by default and also supports `strict`.
+- In `lenient` mode, a matching parent includes its descendants without continuing to filter the full subtree.
+- In `strict` mode, descendants continue to be filtered even when the parent matches.
+- The installed PrimeVue 4.5.5 type surface defines `TreeTableFilterMetaData` as `{ value, matchMode }`, `TreeTableFilterMeta` as a keyed filter object, and a non-lazy `TreeTableFilterEvent.filteredValue`.
+- PrimeVue local filtering is skipped when `lazy=true`; lazy tables return the supplied `value` and expect page/sort/filter information to be handled by the caller/server path.
+- TreeTable row rendering still depends on `expandedKeys`. A descendant that survives filtering remains hidden under a collapsed ancestor unless the display expansion state reveals that ancestor.
+
+The existing flat `ProTable` filter model is not directly reusable. `FilterState` is only:
+
+```ts
+interface FilterState {
+  global: string
+  columns: Record<string, unknown>
+}
+```
+
+The flat filtering engine filters a flat row array. It has no parent/descendant semantics, no lazy-unloaded child semantics, and no tree expansion interaction. `ProTreeTable` may reuse the `global + columns` concept, but must not import or couple to the flat `FilterState`, `ProTableLoadParams`, or flat row filtering engine.
+
+### Options Compared
+
+| Option                                     | API clarity                                                                       | `filterable` compatibility                                                                       | Collapsed/descendant semantics                                                                  | Lazy/server implications                                                    | Accessibility and test burden                                                              | Rollback risk |
+| ------------------------------------------ | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------- |
+| A. Keep filtering deferred                 | Clearest current boundary.                                                        | Keeps the flag as eligibility metadata only.                                                     | No runtime semantics to explain beyond "not wired".                                             | No server contract needed now.                                              | No new UI or keyboard surface.                                                             | Lowest.       |
+| B. Future local client tree filtering      | Clear if introduced behind explicit filter state and local mode.                  | `filterable` can decide which columns participate.                                               | Must define parent-match inclusion, descendant-match ancestor reveal, and clear/reset behavior. | Cannot search unloaded lazy children.                                       | Requires unit tests plus keyboard, focus, empty-state, and axe/screenshot checks.          | Medium.       |
+| C. Future server/lazy filtering only       | Clear for remote data but too narrow for static local trees.                      | `filterable` becomes request metadata, not local UI behavior.                                    | Server must decide whether returned rows include ancestor context and matching descendants.     | Best fit for unloaded descendants, but requires a server/lazy adapter gate. | Requires loading/error/empty state and request ownership tests.                            | Medium.       |
+| D. Future explicit local/server mode split | Best long-term contract because mode owns semantics instead of overloading flags. | `filterable` remains an eligibility flag; behavior comes from `filteringMode` and `filterState`. | Local mode can define deterministic reveal behavior while server mode delegates returned shape. | Server/lazy semantics can evolve in P2-B2 without forcing local filtering.  | Highest total surface, but testable in smaller local-first and server-contract follow-ups. | Medium-high.  |
+
+### Recommendation
+
+Keep the current runtime at Option A after P2-B1: `filterable` remains typed but unwired.
+
+Adopt Option D as the documented future contract shape. Filtering must be introduced only through a separate runtime task, with an explicit mode split rather than making `filterable` itself turn on PrimeVue filtering.
+
+The first possible runtime slice should be a narrow P2-B1R local filtering task after this decision. Server/lazy filtering remains behind P2-B2 server/lazy adapter design. P2-B1R and P2-B2 may share the same CCD-owned filter state shape, but neither should reuse flat `ProTableLoadParams` or the flat filtering engine.
+
+### Proposed Future Contract
+
+Future filtering should use CCD-owned state and events:
+
+```ts
+type ProTreeTableFilteringMode = false | 'local' | 'server'
+
+type ProTreeTableFilterMatchMode =
+  | 'contains'
+  | 'startsWith'
+  | 'equals'
+  | 'in'
+  | 'lt'
+  | 'lte'
+  | 'gt'
+  | 'gte'
+  | 'between'
+  | 'dateIs'
+  | 'dateBefore'
+  | 'dateAfter'
+
+interface ProTreeTableFilterRule {
+  value: unknown
+  matchMode?: ProTreeTableFilterMatchMode
+}
+
+interface ProTreeTableFilterState {
+  global: string
+  columns: Record<string, ProTreeTableFilterRule>
+}
+
+interface ProTreeTableFilterChangeEvent<T extends Record<string, unknown>> {
+  mode: Exclude<ProTreeTableFilteringMode, false>
+  filterState: ProTreeTableFilterState
+  visibleNodes?: ProTreeTableNode<T>[]
+}
+```
+
+Proposed future props and events, if a runtime task accepts them:
+
+- `filteringMode?: ProTreeTableFilteringMode`.
+- `filterState?: ProTreeTableFilterState`.
+- `defaultFilterState?: ProTreeTableFilterState` only if an uncontrolled path is explicitly accepted.
+- `update:filterState`.
+- `filter-change` with a CCD-owned payload, not a raw PrimeVue event object.
+
+`filterable` should mean only "this column may participate in future filtering." It must not independently create filter UI, pass `Column.filter`, or mutate data.
+
+Local filtering semantics:
+
+- Evaluate only currently loaded `nodes`.
+- Default global and text column matching should be `contains`; any PrimeVue-backed runtime must set match modes explicitly instead of inheriting PrimeVue defaults.
+- Exclude columns with `filterable === false`.
+- A row matches when the row itself matches all active column filters and the global filter, or when a loaded descendant matches.
+- A matching parent includes its loaded descendant subtree for context.
+- A matching descendant reveals its ancestor chain.
+- Filtering must not mutate caller-owned `expandedKeys`.
+- To avoid hidden descendant matches, local filtering should derive a display-only expansion map for matched ancestor chains while filters are active. Clearing filters restores the caller-controlled expansion state.
+- Local filtering must not fetch lazy children. Unloaded descendants are unknown and excluded from local matching.
+- Clear/reset normalizes to `{ global: '', columns: {} }`, clears any display-only filter expansion, and emits one controlled update.
+
+Server filtering semantics:
+
+- Server mode does not filter the local tree in the component.
+- The component emits CCD-owned filter state to the caller/adapter.
+- The caller/server owns returned root nodes, ancestor context, matching descendants, totals if any, and unloaded-child semantics.
+- Lazy child loading must receive current filter state only after the P2-B2 server/lazy adapter contract explicitly adds it.
+- Server mode must not reuse `ProTableLoadParams`.
+
+### Future P2-B1R Runtime Acceptance Criteria
+
+A future local filtering implementation is acceptable only when it:
+
+- Adds an explicit filtering mode and CCD-owned filter state.
+- Keeps `filterable` as eligibility metadata rather than an activation switch.
+- Covers self-match, parent-match, descendant-match, ancestor reveal, clear/reset, and collapsed-branch restore behavior with unit tests.
+- Covers lazy-unloaded children as unknown in local mode.
+- Keeps server mode as event-only unless P2-B2 has approved adapter semantics.
+- Adds route-level accessibility checks if new filter UI, empty state, loading state, or focus movement is introduced.
+- Leaves `ProTable.vue`, `VirtualGridRenderer.vue`, and the flat `TableController` untouched.
+- Updates generated API reports only if the public export surface changes in that runtime task.
+
 ## Future Feature Decision Gates
 
 The following features require separate decision records or explicitly scoped follow-up tasks before any runtime implementation:
 
-- Filtering.
+- Filtering runtime implementation.
 - Real server adapters.
 - Editing.
 - Virtualization.
@@ -395,7 +533,7 @@ Until those gates pass, `ProTreeTable` must remain independent and experimental,
 
 ## P2-B Rollback And Validation Gates
 
-P2-B0 rollback is documentation-only: revert the ADR-009 status/backlog changes, the package README status note, and any index/log updates made with the same docs task.
+P2-B0 and P2-B1 rollback is documentation-only: revert the ADR-009 status/backlog/filtering-decision changes, the package README status note, and any index/log updates made with the same docs task.
 
 Before any new runtime feature is approved, the implementing task must define rollback and run at least:
 
@@ -425,7 +563,7 @@ P2-A1 is acceptable only when:
 
 ## Current Impact
 
-This ADR creates the design boundary for future Tree table work. It does not change runtime behavior, public exports, generated API reports, dependencies, or ProTable implementation files.
+This ADR creates the design boundary for future Tree table work. P2-B1 documents the filtering contract decision only. It does not change runtime behavior, public exports, generated API reports, dependencies, or ProTable implementation files.
 
 ## Related Pages
 
