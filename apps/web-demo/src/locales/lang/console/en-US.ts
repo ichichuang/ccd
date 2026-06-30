@@ -2207,16 +2207,17 @@ const enUSConsole = {
     proTreeTable: {
       demo: {
         description:
-          'Static local nodes demonstrate expansion, selection events, and field-based output only.',
+          'Static local nodes demonstrate expansion, selection events, and the P2-A2 column compatibility subset.',
       },
       columns: {
         name: 'Capability',
         owner: 'Owner',
         status: 'Status',
+        order: 'Order',
         evidence: 'Evidence',
       },
       status: {
-        baseline: 'P2-A1 baseline',
+        baseline: 'P2-A2 baseline',
         deferred: 'Deferred',
         planned: 'Later architecture',
       },
@@ -2238,6 +2239,7 @@ const enUSConsole = {
         local: 'Local data',
         adr: 'ADR-009',
         deferred: 'Deferred',
+        columns: 'Column subset',
       },
       cards: {
         wrapper: {
@@ -2249,6 +2251,11 @@ const enUSConsole = {
           title: 'Static hierarchy',
           description:
             'Rows are local ProTreeTableNode objects, which keeps the first slice deterministic and reversible.',
+        },
+        columns: {
+          title: 'Column compatibility',
+          description:
+            'The showcase covers width, minWidth, alignment, pinned columns, sortable columns, valueEnum labels, and text render callbacks.',
         },
         boundary: {
           title: 'No ProTable tree mode',
@@ -2264,7 +2271,7 @@ const enUSConsole = {
       rows: {
         wrapper: {
           name: 'ProTreeTable wrapper',
-          owner: '@ccd/vue-ui',
+          owner: "{'@'}ccd/vue-ui",
           evidence: 'PrimeVue TreeTable is wrapped behind typed CCD props and events.',
         },
         primevue: {
@@ -2274,8 +2281,14 @@ const enUSConsole = {
         },
         types: {
           name: 'Typed node and column API',
-          owner: '@ccd/vue-ui',
+          owner: "{'@'}ccd/vue-ui",
           evidence: 'ProTreeTableNode and ProTreeTableColumn are exported as experimental types.',
+        },
+        columns: {
+          name: 'Column subset baseline',
+          owner: 'P2-A2',
+          evidence:
+            'Columns map sizing, alignment, pinned, sortable, valueEnum, and text render behavior without using Vue h.',
         },
         state: {
           name: 'Controlled expansion and selection',

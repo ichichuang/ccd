@@ -2,7 +2,15 @@
 /// <reference types="vite/client" />
 /* eslint-disable vue/one-component-per-file -- PrimeVue stubs stay local to this focused component spec. */
 import { mount } from '@vue/test-utils'
-import { computed, defineComponent, type Component, type PropType } from 'vue'
+import {
+  computed,
+  defineComponent,
+  inject,
+  provide,
+  type Component,
+  type ComputedRef,
+  type PropType,
+} from 'vue'
 import { describe, expect, it, vi } from 'vitest'
 import { ProTreeTable as RootProTreeTable } from '..'
 import ProTreeTable from './ProTreeTable.vue'
@@ -25,6 +33,8 @@ interface PrimeTreeNodeStub {
   data?: TreeDemoRow
   children?: PrimeTreeNodeStub[]
 }
+
+const treeNodesInjectionKey = vi.hoisted(() => Symbol('treeNodes'))
 
 interface ProTreeTableTestProps {
   nodes: ProTreeTableNode<TreeDemoRow>[]
@@ -75,12 +85,15 @@ vi.mock('primevue/treetable', () => ({
 
       const flattenedNodes = computed(() => flatten(props.value))
 
+      provide(treeNodesInjectionKey, flattenedNodes)
+
       return { flattenedNodes }
     },
     template: `
       <section
         data-testid="prime-tree-table-stub"
         :data-loading="String(loading)"
+        :data-scrollable="String(Boolean($attrs.scrollable))"
         :data-selection-mode="selectionMode || ''"
       >
         <slot />
@@ -143,6 +156,40 @@ vi.mock('primevue/column', () => ({
         type: Boolean,
         default: false,
       },
+      sortable: {
+        type: Boolean,
+        default: false,
+      },
+      frozen: {
+        type: Boolean,
+        default: false,
+      },
+      alignFrozen: {
+        type: String,
+        default: undefined,
+      },
+      style: {
+        type: Object as PropType<Record<string, string>>,
+        default: undefined,
+      },
+      headerClass: {
+        type: String,
+        default: undefined,
+      },
+      bodyClass: {
+        type: String,
+        default: undefined,
+      },
+      filter: {
+        type: Boolean,
+        default: false,
+      },
+    },
+    setup() {
+      const injectedNodes = inject<ComputedRef<PrimeTreeNodeStub[]>>(treeNodesInjectionKey)
+      const renderedNodes = computed(() => injectedNodes?.value ?? [])
+
+      return { renderedNodes }
     },
     template: `
       <div
@@ -150,7 +197,25 @@ vi.mock('primevue/column', () => ({
         :data-field="field || ''"
         :data-header="header || ''"
         :data-expander="String(Boolean(expander))"
-      />
+        :data-sortable="String(Boolean(sortable))"
+        :data-frozen="String(Boolean(frozen))"
+        :data-align-frozen="alignFrozen || ''"
+        :data-style-width="style?.width || ''"
+        :data-style-min-width="style?.minWidth || ''"
+        :data-header-class="headerClass || ''"
+        :data-body-class="bodyClass || ''"
+        :data-filter="String(Boolean(filter))"
+      >
+        <span
+          v-for="node in renderedNodes"
+          :key="node.key"
+          data-testid="prime-tree-cell"
+          :data-field="field || ''"
+          :data-node-key="node.key"
+        >
+          <slot name="body" :node="node" />
+        </span>
+      </div>
     `,
   }),
 }))
@@ -225,6 +290,132 @@ describe('ProTreeTable', () => {
     expect(renderedColumns[0]?.attributes('data-header')).toBe('Capability')
     expect(renderedColumns[0]?.attributes('data-expander')).toBe('true')
     expect(renderedColumns[1]?.attributes('data-expander')).toBe('false')
+  })
+
+  it('maps column width and minWidth to PrimeVue Column styles', () => {
+    const wrapper = mountTreeTable({
+      columns: [
+        {
+          id: 'name',
+          field: 'name',
+          title: 'Capability',
+          width: 180,
+          minWidth: '12rem',
+        },
+      ],
+    })
+    const renderedColumn = wrapper.get('[data-testid="prime-tree-column"]')
+
+    expect(renderedColumn.attributes('data-style-width')).toBe('180px')
+    expect(renderedColumn.attributes('data-style-min-width')).toBe('12rem')
+  })
+
+  it('applies column alignment to both header and body cells', () => {
+    const wrapper = mountTreeTable({
+      columns: [
+        {
+          id: 'owner',
+          field: 'owner',
+          title: 'Owner',
+          align: 'right',
+        },
+      ],
+    })
+    const renderedColumn = wrapper.get('[data-testid="prime-tree-column"]')
+
+    expect(renderedColumn.attributes('data-header-class')).toBe('text-right')
+    expect(renderedColumn.attributes('data-body-class')).toBe('text-right')
+  })
+
+  it('maps pinned columns to PrimeVue frozen columns and enables TreeTable scrolling', () => {
+    const wrapper = mountTreeTable({
+      columns: [
+        {
+          id: 'name',
+          field: 'name',
+          title: 'Capability',
+          pinned: 'left',
+        },
+        {
+          id: 'status',
+          field: 'status',
+          title: 'Status',
+          pinned: 'right',
+        },
+      ],
+    })
+    const renderedColumns = wrapper.findAll('[data-testid="prime-tree-column"]')
+
+    expect(wrapper.get('[data-testid="prime-tree-table-stub"]').attributes('data-scrollable')).toBe(
+      'true'
+    )
+    expect(renderedColumns[0]?.attributes('data-frozen')).toBe('true')
+    expect(renderedColumns[0]?.attributes('data-align-frozen')).toBe('left')
+    expect(renderedColumns[1]?.attributes('data-frozen')).toBe('true')
+    expect(renderedColumns[1]?.attributes('data-align-frozen')).toBe('right')
+  })
+
+  it('maps sortable columns to PrimeVue Column sortable', () => {
+    const wrapper = mountTreeTable({
+      columns: [
+        {
+          id: 'name',
+          field: 'name',
+          title: 'Capability',
+          sortable: true,
+        },
+      ],
+    })
+
+    expect(wrapper.get('[data-testid="prime-tree-column"]').attributes('data-sortable')).toBe(
+      'true'
+    )
+  })
+
+  it('renders valueEnum labels and text render callback output without Vue h helpers', () => {
+    const wrapper = mountTreeTable({
+      columns: [
+        {
+          id: 'status',
+          field: 'status',
+          title: 'Status',
+          valueEnum: {
+            Ready: { label: 'Ready label' },
+            Preview: 'Preview label',
+          },
+        },
+        {
+          id: 'owner',
+          field: 'owner',
+          title: 'Owner',
+          render: ({ text, node }) => `${node.key}:${text}`,
+        },
+      ],
+    })
+    const statusCells = wrapper.findAll('[data-testid="prime-tree-cell"][data-field="status"]')
+    const ownerCells = wrapper.findAll('[data-testid="prime-tree-cell"][data-field="owner"]')
+
+    expect(statusCells.map(cell => cell.text())).toEqual(['Ready label', 'Preview label'])
+    expect(ownerCells.map(cell => cell.text())).toEqual([
+      'operations:Runtime',
+      'operations.telemetry:Runtime',
+    ])
+    expect(stripComments(proTreeTableSource)).not.toContain(' h(')
+  })
+
+  it('keeps filterable as a deferred column flag without wiring PrimeVue filters', () => {
+    const wrapper = mountTreeTable({
+      columns: [
+        {
+          id: 'status',
+          field: 'status',
+          title: 'Status',
+          filterable: true,
+        },
+      ],
+    })
+
+    expect(wrapper.get('[data-testid="prime-tree-column"]').attributes('data-filter')).toBe('false')
   })
 
   it('emits controlled expandedKeys updates and typed node expansion payloads', async () => {

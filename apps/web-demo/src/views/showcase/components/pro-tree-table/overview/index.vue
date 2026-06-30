@@ -149,6 +149,12 @@ function recordTreeEvent(
         :description="$t('showcase.proTreeTable.cards.static.description')"
         :tag="$t('showcase.proTreeTable.tags.local')"
       />
+      <ShowcaseFeatureCard
+        icon="i-lucide-columns-3"
+        :title="$t('showcase.proTreeTable.cards.columns.title')"
+        :description="$t('showcase.proTreeTable.cards.columns.description')"
+        :tag="$t('showcase.proTreeTable.tags.columns')"
+      />
     </template>
 
     <template #explanation>

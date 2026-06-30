@@ -5,6 +5,9 @@ import TreeTable from 'primevue/treetable'
 import { computed } from 'vue'
 import type {
   ProTreeTableColumn,
+  ProTreeTableColumnAlign,
+  ProTreeTableColumnRenderResult,
+  ProTreeTableColumnSize,
   ProTreeTableExpandedKeys,
   ProTreeTableNode,
   ProTreeTableNodeEvent,
@@ -54,6 +57,7 @@ const activeSelectionMode = computed<Exclude<ProTreeTableSelectionMode, false> |
   props.disabled || props.selectionMode === false ? undefined : props.selectionMode
 )
 const primeSelectionKeys = computed(() => toPrimeSelectionKeys(props.selectionKeys))
+const hasPinnedColumns = computed(() => props.columns.some(column => isPinnedColumn(column)))
 
 function toPrimeTreeNode(node: ProTreeTableNode<T>): TreeNode {
   return {
@@ -135,23 +139,83 @@ function handleNodeEvent(event: ProTreeTableNodeEventName, primeNode: TreeNode):
 
 function getColumnStyle(column: ProTreeTableColumn<T>): Record<string, string> | undefined {
   const style: Record<string, string> = {}
-  if (column.width) style.width = column.width
-  if (column.minWidth) style.minWidth = column.minWidth
+  const width = normalizeColumnSize(column.width)
+  const minWidth = normalizeColumnSize(column.minWidth)
+
+  if (width) style.width = width
+  if (minWidth) style.minWidth = minWidth
   return Object.keys(style).length > 0 ? style : undefined
+}
+
+function normalizeColumnSize(value: ProTreeTableColumnSize | undefined): string | undefined {
+  if (value === undefined) return undefined
+  if (typeof value === 'number') return `${value}px`
+  return value.length > 0 ? value : undefined
+}
+
+function getColumnAlignClass(column: ProTreeTableColumn<T>): string | undefined {
+  return toTextAlignClass(column.align)
+}
+
+function toTextAlignClass(align: ProTreeTableColumnAlign | undefined): string | undefined {
+  if (align === 'left') return 'text-left'
+  if (align === 'center') return 'text-center'
+  if (align === 'right') return 'text-right'
+  return undefined
+}
+
+function isPinnedColumn(column: ProTreeTableColumn<T>): boolean {
+  return column.pinned === 'left' || column.pinned === 'right'
 }
 
 function getFrozenAlign(column: ProTreeTableColumn<T>): 'left' | 'right' {
   return column.pinned === 'right' ? 'right' : 'left'
 }
 
-function resolveCellText(primeNode: TreeNode | undefined, column: ProTreeTableColumn<T>): string {
-  if (!primeNode || !column.field || !isRecord(primeNode.data)) return ''
+function resolveCellText(
+  primeNode: TreeNode | undefined,
+  column: ProTreeTableColumn<T>
+): string | number | null {
+  const node = resolveOriginalNode(primeNode)
+  if (!node) return ''
 
-  const value = primeNode.data[column.field]
+  const value = resolveCellValue(node, column)
+  const text = resolveCellValueText(value, column)
+
+  if (column.render) {
+    return normalizeRenderResult(
+      column.render({
+        value,
+        text,
+        node,
+        row: node.data,
+        column,
+      })
+    )
+  }
+
+  return text
+}
+
+function resolveOriginalNode(primeNode: TreeNode | undefined): ProTreeTableNode<T> | undefined {
+  if (!primeNode) return undefined
+  return nodeByKey.value.get(primeNode.key)
+}
+
+function resolveCellValue(node: ProTreeTableNode<T>, column: ProTreeTableColumn<T>): unknown {
+  if (!column.field) return undefined
+  return node.data[column.field]
+}
+
+function resolveCellValueText(value: unknown, column: ProTreeTableColumn<T>): string {
   const enumItem = column.valueEnum?.[String(value)]
   if (enumItem) return resolveValueEnumLabel(enumItem)
 
   return stringifyCellValue(value)
+}
+
+function normalizeRenderResult(value: ProTreeTableColumnRenderResult): string | number | null {
+  return value ?? ''
 }
 
 function resolveValueEnumLabel(item: ProTreeTableValueEnumItem): string {
@@ -178,13 +242,18 @@ function isRecord(value: unknown): value is Record<string, unknown> {
     :data-pro-tree-table-disabled="String(props.disabled)"
     class="pro-tree-table min-w-0"
   >
-    <!-- P2-A1 intentionally excludes lazy loading, editing, virtual scrolling, range selection, ProTable treeMode, server persistence, and a headless hierarchical engine. -->
+    <!--
+      P2-A2 intentionally excludes lazy loading, editing, virtual scrolling, range selection,
+      ProTable treeMode, server persistence, TreeTable filtering, VNode render output,
+      and a headless hierarchical engine.
+    -->
     <TreeTable
       :value="primeNodes"
       :expanded-keys="props.expandedKeys"
       :selection-keys="primeSelectionKeys"
       :selection-mode="activeSelectionMode"
       :loading="props.loading"
+      :scrollable="hasPinnedColumns"
       class="pro-tree-table__prime min-w-0"
       @update:expanded-keys="handleExpandedKeysUpdate"
       @update:selection-keys="handleSelectionKeysUpdate"
@@ -199,11 +268,12 @@ function isRecord(value: unknown): value is Record<string, unknown> {
         :field="column.field"
         :header="column.title"
         :expander="index === 0"
-        :sortable="column.sortable"
-        :frozen="column.pinned === 'left' || column.pinned === 'right'"
+        :sortable="Boolean(column.sortable)"
+        :frozen="isPinnedColumn(column)"
         :align-frozen="getFrozenAlign(column)"
         :style="getColumnStyle(column)"
-        :body-class="column.align ? `text-${column.align}` : undefined"
+        :header-class="getColumnAlignClass(column)"
+        :body-class="getColumnAlignClass(column)"
       >
         <template #body="slotProps">
           <span class="pro-tree-table__cell-text">

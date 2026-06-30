@@ -1985,16 +1985,17 @@ const zhCNConsole = {
     },
     proTreeTable: {
       demo: {
-        description: '静态本地节点只演示展开、选择事件与基于字段的输出。',
+        description: '静态本地节点演示展开、选择事件与 P2-A2 列兼容子集。',
       },
       columns: {
         name: '能力',
         owner: '所有者',
         status: '状态',
+        order: '序号',
         evidence: '证据',
       },
       status: {
-        baseline: 'P2-A1 基线',
+        baseline: 'P2-A2 基线',
         deferred: '延期',
         planned: '后续架构',
       },
@@ -2016,6 +2017,7 @@ const zhCNConsole = {
         local: '本地数据',
         adr: 'ADR-009',
         deferred: '延期',
+        columns: '列子集',
       },
       cards: {
         wrapper: {
@@ -2025,6 +2027,11 @@ const zhCNConsole = {
         static: {
           title: '静态层级数据',
           description: '行数据是本地 ProTreeTableNode 对象，让第一切片确定、可回滚。',
+        },
+        columns: {
+          title: '列兼容能力',
+          description:
+            '展示覆盖 width、minWidth、alignment、pinned、sortable、valueEnum label 与文本 render callback。',
         },
         boundary: {
           title: '不增加 ProTable tree mode',
@@ -2039,7 +2046,7 @@ const zhCNConsole = {
       rows: {
         wrapper: {
           name: 'ProTreeTable 包装',
-          owner: '@ccd/vue-ui',
+          owner: "{'@'}ccd/vue-ui",
           evidence: 'PrimeVue TreeTable 被封装在类型化 CCD props 与事件之后。',
         },
         primevue: {
@@ -2049,8 +2056,14 @@ const zhCNConsole = {
         },
         types: {
           name: '类型化节点与列 API',
-          owner: '@ccd/vue-ui',
+          owner: "{'@'}ccd/vue-ui",
           evidence: 'ProTreeTableNode 与 ProTreeTableColumn 作为实验性类型导出。',
+        },
+        columns: {
+          name: '列子集基线',
+          owner: 'P2-A2',
+          evidence:
+            '列配置映射 sizing、alignment、pinned、sortable、valueEnum 与文本 render 行为，不使用 Vue h。',
         },
         state: {
           name: '受控展开与选择',
