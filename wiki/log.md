@@ -19,11 +19,18 @@ source_paths:
   - uploaded://llm-wiki.md
   - uploaded://deep-research-report.md
   - https://github.com/ichichuang/ccd
-last_reviewed: '2026-06-11'
+last_reviewed: '2026-06-30'
 wiki_owner: LLM-maintained CCD architecture wiki
 ---
 
 # Wiki Log
+
+## [2026-06-30] decisions | ProTreeTable API decision
+
+- Added [[adr-009-pro-tree-table-api-decision]] as the P2-A0 design-only decision for future Tree table support.
+- Recorded the decision to start with an experimental `ProTreeTable` wrapper inside `@ccd/vue-ui` instead of extending flat `ProTable` with `treeMode`.
+- Deferred tree editing, virtual scrolling, Shift-click tree range selection, footer groups, advanced tree group styling, server persistence, and shared headless hierarchy work.
+- Preserved current runtime behavior: no package exports, generated reports, dependencies, or ProTable implementation files changed.
 
 ## [2026-06-12] web-demo-architecture-console | Retire example surface
 

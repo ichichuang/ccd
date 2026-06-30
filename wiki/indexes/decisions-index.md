@@ -18,7 +18,7 @@ source_langs:
 source_paths:
   - wiki/canonical/**
   - wiki/index.md
-last_reviewed: '2026-06-11'
+last_reviewed: '2026-06-30'
 wiki_owner: LLM-maintained CCD architecture wiki
 ---
 
@@ -36,3 +36,4 @@ ADR pages preserving exact ADR identifiers.
 | [[adr-006-approval-gated-architecture-lanes]]      | ADR-006：审批门控架构车道          | `verified` |       0.93 |
 | [[adr-007-runtime-stack-and-tooling-choices]]      | ADR-007：运行时栈与工具选择        | `verified` |       0.93 |
 | [[adr-008-desktop-backend-ipc-and-updater-policy]] | ADR-008：桌面后端 IPC 与更新器策略 | `verified` |       0.93 |
+| [[adr-009-pro-tree-table-api-decision]]            | ADR-009：ProTreeTable API 决策     |    `draft` |       0.86 |
