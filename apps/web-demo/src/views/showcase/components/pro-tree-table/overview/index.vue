@@ -33,27 +33,15 @@ const expandedKeys = ref<ProTreeTableExpandedKeys>({
   wrapper: true,
   deferred: true,
 })
-const selectionKeys = ref<ProTreeTableSelectionKeys>({})
+const selectionKeys = ref<ProTreeTableSelectionKeys>(null)
 const lastEventKey = ref<ProTreeTableEventKey>('ready')
 const lastEventNodeKey = ref('')
-const selectedKeyText = computed(() => {
-  if (
-    !selectionKeys.value ||
-    typeof selectionKeys.value !== 'object' ||
-    Array.isArray(selectionKeys.value)
-  ) {
-    return t('showcase.proTreeTable.state.none')
-  }
-
-  const firstSelectedKey = Object.entries(selectionKeys.value).find(([, value]) =>
-    Boolean(value)
-  )?.[0]
-  return firstSelectedKey ?? t('showcase.proTreeTable.state.none')
-})
+const selectedKeyText = computed(() => formatSelectionKeys(selectionKeys.value))
 const expandedKeyText = computed(() => {
   const keys = Object.keys(expandedKeys.value).filter(key => expandedKeys.value[key])
   return keys.length > 0 ? keys.join(', ') : t('showcase.proTreeTable.state.none')
 })
+const selectionModeText = computed(() => t('showcase.proTreeTable.state.singleMode'))
 const lastEventText = computed(() =>
   lastEventKey.value === 'ready'
     ? t('showcase.proTreeTable.events.ready')
@@ -68,6 +56,23 @@ function recordTreeEvent(
 ): void {
   lastEventKey.value = eventKey
   lastEventNodeKey.value = payload.key
+}
+
+function formatSelectionKeys(value: ProTreeTableSelectionKeys): string {
+  if (!value) return t('showcase.proTreeTable.state.none')
+  if (typeof value === 'string') return value || t('showcase.proTreeTable.state.none')
+  if (Array.isArray(value)) {
+    return value.length > 0 ? value.join(', ') : t('showcase.proTreeTable.state.none')
+  }
+
+  const keys = Object.entries(value)
+    .filter(([, state]) => {
+      if (typeof state === 'boolean') return state
+      return Boolean(state.checked || state.partialChecked)
+    })
+    .map(([key]) => key)
+
+  return keys.length > 0 ? keys.join(', ') : t('showcase.proTreeTable.state.none')
 }
 </script>
 
@@ -95,7 +100,7 @@ function recordTreeEvent(
             @node-unselect="recordTreeEvent('unselect', $event)"
           />
 
-          <div class="grid min-w-0 grid-cols-1 gap-sm lg:grid-cols-3">
+          <div class="grid min-w-0 grid-cols-1 gap-sm lg:grid-cols-4">
             <article
               data-testid="showcase-pro-tree-table-expanded"
               class="material-elevated col-stretch min-w-0 gap-xs p-md"
@@ -105,6 +110,18 @@ function recordTreeEvent(
               </span>
               <span class="text-sm font-medium text-foreground text-ellipsis-2">
                 {{ expandedKeyText }}
+              </span>
+            </article>
+
+            <article
+              data-testid="showcase-pro-tree-table-mode"
+              class="material-elevated col-stretch min-w-0 gap-xs p-md"
+            >
+              <span class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {{ $t('showcase.proTreeTable.state.selectionMode') }}
+              </span>
+              <span class="text-sm font-medium text-foreground text-ellipsis-2">
+                {{ selectionModeText }}
               </span>
             </article>
 

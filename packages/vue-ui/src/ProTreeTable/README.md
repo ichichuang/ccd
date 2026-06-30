@@ -1,10 +1,10 @@
 # ProTreeTable
 
-Status: experimental, P2-A2 column compatibility baseline.
+Status: experimental, P2-A3 controlled expansion and selection baseline.
 
 `ProTreeTable` is an additive wrapper around PrimeVue `TreeTable` for static local tree data. It exists separately from `ProTable` so TreeTable semantics do not enter the flat ProTable row engine before ADR-009 follow-up gates.
 
-## Supported in P2-A2
+## Supported in P2-A3
 
 - `nodes`, `columns`, `loading`, `disabled`
 - `selectionMode`
@@ -13,6 +13,35 @@ Status: experimental, P2-A2 column compatibility baseline.
 - `node-expand`, `node-collapse`, `node-select`, `node-unselect`
 - one expander column, always the first configured column
 - text cell output from field values, with simple `valueEnum` label mapping
+
+## Controlled Expansion
+
+`expandedKeys` is a `Record<string, boolean>` map. `update:expandedKeys` emits a normalized
+truthy-only map:
+
+- falsey update payloads emit `{}`.
+- entries with `false`, `0`, `null`, or `undefined` are removed.
+- emitted values are always `{ [key]: true }` for expanded nodes.
+
+`node-expand` and `node-collapse` emit CCD-owned payloads shaped as `{ key, node }`. Raw PrimeVue
+event objects are not part of the public event contract, and events for unknown keys are ignored.
+
+## Controlled Selection
+
+`selectionMode` controls the public `update:selectionKeys` value shape:
+
+| `selectionMode` | Emitted `selectionKeys` shape                                                | Notes                                                    |
+| --------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `false`         | no interactive selection updates                                             | The wrapper passes no PrimeVue selection mode.           |
+| `single`        | `string \| null`                                                             | Selected key or `null` when no selected entry remains.   |
+| `multiple`      | `string[]`                                                                   | Stable key array; false entries are removed.             |
+| `checkbox`      | `Record<string, boolean \| { checked?: boolean; partialChecked?: boolean }>` | Preserves checkbox `checked` and `partialChecked` state. |
+
+`disabled=true` suppresses PrimeVue interactive selection mode and ignores selection update events.
+`node.selectable=false` is passed through to the underlying PrimeVue `TreeNode`; the wrapper does
+not synthesize selection for non-selectable nodes.
+
+`node-select` and `node-unselect` emit only CCD-owned `{ key, node }` payloads for known nodes.
 
 ## Column Compatibility
 

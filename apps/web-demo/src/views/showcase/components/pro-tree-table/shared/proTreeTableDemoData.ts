@@ -114,6 +114,7 @@ export function createProTreeTableDemoNodes(t: Translate): ProTreeTableNode<ProT
           key: 'deferred.engine',
           data: createRow(t, 'engine', 'planned', 10),
           leaf: true,
+          selectable: false,
         },
       ],
     },

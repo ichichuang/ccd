@@ -1985,7 +1985,7 @@ const zhCNConsole = {
     },
     proTreeTable: {
       demo: {
-        description: '静态本地节点演示展开、选择事件与 P2-A2 列兼容子集。',
+        description: '静态本地节点演示受控展开、受控选择与 P2-A3 契约边界。',
       },
       columns: {
         name: '能力',
@@ -1995,7 +1995,7 @@ const zhCNConsole = {
         evidence: '证据',
       },
       status: {
-        baseline: 'P2-A2 基线',
+        baseline: 'P2-A3 基线',
         deferred: '延期',
         planned: '后续架构',
       },
@@ -2003,6 +2003,8 @@ const zhCNConsole = {
         none: '无',
         expanded: '展开 key',
         selection: '选择 key',
+        selectionMode: '选择模式',
+        singleMode: 'single -> string | null',
         lastEvent: '最近事件',
       },
       events: {
@@ -2026,7 +2028,8 @@ const zhCNConsole = {
         },
         static: {
           title: '静态层级数据',
-          description: '行数据是本地 ProTreeTableNode 对象，让第一切片确定、可回滚。',
+          description:
+            '行数据是本地 ProTreeTableNode 对象，并包含一个不可选节点，让本切片确定、可回滚。',
         },
         columns: {
           title: '列兼容能力',
@@ -2068,7 +2071,7 @@ const zhCNConsole = {
         state: {
           name: '受控展开与选择',
           owner: 'web-demo',
-          evidence: '页面持有 expandedKeys、selectionKeys 与转发后的事件证据。',
+          evidence: '页面持有 expandedKeys、规范化 selectionKeys、选择模式与转发后的事件证据。',
         },
         deferred: {
           name: '延期能力边界',
@@ -2093,7 +2096,7 @@ const zhCNConsole = {
         engine: {
           name: 'Headless 层级引擎',
           owner: 'P2-A6 gate',
-          evidence: '共享层级引擎是后续决策，不是第一个运行时切片。',
+          evidence: '该规划行被标记为不可选；共享层级引擎仍是后续决策。',
         },
       },
     },

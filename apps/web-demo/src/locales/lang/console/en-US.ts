@@ -2207,7 +2207,7 @@ const enUSConsole = {
     proTreeTable: {
       demo: {
         description:
-          'Static local nodes demonstrate expansion, selection events, and the P2-A2 column compatibility subset.',
+          'Static local nodes demonstrate controlled expansion, controlled selection, and the P2-A3 contract boundary.',
       },
       columns: {
         name: 'Capability',
@@ -2217,14 +2217,16 @@ const enUSConsole = {
         evidence: 'Evidence',
       },
       status: {
-        baseline: 'P2-A2 baseline',
+        baseline: 'P2-A3 baseline',
         deferred: 'Deferred',
         planned: 'Later architecture',
       },
       state: {
         none: 'None',
         expanded: 'Expanded keys',
-        selection: 'Selection key',
+        selection: 'Selection keys',
+        selectionMode: 'Selection mode',
+        singleMode: 'single -> string | null',
         lastEvent: 'Last event',
       },
       events: {
@@ -2250,7 +2252,7 @@ const enUSConsole = {
         static: {
           title: 'Static hierarchy',
           description:
-            'Rows are local ProTreeTableNode objects, which keeps the first slice deterministic and reversible.',
+            'Rows are local ProTreeTableNode objects, including one non-selectable node, which keeps the slice deterministic and reversible.',
         },
         columns: {
           title: 'Column compatibility',
@@ -2293,7 +2295,8 @@ const enUSConsole = {
         state: {
           name: 'Controlled expansion and selection',
           owner: 'web-demo',
-          evidence: 'The page owns expandedKeys, selectionKeys, and forwarded event evidence.',
+          evidence:
+            'The page owns expandedKeys, normalized selectionKeys, selection mode evidence, and forwarded event evidence.',
         },
         deferred: {
           name: 'Deferred feature boundary',
@@ -2321,7 +2324,7 @@ const enUSConsole = {
           name: 'Headless hierarchy engine',
           owner: 'P2-A6 gate',
           evidence:
-            'A shared hierarchical engine is a later decision, not the first runtime slice.',
+            'This planned row is marked non-selectable; a shared hierarchy engine remains a later decision.',
         },
       },
     },

@@ -20,6 +20,7 @@ import type {
   ProTreeTableExpandedKeys,
   ProTreeTableNode,
   ProTreeTableSelectionKeys,
+  ProTreeTableSelectionMode,
 } from './types'
 
 interface TreeDemoRow extends Record<string, unknown> {
@@ -32,6 +33,7 @@ interface PrimeTreeNodeStub {
   key: string
   data?: TreeDemoRow
   children?: PrimeTreeNodeStub[]
+  selectable?: boolean
 }
 
 const treeNodesInjectionKey = vi.hoisted(() => Symbol('treeNodes'))
@@ -40,7 +42,8 @@ interface ProTreeTableTestProps {
   nodes: ProTreeTableNode<TreeDemoRow>[]
   columns: ProTreeTableColumn<TreeDemoRow>[]
   loading: boolean
-  selectionMode: 'single' | 'multiple' | 'checkbox'
+  disabled: boolean
+  selectionMode: ProTreeTableSelectionMode
   expandedKeys: ProTreeTableExpandedKeys
   selectionKeys: ProTreeTableSelectionKeys
 }
@@ -106,10 +109,31 @@ vi.mock('primevue/treetable', () => ({
         </button>
         <button
           type="button"
+          data-testid="emit-expanded-empty"
+          @click="$emit('update:expandedKeys', null)"
+        >
+          expand empty
+        </button>
+        <button
+          type="button"
           data-testid="emit-collapsed"
-          @click="$emit('node-collapse', value[0])"
+          @click="$emit('update:expandedKeys', { operations: false, 'operations.telemetry': true }); $emit('node-collapse', value[0])"
         >
           collapse
+        </button>
+        <button
+          type="button"
+          data-testid="emit-expand-unknown"
+          @click="$emit('node-expand', { key: 'missing' })"
+        >
+          expand unknown
+        </button>
+        <button
+          type="button"
+          data-testid="emit-collapse-unknown"
+          @click="$emit('node-collapse', { key: 'missing' })"
+        >
+          collapse unknown
         </button>
         <button
           type="button"
@@ -120,16 +144,52 @@ vi.mock('primevue/treetable', () => ({
         </button>
         <button
           type="button"
+          data-testid="emit-selection-empty"
+          @click="$emit('update:selectionKeys', { operations: false })"
+        >
+          select empty
+        </button>
+        <button
+          type="button"
+          data-testid="emit-selection-multiple"
+          @click="$emit('update:selectionKeys', { operations: true, 'operations.telemetry': true, stale: false })"
+        >
+          select multiple
+        </button>
+        <button
+          type="button"
+          data-testid="emit-selection-checkbox"
+          @click="$emit('update:selectionKeys', { operations: { checked: true, partialChecked: false }, 'operations.telemetry': { checked: false, partialChecked: true }, stale: { checked: false, partialChecked: false } })"
+        >
+          select checkbox
+        </button>
+        <button
+          type="button"
+          data-testid="emit-select-unknown"
+          @click="$emit('node-select', { key: 'missing' })"
+        >
+          select unknown
+        </button>
+        <button
+          type="button"
           data-testid="emit-unselect"
           @click="$emit('node-unselect', value[0])"
         >
           unselect
+        </button>
+        <button
+          type="button"
+          data-testid="emit-unselect-unknown"
+          @click="$emit('node-unselect', { key: 'missing' })"
+        >
+          unselect unknown
         </button>
         <div
           v-for="node in flattenedNodes"
           :key="node.key"
           data-testid="tree-row"
           :data-key="node.key"
+          :data-selectable="String(node.selectable ?? true)"
         >
           <span>{{ node.data?.name }}</span>
           <span>{{ node.data?.owner }}</span>
@@ -422,15 +482,70 @@ describe('ProTreeTable', () => {
     const wrapper = mountTreeTable()
 
     await wrapper.get('[data-testid="emit-expanded"]').trigger('click')
+    await wrapper.get('[data-testid="emit-expand-unknown"]').trigger('click')
 
     expect(wrapper.emitted('update:expandedKeys')?.[0]).toEqual([{ operations: true }])
-    expect(wrapper.emitted('node-expand')?.[0]?.[0]).toMatchObject({
+    const expandPayload = wrapper.emitted('node-expand')?.[0]?.[0]
+
+    expect(wrapper.emitted('node-expand')).toHaveLength(1)
+    expect(Object.keys(expandPayload ?? {})).toEqual(['key', 'node'])
+    expect(expandPayload).toMatchObject({
       key: 'operations',
       node: nodes[0],
     })
   })
 
-  it('emits controlled selectionKeys updates and typed selection payloads', async () => {
+  it('normalizes expandedKeys updates to stable truthy key maps', async () => {
+    const wrapper = mountTreeTable()
+
+    await wrapper.get('[data-testid="emit-collapsed"]').trigger('click')
+    await wrapper.get('[data-testid="emit-collapse-unknown"]').trigger('click')
+
+    expect(wrapper.emitted('update:expandedKeys')?.[0]).toEqual([
+      { ['operations.telemetry']: true },
+    ])
+    expect(wrapper.emitted('node-collapse')).toHaveLength(1)
+    expect(wrapper.emitted('node-collapse')?.[0]?.[0]).toEqual({
+      key: 'operations',
+      node: nodes[0],
+    })
+  })
+
+  it('normalizes falsey expandedKeys updates to an empty object', async () => {
+    const wrapper = mountTreeTable()
+
+    await wrapper.get('[data-testid="emit-expanded-empty"]').trigger('click')
+
+    expect(wrapper.emitted('update:expandedKeys')?.[0]).toEqual([{}])
+  })
+
+  it('disables selection updates when selectionMode is false', async () => {
+    const wrapper = mountTreeTable({ selectionMode: false })
+
+    expect(
+      wrapper.get('[data-testid="prime-tree-table-stub"]').attributes('data-selection-mode')
+    ).toBe('')
+
+    await wrapper.get('[data-testid="emit-selection"]').trigger('click')
+
+    expect(wrapper.emitted('update:selectionKeys')).toBeUndefined()
+    expect(wrapper.emitted('node-select')).toBeUndefined()
+  })
+
+  it('disables interactive selection updates when the table is disabled', async () => {
+    const wrapper = mountTreeTable({ disabled: true, selectionMode: 'single' })
+
+    expect(
+      wrapper.get('[data-testid="prime-tree-table-stub"]').attributes('data-selection-mode')
+    ).toBe('')
+
+    await wrapper.get('[data-testid="emit-selection"]').trigger('click')
+
+    expect(wrapper.emitted('update:selectionKeys')).toBeUndefined()
+    expect(wrapper.emitted('node-select')).toBeUndefined()
+  })
+
+  it('emits single selection updates as a stable selected key or null', async () => {
     const wrapper = mountTreeTable({ selectionMode: 'single' })
 
     expect(
@@ -438,12 +553,76 @@ describe('ProTreeTable', () => {
     ).toBe('single')
 
     await wrapper.get('[data-testid="emit-selection"]').trigger('click')
+    await wrapper.get('[data-testid="emit-selection-empty"]').trigger('click')
 
-    expect(wrapper.emitted('update:selectionKeys')?.[0]).toEqual([{ operations: true }])
-    expect(wrapper.emitted('node-select')?.[0]?.[0]).toMatchObject({
+    expect(wrapper.emitted('update:selectionKeys')?.[0]).toEqual(['operations'])
+    expect(wrapper.emitted('update:selectionKeys')?.[1]).toEqual([null])
+  })
+
+  it('emits multiple selection updates as a stable key array', async () => {
+    const wrapper = mountTreeTable({ selectionMode: 'multiple' })
+
+    await wrapper.get('[data-testid="emit-selection-multiple"]').trigger('click')
+
+    expect(wrapper.emitted('update:selectionKeys')?.[0]).toEqual([
+      ['operations', 'operations.telemetry'],
+    ])
+  })
+
+  it('preserves checked and partialChecked state for checkbox selection', async () => {
+    const wrapper = mountTreeTable({ selectionMode: 'checkbox' })
+
+    await wrapper.get('[data-testid="emit-selection-checkbox"]').trigger('click')
+
+    expect(wrapper.emitted('update:selectionKeys')?.[0]).toEqual([
+      {
+        operations: { checked: true, partialChecked: false },
+        ['operations.telemetry']: { checked: false, partialChecked: true },
+      },
+    ])
+  })
+
+  it('emits typed node selection payloads only for known nodes', async () => {
+    const wrapper = mountTreeTable({ selectionMode: 'single' })
+
+    await wrapper.get('[data-testid="emit-selection"]').trigger('click')
+    await wrapper.get('[data-testid="emit-unselect"]').trigger('click')
+    await wrapper.get('[data-testid="emit-select-unknown"]').trigger('click')
+    await wrapper.get('[data-testid="emit-unselect-unknown"]').trigger('click')
+
+    const selectPayload = wrapper.emitted('node-select')?.[0]?.[0]
+    const unselectPayload = wrapper.emitted('node-unselect')?.[0]?.[0]
+
+    expect(wrapper.emitted('node-select')).toHaveLength(1)
+    expect(wrapper.emitted('node-unselect')).toHaveLength(1)
+    expect(Object.keys(selectPayload ?? {})).toEqual(['key', 'node'])
+    expect(Object.keys(unselectPayload ?? {})).toEqual(['key', 'node'])
+    expect(selectPayload).toMatchObject({
       key: 'operations',
       node: nodes[0],
     })
+    expect(unselectPayload).toMatchObject({
+      key: 'operations',
+      node: nodes[0],
+    })
+  })
+
+  it('passes node selectable=false through to PrimeVue tree nodes', () => {
+    const wrapper = mountTreeTable({
+      nodes: [
+        {
+          key: 'operations',
+          data: {
+            name: 'Operations',
+            owner: 'Runtime',
+            status: 'Ready',
+          },
+          selectable: false,
+        },
+      ],
+    })
+
+    expect(wrapper.get('[data-testid="tree-row"]').attributes('data-selectable')).toBe('false')
   })
 
   it('does not depend on the existing ProTable flat engine implementation', () => {

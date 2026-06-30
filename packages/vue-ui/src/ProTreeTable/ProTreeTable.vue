@@ -4,6 +4,7 @@ import type { TreeNode } from 'primevue/treenode'
 import TreeTable from 'primevue/treetable'
 import { computed } from 'vue'
 import type {
+  ProTreeTableCheckboxSelectionState,
   ProTreeTableColumn,
   ProTreeTableColumnAlign,
   ProTreeTableColumnRenderResult,
@@ -17,7 +18,9 @@ import type {
   ProTreeTableValueEnumItem,
 } from './types'
 
+type ActiveSelectionMode = Exclude<ProTreeTableSelectionMode, false>
 type ProTreeTableNodeEventName = 'node-expand' | 'node-collapse' | 'node-select' | 'node-unselect'
+type PrimeSelectionKeys = Record<string, boolean | ProTreeTableCheckboxSelectionState>
 
 defineOptions({ name: 'ProTreeTable' })
 
@@ -53,10 +56,14 @@ const nodeByKey = computed(() => {
 })
 
 const primeNodes = computed(() => props.nodes.map(toPrimeTreeNode))
-const activeSelectionMode = computed<Exclude<ProTreeTableSelectionMode, false> | undefined>(() =>
+const activeSelectionMode = computed<ActiveSelectionMode | undefined>(() =>
   props.disabled || props.selectionMode === false ? undefined : props.selectionMode
 )
-const primeSelectionKeys = computed(() => toPrimeSelectionKeys(props.selectionKeys))
+const primeExpandedKeys = computed(() => normalizeExpandedKeys(props.expandedKeys))
+const primeSelectionKeys = computed(() => {
+  const mode = activeSelectionMode.value
+  return mode ? toPrimeSelectionKeys(props.selectionKeys, mode) : undefined
+})
 const hasPinnedColumns = computed(() => props.columns.some(column => isPinnedColumn(column)))
 
 function toPrimeTreeNode(node: ProTreeTableNode<T>): TreeNode {
@@ -72,14 +79,19 @@ function toPrimeTreeNode(node: ProTreeTableNode<T>): TreeNode {
 }
 
 function toPrimeSelectionKeys(
-  selectionKeys: ProTreeTableSelectionKeys
-): Record<string, unknown> | undefined {
-  if (!selectionKeys) return undefined
-  if (typeof selectionKeys === 'string') return { [selectionKeys]: true }
-  if (Array.isArray(selectionKeys)) {
-    return Object.fromEntries(selectionKeys.map(key => [key, true]))
+  selectionKeys: ProTreeTableSelectionKeys,
+  mode: ActiveSelectionMode
+): PrimeSelectionKeys | undefined {
+  const normalized = normalizeSelectionKeysForMode(selectionKeys, mode)
+
+  if (!normalized) return undefined
+  if (typeof normalized === 'string') return { [normalized]: true }
+  if (Array.isArray(normalized)) {
+    return normalized.length > 0
+      ? Object.fromEntries(normalized.map(key => [key, true]))
+      : undefined
   }
-  return selectionKeys
+  return Object.keys(normalized).length > 0 ? normalized : undefined
 }
 
 function normalizeExpandedKeys(value: unknown): ProTreeTableExpandedKeys {
@@ -92,29 +104,77 @@ function normalizeExpandedKeys(value: unknown): ProTreeTableExpandedKeys {
   )
 }
 
-function normalizeSelectionKeys(value: unknown): ProTreeTableSelectionKeys {
-  if (value === null || value === undefined) return null
-  if (typeof value === 'string') return value
+function normalizeSelectionKeysForMode(
+  value: unknown,
+  mode: ActiveSelectionMode
+): ProTreeTableSelectionKeys {
+  if (mode === 'single') return normalizeSingleSelectionKey(value)
+  if (mode === 'multiple') return normalizeMultipleSelectionKeys(value)
+  return normalizeCheckboxSelectionKeys(value)
+}
+
+function normalizeSingleSelectionKey(value: unknown): string | null {
+  if (typeof value === 'string') return normalizeKey(value)
   if (Array.isArray(value)) {
-    return value.filter((key): key is string => typeof key === 'string')
+    return value.find((key): key is string => typeof key === 'string' && key.length > 0) ?? null
   }
   if (!isRecord(value)) return null
 
+  return Object.entries(value).find(([, entry]) => isSelectedEntry(entry))?.[0] ?? null
+}
+
+function normalizeMultipleSelectionKeys(value: unknown): string[] {
+  if (typeof value === 'string') return normalizeKey(value) ? [value] : []
+  if (Array.isArray(value)) {
+    return uniqueKeys(value.filter((key): key is string => typeof key === 'string'))
+  }
+  if (!isRecord(value)) return []
+
+  return Object.entries(value)
+    .filter(([, entry]) => isSelectedEntry(entry))
+    .map(([key]) => key)
+}
+
+function normalizeCheckboxSelectionKeys(value: unknown): PrimeSelectionKeys {
+  if (typeof value === 'string') return normalizeKey(value) ? { [value]: true } : {}
+  if (Array.isArray(value)) {
+    const keys = value.filter((key): key is string => typeof key === 'string')
+    return Object.fromEntries(uniqueKeys(keys).map(key => [key, true]))
+  }
+  if (!isRecord(value)) return {}
+
   return Object.fromEntries(
-    Object.entries(value).map(([key, entry]) => [key, normalizeSelectionEntry(entry)])
+    Object.entries(value).flatMap(([key, entry]) => {
+      const normalized = normalizeCheckboxSelectionEntry(entry)
+      return normalized === undefined ? [] : [[key, normalized]]
+    })
   )
 }
 
-function normalizeSelectionEntry(
+function normalizeCheckboxSelectionEntry(
   value: unknown
-): boolean | { checked?: boolean; partialChecked?: boolean } {
+): boolean | ProTreeTableCheckboxSelectionState | undefined {
+  if (typeof value === 'boolean') return value ? true : undefined
+  if (!isRecord(value)) return value ? true : undefined
+
+  const checked = Boolean(value.checked)
+  const partialChecked = Boolean(value.partialChecked)
+
+  return checked || partialChecked ? { checked, partialChecked } : undefined
+}
+
+function isSelectedEntry(value: unknown): boolean {
   if (typeof value === 'boolean') return value
   if (!isRecord(value)) return Boolean(value)
+  return value.checked === true
+}
 
-  return {
-    checked: Boolean(value.checked),
-    partialChecked: Boolean(value.partialChecked),
-  }
+function uniqueKeys(keys: readonly string[]): string[] {
+  return Array.from(new Set(keys.filter(key => key.length > 0)))
+}
+
+function normalizeKey(key: string): string | null {
+  return key.length > 0 ? key : null
 }
 
 function handleExpandedKeysUpdate(value: unknown): void {
@@ -122,10 +182,15 @@ function handleExpandedKeysUpdate(value: unknown): void {
 }
 
 function handleSelectionKeysUpdate(value: unknown): void {
-  emit('update:selectionKeys', normalizeSelectionKeys(value))
+  const mode = activeSelectionMode.value
+  if (!mode) return
+
+  emit('update:selectionKeys', normalizeSelectionKeysForMode(value, mode))
 }
 
 function handleNodeEvent(event: ProTreeTableNodeEventName, primeNode: TreeNode): void {
+  if (isSelectionEvent(event) && !activeSelectionMode.value) return
+
   const node = nodeByKey.value.get(primeNode.key)
   if (!node) return
 
@@ -135,6 +200,10 @@ function handleNodeEvent(event: ProTreeTableNodeEventName, primeNode: TreeNode):
   if (event === 'node-collapse') emit('node-collapse', payload)
   if (event === 'node-select') emit('node-select', payload)
   if (event === 'node-unselect') emit('node-unselect', payload)
+}
+
+function isSelectionEvent(event: ProTreeTableNodeEventName): boolean {
+  return event === 'node-select' || event === 'node-unselect'
 }
 
 function getColumnStyle(column: ProTreeTableColumn<T>): Record<string, string> | undefined {
@@ -243,13 +312,13 @@ function isRecord(value: unknown): value is Record<string, unknown> {
     class="pro-tree-table min-w-0"
   >
     <!--
-      P2-A2 intentionally excludes lazy loading, editing, virtual scrolling, range selection,
+      P2-A3 intentionally excludes lazy loading, editing, virtual scrolling, range selection,
       ProTable treeMode, server persistence, TreeTable filtering, VNode render output,
       and a headless hierarchical engine.
     -->
     <TreeTable
       :value="primeNodes"
-      :expanded-keys="props.expandedKeys"
+      :expanded-keys="primeExpandedKeys"
       :selection-keys="primeSelectionKeys"
       :selection-mode="activeSelectionMode"
       :loading="props.loading"
