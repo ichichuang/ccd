@@ -26,6 +26,7 @@ const showcasePageTitles = {
   'components-pro-table-row-editing': '行编辑',
   'components-pro-table-form-composition': '表单组合',
   'components-pro-table-api-events': 'API 与事件',
+  'components-pro-tree-table-overview': 'ProTreeTable 概览',
   'components-pro-form-overview': 'ProForm 概览',
   'components-pro-form-basic-schema': '基础 Schema',
   'components-pro-form-grouped-layout': '分组布局',
@@ -198,6 +199,13 @@ const showcasePageLocaleOverrides: Record<string, ShowcasePageLocaleOverride> = 
     source: '源码路径包含 apiExecutor 适配器与共享壳。',
     technical: '技术说明解释应用注入的 API 边界。',
   },
+  'components-pro-tree-table-overview': {
+    eyebrow: 'ProTreeTable 展示',
+    description: '实验性树表包装组件渲染本地层级行，同时不改变 ProTable。',
+    try: '查看静态树表。',
+    source: '源码路径展示包装组件、本地树数据与目录路由。',
+    technical: '技术说明将 TreeTable 行为与 ProTable flat row engine 保持分离。',
+  },
   'components-pro-form-overview': {
     eyebrow: 'ProForm 展示',
     description: '表单能力导览，覆盖请求录入、价格逻辑、校验反馈与可见状态摘要。',
@@ -356,6 +364,8 @@ const showcaseRouterLocale = createNestedLocaleRecord([
   ['components.proTable.rowEditing', '行编辑'],
   ['components.proTable.formComposition', '表单组合'],
   ['components.proTable.apiEvents', 'API 与事件'],
+  ['components.proTreeTable.root', 'ProTreeTable'],
+  ['components.proTreeTable.overview', 'ProTreeTable 概览'],
   ['components.proForm.root', 'ProForm'],
   ['components.proForm.overview', 'ProForm 概览'],
   ['components.proForm.basicSchema', '基础 Schema'],
@@ -1970,6 +1980,107 @@ const zhCNConsole = {
         callerPersistence: {
           title: '调用方持久化',
           description: '演示监听编辑事件并替换自己的本地行副本；ProTable 不修改源数据。',
+        },
+      },
+    },
+    proTreeTable: {
+      demo: {
+        description: '静态本地节点只演示展开、选择事件与基于字段的输出。',
+      },
+      columns: {
+        name: '能力',
+        owner: '所有者',
+        status: '状态',
+        evidence: '证据',
+      },
+      status: {
+        baseline: 'P2-A1 基线',
+        deferred: '延期',
+        planned: '后续架构',
+      },
+      state: {
+        none: '无',
+        expanded: '展开 key',
+        selection: '选择 key',
+        lastEvent: '最近事件',
+      },
+      events: {
+        ready: '暂无树表事件。',
+        expand: '已展开 {key}。',
+        collapse: '已折叠 {key}。',
+        select: '已选择 {key}。',
+        unselect: '已取消选择 {key}。',
+      },
+      tags: {
+        experimental: '实验性',
+        local: '本地数据',
+        adr: 'ADR-009',
+        deferred: '延期',
+      },
+      cards: {
+        wrapper: {
+          title: '独立包装组件',
+          description: '演示直接导入 ProTreeTable，并保持现有 ProTable flat row engine 不变。',
+        },
+        static: {
+          title: '静态层级数据',
+          description: '行数据是本地 ProTreeTableNode 对象，让第一切片确定、可回滚。',
+        },
+        boundary: {
+          title: '不增加 ProTable tree mode',
+          description: '树语义留在专用组件内，ProTable 继续负责扁平表格工作流。',
+        },
+        deferred: {
+          title: '延期范围',
+          description:
+            'lazy loading、editing、virtual scroll、Shift-click 范围选择、server persistence 与 headless tree engine 均不在本切片内。',
+        },
+      },
+      rows: {
+        wrapper: {
+          name: 'ProTreeTable 包装',
+          owner: '@ccd/vue-ui',
+          evidence: 'PrimeVue TreeTable 被封装在类型化 CCD props 与事件之后。',
+        },
+        primevue: {
+          name: 'PrimeVue TreeTable 基线',
+          owner: 'PrimeVue',
+          evidence: '展开、选择与 expander 列行为来自 TreeTable。',
+        },
+        types: {
+          name: '类型化节点与列 API',
+          owner: '@ccd/vue-ui',
+          evidence: 'ProTreeTableNode 与 ProTreeTableColumn 作为实验性类型导出。',
+        },
+        state: {
+          name: '受控展开与选择',
+          owner: 'web-demo',
+          evidence: '页面持有 expandedKeys、selectionKeys 与转发后的事件证据。',
+        },
+        deferred: {
+          name: '延期能力边界',
+          owner: 'ADR-009',
+          evidence: '不支持的行为被显式列出，而不是藏在半成品 props 后。',
+        },
+        lazy: {
+          name: '子节点懒加载',
+          owner: 'P2-A4',
+          evidence: '后续请求适配器需要树专用 contract，而不是 ProTableLoadParams。',
+        },
+        editing: {
+          name: '树行编辑',
+          owner: '后续 spike',
+          evidence: '已安装的 PrimeVue TreeTable 基线不包含编辑能力。',
+        },
+        virtual: {
+          name: '树虚拟滚动',
+          owner: '后续 spike',
+          evidence: 'VirtualGridRenderer 仍保持扁平行模型，不复用于树行。',
+        },
+        engine: {
+          name: 'Headless 层级引擎',
+          owner: 'P2-A6 gate',
+          evidence: '共享层级引擎是后续决策，不是第一个运行时切片。',
         },
       },
     },

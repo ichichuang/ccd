@@ -76,6 +76,7 @@ const PLANNED_ROUTE_PATHS = [
   '/showcase/components/pro-table/form-composition',
   '/showcase/components/pro-table/column-groups',
   '/showcase/components/pro-table/api-events',
+  '/showcase/components/pro-tree-table/overview',
   '/showcase/components/pro-form/overview',
   '/showcase/components/pro-form/basic-schema',
   '/showcase/components/pro-form/grouped-layout',
@@ -127,6 +128,10 @@ const EXPECTED_SHOWCASE_ROUTE_ANCESTRY = [
   {
     path: '/showcase/components/pro-table/basic',
     ancestors: ['/showcase', '/showcase/components', '/showcase/components/pro-table'],
+  },
+  {
+    path: '/showcase/components/pro-tree-table/overview',
+    ancestors: ['/showcase', '/showcase/components', '/showcase/components/pro-tree-table'],
   },
   {
     path: '/showcase/components/pro-form/validation',
@@ -546,6 +551,22 @@ describe('showcase catalog', () => {
     ).toEqual(implementedIds)
   })
 
+  it('loads implemented ProTreeTable showcase pages instead of the placeholder module', () => {
+    const implementedIds = ['components-pro-tree-table-overview']
+
+    expect(
+      showcaseCatalog
+        .filter(item => implementedIds.includes(item.id))
+        .map(item => (hasShowcaseViewModule(item) ? null : item.id))
+        .filter((id): id is string => id !== null)
+    ).toEqual([])
+    expect(
+      showcaseCatalog
+        .filter(item => item.id.startsWith('components-pro-tree-table-'))
+        .map(item => item.id)
+    ).toEqual(implementedIds)
+  })
+
   it('loads implemented ProForm showcase pages instead of the placeholder module', () => {
     const implementedIds = [
       'components-pro-form-overview',
@@ -589,6 +610,7 @@ describe('showcase catalog', () => {
         .filter(
           item =>
             !item.id.startsWith('components-pro-table-') &&
+            !item.id.startsWith('components-pro-tree-table-') &&
             !item.id.startsWith('components-pro-form-')
         )
         .map(item => item.id)

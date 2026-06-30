@@ -26,6 +26,7 @@ const showcasePageTitles = {
   'components-pro-table-row-editing': 'Row Editing',
   'components-pro-table-form-composition': 'Form Composition',
   'components-pro-table-api-events': 'API and Events',
+  'components-pro-tree-table-overview': 'ProTreeTable Overview',
   'components-pro-form-overview': 'ProForm Overview',
   'components-pro-form-basic-schema': 'Basic Schema',
   'components-pro-form-grouped-layout': 'Grouped Layout',
@@ -218,6 +219,15 @@ const showcasePageLocaleOverrides: Record<string, ShowcasePageLocaleOverride> = 
     source: 'Source paths include the apiExecutor adapter and shared shell.',
     technical: 'Technical notes explain the app-injected API boundary.',
   },
+  'components-pro-tree-table-overview': {
+    eyebrow: 'ProTreeTable showcase',
+    description:
+      'An experimental tree table wrapper renders local hierarchical rows without changing ProTable.',
+    try: 'Inspect the static tree table.',
+    source: 'Source paths show the wrapper, local tree data, and catalog route.',
+    technical:
+      'Technical notes keep TreeTable behavior separate from the ProTable flat row engine.',
+  },
   'components-pro-form-overview': {
     eyebrow: 'ProForm showcase',
     description:
@@ -388,6 +398,8 @@ const showcaseRouterLocale = createNestedLocaleRecord([
   ['components.proTable.rowEditing', 'Row Editing'],
   ['components.proTable.formComposition', 'Form Composition'],
   ['components.proTable.apiEvents', 'API and Events'],
+  ['components.proTreeTable.root', 'ProTreeTable'],
+  ['components.proTreeTable.overview', 'ProTreeTable Overview'],
   ['components.proForm.root', 'ProForm'],
   ['components.proForm.overview', 'ProForm Overview'],
   ['components.proForm.basicSchema', 'Basic Schema'],
@@ -2189,6 +2201,114 @@ const enUSConsole = {
           title: 'Caller-owned persistence',
           description:
             'The demo listens for edit events and replaces its own local row copy; ProTable does not mutate source data.',
+        },
+      },
+    },
+    proTreeTable: {
+      demo: {
+        description:
+          'Static local nodes demonstrate expansion, selection events, and field-based output only.',
+      },
+      columns: {
+        name: 'Capability',
+        owner: 'Owner',
+        status: 'Status',
+        evidence: 'Evidence',
+      },
+      status: {
+        baseline: 'P2-A1 baseline',
+        deferred: 'Deferred',
+        planned: 'Later architecture',
+      },
+      state: {
+        none: 'None',
+        expanded: 'Expanded keys',
+        selection: 'Selection key',
+        lastEvent: 'Last event',
+      },
+      events: {
+        ready: 'No tree event yet.',
+        expand: 'Expanded {key}.',
+        collapse: 'Collapsed {key}.',
+        select: 'Selected {key}.',
+        unselect: 'Unselected {key}.',
+      },
+      tags: {
+        experimental: 'Experimental',
+        local: 'Local data',
+        adr: 'ADR-009',
+        deferred: 'Deferred',
+      },
+      cards: {
+        wrapper: {
+          title: 'Separate wrapper',
+          description:
+            'The demo imports ProTreeTable directly and leaves the existing ProTable flat row engine untouched.',
+        },
+        static: {
+          title: 'Static hierarchy',
+          description:
+            'Rows are local ProTreeTableNode objects, which keeps the first slice deterministic and reversible.',
+        },
+        boundary: {
+          title: 'No ProTable tree mode',
+          description:
+            'Tree semantics stay in a dedicated component while ProTable continues to own flat table workflows.',
+        },
+        deferred: {
+          title: 'Deferred scope',
+          description:
+            'Lazy loading, editing, virtual scroll, Shift-click ranges, server persistence, and a headless tree engine remain outside this slice.',
+        },
+      },
+      rows: {
+        wrapper: {
+          name: 'ProTreeTable wrapper',
+          owner: '@ccd/vue-ui',
+          evidence: 'PrimeVue TreeTable is wrapped behind typed CCD props and events.',
+        },
+        primevue: {
+          name: 'PrimeVue TreeTable baseline',
+          owner: 'PrimeVue',
+          evidence: 'Expansion, selection, and expander column behavior come from TreeTable.',
+        },
+        types: {
+          name: 'Typed node and column API',
+          owner: '@ccd/vue-ui',
+          evidence: 'ProTreeTableNode and ProTreeTableColumn are exported as experimental types.',
+        },
+        state: {
+          name: 'Controlled expansion and selection',
+          owner: 'web-demo',
+          evidence: 'The page owns expandedKeys, selectionKeys, and forwarded event evidence.',
+        },
+        deferred: {
+          name: 'Deferred feature boundary',
+          owner: 'ADR-009',
+          evidence:
+            'Unsupported behavior is listed explicitly instead of hidden behind partial props.',
+        },
+        lazy: {
+          name: 'Lazy child loading',
+          owner: 'P2-A4',
+          evidence:
+            'Future request adapters need a tree-specific contract, not ProTableLoadParams.',
+        },
+        editing: {
+          name: 'Tree row editing',
+          owner: 'Future spike',
+          evidence: 'PrimeVue TreeTable editing is not part of the installed baseline.',
+        },
+        virtual: {
+          name: 'Tree virtualization',
+          owner: 'Future spike',
+          evidence: 'VirtualGridRenderer remains flat and is not reused for tree rows.',
+        },
+        engine: {
+          name: 'Headless hierarchy engine',
+          owner: 'P2-A6 gate',
+          evidence:
+            'A shared hierarchical engine is a later decision, not the first runtime slice.',
         },
       },
     },

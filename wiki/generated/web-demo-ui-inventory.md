@@ -64,11 +64,11 @@ that this file used to carry.
 | system       | `/system`                         |                  6 | root + 5 console pages                      |
 | desktop      | `/desktop`                        |                  1 | single boundary console page                |
 | error/catch  | `/404`, `/403`, `/500`, catch-all |                  4 | catch-all → `/404`                          |
-| showcase     | `/showcase`                       |                 73 | root + 7 group parents + 65 catalog records |
+| showcase     | `/showcase`                       |                 75 | root + 8 group parents + 66 catalog records |
 
 Console route records (architecture + runtime + ui + system + desktop) total **23**.
 Base registered records (everything except `/showcase`) total **30**. The full
-registered surface is **103** records.
+registered surface is **105** records.
 
 ## Base / static routes (30 registered records)
 
@@ -108,28 +108,29 @@ the console page model. `(redirect)` rows do not render a component of their own
 | error        | `/500`                             | 500                           | leaf                     | `router.error.serverError`                      | views/notfound/500.vue          |
 | error        | `/:pathMatch(.*)*`                 | CatchAll                      | → /404                   | `router.error.notFound`                         | (redirect)                      |
 
-## Showcase routes (73 records: 1 root + 7 group parents + 65 catalog records)
+## Showcase routes (75 records: 1 root + 8 group parents + 66 catalog records)
 
 Showcase routes are computed at runtime by `createShowcaseRoutes()` from
-`showcaseCatalog.ts`. The root and the seven group parents are redirect-only
-container records. `showcaseCatalog.ts` contributes 65 catalog records:
+`showcaseCatalog.ts`. The root and the eight group parents are redirect-only
+container records. `showcaseCatalog.ts` contributes 66 catalog records:
 `/showcase/components` is a catalog-owned redirect group parent, and the
-remaining 64 records are navigable/leaf records.
+remaining 65 records are navigable/leaf records.
 
 ### Root and group parents
 
-| Path                             | Name                       | Resolution           | TitleKey                                   |
-| -------------------------------- | -------------------------- | -------------------- | ------------------------------------------ |
-| `/showcase`                      | ShowcaseRoot               | → /showcase/overview | `router.showcase.root`                     |
-| `/showcase/components/pro-table` | ShowcaseComponentsProTable | → …/overview         | `router.showcase.components.proTable.root` |
-| `/showcase/components/pro-form`  | ShowcaseComponentsProForm  | → …/overview         | `router.showcase.components.proForm.root`  |
-| `/showcase/components/charts`    | ShowcaseComponentsCharts   | → …/overview         | `router.showcase.components.charts.root`   |
-| `/showcase/hooks`                | ShowcaseHooks              | → …/overview         | `router.showcase.hooks.root`               |
-| `/showcase/utils`                | ShowcaseUtils              | → …/overview         | `router.showcase.utils.root`               |
-| `/showcase/runtime`              | ShowcaseRuntime            | → …/overview         | `router.showcase.runtime.root`             |
-| `/showcase/design`               | ShowcaseDesign             | → …/tokens           | `router.showcase.design.root`              |
+| Path                                  | Name                           | Resolution           | TitleKey                                       |
+| ------------------------------------- | ------------------------------ | -------------------- | ---------------------------------------------- |
+| `/showcase`                           | ShowcaseRoot                   | → /showcase/overview | `router.showcase.root`                         |
+| `/showcase/components/pro-table`      | ShowcaseComponentsProTable     | → …/overview         | `router.showcase.components.proTable.root`     |
+| `/showcase/components/pro-tree-table` | ShowcaseComponentsProTreeTable | → …/overview         | `router.showcase.components.proTreeTable.root` |
+| `/showcase/components/pro-form`       | ShowcaseComponentsProForm      | → …/overview         | `router.showcase.components.proForm.root`      |
+| `/showcase/components/charts`         | ShowcaseComponentsCharts       | → …/overview         | `router.showcase.components.charts.root`       |
+| `/showcase/hooks`                     | ShowcaseHooks                  | → …/overview         | `router.showcase.hooks.root`                   |
+| `/showcase/utils`                     | ShowcaseUtils                  | → …/overview         | `router.showcase.utils.root`                   |
+| `/showcase/runtime`                   | ShowcaseRuntime                | → …/overview         | `router.showcase.runtime.root`                 |
+| `/showcase/design`                    | ShowcaseDesign                 | → …/tokens           | `router.showcase.design.root`                  |
 
-### Showcase catalog records (65)
+### Showcase catalog records (66)
 
 `/showcase/components` (`ShowcaseComponentsRoot`) is itself a catalog item that acts
 as a redirect group parent (→ `/showcase/components/primevue-adapter`).
@@ -159,6 +160,7 @@ as a redirect group parent (→ `/showcase/components/primevue-adapter`).
 | tables          | `/showcase/components/pro-table/row-editing`           | ShowcaseComponentsProTableRowEditing           | `router.showcase.components.proTable.rowEditing`           |
 | tables          | `/showcase/components/pro-table/form-composition`      | ShowcaseComponentsProTableFormComposition      | `router.showcase.components.proTable.formComposition`      |
 | tables          | `/showcase/components/pro-table/api-events`            | ShowcaseComponentsProTableApiEvents            | `router.showcase.components.proTable.apiEvents`            |
+| tables          | `/showcase/components/pro-tree-table/overview`         | ShowcaseComponentsProTreeTableOverview         | `router.showcase.components.proTreeTable.overview`         |
 | forms           | `/showcase/components/pro-form/overview`               | ShowcaseComponentsProFormOverview              | `router.showcase.components.proForm.overview`              |
 | forms           | `/showcase/components/pro-form/basic-schema`           | ShowcaseComponentsProFormBasicSchema           | `router.showcase.components.proForm.basicSchema`           |
 | forms           | `/showcase/components/pro-form/grouped-layout`         | ShowcaseComponentsProFormGroupedLayout         | `router.showcase.components.proForm.groupedLayout`         |
@@ -208,11 +210,11 @@ as a redirect group parent (→ `/showcase/components/primevue-adapter`).
 | -------------------------------------------------------------- | ----- | ------------------------------------------------------------------------------------------------ |
 | Console route records (architecture/runtime/ui/system/desktop) | 23    | `architecture-console.spec.ts` (`EXPECTED_CONSOLE_ROUTE_RECORD_COUNT`)                           |
 | Base registered records (non-showcase)                         | 30    | core, dashboard and console route modules plus `constants/router.ts` (error pages and catch-all) |
-| Showcase catalog items (leaves)                                | 62    | `showcaseCatalog.length` in `showcaseCatalog.ts`                                                 |
-| Showcase route group parents                                   | 7     | `SHOWCASE_ROUTE_GROUPS.length`                                                                   |
+| Showcase catalog items                                         | 66    | `showcaseCatalog.length` in `showcaseCatalog.ts`                                                 |
+| Showcase route group parents                                   | 8     | `SHOWCASE_ROUTE_GROUPS.length`                                                                   |
 | Showcase root record                                           | 1     | `SHOWCASE_ROOT_ROUTE`                                                                            |
-| Showcase records total                                         | 70    | 1 root + 7 groups + 62 leaves                                                                    |
-| Registered records total                                       | 100   | 30 base + 70 showcase                                                                            |
+| Showcase records total                                         | 75    | 1 root + 8 groups + 66 catalog items                                                             |
+| Registered records total                                       | 105   | 30 base + 75 showcase                                                                            |
 
 These match the dynamic assertion in `architecture-console.spec.ts`:
 `EXPECTED_REGISTERED_ROUTE_RECORD_COUNT = 30 + showcaseCatalog.length + SHOWCASE_ROUTE_GROUPS.length + 1`.

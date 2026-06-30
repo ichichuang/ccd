@@ -79,6 +79,12 @@ const SHOWCASE_EXTRA_SOURCE_PATHS_BY_ID: Partial<Record<string, readonly string[
     COMPONENT_DEMO_SOURCE,
     'packages/vue-ui/src/CScrollbar/CScrollbar.vue',
   ],
+  'components-pro-tree-table-overview': [
+    'apps/web-demo/src/views/showcase/components/pro-tree-table/shared/proTreeTableDemoData.ts',
+    'packages/vue-ui/src/ProTreeTable/ProTreeTable.vue',
+    'packages/vue-ui/src/ProTreeTable/types.ts',
+    'packages/vue-ui/src/ProTreeTable/README.md',
+  ],
   'feedback-dialog-toast': [
     FEEDBACK_DEMO_SOURCE,
     FEEDBACK_DIALOG_BRIDGE_SOURCE,
@@ -155,6 +161,10 @@ const SHOWCASE_RELATED_IDS_BY_ID: Partial<Record<string, readonly string[]>> = {
   'components-charts-states': ['components-charts-events', 'components-empty-state'],
   'components-charts-events': ['components-charts-states', 'feedback-dialog-toast'],
   'components-charts-dashboard-preview': ['components-charts-theme', 'runtime-overview'],
+  'components-pro-tree-table-overview': [
+    'components-pro-table-overview',
+    'components-primevue-adapter',
+  ],
   'hooks-overview': ['hooks-theme-switching', 'hooks-http-flow'],
   'hooks-theme-switching': ['hooks-locale-switching', 'design-motion'],
   'hooks-locale-switching': ['hooks-theme-switching', 'utils-date'],
@@ -385,6 +395,26 @@ const proTableCatalogItems = proTableItems.map(
     dashboardLink: slug === 'basic',
     e2eTarget: slug === 'basic',
     tags: ['components', 'tables', 'pro-table'],
+  })
+) satisfies ShowcaseItemInput[]
+
+const proTreeTableItems = [['overview', 'Overview', 'overview', 37, 'preview']] as const
+
+const proTreeTableCatalogItems = proTreeTableItems.map(
+  ([slug, nameSuffix, keySuffix, rank, demoLevel]) => ({
+    id: `components-pro-tree-table-${slug}`,
+    parentId: 'components-root',
+    groupId: 'tables',
+    path: `/showcase/components/pro-tree-table/${slug}`,
+    name: `ShowcaseComponentsProTreeTable${nameSuffix}`,
+    titleKey: `router.showcase.components.proTreeTable.${keySuffix}`,
+    icon: 'i-lucide-list-tree',
+    rank,
+    kind: 'table',
+    demoLevel,
+    componentKey: `@/views/showcase/components/pro-tree-table/${slug}/index.vue`,
+    sourcePath: `apps/web-demo/src/views/showcase/components/pro-tree-table/${slug}/index.vue`,
+    tags: ['components', 'tables', 'pro-tree-table', 'experimental'],
   })
 ) satisfies ShowcaseItemInput[]
 
@@ -751,6 +781,7 @@ const showcaseCatalogInputs: ShowcaseItemInput[] = [
   },
   ...componentItems,
   ...proTableCatalogItems,
+  ...proTreeTableCatalogItems,
   ...proFormCatalogItems,
   ...chartCatalogItems,
   ...standaloneItems,
@@ -780,6 +811,16 @@ export const SHOWCASE_ROUTE_GROUPS = [
     icon: 'i-lucide-table',
     rank: 20,
     redirect: '/showcase/components/pro-table/overview',
+  },
+  {
+    id: 'components-pro-tree-table',
+    groupId: 'tables',
+    path: '/showcase/components/pro-tree-table',
+    name: 'ShowcaseComponentsProTreeTable',
+    titleKey: 'router.showcase.components.proTreeTable.root',
+    icon: 'i-lucide-list-tree',
+    rank: 37,
+    redirect: '/showcase/components/pro-tree-table/overview',
   },
   {
     id: 'components-pro-form',
@@ -974,6 +1015,16 @@ function createCatalogRoutesByGroupId(
   return sortCatalogItems(items.filter(item => item.groupId === groupId)).map(createCatalogRoute)
 }
 
+function createCatalogRoutesByRouteGroup(
+  items: ShowcaseCatalogItem[],
+  group: ShowcaseRouteGroup
+): RouteConfig[] {
+  const groupPathPrefix = `${group.path}/`
+  return sortCatalogItems(items.filter(item => item.path.startsWith(groupPathPrefix))).map(
+    createCatalogRoute
+  )
+}
+
 function isRootGroupedCatalogItem(item: ShowcaseCatalogItem): boolean {
   return ROOT_ROUTE_GROUPS.some(groupId => groupId === item.groupId)
 }
@@ -1003,15 +1054,31 @@ export function createShowcaseRoutes(): RouteConfig {
         ...componentPrimitiveChildren.map(createCatalogRoute),
         createRouteGroupRoute(
           requireRouteGroup('components-pro-table'),
-          createCatalogRoutesByGroupId(componentsChildren, 'tables')
+          createCatalogRoutesByRouteGroup(
+            componentsChildren,
+            requireRouteGroup('components-pro-table')
+          )
+        ),
+        createRouteGroupRoute(
+          requireRouteGroup('components-pro-tree-table'),
+          createCatalogRoutesByRouteGroup(
+            componentsChildren,
+            requireRouteGroup('components-pro-tree-table')
+          )
         ),
         createRouteGroupRoute(
           requireRouteGroup('components-pro-form'),
-          createCatalogRoutesByGroupId(componentsChildren, 'forms')
+          createCatalogRoutesByRouteGroup(
+            componentsChildren,
+            requireRouteGroup('components-pro-form')
+          )
         ),
         createRouteGroupRoute(
           requireRouteGroup('components-charts'),
-          createCatalogRoutesByGroupId(componentsChildren, 'charts')
+          createCatalogRoutesByRouteGroup(
+            componentsChildren,
+            requireRouteGroup('components-charts')
+          )
         ),
       ]),
       '/showcase/components/primevue-adapter'

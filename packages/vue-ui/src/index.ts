@@ -143,6 +143,22 @@ export type {
   UseProTableUrlSyncReturn,
 } from './ProTable'
 
+export { ProTreeTable } from './ProTreeTable'
+export type {
+  ProTreeTableCheckboxSelectionState,
+  ProTreeTableColumn,
+  ProTreeTableColumnAlign,
+  ProTreeTableColumnPinned,
+  ProTreeTableExpandedKeys,
+  ProTreeTableNode,
+  ProTreeTableNodeEvent,
+  ProTreeTableProps,
+  ProTreeTableSelectionKeys,
+  ProTreeTableSelectionMode,
+  ProTreeTableValueEnum,
+  ProTreeTableValueEnumItem,
+} from './ProTreeTable'
+
 export {
   PrimeDialog,
   PrimeDialogMessageContent,

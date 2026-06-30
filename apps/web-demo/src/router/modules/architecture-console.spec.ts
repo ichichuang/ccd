@@ -84,6 +84,7 @@ const EXPECTED_REGISTERED_ROUTE_SIGNATURES = [
   '/showcase/components|ShowcaseComponentsRoot|/showcase/components/primevue-adapter|static',
   '/showcase/components/pro-table|ShowcaseComponentsProTable|/showcase/components/pro-table/overview|static',
   '/showcase/components/pro-table/basic|ShowcaseComponentsProTableBasic||lazy',
+  '/showcase/components/pro-tree-table|ShowcaseComponentsProTreeTable|/showcase/components/pro-tree-table/overview|static',
   '/showcase/components/pro-form|ShowcaseComponentsProForm|/showcase/components/pro-form/overview|static',
   '/showcase/components/pro-form/validation|ShowcaseComponentsProFormValidation||lazy',
   '/showcase/components/charts|ShowcaseComponentsCharts|/showcase/components/charts/overview|static',
