@@ -25,6 +25,20 @@ wiki_owner: LLM-maintained CCD architecture wiki
 
 # Wiki Log
 
+## [2026-06-30] decisions | ProTreeTable visual state inventory and polish contract
+
+- Updated [[adr-009-pro-tree-table-api-decision]] with the P2-B3 visual state inventory and polish
+  contract.
+- Defined future empty, loading, lazy-loading, lazy-error, disabled, selection, expansion,
+  deferred-scope, demo-card, responsive, focus/keyboard, reduced-motion, screenshot, and
+  accessibility expectations.
+- Compared docs-only, showcase-only, component-level state API, and shared state primitive options for
+  future visual polish.
+- Recommended a future P2-B3R showcase/wrapper visual pass first, without shared primitives,
+  `ProTable treeMode`, filtering, server adapters, editing, virtualization, or tree range selection.
+- Synchronized the ProTreeTable README visual state status note without changing runtime source,
+  generated reports, dependencies, or flat `ProTable` files.
+
 ## [2026-06-30] decisions | ProTreeTable server/lazy adapter contract decision
 
 - Updated [[adr-009-pro-tree-table-api-decision]] with the P2-B2 server/lazy adapter contract decision.

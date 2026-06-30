@@ -19,6 +19,10 @@ P2-B2 records the server/lazy adapter contract decision. The current `loadChildr
 the local child-loading path; real root/server adapters, retry UI, URL/state persistence, and public
 server-mode props/events remain deferred.
 
+P2-B3 records the visual state inventory and polish contract. It defines future empty, loading,
+lazy-loading, lazy-error, disabled, selection, responsive, focus, and deferred-scope acceptance
+criteria without implementing runtime visual polish.
+
 This README does not approve production readiness or new runtime behavior. Filtering, real server
 adapters, editing, virtualization, tree range selection, a shared headless hierarchy engine, and
 `ProTable` integration each require a separate decision gate before implementation.
@@ -158,6 +162,22 @@ P2-B2 is a documented future contract, not a runtime feature in the current expe
 - `ProTableLoadParams` remains rejected for tree server/lazy contracts because it is a flat-row
   request payload and cannot represent root-versus-child loading, parent keys, expansion/selection
   snapshots, child persistence, or node-key-scoped stale response handling.
+
+## Visual State Status
+
+P2-B3 is a documented future visual contract, not a runtime polish implementation.
+
+- Current empty rendering remains PrimeVue/default TreeTable behavior unless the caller wraps it.
+- Current table-level `loading` and node-level lazy loading stay as the existing PrimeVue passthrough
+  and transient `TreeNode.loading` behavior.
+- Current lazy errors remain event-only through `lazy-load-error`; no retry UI or visible row-level
+  error state is added.
+- Current disabled behavior suppresses interactive selection updates; no new visual disabled state is
+  added.
+- The overview route keeps local evidence cards for expanded keys, selection, lazy-load counts, loaded
+  children, and last event.
+- Any future visual polish must run screenshot, route E2E, keyboard, and accessibility validation, and
+  must keep `ProTreeTable` experimental unless a later promotion decision says otherwise.
 
 ## Column Compatibility
 

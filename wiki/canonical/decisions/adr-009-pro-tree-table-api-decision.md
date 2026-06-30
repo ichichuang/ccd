@@ -37,9 +37,15 @@ source_paths:
   - packages/vue-ui/src/ProTreeTable/types.ts
   - packages/vue-ui/src/ProTreeTable/ProTreeTable.vue
   - packages/vue-ui/src/ProTreeTable/ProTreeTable.spec.ts
+  - packages/vue-ui/src/EmptyState/EmptyState.vue
+  - apps/web-demo/src/views/showcase/shared/ShowcaseEmptyState.vue
+  - apps/web-demo/src/views/showcase/components/pro-table/shared/ProTableDemoShell.vue
   - apps/web-demo/src/views/showcase/components/pro-tree-table/overview/index.vue
   - apps/web-demo/src/views/showcase/components/pro-tree-table/shared/proTreeTableDemoData.ts
   - e2e/pro-tree-table-accessibility.spec.ts
+  - packages/design-tokens/src/size.ts
+  - .ai/rules/design-system/00-unocss-guardrails.mdc
+  - .ai/rules/design-system/03-material-system.mdc
   - wiki/generated/api-surface-report.json
   - wiki/generated/web-demo-ui-inventory.md
   - https://primevue.org/treetable
@@ -61,6 +67,9 @@ P2-B1 records the filtering contract research and docs-only decision. It does no
 
 P2-B2 records the server/lazy adapter contract design. It does not implement a server adapter,
 add runtime props or events, or change the current local `loadChildren` behavior.
+
+P2-B3 records the visual state inventory and polish contract. It does not implement empty, loading,
+error, disabled, selection, responsive, focus, or shared state primitive runtime changes.
 
 ## Decision Summary
 
@@ -376,15 +385,15 @@ This baseline remains experimental. It is a tested smoke baseline, not a product
 
 P2-B work must stay behind separate decision gates. P2-B0 is this documentation/status sync.
 
-| Priority | Item                                     | Scope                                                                                      | Acceptance criteria                                                                                                                                                                                                                                                                                         |
-| -------- | ---------------------------------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| P2-B0    | Stabilization status sync and issue list | Docs/governance only.                                                                      | ADR-009 records P2-A closure, P2-A6 decision result, current supported capabilities, deferred scope, P2-B backlog, rollback, and validation gates. README status is synchronized without claiming production readiness. No runtime files, generated reports, dependencies, or flat `ProTable` files change. |
-| P2-B1    | Filtering contract research/decision     | Completed docs-only decision for `filterable` and TreeTable filtering semantics.           | ADR-009 records the runtime boundary, option comparison, recommended future contract, local/server split, collapsed-descendant behavior, lazy-child behavior, relation to flat `FilterState`, and future runtime acceptance criteria. No runtime filtering is wired.                                        |
-| P2-B2    | Server/lazy adapter contract design      | Design the server/lazy adapter contract without implementing real adapters.                | Specify root loading, child loading, error/retry shape, pagination ownership, child persistence ownership, and event payload ownership. Preserve `loadChildren` as the current local contract until a later task explicitly changes runtime.                                                                |
-| P2-B3    | Visual polish and state inventory        | Token/state design for empty, loading, and error states.                                   | Produce a state inventory and acceptance checklist for tokenized empty/loading/error states. Any UI change must be a separate runtime task with screenshots and must not add editing, virtualization, filtering, or server behavior.                                                                        |
-| P2-B4    | Selection/expansion edge-case audit      | Audit controlled state edge cases before adding new behavior.                              | Cover disabled mode, `node.selectable=false`, unknown keys, collapsed selected descendants, lazy children, checkbox partial state, duplicate key risks, and remount/transient-cache behavior. Output either docs-only findings or a test-only follow-up plan.                                               |
-| P2-B5    | Accessibility hardening follow-up        | Required if P2-B3 changes UI states or interaction surfaces.                               | Re-run and extend keyboard, axe, screenshot, and manual ARIA checks for new states. Preserve the statement that accessibility is smoke-tested, not globally certified.                                                                                                                                      |
-| P2-B6    | Experimental-versus-beta decision gate   | Decide whether to keep experimental status or promote to beta after B1-B5 evidence exists. | Record pass/fail status for B1-B5, unresolved API risks, required validation evidence, rollback path, and recommendation. Promotion to beta requires a separate docs decision and must not imply `ProTable` integration.                                                                                    |
+| Priority | Item                                     | Scope                                                                                      | Acceptance criteria                                                                                                                                                                                                                                                                                                    |
+| -------- | ---------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P2-B0    | Stabilization status sync and issue list | Docs/governance only.                                                                      | ADR-009 records P2-A closure, P2-A6 decision result, current supported capabilities, deferred scope, P2-B backlog, rollback, and validation gates. README status is synchronized without claiming production readiness. No runtime files, generated reports, dependencies, or flat `ProTable` files change.            |
+| P2-B1    | Filtering contract research/decision     | Completed docs-only decision for `filterable` and TreeTable filtering semantics.           | ADR-009 records the runtime boundary, option comparison, recommended future contract, local/server split, collapsed-descendant behavior, lazy-child behavior, relation to flat `FilterState`, and future runtime acceptance criteria. No runtime filtering is wired.                                                   |
+| P2-B2    | Server/lazy adapter contract design      | Design the server/lazy adapter contract without implementing real adapters.                | Specify root loading, child loading, error/retry shape, pagination ownership, child persistence ownership, and event payload ownership. Preserve `loadChildren` as the current local contract until a later task explicitly changes runtime.                                                                           |
+| P2-B3    | Visual polish and state inventory        | Completed docs-only contract for visual states and future runtime acceptance criteria.     | ADR-009 records current and desired empty, loading, lazy loading, lazy error, disabled, selection, expansion, deferred-scope, demo-card, responsive, focus, and validation states. No runtime visual polish is implemented; future UI work requires screenshots, E2E, accessibility validation, and separate approval. |
+| P2-B4    | Selection/expansion edge-case audit      | Audit controlled state edge cases before adding new behavior.                              | Cover disabled mode, `node.selectable=false`, unknown keys, collapsed selected descendants, lazy children, checkbox partial state, duplicate key risks, and remount/transient-cache behavior. Output either docs-only findings or a test-only follow-up plan.                                                          |
+| P2-B5    | Accessibility hardening follow-up        | Required if P2-B3 changes UI states or interaction surfaces.                               | Re-run and extend keyboard, axe, screenshot, and manual ARIA checks for new states. Preserve the statement that accessibility is smoke-tested, not globally certified.                                                                                                                                                 |
+| P2-B6    | Experimental-versus-beta decision gate   | Decide whether to keep experimental status or promote to beta after B1-B5 evidence exists. | Record pass/fail status for B1-B5, unresolved API risks, required validation evidence, rollback path, and recommendation. Promotion to beta requires a separate docs decision and must not imply `ProTable` integration.                                                                                               |
 
 ## P2-B1 Filtering Contract Decision
 
@@ -783,11 +792,132 @@ A future server/lazy runtime task is acceptable only when it:
 - Leaves `ProTable.vue`, `VirtualGridRenderer.vue`, and the flat `TableController` untouched.
 - Updates generated API reports only if the public export surface changes in that runtime task.
 
+## P2-B3 Visual State Inventory And Polish Contract
+
+P2-B3 is a docs-only stabilization decision. The current runtime remains unchanged:
+
+- `ProTreeTable.vue` still delegates table rendering to PrimeVue `TreeTable`.
+- `ProTreeTableProps` still exposes only `nodes`, `columns`, `loading`, `disabled`, `selectionMode`,
+  `expandedKeys`, `selectionKeys`, `lazy`, and `loadChildren`.
+- Current lazy errors still emit `{ key, node, error }`; no retry UI, inline error row, root error prop,
+  or error slot is added.
+- Current empty rendering remains PrimeVue/default TreeTable behavior unless a caller wraps or slots a
+  future state externally; no component-level empty slot is added in P2-B3.
+- The overview route still uses local state cards for expanded keys, selection mode, selected keys, lazy
+  load count, loaded child count, and last event.
+- `ProTreeTable` remains independent and experimental.
+- `ProTable treeMode` remains rejected.
+
+### Visual State Research Findings
+
+The current implementation and demo already expose state evidence, but not a complete polished visual
+language:
+
+- `ProTreeTableNode` already carries `loading` and `selectable` node metadata, and `ProTreeTableProps`
+  already carries `loading` and `disabled`.
+- While `loadChildren` is pending, the wrapper passes `loading=true` on the target PrimeVue `TreeNode`.
+- A rejected `loadChildren` call emits `lazy-load-error` but does not retain a visible row-level error
+  state.
+- `disabled=true` suppresses interactive selection mode and ignores selection updates, but there is no
+  documented visual dimming or affordance contract.
+- `node.selectable=false` is passed through to the underlying PrimeVue tree node, but there is no CCD
+  visual contract for non-selectable rows yet.
+- The current route-level E2E gate verifies treegrid rendering, wrapper experimental markers, deferred
+  copy, axe smoke, screenshot evidence, keyboard lazy expansion, lazy-load counters, row selection
+  evidence, and no console/page errors.
+- Neighboring `ProTable` showcase state controls keep loading and empty toggles in the showcase shell,
+  pass `loading` to the component, and provide empty content through a local `ShowcaseEmptyState` slot.
+- Shared `EmptyState` and `Icons` primitives exist, and design-system rules require semantic tokens,
+  token spacing, `material-solid` for data grids, named motion durations, and visible focus treatment
+  without raw colors or generated one-off primitives.
+
+### Visual State Inventory
+
+| State                            | Owner                                                                   | Trigger and current behavior                                                                                                          | Desired future behavior                                                                                                                                                                                 | Accessibility requirement                                                                                                                 | Token/style expectation                                                                                                               | Testing requirement and runtime work                                                                                                  |
+| -------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Current rendered state           | Wrapper plus demo route                                                 | Route renders a PrimeVue `treegrid` with experimental wrapper markers and local evidence cards.                                       | Preserve a quiet data-grid surface with visible experimental/deferred evidence outside the grid.                                                                                                        | Keep a named `treegrid`, expander labels, and no console/page errors.                                                                     | Data-grid shell uses `material-solid`; surrounding evidence cards may use `material-elevated`; semantic text and spacing tokens only. | Already smoke-tested by route E2E; runtime work only if polish changes markup or classes.                                             |
+| Empty nodes state                | Future caller/showcase first, component later only by separate decision | `nodes=[]` is not explicitly documented as a CCD empty visual state.                                                                  | Show an empty state that explains no tree nodes are available without implying server/filter support.                                                                                                   | Empty copy must be exposed as readable text in the table region and must not trap focus.                                                  | Prefer existing `EmptyState`/`ShowcaseEmptyState`, neutral semantic icon, `bg-card`/`bg-muted`, token padding and gaps.               | Future P2-B3R screenshot, axe, and keyboard smoke; component-level slot/prop work requires separate decision.                         |
+| Global loading state             | Current prop; future wrapper/showcase visual                            | `loading` passes through to PrimeVue `TreeTable`.                                                                                     | Show table-level loading without replacing selection/expansion evidence or hiding deferred-scope copy.                                                                                                  | Loading must expose busy status through PrimeVue semantics or an approved `aria-busy` wrapper if needed.                                  | Use PrimeVue-compatible loader or tokenized overlay; no raw spinner colors or layout shift.                                           | Unit test prop passthrough plus route screenshot if visual changes.                                                                   |
+| Lazy node loading state          | Component-owned transient state                                         | Pending `loadChildren` sets target node `loading=true` and clears it after settle.                                                    | Show node-scoped progress on the expanded row while keeping parent/child indentation stable.                                                                                                            | Focus must remain on the triggering row or a deterministic child target after load; screen-reader state must not announce unrelated rows. | Use row-local semantic muted/progress treatment, preserve tree indentation, avoid reflow and broad overlays.                          | Existing unit coverage checks node loading; future visual work needs keyboard expansion screenshot and E2E.                           |
+| Lazy load success state          | Component transient render plus caller-owned durable state              | Loaded children render from transient clone and `lazy-load` emits `{ key, node, children }`.                                          | Optional success evidence may live in demo state cards, not inside every row by default.                                                                                                                | Newly inserted children must be reachable by arrow keys and selection tests.                                                              | Do not add success badges in the component without a separate state/noise decision.                                                   | Existing route checks child visibility and counters; future visual success copy needs screenshot/a11y checks.                         |
+| Lazy load error state            | Event-only today; future caller/showcase first                          | `lazy-load-error` emits `{ key, node, error }`; no visible error row is retained.                                                     | Surface a node-scoped, retry-aware error message in showcase/wrapper runtime only after retry semantics are approved.                                                                                   | Error copy must be programmatically associated with the node or table region, and retry controls must be keyboard reachable.              | Use `text-danger`, `surface-danger` or equivalent semantic danger treatment; no raw error colors.                                     | Future work requires forced deterministic failure fixture, unit event tests, axe, keyboard, and screenshot evidence.                  |
+| Disabled state                   | Current wrapper prop                                                    | `disabled=true` suppresses PrimeVue selection mode and ignores selection update events.                                               | Disabled visual treatment should make interaction limits clear without lowering text below contrast requirements. Expansion semantics need a separate decision if disabled should also block expansion. | Disabled rows/controls must not present active controls to keyboard users; any remaining focus target must explain state.                 | Semantic muted foreground/background and approved disabled opacity only; no blanket opacity that harms readability.                   | Existing unit coverage verifies selection suppression; future visual work requires disabled selection and focus smoke.                |
+| `selectable=false` node state    | Node data/caller; PrimeVue passthrough                                  | Node metadata is passed to PrimeVue as `selectable=false`.                                                                            | Non-selectable rows should remain readable and expandable if applicable, with no fake checkbox/selected affordance.                                                                                     | Screen-reader and keyboard behavior must not suggest the row can be selected.                                                             | Muted interaction affordance only; preserve row text contrast and indentation.                                                        | Existing unit coverage verifies passthrough; future visual work requires a non-selectable row screenshot and selection-negative test. |
+| Selected row state               | PrimeVue plus controlled `selectionKeys`                                | Selection is controlled and evidence card shows selected keys.                                                                        | Selected rows need a semantic active treatment that is visible in light/dark mode and does not conflict with focus.                                                                                     | `aria-selected` must remain accurate; focus and selection must be visually distinguishable.                                               | Use semantic foreground/primary or approved active-row tokens; do not rely on color alone.                                            | Existing E2E verifies `aria-selected`; future visual work needs screenshot checks for selected and focused-selected rows.             |
+| Expanded/collapsed state         | PrimeVue plus controlled `expandedKeys`                                 | Expansion is controlled, normalized to truthy maps, and evidence card shows expanded keys.                                            | Toggle affordance, indentation, and expanded/collapsed evidence must remain stable across loading and responsive layouts.                                                                               | `aria-expanded` must match controlled state; toggle label stays present.                                                                  | Preserve tokenized spacing and avoid row-height jumps on expand/collapse.                                                             | Existing unit and E2E cover expansion; future visuals need keyboard screenshot and no-overlap checks.                                 |
+| Deferred-scope explanation state | Demo/docs                                                               | Current route includes feature cards and copy for deferred editing, virtual scroll, engine, filtering/server scope.                   | Keep deferred copy visible near the demo whenever runtime polish is added so users do not infer production completeness.                                                                                | Copy must be readable and not only encoded as badges/icons.                                                                               | Use `ShowcaseFeatureCard`/`ShowcaseCard` patterns and semantic tags.                                                                  | Existing E2E checks deferred copy; future runtime polish must keep that assertion.                                                    |
+| Local demo state cards           | Demo route                                                              | Six `material-elevated` cards expose expanded, mode, selection, lazy loads, loaded children, and last event.                          | Add future error/loading/empty cards only when they provide actionable state evidence, not decorative metrics.                                                                                          | Cards must use text labels, not icon-only status, and remain readable at mobile widths.                                                   | Responsive grid using existing token gaps and card material; no nested cards.                                                         | Route screenshot and text assertions if cards change.                                                                                 |
+| Mobile/responsive state          | Demo route and future wrapper visual                                    | Existing evidence cards use `grid-cols-1`, `md:grid-cols-2`, and `xl:grid-cols-6`; TreeTable horizontal behavior depends on PrimeVue. | Future polish must preserve no-overlap, readable card text, stable table scroll, and visible deferred copy on narrow screens.                                                                           | Keyboard focus must stay visible after horizontal scroll or responsive wrapping.                                                          | Token gaps and `min-w-0`; data grids remain `material-solid`; avoid viewport-scaled font sizes.                                       | Future runtime work must attach desktop and mobile screenshots.                                                                       |
+| Focus/keyboard visual state      | PrimeVue plus wrapper labels                                            | Current E2E focuses lazy row, uses `ArrowRight`, and selects with `Enter`.                                                            | Focus ring must be visible separately from selected/hover states and must not be clipped by table containers.                                                                                           | Tab, Shift+Tab, Enter, Space, and arrow-key paths must be covered when interaction visuals change.                                        | Use approved focus/ring treatment such as tokenized `ring`/`ring-focus-focus`; avoid arbitrary shadows that break rings.              | Future visual work requires keyboard E2E and screenshot evidence for focused, selected, and focused-selected rows.                    |
+| Reduced-motion/no-motion state   | Future visual implementation                                            | No custom motion is implemented now.                                                                                                  | Any future loading/expand/error motion must respect reduced-motion and remain optional/non-essential.                                                                                                   | State changes must not depend on animation to convey meaning.                                                                             | Named duration tokens only; avoid custom easing unless design-system approved.                                                        | Future motion requires reduced-motion smoke or documented no-motion path.                                                             |
+
+### Future Runtime Options Compared
+
+| Option                                                          | Shape                                                                                                   | Benefit                                                            | Risk                                                                            | P2-B3 decision                                                  |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| A. Docs-only inventory                                          | Record state contract and acceptance criteria only.                                                     | Lowest risk; preserves current runtime and clarifies future gates. | No visual improvement yet.                                                      | Accepted for P2-B3.                                             |
+| B. Showcase-only polish                                         | Add deterministic empty/loading/error/disabled fixtures and evidence cards around the existing wrapper. | Proves visual language without changing public component API.      | Could drift from eventual component API if treated as final.                    | Recommended first future P2-B3R runtime path.                   |
+| C. Component-level empty/loading/error slots or props           | Add wrapper-owned slots/props for state visuals.                                                        | Stronger reusable component contract.                              | Public API expansion, accessibility burden, and rollback scope increase.        | Defer until showcase evidence proves the need.                  |
+| D. Shared state primitives across `ProTable` and `ProTreeTable` | Build common state/empty/loading/error primitives.                                                      | Potential consistency across tables.                               | Broadest blast radius; risks flat `ProTable` changes and premature abstraction. | Reject for P2-B3R; requires a separate decision if ever needed. |
+
+### Recommendation
+
+Keep P2-B3 as docs-only. The next runtime task, if approved, should be P2-B3R and should start with
+Option B: showcase and wrapper-adjacent visual fixtures for empty, loading, lazy-loading, lazy-error,
+disabled, selection, and deferred-scope evidence.
+
+P2-B3R must not introduce shared state primitives, alter flat `ProTable`, add `treeMode`, add filtering,
+add server adapters, add editing, add virtualization, add tree range selection, or promote `ProTreeTable`
+out of experimental status.
+
+### Future P2-B3R Runtime Acceptance Criteria
+
+A future visual polish runtime task is acceptable only when it:
+
+- Starts from deterministic local fixtures for empty, loading, lazy-loading, lazy-error, disabled,
+  `selectable=false`, selected, focused, expanded, and deferred-scope states.
+- Keeps new state visuals either showcase-only or behind explicitly approved `ProTreeTable` wrapper
+  slots/props; no implicit public API expansion.
+- Keeps `ProTable.vue`, `VirtualGridRenderer.vue`, and the flat `TableController` untouched.
+- Keeps `ProTable treeMode` rejected and does not add tree props to `ProTable`.
+- Uses existing `EmptyState`, `Icons`, `ShowcaseCard`, `ShowcaseFeatureCard`, and token/material rules
+  before creating new primitives.
+- Preserves semantic token usage, token spacing, readable contrast, data-grid `material-solid`, no raw
+  palette colors, no source-authored `rem`/`em`, and no generated one-off shortcuts.
+- Keeps focus visible and distinct from hover/selected state in light and dark themes.
+- Defines whether `disabled=true` blocks expansion or only selection before changing behavior.
+- Defines lazy-error retry ownership before adding retry controls.
+- Provides desktop and mobile screenshot evidence for empty, loading, lazy loading, lazy error, selected,
+  disabled, and focused rows.
+- Runs route-level E2E with axe smoke, keyboard expansion/selection, no console/page errors, and no
+  network failures.
+- Adds focused unit tests only for runtime contracts that actually change.
+- Updates generated API reports only if public exports or public types change.
+- Updates UI inventory only if route topology changes.
+
+### P2-B3 Rollback And Acceptance
+
+P2-B3 rollback is documentation-only: revert this ADR section, the P2-B3 README note, and the wiki log
+entry. No runtime rollback is needed because P2-B3 intentionally changes no runtime files.
+
+P2-B3 is accepted when:
+
+- The visual state inventory above covers empty, global loading, lazy node loading, lazy success, lazy
+  error, disabled, `selectable=false`, selected, expanded/collapsed, deferred-scope, demo-card,
+  responsive, focus/keyboard, and reduced-motion expectations.
+- The docs clearly state that no runtime visual polish is implemented in P2-B3.
+- `ProTreeTable` remains experimental.
+- `ProTable treeMode` remains rejected.
+- Any future shared state primitive is behind a separate decision.
+- Future P2-B3R acceptance criteria require screenshot, E2E, accessibility, and rollback evidence.
+- `git diff --check` and `mise exec -- pnpm wiki:validate` pass for the docs update.
+
 ## Future Feature Decision Gates
 
 The following features require separate decision records or explicitly scoped follow-up tasks before any runtime implementation:
 
 - Filtering runtime implementation.
+- Visual polish runtime implementation.
 - Real server adapters.
 - Editing.
 - Virtualization.
@@ -799,9 +929,9 @@ Until those gates pass, `ProTreeTable` must remain independent and experimental,
 
 ## P2-B Rollback And Validation Gates
 
-P2-B0, P2-B1, and P2-B2 rollback is documentation-only: revert the ADR-009
-status/backlog/filtering/server-lazy decision changes, the package README status note, and any
-index/log updates made with the same docs task.
+P2-B0, P2-B1, P2-B2, and P2-B3 rollback is documentation-only: revert the ADR-009
+status/backlog/filtering/server-lazy/visual-state decision changes, the package README status note,
+and any index/log updates made with the same docs task.
 
 Before any new runtime feature is approved, the implementing task must define rollback and run at least:
 
@@ -832,8 +962,9 @@ P2-A1 is acceptable only when:
 ## Current Impact
 
 This ADR creates the design boundary for future Tree table work. P2-B1 documents the filtering
-contract decision and P2-B2 documents the server/lazy adapter contract decision only. Neither changes
-runtime behavior, public exports, generated API reports, dependencies, or ProTable implementation files.
+contract decision, P2-B2 documents the server/lazy adapter contract decision, and P2-B3 documents the
+visual state inventory and polish contract only. These tasks do not change runtime behavior, public
+exports, generated API reports, dependencies, or ProTable implementation files.
 
 ## Related Pages
 
