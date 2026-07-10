@@ -35,8 +35,6 @@
     "project:validate": "node scripts/project-config.mjs validate",
     "project:sync": "node scripts/project-config.mjs sync",
     "project:doctor": "node scripts/project-config.mjs doctor",
-    "sync:brand": "node scripts/sync-brand.mjs",
-    "sync:version": "node scripts/sync-version.mjs",
     "dev": "pnpm dev:web-demo",
     "dev:demo": "cross-env NODE_OPTIONS=--max-old-space-size=8192 UNO_DEMO=true pnpm --filter @ccd/web-demo dev",
     "build": "pnpm build:web-demo",
