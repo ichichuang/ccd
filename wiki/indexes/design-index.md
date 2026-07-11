@@ -28,11 +28,12 @@ wiki_owner: LLM-maintained CCD architecture wiki
 
 CCD design guidance for AI-generated UI work.
 
-| Page                            | 中文标题           |  Status | Confidence |
-| ------------------------------- | ------------------ | ------: | ---------: |
-| [[ccd-product-design-language]] | CCD 产品设计语言   | `draft` |       0.82 |
-| [[ccd-ai-ui-skill-governance]]  | CCD AI UI 技能治理 | `draft` |       0.82 |
-| [[animation-governance]]        | 动画治理           | `draft` |       0.82 |
+| Page                             | 中文标题           |      Status | Confidence |
+| -------------------------------- | ------------------ | ----------: | ---------: |
+| [[ccd-product-design-language]]  | CCD 产品设计语言   |     `draft` |       0.82 |
+| [[ccd-ai-ui-skill-governance]]   | CCD AI UI 技能治理 |     `draft` |       0.82 |
+| [[animation-governance]]         | 动画治理           |     `draft` |       0.82 |
+| [[ui-governance-migration-plan]] | UI 治理迁移计划    | `published` |       0.95 |
 
 ## Related pages
 
