@@ -5,9 +5,9 @@
   "baseline": "9fad207b1700615000517a0c5fee1af9661d00f8",
   "scope": {
     "totalVerifiedAssets": 135,
-    "manifestAssetCount": 53,
-    "evidenceOnlyCount": 82,
-    "accountingEquation": "53 manifest assets + 82 evidence-only assets = 135 verified assets"
+    "manifestAssetCount": 54,
+    "evidenceOnlyCount": 81,
+    "accountingEquation": "54 manifest assets + 81 evidence-only assets = 135 verified assets"
   },
   "topicTaxonomy": [
     "accessibility",
@@ -57,24 +57,23 @@
   ],
   "summary": {
     "totalVerifiedAssets": 135,
-    "manifestAssetCount": 53,
-    "evidenceOnlyCount": 82,
+    "manifestAssetCount": 54,
+    "evidenceOnlyCount": 81,
     "dispositionCounts": {
-      "KEEP": 28,
-      "MERGE": 22,
-      "REWRITE": 3,
-      "RETIRE_AFTER_REPLACEMENT": 0
+      "REWRITE": 11,
+      "KEEP": 21,
+      "MERGE": 22
     },
     "authorityCounts": {
+      "generated": 4,
+      "canonical": 43,
       "compatibility": 5,
-      "generated": 5,
-      "canonical": 41,
       "security-owner-decision": 2
     },
     "topicCounts": {
-      "cli-adapters": 9,
       "skill-routing": 3,
       "unocss": 3,
+      "cli-adapters": 10,
       "component-priority": 2,
       "platform-invariants": 3,
       "charts": 1,
@@ -92,8 +91,8 @@
       "accessibility": 1,
       "security-permissions": 1,
       "runtime-boundary": 1,
+      "generation-sync": 7,
       "validation": 5,
-      "generation-sync": 6,
       "wiki-documentation": 5
     },
     "conflictCount": 12,
@@ -111,55 +110,6 @@
     "atomicReplacementBoundaries": 25
   },
   "assets": [
-    {
-      "id": "AGENTS_md",
-      "path": "AGENTS.md",
-      "assetType": "compatibility-output",
-      "roleFacets": ["compatibility-output"],
-      "authority": "compatibility",
-      "topics": ["cli-adapters"],
-      "currentPurpose": "cross-cutting support",
-      "currentConsumers": [
-        "consumed by .ai/manifests/skill-routing.json, .ai/protocol/adapter-manifest.json, AGENTS.md, CLAUDE.md, scripts/ai-doctor.mjs, scripts/ai-sync.mjs, scripts/codex-preflight.mjs"
-      ],
-      "inboundReferences": [
-        ".ai/manifests/skill-routing.json (routing-reference): referenced in skill-routing.json",
-        ".ai/protocol/adapter-manifest.json (manifest-reference): referenced in adapter manifest",
-        "AGENTS.md (adapter-reference): referenced in AGENTS.md",
-        "CLAUDE.md (adapter-reference): referenced in CLAUDE.md",
-        "scripts/ai-doctor.mjs (script-reference): literal path reference in scripts/ai-doctor.mjs",
-        "scripts/ai-sync.mjs (sync-output): copied from .ai/protocol/AI.entry.md",
-        "scripts/codex-preflight.mjs (script-reference): literal path reference in scripts/codex-preflight.mjs"
-      ],
-      "dynamicDiscovery": [],
-      "generatorRelationship": [],
-      "trackedState": "ignored",
-      "globPatterns": [],
-      "globMatchStatus": "not-applicable",
-      "duplicateWith": [],
-      "conflictsWith": ["CONF-09"],
-      "uniqueRequirements": [],
-      "ownerDecisions": [],
-      "currentProblems": [],
-      "disposition": "KEEP",
-      "futureOwner": "AGENTS.md (compatibility output)",
-      "retirementPrerequisites": [],
-      "prematureChangeRisk": [
-        "Premature retirement removes governance surface before replacement is validated."
-      ],
-      "evidence": [
-        ".ai/manifests/skill-routing.json (routing-reference): referenced in skill-routing.json",
-        ".ai/protocol/adapter-manifest.json (manifest-reference): referenced in adapter manifest",
-        "AGENTS.md (adapter-reference): referenced in AGENTS.md",
-        "CLAUDE.md (adapter-reference): referenced in CLAUDE.md",
-        "scripts/ai-doctor.mjs (script-reference): literal path reference in scripts/ai-doctor.mjs",
-        "scripts/ai-sync.mjs (sync-output): copied from .ai/protocol/AI.entry.md",
-        "scripts/codex-preflight.mjs (script-reference): literal path reference in scripts/codex-preflight.mjs"
-      ],
-      "notes": [
-        "Compatibility pointer to .ai/protocol/AGENTS.core.md; ignored generated output remains valid for cold-start."
-      ]
-    },
     {
       "id": "ai_manifests_rule_index_json",
       "path": ".ai/manifests/rule-index.json",
@@ -212,7 +162,7 @@
       "path": ".ai/manifests/skill-routing.json",
       "assetType": "routing-owner",
       "roleFacets": ["routing-owner"],
-      "authority": "generated",
+      "authority": "canonical",
       "topics": ["skill-routing"],
       "currentPurpose": "routing or index manifest",
       "currentConsumers": ["consumed by scripts/ai-doctor.mjs, scripts/codex-preflight.mjs"],
@@ -230,20 +180,42 @@
       "conflictsWith": ["CONF-01", "CONF-04", "CONF-06"],
       "uniqueRequirements": [],
       "ownerDecisions": [],
-      "currentProblems": [],
-      "disposition": "KEEP",
-      "futureOwner": ".ai/manifests/skill-routing.json (routing owner)",
+      "currentProblems": [
+        "CONF-01: ccd-page-archetypes is present in adapter-manifest.json codex.skillMapping and AGENTS.core.md design skill chain, but route ccd-ui-design omits it from skills.",
+        "CONF-04: route page-route-scaffold uses old single-root globs (src/views/**, src/router/modules/**, src/hooks/modules/**); other routes reference src/**, vite.config.ts, build/**, src-tauri/** that do not cover current monorepo roots (apps/**/src/**, apps/*/src-tauri/**, apps/*/vite.config.ts).",
+        "CONF-06: route ccd-ui-design loads both .ai/skills/design/ccd-gsap-motion and .ai/skills/design/ccd-animate-lite by default, conflicting with governance intent that GSAP loads only for timeline work and animate-lite loads only for route/class transitions."
+      ],
+      "disposition": "REWRITE",
+      "futureOwner": ".ai/manifests/skill-routing.json rewritten as the Skill Routing Manifest",
       "retirementPrerequisites": [],
       "prematureChangeRisk": [
-        "Premature retirement removes governance surface before replacement is validated."
+        "Rewriting routing before monorepo globs are corrected will route UI tasks to wrong roots.",
+        "Loading both motion systems by default wastes tokens and violates motion-governance intent."
       ],
       "evidence": [
-        "scripts/ai-doctor.mjs (script-reference): literal path reference in scripts/ai-doctor.mjs",
-        "scripts/codex-preflight.mjs (script-reference): literal path reference in scripts/codex-preflight.mjs",
-        "scripts/codex-preflight.mjs (validation-input): required path checked by preflight"
+        "adapter-manifest.json codex.skillMapping lists ccd-page-archetypes in design skill chain",
+        "AGENTS.core.md UI Design Skill Auto-Activation lists ccd-page-archetypes/SKILL.md",
+        "skill-routing.json route ccd-ui-design skills list omits ccd-page-archetypes",
+        "skill-routing.json route ccd-ui-design skills list includes ccd-gsap-motion and ccd-animate-lite",
+        "skill-routing.json route page-route-scaffold path_globs = [\"src/views/**\", \"src/router/modules/**\", \"src/hooks/modules/**\"]",
+        "skill-routing.json routes core-vue, core-unocss, core-vite, desktop-tauri reference old src/**, vite.config.ts, build/**, src-tauri/** paths",
+        "monorepo source roots are apps/web-demo/src/**, apps/desktop/src/**, packages/**"
       ],
       "notes": [
-        "Skill routing manifest; continuing ownership valid, future updates may consolidate routing."
+        "Authority corrected from generated to canonical because no generator script creates or overwrites this file; skills-lock.mjs only hashes it for freshness validation.",
+        "Disposition corrected from KEEP to REWRITE because the same manifest must continue but its routing precision, motion activation model, and monorepo path coverage require material correction."
+      ],
+      "rewritePrerequisites": [
+        "ccd-page-archetypes routing coverage is explicit and tested (CONF-01)",
+        "GSAP loads only for GSAP-specific task evidence (CONF-06)",
+        "animate-lite loads only for route or class-transition evidence (CONF-06)",
+        "generic UI routing does not load both motion systems without need (CONF-06)",
+        "all current monorepo roots use accurate globs (apps/**/src/**, apps/*/src-tauri/**, apps/*/vite.config.ts) (CONF-04)",
+        "old single-root routes (src/**, vite.config.ts, build/**, src-tauri/**) are removed or replaced (CONF-04)",
+        "positive routing fixtures pass",
+        "negative routing fixtures pass",
+        "Codex preflight and task-orchestrator consumers pass",
+        "non-UI routes retain current coverage"
       ]
     },
     {
@@ -341,17 +313,30 @@
       "conflictsWith": ["CONF-01", "CONF-09"],
       "uniqueRequirements": [],
       "ownerDecisions": [],
-      "currentProblems": [],
-      "disposition": "KEEP",
-      "futureOwner": ".ai/protocol/adapter-manifest.json (canonical protocol)",
-      "retirementPrerequisites": [],
-      "prematureChangeRisk": ["Premature change risks destabilizing current consumers."],
-      "evidence": [
-        "AGENTS.md (adapter-reference): referenced in AGENTS.md",
-        "CLAUDE.md (adapter-reference): referenced in CLAUDE.md",
-        "scripts/ai-doctor.mjs (script-reference): literal path reference in scripts/ai-doctor.mjs"
+      "currentProblems": [
+        "CONF-09: adapter-manifest.json declares AGENTS.md and CLAUDE.md as generated compatibility entrypoints but does not record that they are currently ignored and absent from a fresh clone. The manifest contributes to the false cold-start narrative."
       ],
-      "notes": ["Canonical adapter manifest; path, authority, and consumers remain valid."]
+      "disposition": "REWRITE",
+      "futureOwner": ".ai/protocol/adapter-manifest.json (canonical protocol) rewritten to declare tracked cold-start outputs",
+      "retirementPrerequisites": [],
+      "prematureChangeRisk": [
+        "Changing the manifest without changing .gitignore and generator contracts leaves tracked-state claims inconsistent with repository reality."
+      ],
+      "evidence": [
+        "adapter-manifest.json codex.discovery: \"Codex reads root AGENTS.md\"",
+        "adapter-manifest.json claude.discovery: \"Claude AI reads root CLAUDE.md when present\"",
+        "adapter-manifest.json coreMandate: \"Materialize repo adapters with pnpm ai:sync\"",
+        ".gitignore ignores AGENTS.md and CLAUDE.md"
+      ],
+      "notes": [
+        "Same path continues as canonical protocol source; disposition is REWRITE because its cold-start declarations and output contracts must be corrected."
+      ],
+      "rewritePrerequisites": [
+        "AGENTS.md and CLAUDE.md are tracked and declared as tracked generated outputs or canonical entrypoints",
+        "No note states that a fresh-clone-absent ignored output is independently valid for cold-start",
+        "Generator scripts are updated to respect tracked outputs",
+        "Digest or freshness validation covers tracked cold-start entries"
+      ]
     },
     {
       "id": "ai_protocol_adapters_claude_md",
@@ -377,23 +362,33 @@
       "globPatterns": [],
       "globMatchStatus": "not-applicable",
       "duplicateWith": [],
-      "conflictsWith": [],
+      "conflictsWith": ["CONF-09"],
       "uniqueRequirements": [],
       "ownerDecisions": [],
-      "currentProblems": [],
-      "disposition": "KEEP",
-      "futureOwner": ".ai/protocol/adapters/claude.md (compatibility output)",
+      "currentProblems": [
+        "CONF-09: .ai/protocol/adapters/claude.md is rendered by scripts/generate-ai-protocol-adapters.mjs but is ignored by the broad CLAUDE.md pattern in .gitignore (git check-ignore -v reports .gitignore:127). A clean fresh clone lacks it, yet scripts/codex-preflight.mjs requiredPaths includes it."
+      ],
+      "disposition": "REWRITE",
+      "futureOwner": ".ai/protocol/adapters/claude.md rewritten as tracked compatibility output",
       "retirementPrerequisites": [],
-      "prematureChangeRisk": ["Premature change risks destabilizing current consumers."],
+      "prematureChangeRisk": [
+        "Tracking only root CLAUDE.md but leaving the broad CLAUDE.md pattern continues to ignore .ai/protocol/adapters/claude.md."
+      ],
       "evidence": [
-        ".ai/protocol/adapter-manifest.json (manifest-reference): referenced in adapter manifest",
-        "AGENTS.md (adapter-reference): referenced in AGENTS.md",
-        "scripts/ai-doctor.mjs (script-reference): literal path reference in scripts/ai-doctor.mjs",
-        "scripts/codex-preflight.mjs (script-reference): literal path reference in scripts/codex-preflight.mjs",
-        "scripts/generate-ai-protocol-adapters.mjs (generator-output): rendered from .ai/protocol/adapter-manifest.json"
+        ".gitignore line 127 ignores CLAUDE.md, which matches any file named CLAUDE.md including .ai/protocol/adapters/claude.md",
+        "git check-ignore -v .ai/protocol/adapters/claude.md reports .gitignore:127",
+        "git ls-files confirms .ai/protocol/adapters/claude.md is not tracked",
+        "scripts/generate-ai-protocol-adapters.mjs renders .ai/protocol/adapters/claude.md",
+        "scripts/codex-preflight.mjs requiredPaths includes .ai/protocol/adapters/claude.md"
       ],
       "notes": [
-        "Ignored generated adapter output; canonical source remains .ai/protocol/AI.entry.md."
+        "Previously classified as compatibility output with trackedState=ignored; the same surface continues but must become tracked for cold-start independence."
+      ],
+      "rewritePrerequisites": [
+        ".gitignore excludes only root CLAUDE.md or uses a path-specific pattern so .ai/protocol/adapters/claude.md is tracked",
+        ".ai/protocol/adapters/claude.md is tracked in Git",
+        ".ai/protocol/adapters/claude.md is independently readable in a fresh clone",
+        "Generator scripts do not silently overwrite an independently maintained tracked entry"
       ]
     },
     {
@@ -434,7 +429,8 @@
         "scripts/generate-ai-protocol-adapters.mjs (generator-output): rendered from .ai/protocol/adapter-manifest.json"
       ],
       "notes": [
-        "Tracked generated adapter output; canonical source remains .ai/protocol/AI.entry.md."
+        "Tracked generated adapter output; canonical source remains .ai/protocol/AI.entry.md.",
+        "Tracked compatibility output remains KEEP. Its content is generated but currently tracked; cold-start correction is owned by .gitignore and generator scripts."
       ]
     },
     {
@@ -471,7 +467,8 @@
         "scripts/generate-ai-protocol-adapters.mjs (generator-output): rendered from .ai/protocol/adapter-manifest.json"
       ],
       "notes": [
-        "Tracked adapter documentation; canonical source remains .ai/protocol/adapter-manifest.json."
+        "Tracked adapter documentation; canonical source remains .ai/protocol/adapter-manifest.json.",
+        "Tracked adapter index remains KEEP. Cold-start correction is owned by .gitignore and generator scripts."
       ]
     },
     {
@@ -515,7 +512,11 @@
         "wiki/canonical/design/ccd-product-design-language.md (wiki-reference): referenced in wiki/canonical/design/ccd-product-design-language.md",
         "wiki/generated/source-coverage.md (wiki-reference): referenced in wiki/generated/source-coverage.md"
       ],
-      "notes": ["Canonical protocol entrypoint; path, authority, and consumers remain valid."]
+      "notes": [
+        "Canonical protocol entrypoint; path, authority, and consumers remain valid.",
+        "Canonical protocol core remains KEEP. It correctly states that compatibility paths are generated adapters only; it does not claim ignored outputs are valid for cold-start.",
+        "The required cold-start correction is owned by .gitignore and the generator/sync scripts; AGENTS.core.md itself remains structurally valid."
+      ]
     },
     {
       "id": "ai_protocol_AI_entry_md",
@@ -554,7 +555,10 @@
         "scripts/ai-doctor.mjs (script-reference): literal path reference in scripts/ai-doctor.mjs",
         "scripts/generate-ai-protocol-adapters.mjs (generator-output): rendered from .ai/protocol/adapter-manifest.json"
       ],
-      "notes": ["Canonical protocol source; path, authority, and consumers remain valid."]
+      "notes": [
+        "Canonical protocol source; path, authority, and consumers remain valid.",
+        "Canonical protocol entrypoint remains KEEP. The correction to tracked AGENTS.md/CLAUDE.md does not change AI.entry.md's role; .gitignore and generator contracts own the required change."
+      ]
     },
     {
       "id": "ai_protocol_version_json",
@@ -1714,84 +1718,6 @@
       ]
     },
     {
-      "id": "apps_web_demo_src_types_design_state_ts",
-      "path": "apps/web-demo/src/types/design-state.ts",
-      "assetType": "schema-or-contract-owner",
-      "roleFacets": ["schema-or-contract-owner"],
-      "authority": "canonical",
-      "topics": ["page-contract"],
-      "currentPurpose": "page contract schema / checker",
-      "currentConsumers": ["supporting / no static consumer in this phase"],
-      "inboundReferences": [
-        "no static references found; not discovered by convention in this phase"
-      ],
-      "dynamicDiscovery": [],
-      "generatorRelationship": [],
-      "trackedState": "tracked",
-      "globPatterns": [],
-      "globMatchStatus": "not-applicable",
-      "duplicateWith": [],
-      "conflictsWith": ["CONF-07"],
-      "uniqueRequirements": [],
-      "ownerDecisions": [],
-      "currentProblems": [],
-      "disposition": "KEEP",
-      "futureOwner": "apps/web-demo/src/types/design-state.ts (schema/contract owner)",
-      "retirementPrerequisites": [],
-      "prematureChangeRisk": [
-        "Premature rewrite breaks current consumers before migration boundary is ready."
-      ],
-      "evidence": ["no static references found; not discovered by convention in this phase"],
-      "notes": ["UIDesignState contract type owner; continuing ownership requires explicit KEEP."]
-    },
-    {
-      "id": "CLAUDE_md",
-      "path": "CLAUDE.md",
-      "assetType": "compatibility-output",
-      "roleFacets": ["compatibility-output"],
-      "authority": "compatibility",
-      "topics": ["cli-adapters"],
-      "currentPurpose": "cross-cutting support",
-      "currentConsumers": [
-        "consumed by .ai/manifests/skill-routing.json, .ai/protocol/adapter-manifest.json, AGENTS.md, scripts/ai-doctor.mjs, scripts/codex-preflight.mjs, scripts/generate-ai-protocol-adapters.mjs"
-      ],
-      "inboundReferences": [
-        ".ai/manifests/skill-routing.json (routing-reference): referenced in skill-routing.json",
-        ".ai/protocol/adapter-manifest.json (manifest-reference): referenced in adapter manifest",
-        "AGENTS.md (adapter-reference): referenced in AGENTS.md",
-        "scripts/ai-doctor.mjs (script-reference): literal path reference in scripts/ai-doctor.mjs",
-        "scripts/codex-preflight.mjs (script-reference): literal path reference in scripts/codex-preflight.mjs",
-        "scripts/generate-ai-protocol-adapters.mjs (generator-output): rendered from .ai/protocol/adapter-manifest.json"
-      ],
-      "dynamicDiscovery": [],
-      "generatorRelationship": [],
-      "trackedState": "ignored",
-      "globPatterns": [],
-      "globMatchStatus": "not-applicable",
-      "duplicateWith": [],
-      "conflictsWith": ["CONF-09"],
-      "uniqueRequirements": [],
-      "ownerDecisions": [],
-      "currentProblems": [],
-      "disposition": "KEEP",
-      "futureOwner": "CLAUDE.md (compatibility output)",
-      "retirementPrerequisites": [],
-      "prematureChangeRisk": [
-        "Premature retirement removes governance surface before replacement is validated."
-      ],
-      "evidence": [
-        ".ai/manifests/skill-routing.json (routing-reference): referenced in skill-routing.json",
-        ".ai/protocol/adapter-manifest.json (manifest-reference): referenced in adapter manifest",
-        "AGENTS.md (adapter-reference): referenced in AGENTS.md",
-        "scripts/ai-doctor.mjs (script-reference): literal path reference in scripts/ai-doctor.mjs",
-        "scripts/codex-preflight.mjs (script-reference): literal path reference in scripts/codex-preflight.mjs",
-        "scripts/generate-ai-protocol-adapters.mjs (generator-output): rendered from .ai/protocol/adapter-manifest.json"
-      ],
-      "notes": [
-        "Compatibility pointer to .ai/protocol/AI.entry.md; ignored generated output remains valid for cold-start."
-      ]
-    },
-    {
       "id": "codex_config_toml",
       "path": ".codex/config.toml",
       "assetType": "security-owner-decision",
@@ -1854,6 +1780,214 @@
       "notes": ["Security/owner-decision surface; must remain outside automatic UI retirement."]
     },
     {
+      "id": "gitignore",
+      "path": ".gitignore",
+      "assetType": "governance-manifest",
+      "roleFacets": ["cold-start-boundary", "ignore-policy-owner", "discovery-contract"],
+      "authority": "canonical",
+      "topics": ["cli-adapters", "generation-sync"],
+      "currentPurpose": "Controls fresh-clone file availability for AI cold-start; governs whether AGENTS.md, CLAUDE.md, .ai/protocol/adapters/claude.md, .claude/settings.local.json, and .claude/skills/ are tracked or ignored.",
+      "currentConsumers": [
+        "consumed by Git, pnpm ai:sync, scripts/generate-ai-protocol-adapters.mjs, scripts/ai-doctor.mjs, scripts/codex-preflight.mjs, AGENTS.md, CLAUDE.md"
+      ],
+      "inboundReferences": [
+        "Git (tracking-state): .gitignore is tracked and applies to all subpaths",
+        "scripts/ai-sync.mjs (sync-output): materializes AGENTS.md from .ai/protocol/AI.entry.md",
+        "scripts/generate-ai-protocol-adapters.mjs (generator-output): renders CLAUDE.md and .ai/protocol/adapters/claude.md",
+        "scripts/ai-doctor.mjs (validation-input): checks generated adapter freshness and existence",
+        "scripts/codex-preflight.mjs (validation-input): requires AGENTS.md and CLAUDE.md to exist",
+        "AGENTS.md (discovery-contract): availability depends on .gitignore exclude rule",
+        "CLAUDE.md (discovery-contract): availability depends on .gitignore exclude rule"
+      ],
+      "dynamicDiscovery": [],
+      "generatorRelationship": [],
+      "trackedState": "tracked",
+      "globPatterns": [],
+      "globMatchStatus": "not-applicable",
+      "duplicateWith": [],
+      "conflictsWith": ["CONF-09"],
+      "uniqueRequirements": [
+        "Must keep one authoritative record because it controls whether AI cold-start entries exist in a fresh clone.",
+        "Must stop excluding AGENTS.md, CLAUDE.md, and .ai/protocol/adapters/claude.md so they are tracked in a fresh clone.",
+        "May continue excluding .claude/settings.local.json and .claude/skills/ because those are local AI runtime state, not repository cold-start entries."
+      ],
+      "ownerDecisions": [],
+      "currentProblems": [
+        "CONF-09: .gitignore currently excludes AGENTS.md, CLAUDE.md, and (via the broad CLAUDE.md pattern) .ai/protocol/adapters/claude.md. These files are absent from a clean fresh clone, creating a bootstrap dependency on pnpm ai:sync before ai-doctor or codex-preflight can pass."
+      ],
+      "disposition": "REWRITE",
+      "futureOwner": ".gitignore (canonical ignore-policy owner) rewritten to track AI cold-start adapters",
+      "rewritePrerequisites": [
+        "Remove or narrow AGENTS.md ignore rule so root AGENTS.md is tracked",
+        "Remove or narrow CLAUDE.md ignore rule so root CLAUDE.md and .ai/protocol/adapters/claude.md are tracked",
+        "Preserve .claude/settings.local.json and .claude/skills/ ignore rules because they are local AI runtime state",
+        "Update generator contracts so tracked outputs are not silently overwritten",
+        "Update ai-doctor and codex-preflight to pass in a fresh clone with tracked cold-start files"
+      ],
+      "retirementPrerequisites": [],
+      "prematureChangeRisk": [
+        "Removing ignore rules without updating generator contracts risks duplicate tracked/generated authority and stale adapter content."
+      ],
+      "evidence": [
+        ".gitignore lines 126-129: AGENTS.md, CLAUDE.md, .claude/settings.local.json, .claude/skills/ are ignored",
+        "git check-ignore -v .ai/protocol/adapters/claude.md reports CLAUDE.md pattern at .gitignore:127, so .ai/protocol/adapters/claude.md is also ignored",
+        "git ls-files confirms AGENTS.md, CLAUDE.md, and .ai/protocol/adapters/claude.md are not tracked",
+        "scripts/ai-sync.mjs copies .ai/protocol/AI.entry.md to AGENTS.md",
+        "scripts/generate-ai-protocol-adapters.mjs renders CLAUDE.md and .ai/protocol/adapters/claude.md",
+        "scripts/ai-doctor.mjs fileAdapters and generatedContentChecks require AGENTS.md and CLAUDE.md to exist and match canonical sources",
+        "scripts/codex-preflight.mjs requiredPaths includes AGENTS.md and CLAUDE.md"
+      ],
+      "notes": [
+        "Previously classified as evidence-only (id gitignore). This correction promotes it to a manifest-scope governance asset because it directly participates in CONF-09.",
+        "The verified universe remains 135 because .gitignore moves from evidence-only to manifest scope.",
+        "KEEP is prohibited because the future tracked AGENTS.md and CLAUDE.md model requires materially changing the current ignore rules."
+      ]
+    },
+    {
+      "id": "AGENTS_md",
+      "path": "AGENTS.md",
+      "assetType": "compatibility-output",
+      "roleFacets": ["compatibility-output"],
+      "authority": "compatibility",
+      "topics": ["cli-adapters"],
+      "currentPurpose": "cross-cutting support",
+      "currentConsumers": [
+        "consumed by .ai/manifests/skill-routing.json, .ai/protocol/adapter-manifest.json, AGENTS.md, CLAUDE.md, scripts/ai-doctor.mjs, scripts/ai-sync.mjs, scripts/codex-preflight.mjs"
+      ],
+      "inboundReferences": [
+        ".ai/manifests/skill-routing.json (routing-reference): referenced in skill-routing.json",
+        ".ai/protocol/adapter-manifest.json (manifest-reference): referenced in adapter manifest",
+        "AGENTS.md (adapter-reference): referenced in AGENTS.md",
+        "CLAUDE.md (adapter-reference): referenced in CLAUDE.md",
+        "scripts/ai-doctor.mjs (script-reference): literal path reference in scripts/ai-doctor.mjs",
+        "scripts/ai-sync.mjs (sync-output): copied from .ai/protocol/AI.entry.md",
+        "scripts/codex-preflight.mjs (script-reference): literal path reference in scripts/codex-preflight.mjs"
+      ],
+      "dynamicDiscovery": [],
+      "generatorRelationship": [],
+      "trackedState": "ignored",
+      "globPatterns": [],
+      "globMatchStatus": "not-applicable",
+      "duplicateWith": [],
+      "conflictsWith": ["CONF-09"],
+      "uniqueRequirements": [],
+      "ownerDecisions": [],
+      "currentProblems": [
+        "CONF-09: AGENTS.md is a generated compatibility output that is ignored by .gitignore. A clean fresh clone does not contain it, yet scripts/ai-doctor.mjs and scripts/codex-preflight.mjs require it. It is not independently available for cold-start."
+      ],
+      "disposition": "REWRITE",
+      "futureOwner": "AGENTS.md rewritten as tracked compatibility/generated entry",
+      "retirementPrerequisites": [],
+      "prematureChangeRisk": [
+        "Tracking AGENTS.md without updating generator contracts creates duplicate authority if the generator continues to overwrite it without digest validation."
+      ],
+      "evidence": [
+        ".gitignore line 126 ignores AGENTS.md",
+        "git ls-files confirms AGENTS.md is not tracked (exists only as locally materialized file)",
+        "scripts/ai-sync.mjs copies .ai/protocol/AI.entry.md to AGENTS.md",
+        "scripts/ai-doctor.mjs fileAdapters checks AGENTS.md against .ai/protocol/AI.entry.md",
+        "scripts/codex-preflight.mjs requiredPaths includes AGENTS.md"
+      ],
+      "notes": [
+        "Previously noted as \"ignored generated output remains valid for cold-start\"; that statement is false because an ignored file absent from a fresh clone is not independently valid for cold-start.",
+        "The same path continues (AGENTS.md) but its tracked state and cold-start contract materially change, so REWRITE is required."
+      ],
+      "rewritePrerequisites": [
+        ".gitignore no longer excludes AGENTS.md",
+        "AGENTS.md is tracked in Git",
+        "AGENTS.md is independently readable in a fresh clone",
+        "Generator scripts do not silently overwrite an independently maintained tracked entry",
+        "ai-doctor and codex-preflight pass in a fresh clone before local materialization of other ignored outputs"
+      ]
+    },
+    {
+      "id": "apps_web_demo_src_types_design_state_ts",
+      "path": "apps/web-demo/src/types/design-state.ts",
+      "assetType": "schema-or-contract-owner",
+      "roleFacets": ["schema-or-contract-owner"],
+      "authority": "canonical",
+      "topics": ["page-contract"],
+      "currentPurpose": "page contract schema / checker",
+      "currentConsumers": ["supporting / no static consumer in this phase"],
+      "inboundReferences": [
+        "no static references found; not discovered by convention in this phase"
+      ],
+      "dynamicDiscovery": [],
+      "generatorRelationship": [],
+      "trackedState": "tracked",
+      "globPatterns": [],
+      "globMatchStatus": "not-applicable",
+      "duplicateWith": [],
+      "conflictsWith": ["CONF-07"],
+      "uniqueRequirements": [],
+      "ownerDecisions": [],
+      "currentProblems": [],
+      "disposition": "KEEP",
+      "futureOwner": "apps/web-demo/src/types/design-state.ts (schema/contract owner)",
+      "retirementPrerequisites": [],
+      "prematureChangeRisk": [
+        "Premature rewrite breaks current consumers before migration boundary is ready."
+      ],
+      "evidence": ["no static references found; not discovered by convention in this phase"],
+      "notes": ["UIDesignState contract type owner; continuing ownership requires explicit KEEP."]
+    },
+    {
+      "id": "CLAUDE_md",
+      "path": "CLAUDE.md",
+      "assetType": "compatibility-output",
+      "roleFacets": ["compatibility-output"],
+      "authority": "compatibility",
+      "topics": ["cli-adapters"],
+      "currentPurpose": "cross-cutting support",
+      "currentConsumers": [
+        "consumed by .ai/manifests/skill-routing.json, .ai/protocol/adapter-manifest.json, AGENTS.md, scripts/ai-doctor.mjs, scripts/codex-preflight.mjs, scripts/generate-ai-protocol-adapters.mjs"
+      ],
+      "inboundReferences": [
+        ".ai/manifests/skill-routing.json (routing-reference): referenced in skill-routing.json",
+        ".ai/protocol/adapter-manifest.json (manifest-reference): referenced in adapter manifest",
+        "AGENTS.md (adapter-reference): referenced in AGENTS.md",
+        "scripts/ai-doctor.mjs (script-reference): literal path reference in scripts/ai-doctor.mjs",
+        "scripts/codex-preflight.mjs (script-reference): literal path reference in scripts/codex-preflight.mjs",
+        "scripts/generate-ai-protocol-adapters.mjs (generator-output): rendered from .ai/protocol/adapter-manifest.json"
+      ],
+      "dynamicDiscovery": [],
+      "generatorRelationship": [],
+      "trackedState": "ignored",
+      "globPatterns": [],
+      "globMatchStatus": "not-applicable",
+      "duplicateWith": [],
+      "conflictsWith": ["CONF-09"],
+      "uniqueRequirements": [],
+      "ownerDecisions": [],
+      "currentProblems": [
+        "CONF-09: CLAUDE.md is a generated compatibility output that is ignored by .gitignore. A clean fresh clone does not contain it, yet scripts/ai-doctor.mjs and scripts/codex-preflight.mjs require it. It is not independently available for cold-start."
+      ],
+      "disposition": "REWRITE",
+      "futureOwner": "CLAUDE.md rewritten as tracked compatibility/generated entry",
+      "retirementPrerequisites": [],
+      "prematureChangeRisk": [
+        "Tracking CLAUDE.md while .ai/protocol/adapters/claude.md remains ignored leaves a second ignored CLAUDE.md instance and breaks single-source cold-start."
+      ],
+      "evidence": [
+        ".gitignore line 127 ignores CLAUDE.md",
+        "git ls-files confirms CLAUDE.md is not tracked",
+        "scripts/generate-ai-protocol-adapters.mjs renders CLAUDE.md from .ai/protocol/adapter-manifest.json",
+        "scripts/ai-doctor.mjs generatedContentChecks verifies CLAUDE.md content",
+        "scripts/codex-preflight.mjs requiredPaths includes CLAUDE.md"
+      ],
+      "notes": [
+        "Previously noted as \"ignored generated output remains valid for cold-start\"; that statement is false because an ignored file absent from a fresh clone is not independently valid for cold-start.",
+        "The same path continues (CLAUDE.md) but its tracked state and cold-start contract materially change, so REWRITE is required."
+      ],
+      "rewritePrerequisites": [
+        ".gitignore no longer excludes CLAUDE.md",
+        "CLAUDE.md is tracked in Git",
+        "CLAUDE.md is independently readable in a fresh clone",
+        "CLAUDE.md points to tracked AGENTS.md without requiring another ignored output",
+        "Generator scripts do not silently overwrite an independently maintained tracked entry"
+      ]
+    },
+    {
       "id": "scripts_ai_doctor_mjs",
       "path": "scripts/ai-doctor.mjs",
       "assetType": "validation-owner",
@@ -1884,7 +2018,10 @@
         "scripts/ai-doctor.mjs (script-reference): literal path reference in scripts/ai-doctor.mjs",
         "scripts/codex-preflight.mjs (script-reference): literal path reference in scripts/codex-preflight.mjs"
       ],
-      "notes": ["Cold-start/adapter validation owner; directly supports UI adapter compatibility."]
+      "notes": [
+        "Cold-start/adapter validation owner; directly supports UI adapter compatibility.",
+        "Validator remains KEEP. After AGENTS.md/CLAUDE.md become tracked, ai-doctor's fileAdapters and generatedContentChecks remain valid; the required correction is to the tracked state of the outputs, not to this validator."
+      ]
     },
     {
       "id": "scripts_ai_route_view_scaffold_mjs",
@@ -1989,7 +2126,10 @@
         "scripts/ai-doctor.mjs (script-reference): literal path reference in scripts/ai-doctor.mjs",
         "scripts/codex-preflight.mjs (script-reference): literal path reference in scripts/codex-preflight.mjs"
       ],
-      "notes": ["Codex skill sync generator; continuing ownership valid."]
+      "notes": [
+        "Codex skill sync generator; continuing ownership valid.",
+        "Skill sync remains KEEP. It writes local Codex skills to ~/.codex/skills and updates .ai/manifests/skills-lock.json; it is not part of the AGENTS.md/CLAUDE.md cold-start bootstrap chain addressed by CONF-09."
+      ]
     },
     {
       "id": "scripts_ai_sync_mjs",
@@ -2010,21 +2150,32 @@
       "globPatterns": [],
       "globMatchStatus": "not-applicable",
       "duplicateWith": [],
-      "conflictsWith": [],
+      "conflictsWith": ["CONF-09"],
       "uniqueRequirements": [],
       "ownerDecisions": [],
-      "currentProblems": [],
-      "disposition": "KEEP",
-      "futureOwner": "scripts/ai-sync.mjs (generator owner)",
+      "currentProblems": [
+        "CONF-09: ai-sync.mjs copies .ai/protocol/AI.entry.md to AGENTS.md, which is currently ignored. The script is part of the bootstrap dependency that prevents a fresh clone from passing ai-doctor or codex-preflight without first running pnpm ai:sync."
+      ],
+      "disposition": "REWRITE",
+      "futureOwner": "scripts/ai-sync.mjs (generator owner) rewritten to materialize tracked AGENTS.md",
       "retirementPrerequisites": [],
       "prematureChangeRisk": [
-        "Premature retirement removes governance surface before replacement is validated."
+        "Continuing to overwrite AGENTS.md after it becomes independently maintained creates duplicate authority."
       ],
       "evidence": [
-        "scripts/ai-doctor.mjs (script-reference): literal path reference in scripts/ai-doctor.mjs",
-        "scripts/codex-preflight.mjs (script-reference): literal path reference in scripts/codex-preflight.mjs"
+        "scripts/ai-sync.mjs fileAdapters includes { source: \".ai/protocol/AI.entry.md\", target: \"AGENTS.md\" }",
+        ".gitignore line 126 ignores AGENTS.md",
+        "scripts/ai-doctor.mjs checks AGENTS.md equals AI.entry.md"
       ],
-      "notes": ["AI protocol sync generator; continuing ownership valid."]
+      "notes": [
+        "Same sync script path continues; disposition is REWRITE because its AGENTS.md output contract changes from ignored to tracked."
+      ],
+      "rewritePrerequisites": [
+        ".gitignore no longer excludes AGENTS.md",
+        "AGENTS.md is tracked in Git",
+        "ai-sync.mjs does not silently overwrite an independently maintained tracked AGENTS.md",
+        "Digest or freshness validation covers AGENTS.md"
+      ]
     },
     {
       "id": "scripts_codex_preflight_mjs",
@@ -2059,7 +2210,10 @@
         "scripts/ai-doctor.mjs (script-reference): literal path reference in scripts/ai-doctor.mjs",
         "scripts/codex-preflight.mjs (script-reference): literal path reference in scripts/codex-preflight.mjs"
       ],
-      "notes": ["Codex preflight validation owner; directly supports UI adapter compatibility."]
+      "notes": [
+        "Codex preflight validation owner; directly supports UI adapter compatibility.",
+        "Preflight remains KEEP. Its requiredPaths list correctly names the cold-start files; once those files are tracked, the preflight passes in a fresh clone. The .gitignore and generator contracts own the correction."
+      ]
     },
     {
       "id": "scripts_drift_check_mjs",
@@ -2178,17 +2332,29 @@
       "conflictsWith": ["CONF-09"],
       "uniqueRequirements": [],
       "ownerDecisions": [],
-      "currentProblems": [],
-      "disposition": "KEEP",
-      "futureOwner": "scripts/generate-ai-protocol-adapters.mjs (generator owner)",
+      "currentProblems": [
+        "CONF-09: generate-ai-protocol-adapters.mjs renders CLAUDE.md and .ai/protocol/adapters/claude.md, which are currently ignored by .gitignore. The script therefore produces fresh-clone-absent outputs that are required by codex-preflight."
+      ],
+      "disposition": "REWRITE",
+      "futureOwner": "scripts/generate-ai-protocol-adapters.mjs (generator owner) rewritten to emit tracked cold-start outputs",
       "retirementPrerequisites": [],
       "prematureChangeRisk": [
-        "Premature retirement removes governance surface before replacement is validated."
+        "Running the generator before .gitignore correction would recreate ignored outputs and fail cold-start validation."
       ],
       "evidence": [
-        "scripts/ai-doctor.mjs (script-reference): literal path reference in scripts/ai-doctor.mjs"
+        "scripts/generate-ai-protocol-adapters.mjs writeText(\"CLAUDE.md\", ...) and writeText(\".ai/protocol/adapters/claude.md\", ...)",
+        ".gitignore CLAUDE.md pattern ignores both files",
+        "scripts/codex-preflight.mjs requiredPaths includes both files"
       ],
-      "notes": ["Adapter generator owner; directly owns cold-start compatibility outputs."]
+      "notes": [
+        "Same generator path continues; disposition is REWRITE because its output contract changes from ignored to tracked cold-start outputs."
+      ],
+      "rewritePrerequisites": [
+        ".gitignore no longer excludes CLAUDE.md and .ai/protocol/adapters/claude.md",
+        "Generated outputs are tracked in Git",
+        "Generator does not silently overwrite an independently maintained tracked entry",
+        "Digest or freshness validation covers generated outputs"
+      ]
     },
     {
       "id": "scripts_generate_rule_index_mjs",
@@ -2285,7 +2451,10 @@
         "scripts/ai-doctor.mjs (script-reference): literal path reference in scripts/ai-doctor.mjs",
         "scripts/codex-preflight.mjs (script-reference): literal path reference in scripts/codex-preflight.mjs"
       ],
-      "notes": ["Skill-lock utility directly owning UI Skill discovery/integrity."]
+      "notes": [
+        "Skill-lock utility directly owning UI Skill discovery/integrity.",
+        "Skill lock utilities remain KEEP. They compute hashes and validate skill-routing targets; the skill-routing.json manifest itself owns the routing correction."
+      ]
     },
     {
       "id": "wiki_canonical_design_animation_governance_md",
@@ -2477,7 +2646,7 @@
       ],
       "topics": ["skill-routing"],
       "description": "adapter-manifest.json codex.skillMapping includes ccd-page-archetypes in the design skill chain, but skill-routing.json route ccd-ui-design omits it.",
-      "recommendedFutureOwner": "Skill Routing Manifest",
+      "recommendedFutureOwner": ".ai/manifests/skill-routing.json rewritten as the Skill Routing Manifest",
       "requiredResolutionPhase": "P2 project UI source construction",
       "evidence": "adapter-manifest.json lines 67-68; skill-routing.json route ccd-ui-design skills array.",
       "status": "preserved-supported"
@@ -2527,7 +2696,7 @@
       ],
       "topics": ["platform-invariants"],
       "description": "47 unique old single-root patterns (src/**, index.html, vite.config.ts, src-tauri/**, build/**) produce zero or wrong-root matches because source code moved to apps/**/src/**.",
-      "recommendedFutureOwner": "Machine UI Policy / rule-index migration",
+      "recommendedFutureOwner": ".ai/manifests/skill-routing.json rewritten as the Skill Routing Manifest",
       "requiredResolutionPhase": "P2 project UI source construction",
       "evidence": "glob-unique-pattern-register.json isOldSingleRoot entries with status dead.",
       "status": "preserved-supported"
@@ -2565,7 +2734,7 @@
       ],
       "topics": ["motion-general"],
       "description": "Generic UI route ccd-ui-design loads both GSAP and animate-lite motion skills by default; governance intends conditional loading (GSAP only for timeline work, animate-lite for route/class transitions).",
-      "recommendedFutureOwner": "project-ui interaction-motion reference",
+      "recommendedFutureOwner": ".ai/manifests/skill-routing.json rewritten as the Skill Routing Manifest",
       "requiredResolutionPhase": "P2 project UI source construction",
       "evidence": "skill-routing.json route ccd-ui-design skills array; adapter-manifest.json triggerHints.",
       "status": "preserved-supported"
@@ -2617,7 +2786,7 @@
       ],
       "topics": ["cli-adapters"],
       "description": "AI client cold-start files AGENTS.md and CLAUDE.md are generated, ignored outputs. A fresh clone lacks them until ai:sync runs, but ai-doctor and codex-preflight require them.",
-      "recommendedFutureOwner": "Adapter cold-start replacement",
+      "recommendedFutureOwner": "Cold-start atomic replacement boundary (.gitignore + AGENTS.md + CLAUDE.md + .ai/protocol/adapters/claude.md + adapter-manifest.json + generator scripts)",
       "requiredResolutionPhase": "Adapter cold-start replacement",
       "evidence": ".gitignore lines 126-127; generate-ai-protocol-adapters.mjs outputs; ai-doctor canonicalMustExist.",
       "status": "preserved-supported"
@@ -4883,7 +5052,7 @@
     "generatedAtPolicy": "repository-baseline-derived; no volatile timestamp embedded",
     "repository": "ichichuang/ccd",
     "baseline": "9fad207b1700615000517a0c5fee1af9661d00f8",
-    "evidenceOnlyAssetCount": 82,
+    "evidenceOnlyAssetCount": 81,
     "evidenceOnlyAssetIds": [
       "ai_execution_execution_fingerprint_json",
       "ai_execution_provider_session_json",
@@ -4942,7 +5111,6 @@
       "ai_runtime_web_demo_ui_rebuild_plan_md",
       "github_workflows_ci_yml",
       "github_workflows_deploy_yml",
-      "gitignore",
       "scripts_ai_architecture_guard_mjs",
       "scripts_migrate_ledger_mjs",
       "wiki_generated_api_surface_report_json",
@@ -5369,13 +5537,6 @@
         "governanceRelationship": "Evidence-only asset outside manifest scope. Authority: implementation-evidence. Implementation or supporting evidence only"
       },
       {
-        "id": "gitignore",
-        "path": ".gitignore",
-        "classification": "implementation-evidence",
-        "scopeReason": "Implementation or supporting evidence only",
-        "governanceRelationship": "Evidence-only asset outside manifest scope. Authority: implementation-evidence. Implementation or supporting evidence only"
-      },
-      {
         "id": "scripts_ai_architecture_guard_mjs",
         "path": "scripts/ai-architecture-guard.mjs",
         "classification": "canonical",
@@ -5549,7 +5710,7 @@
     "generatedAtPolicy": "repository-baseline-derived; no volatile timestamp embedded",
     "repository": "ichichuang/ccd",
     "baseline": "9fad207b1700615000517a0c5fee1af9661d00f8",
-    "status": "P1 complete; P2 has not started",
+    "status": "P1 correction C1 completed; P2 not started",
     "statement": "project-ui does not currently exist. P2 has not started. P1 authorizes no deletion, replacement, merge execution, rewrite execution, routing change, adapter change, page-contract implementation, scaffold change, or runtime UI change.",
     "constraints": [
       "Do not delete or replace .ai/governance/api-snapshots/**.",
@@ -5584,524 +5745,124 @@
     },
     "atomicReplacementBoundaries": [
       {
-        "id": "ai_manifests_rule_index_json",
-        "path": ".ai/manifests/rule-index.json",
-        "boundary": "Rewrite .ai/manifests/rule-index.json in place",
-        "consumerMigrationRequired": false,
-        "testablePrerequisites": [
-          "Confirm non-UI rules retain routing coverage",
-          "Regenerate rule-index.json from current .ai/rules/**/*.mdc frontmatter",
-          "Validate all globs against tracked files in apps/**/src/**"
-        ]
+        "boundaryId": "atomic-skill-routing-rewrite",
+        "boundaryName": "Rewrite Skill Routing Manifest",
+        "assetIds": ["ai_manifests_skill_routing_json"],
+        "assetPaths": [".ai/manifests/skill-routing.json"],
+        "prerequisites": [
+          "ccd-page-archetypes routing coverage is explicit and tested (CONF-01)",
+          "GSAP loads only for GSAP-specific task evidence (CONF-06)",
+          "animate-lite loads only for route or class-transition evidence (CONF-06)",
+          "generic UI routing does not load both motion systems without need (CONF-06)",
+          "all current monorepo roots use accurate globs (CONF-04)",
+          "old single-root routes are removed or replaced (CONF-04)",
+          "positive routing fixtures pass",
+          "negative routing fixtures pass",
+          "Codex preflight and task-orchestrator consumers pass",
+          "non-UI routes retain current coverage"
+        ],
+        "consumerMigrationRequired": false
       },
       {
-        "id": "ai_rules_components_00_primevue_ecosystem_mdc",
-        "path": ".ai/rules/components/00-primevue-ecosystem.mdc",
-        "boundary": "Consolidate into project-ui component-priority reference",
-        "consumerMigrationRequired": true,
-        "testablePrerequisites": []
-      },
-      {
-        "id": "ai_rules_components_01_primevue_pt_styling_mdc",
-        "path": ".ai/rules/components/01-primevue-pt-styling.mdc",
-        "boundary": "Consolidate into project-ui component-priority reference",
-        "consumerMigrationRequired": true,
-        "testablePrerequisites": []
-      },
-      {
-        "id": "ai_rules_components_02_pro_components_mdc",
-        "path": ".ai/rules/components/02-pro-components.mdc",
-        "boundary": "Consolidate into project-ui component-priority reference",
-        "consumerMigrationRequired": true,
-        "testablePrerequisites": []
-      },
-      {
-        "id": "ai_rules_components_03_echarts_theming_mdc",
-        "path": ".ai/rules/components/03-echarts-theming.mdc",
-        "boundary": "Consolidate into project-ui component-priority reference",
-        "consumerMigrationRequired": true,
-        "testablePrerequisites": []
-      },
-      {
-        "id": "ai_rules_core_02_ui_preflight_mdc",
-        "path": ".ai/rules/core/02-ui-preflight.mdc",
-        "boundary": "Consolidate into Machine UI Policy",
-        "consumerMigrationRequired": true,
-        "testablePrerequisites": []
-      },
-      {
-        "id": "ai_rules_core_10_ai_generation_workflow_mdc",
-        "path": ".ai/rules/core/10-ai-generation-workflow.mdc",
-        "boundary": "Consolidate into Machine UI Policy",
-        "consumerMigrationRequired": true,
-        "testablePrerequisites": []
-      },
-      {
-        "id": "ai_rules_design_system_00_unocss_guardrails_mdc",
-        "path": ".ai/rules/design-system/00-unocss-guardrails.mdc",
-        "boundary": "Consolidate into project-ui tokens-unocss reference",
-        "consumerMigrationRequired": true,
-        "testablePrerequisites": []
-      },
-      {
-        "id": "ai_rules_design_system_01_design_tokens_mdc",
-        "path": ".ai/rules/design-system/01-design-tokens.mdc",
-        "boundary": "Consolidate into project-ui tokens-unocss reference",
-        "consumerMigrationRequired": true,
-        "testablePrerequisites": []
-      },
-      {
-        "id": "ai_rules_design_system_02_size_density_system_mdc",
-        "path": ".ai/rules/design-system/02-size-density-system.mdc",
-        "boundary": "Consolidate into project-ui tokens-unocss reference",
-        "consumerMigrationRequired": true,
-        "testablePrerequisites": []
-      },
-      {
-        "id": "ai_rules_design_system_03_material_system_mdc",
-        "path": ".ai/rules/design-system/03-material-system.mdc",
-        "boundary": "Consolidate into project-ui product-ui-profile reference",
-        "consumerMigrationRequired": true,
-        "testablePrerequisites": []
-      },
-      {
-        "id": "ai_rules_design_system_04_design_state_contract_mdc",
-        "path": ".ai/rules/design-system/04-design-state-contract.mdc",
-        "boundary": "Consolidate into Page Contract Schema",
-        "consumerMigrationRequired": true,
-        "testablePrerequisites": []
-      },
-      {
-        "id": "ai_rules_design_system_05_semantic_color_usage_contract_mdc",
-        "path": ".ai/rules/design-system/05-semantic-color-usage-contract.mdc",
-        "boundary": "Consolidate into project-ui tokens-unocss reference",
-        "consumerMigrationRequired": true,
-        "testablePrerequisites": []
-      },
-      {
-        "id": "ai_rules_integrations_03_layout_architecture_mdc",
-        "path": ".ai/rules/integrations/03-layout-architecture.mdc",
-        "boundary": "Consolidate into project-ui layout-scroll reference",
-        "consumerMigrationRequired": true,
-        "testablePrerequisites": []
-      },
-      {
-        "id": "ai_rules_integrations_07_interaction_patterns_mdc",
-        "path": ".ai/rules/integrations/07-interaction-patterns.mdc",
-        "boundary": "Consolidate into project-ui interaction-motion reference",
-        "consumerMigrationRequired": true,
-        "testablePrerequisites": []
-      },
-      {
-        "id": "ai_skills_design_ccd_animate_lite_SKILL_md",
-        "path": ".ai/skills/design/ccd-animate-lite/SKILL.md",
-        "boundary": "Consolidate into project-ui interaction-motion reference",
-        "consumerMigrationRequired": true,
-        "testablePrerequisites": []
-      },
-      {
-        "id": "ai_skills_design_ccd_gsap_motion_SKILL_md",
-        "path": ".ai/skills/design/ccd-gsap-motion/SKILL.md",
-        "boundary": "Consolidate into project-ui interaction-motion reference",
-        "consumerMigrationRequired": true,
-        "testablePrerequisites": []
-      },
-      {
-        "id": "ai_skills_design_ccd_material_system_SKILL_md",
-        "path": ".ai/skills/design/ccd-material-system/SKILL.md",
-        "boundary": "Consolidate into project-ui product-ui-profile reference",
-        "consumerMigrationRequired": true,
-        "testablePrerequisites": []
-      },
-      {
-        "id": "ai_skills_design_ccd_motion_system_SKILL_md",
-        "path": ".ai/skills/design/ccd-motion-system/SKILL.md",
-        "boundary": "Consolidate into project-ui interaction-motion reference",
-        "consumerMigrationRequired": true,
-        "testablePrerequisites": []
-      },
-      {
-        "id": "ai_skills_design_ccd_page_archetypes_SKILL_md",
-        "path": ".ai/skills/design/ccd-page-archetypes/SKILL.md",
-        "boundary": "Consolidate into project-ui page-archetypes reference",
-        "consumerMigrationRequired": true,
-        "testablePrerequisites": []
-      },
-      {
-        "id": "ai_skills_design_ccd_product_language_SKILL_md",
-        "path": ".ai/skills/design/ccd-product-language/SKILL.md",
-        "boundary": "Consolidate into project-ui product-language reference",
-        "consumerMigrationRequired": true,
-        "testablePrerequisites": []
-      },
-      {
-        "id": "ai_skills_design_ccd_ui_review_gate_SKILL_md",
-        "path": ".ai/skills/design/ccd-ui-review-gate/SKILL.md",
-        "boundary": "Consolidate into project-ui accessibility reference",
-        "consumerMigrationRequired": true,
-        "testablePrerequisites": []
-      },
-      {
-        "id": "ai_skills_design_README_md",
-        "path": ".ai/skills/design/README.md",
-        "boundary": "Consolidate into project-ui SKILL entry",
-        "consumerMigrationRequired": true,
-        "testablePrerequisites": []
-      },
-      {
-        "id": "scripts_ai_route_view_scaffold_mjs",
-        "path": "scripts/ai-route-view-scaffold.mjs",
-        "boundary": "Rewrite scripts/ai-route-view-scaffold.mjs in place",
-        "consumerMigrationRequired": false,
-        "testablePrerequisites": [
-          "Add UIDesignState import and default shape",
-          "Update scaffold template to emit page.state.ts",
-          "Validate against 04-design-state-contract.mdc"
-        ]
-      },
-      {
-        "id": "scripts_drift_check_mjs",
-        "path": "scripts/drift-check.mjs",
-        "boundary": "Rewrite scripts/drift-check.mjs in place",
-        "consumerMigrationRequired": false,
-        "testablePrerequisites": [
-          "Add negative fixture for missing page.state.ts",
-          "Exit non-zero when zero comparisons result from missing contracts",
-          "Validate against page-contract schema"
-        ]
+        "boundaryId": "atomic-cold-start-replacement",
+        "boundaryName": "Track AI cold-start adapters",
+        "assetIds": [
+          "gitignore",
+          "AGENTS_md",
+          "CLAUDE_md",
+          "ai_protocol_adapters_claude_md",
+          "ai_protocol_adapter_manifest_json",
+          "scripts_generate_ai_protocol_adapters_mjs",
+          "scripts_ai_sync_mjs"
+        ],
+        "assetPaths": [
+          ".gitignore",
+          "AGENTS.md",
+          "CLAUDE.md",
+          ".ai/protocol/adapters/claude.md",
+          ".ai/protocol/adapter-manifest.json",
+          "scripts/generate-ai-protocol-adapters.mjs",
+          "scripts/ai-sync.mjs"
+        ],
+        "prerequisites": [
+          ".gitignore no longer excludes AGENTS.md, CLAUDE.md, or .ai/protocol/adapters/claude.md",
+          "tracked AGENTS.md exists",
+          "tracked CLAUDE.md exists",
+          "tracked .ai/protocol/adapters/claude.md exists",
+          "all three entries are independently readable in a fresh clone",
+          "shared canonical facts remain single-sourced in .ai/protocol/adapter-manifest.json",
+          "Codex and Claude adapter generation is deterministic",
+          "adapter digest or freshness validation passes",
+          "ai-doctor passes in a fresh clone before local materialization of other ignored outputs",
+          "codex-preflight passes with the tracked cold-start model",
+          "Claude cold-start validation passes independently",
+          "no ignored output is required as a bootstrap prerequisite for AGENTS.md, CLAUDE.md, or .ai/protocol/adapters/claude.md",
+          "existing consumers (ai-doctor, codex-preflight) have migrated to the tracked model",
+          "a second generator run is stable",
+          "no unrelated real-HOME state is required for repository cold-start"
+        ],
+        "consumerMigrationRequired": true
       }
     ],
     "keepAssets": [
-      {
-        "id": "AGENTS_md",
-        "path": "AGENTS.md",
-        "futureOwner": "AGENTS.md (compatibility output)"
-      },
-      {
-        "id": "ai_manifests_skill_routing_json",
-        "path": ".ai/manifests/skill-routing.json",
-        "futureOwner": ".ai/manifests/skill-routing.json (routing owner)"
-      },
-      {
-        "id": "ai_manifests_skills_lock_json",
-        "path": ".ai/manifests/skills-lock.json",
-        "futureOwner": ".ai/manifests/skills-lock.json (routing owner)"
-      },
-      {
-        "id": "ai_manifests_unocss_semantic_shortcuts_json",
-        "path": ".ai/manifests/unocss-semantic-shortcuts.json",
-        "futureOwner": ".ai/manifests/unocss-semantic-shortcuts.json (routing owner)"
-      },
-      {
-        "id": "ai_protocol_adapter_manifest_json",
-        "path": ".ai/protocol/adapter-manifest.json",
-        "futureOwner": ".ai/protocol/adapter-manifest.json (canonical protocol)"
-      },
-      {
-        "id": "ai_protocol_adapters_claude_md",
-        "path": ".ai/protocol/adapters/claude.md",
-        "futureOwner": ".ai/protocol/adapters/claude.md (compatibility output)"
-      },
-      {
-        "id": "ai_protocol_adapters_codex_md",
-        "path": ".ai/protocol/adapters/codex.md",
-        "futureOwner": ".ai/protocol/adapters/codex.md (compatibility output)"
-      },
-      {
-        "id": "ai_protocol_adapters_README_md",
-        "path": ".ai/protocol/adapters/README.md",
-        "futureOwner": ".ai/protocol/adapters/README.md (compatibility output)"
-      },
-      {
-        "id": "ai_protocol_AGENTS_core_md",
-        "path": ".ai/protocol/AGENTS.core.md",
-        "futureOwner": ".ai/protocol/AGENTS.core.md (canonical protocol)"
-      },
-      {
-        "id": "ai_protocol_AI_entry_md",
-        "path": ".ai/protocol/AI.entry.md",
-        "futureOwner": ".ai/protocol/AI.entry.md (canonical protocol)"
-      },
-      {
-        "id": "ai_protocol_version_json",
-        "path": ".ai/protocol/version.json",
-        "futureOwner": ".ai/protocol/version.json (canonical protocol)"
-      },
-      {
-        "id": "apps_web_demo_src_types_design_state_ts",
-        "path": "apps/web-demo/src/types/design-state.ts",
-        "futureOwner": "apps/web-demo/src/types/design-state.ts (schema/contract owner)"
-      },
-      {
-        "id": "CLAUDE_md",
-        "path": "CLAUDE.md",
-        "futureOwner": "CLAUDE.md (compatibility output)"
-      },
-      {
-        "id": "codex_config_toml",
-        "path": ".codex/config.toml",
-        "futureOwner": ".codex/config.toml (security owner decision)"
-      },
-      {
-        "id": "github_CODEOWNERS",
-        "path": ".github/CODEOWNERS",
-        "futureOwner": ".github/CODEOWNERS (security owner decision)"
-      },
-      {
-        "id": "scripts_ai_doctor_mjs",
-        "path": "scripts/ai-doctor.mjs",
-        "futureOwner": "scripts/ai-doctor.mjs (validation owner)"
-      },
-      {
-        "id": "scripts_ai_sync_codex_mjs",
-        "path": "scripts/ai-sync-codex.mjs",
-        "futureOwner": "scripts/ai-sync-codex.mjs (generator owner)"
-      },
-      {
-        "id": "scripts_ai_sync_mjs",
-        "path": "scripts/ai-sync.mjs",
-        "futureOwner": "scripts/ai-sync.mjs (generator owner)"
-      },
-      {
-        "id": "scripts_codex_preflight_mjs",
-        "path": "scripts/codex-preflight.mjs",
-        "futureOwner": "scripts/codex-preflight.mjs (validation owner)"
-      },
-      {
-        "id": "scripts_generate_ai_protocol_adapters_mjs",
-        "path": "scripts/generate-ai-protocol-adapters.mjs",
-        "futureOwner": "scripts/generate-ai-protocol-adapters.mjs (generator owner)"
-      },
-      {
-        "id": "scripts_generate_rule_index_mjs",
-        "path": "scripts/generate-rule-index.mjs",
-        "futureOwner": "scripts/generate-rule-index.mjs (generator owner)"
-      },
-      {
-        "id": "scripts_generate_unocss_ide_data_mjs",
-        "path": "scripts/generate-unocss-ide-data.mjs",
-        "futureOwner": "scripts/generate-unocss-ide-data.mjs (generator owner)"
-      },
-      {
-        "id": "scripts_skill_lock_utils_mjs",
-        "path": "scripts/skill-lock-utils.mjs",
-        "futureOwner": "scripts/skill-lock-utils.mjs (validation owner)"
-      },
-      {
-        "id": "wiki_canonical_design_animation_governance_md",
-        "path": "wiki/canonical/design/animation-governance.md",
-        "futureOwner": "wiki/canonical/design/animation-governance.md (canonical wiki)"
-      },
-      {
-        "id": "wiki_canonical_design_ccd_ai_ui_skill_governance_md",
-        "path": "wiki/canonical/design/ccd-ai-ui-skill-governance.md",
-        "futureOwner": "wiki/canonical/design/ccd-ai-ui-skill-governance.md (canonical wiki)"
-      },
-      {
-        "id": "wiki_canonical_design_ccd_product_design_language_md",
-        "path": "wiki/canonical/design/ccd-product-design-language.md",
-        "futureOwner": "wiki/canonical/design/ccd-product-design-language.md (canonical wiki)"
-      },
-      {
-        "id": "wiki_generated_web_demo_ui_inventory_md",
-        "path": "wiki/generated/web-demo-ui-inventory.md",
-        "futureOwner": "wiki/generated/web-demo-ui-inventory.md (UI-specific inventory)"
-      },
-      {
-        "id": "wiki_indexes_design_index_md",
-        "path": "wiki/indexes/design-index.md",
-        "futureOwner": "wiki/indexes/design-index.md (canonical index)"
-      }
+      "ai_manifests_skills_lock_json",
+      "ai_manifests_unocss_semantic_shortcuts_json",
+      "ai_protocol_adapters_codex_md",
+      "ai_protocol_adapters_README_md",
+      "ai_protocol_AGENTS_core_md",
+      "ai_protocol_AI_entry_md",
+      "ai_protocol_version_json",
+      "codex_config_toml",
+      "github_CODEOWNERS",
+      "apps_web_demo_src_types_design_state_ts",
+      "scripts_ai_doctor_mjs",
+      "scripts_ai_sync_codex_mjs",
+      "scripts_codex_preflight_mjs",
+      "scripts_generate_rule_index_mjs",
+      "scripts_generate_unocss_ide_data_mjs",
+      "scripts_skill_lock_utils_mjs",
+      "wiki_canonical_design_animation_governance_md",
+      "wiki_canonical_design_ccd_ai_ui_skill_governance_md",
+      "wiki_canonical_design_ccd_product_design_language_md",
+      "wiki_generated_web_demo_ui_inventory_md",
+      "wiki_indexes_design_index_md"
     ],
     "mergeAssets": [
-      {
-        "id": "ai_rules_components_00_primevue_ecosystem_mdc",
-        "path": ".ai/rules/components/00-primevue-ecosystem.mdc",
-        "futureOwner": "project-ui component-priority reference",
-        "uniqueRequirements": [
-          "Preserve PrimeVue ecosystem priority, PassThrough styling invariants, pro-component selection, and ECharts theming constraints."
-        ]
-      },
-      {
-        "id": "ai_rules_components_01_primevue_pt_styling_mdc",
-        "path": ".ai/rules/components/01-primevue-pt-styling.mdc",
-        "futureOwner": "project-ui component-priority reference",
-        "uniqueRequirements": [
-          "Preserve UI preflight and AI-generation workflow invariants in machine-readable form."
-        ]
-      },
-      {
-        "id": "ai_rules_components_02_pro_components_mdc",
-        "path": ".ai/rules/components/02-pro-components.mdc",
-        "futureOwner": "project-ui component-priority reference",
-        "uniqueRequirements": [
-          "Preserve PrimeVue ecosystem priority, PassThrough styling invariants, pro-component selection, and ECharts theming constraints."
-        ]
-      },
-      {
-        "id": "ai_rules_components_03_echarts_theming_mdc",
-        "path": ".ai/rules/components/03-echarts-theming.mdc",
-        "futureOwner": "project-ui component-priority reference",
-        "uniqueRequirements": [
-          "Preserve .ai/rules/components/03-echarts-theming.mdc governance semantics under project-ui component-priority reference"
-        ]
-      },
-      {
-        "id": "ai_rules_core_02_ui_preflight_mdc",
-        "path": ".ai/rules/core/02-ui-preflight.mdc",
-        "futureOwner": "Machine UI Policy",
-        "uniqueRequirements": [
-          "Preserve UI preflight and AI-generation workflow invariants in machine-readable form."
-        ]
-      },
-      {
-        "id": "ai_rules_core_10_ai_generation_workflow_mdc",
-        "path": ".ai/rules/core/10-ai-generation-workflow.mdc",
-        "futureOwner": "Machine UI Policy",
-        "uniqueRequirements": [
-          "Preserve UI preflight and AI-generation workflow invariants in machine-readable form."
-        ]
-      },
-      {
-        "id": "ai_rules_design_system_00_unocss_guardrails_mdc",
-        "path": ".ai/rules/design-system/00-unocss-guardrails.mdc",
-        "futureOwner": "project-ui tokens-unocss reference",
-        "uniqueRequirements": [
-          "Preserve UnoCSS guardrails, semantic shortcuts, and token-driven usage contracts."
-        ]
-      },
-      {
-        "id": "ai_rules_design_system_01_design_tokens_mdc",
-        "path": ".ai/rules/design-system/01-design-tokens.mdc",
-        "futureOwner": "project-ui tokens-unocss reference",
-        "uniqueRequirements": [
-          "Preserve design-token, size-density, and semantic-color usage contracts."
-        ]
-      },
-      {
-        "id": "ai_rules_design_system_02_size_density_system_mdc",
-        "path": ".ai/rules/design-system/02-size-density-system.mdc",
-        "futureOwner": "project-ui tokens-unocss reference",
-        "uniqueRequirements": ["Preserve size-density and spacing-system decisions."]
-      },
-      {
-        "id": "ai_rules_design_system_03_material_system_mdc",
-        "path": ".ai/rules/design-system/03-material-system.mdc",
-        "futureOwner": "project-ui product-ui-profile reference",
-        "uniqueRequirements": ["Preserve material-system profile and product-language decisions."]
-      },
-      {
-        "id": "ai_rules_design_system_04_design_state_contract_mdc",
-        "path": ".ai/rules/design-system/04-design-state-contract.mdc",
-        "futureOwner": "Page Contract Schema",
-        "uniqueRequirements": [
-          "Preserve UIDesignState contract shape and page-archetype binding rules."
-        ]
-      },
-      {
-        "id": "ai_rules_design_system_05_semantic_color_usage_contract_mdc",
-        "path": ".ai/rules/design-system/05-semantic-color-usage-contract.mdc",
-        "futureOwner": "project-ui tokens-unocss reference",
-        "uniqueRequirements": [
-          "Preserve design-token, size-density, and semantic-color usage contracts."
-        ]
-      },
-      {
-        "id": "ai_rules_integrations_03_layout_architecture_mdc",
-        "path": ".ai/rules/integrations/03-layout-architecture.mdc",
-        "futureOwner": "project-ui layout-scroll reference",
-        "uniqueRequirements": ["Preserve layout-shell and scroll-region ownership rules."]
-      },
-      {
-        "id": "ai_rules_integrations_07_interaction_patterns_mdc",
-        "path": ".ai/rules/integrations/07-interaction-patterns.mdc",
-        "futureOwner": "project-ui interaction-motion reference",
-        "uniqueRequirements": ["Preserve interaction-pattern and motion-routing constraints."]
-      },
-      {
-        "id": "ai_skills_design_ccd_animate_lite_SKILL_md",
-        "path": ".ai/skills/design/ccd-animate-lite/SKILL.md",
-        "futureOwner": "project-ui interaction-motion reference",
-        "uniqueRequirements": ["Preserve lightweight animation constraints and skill boundaries."]
-      },
-      {
-        "id": "ai_skills_design_ccd_gsap_motion_SKILL_md",
-        "path": ".ai/skills/design/ccd-gsap-motion/SKILL.md",
-        "futureOwner": "project-ui interaction-motion reference",
-        "uniqueRequirements": [
-          "Preserve GSAP motion usage restrictions and conditional-routing rules."
-        ]
-      },
-      {
-        "id": "ai_skills_design_ccd_material_system_SKILL_md",
-        "path": ".ai/skills/design/ccd-material-system/SKILL.md",
-        "futureOwner": "project-ui product-ui-profile reference",
-        "uniqueRequirements": ["Preserve material-system profile and product-language decisions."]
-      },
-      {
-        "id": "ai_skills_design_ccd_motion_system_SKILL_md",
-        "path": ".ai/skills/design/ccd-motion-system/SKILL.md",
-        "futureOwner": "project-ui interaction-motion reference",
-        "uniqueRequirements": ["Preserve consolidated motion-system constraints."]
-      },
-      {
-        "id": "ai_skills_design_ccd_page_archetypes_SKILL_md",
-        "path": ".ai/skills/design/ccd-page-archetypes/SKILL.md",
-        "futureOwner": "project-ui page-archetypes reference",
-        "uniqueRequirements": ["Preserve page-archetype declarations and binding conventions."]
-      },
-      {
-        "id": "ai_skills_design_ccd_product_language_SKILL_md",
-        "path": ".ai/skills/design/ccd-product-language/SKILL.md",
-        "futureOwner": "project-ui product-language reference",
-        "uniqueRequirements": ["Preserve product-design-language vocabulary and tone constraints."]
-      },
-      {
-        "id": "ai_skills_design_ccd_ui_review_gate_SKILL_md",
-        "path": ".ai/skills/design/ccd-ui-review-gate/SKILL.md",
-        "futureOwner": "project-ui accessibility reference",
-        "uniqueRequirements": [
-          "Preserve accessibility review gate criteria and validation checklist."
-        ]
-      },
-      {
-        "id": "ai_skills_design_README_md",
-        "path": ".ai/skills/design/README.md",
-        "futureOwner": "project-ui SKILL entry",
-        "uniqueRequirements": ["Preserve material-system profile and product-language decisions."]
-      }
+      "ai_rules_components_00_primevue_ecosystem_mdc",
+      "ai_rules_components_01_primevue_pt_styling_mdc",
+      "ai_rules_components_02_pro_components_mdc",
+      "ai_rules_components_03_echarts_theming_mdc",
+      "ai_rules_core_02_ui_preflight_mdc",
+      "ai_rules_core_10_ai_generation_workflow_mdc",
+      "ai_rules_design_system_00_unocss_guardrails_mdc",
+      "ai_rules_design_system_01_design_tokens_mdc",
+      "ai_rules_design_system_02_size_density_system_mdc",
+      "ai_rules_design_system_03_material_system_mdc",
+      "ai_rules_design_system_04_design_state_contract_mdc",
+      "ai_rules_design_system_05_semantic_color_usage_contract_mdc",
+      "ai_rules_integrations_03_layout_architecture_mdc",
+      "ai_rules_integrations_07_interaction_patterns_mdc",
+      "ai_skills_design_ccd_animate_lite_SKILL_md",
+      "ai_skills_design_ccd_gsap_motion_SKILL_md",
+      "ai_skills_design_ccd_material_system_SKILL_md",
+      "ai_skills_design_ccd_motion_system_SKILL_md",
+      "ai_skills_design_ccd_page_archetypes_SKILL_md",
+      "ai_skills_design_ccd_product_language_SKILL_md",
+      "ai_skills_design_ccd_ui_review_gate_SKILL_md",
+      "ai_skills_design_README_md"
     ],
     "rewriteAssets": [
-      {
-        "id": "ai_manifests_rule_index_json",
-        "path": ".ai/manifests/rule-index.json",
-        "futureOwner": ".ai/manifests/rule-index.json (rewritten)",
-        "retirementPrerequisites": [
-          "Regenerate rule-index.json from current .ai/rules/**/*.mdc frontmatter",
-          "Validate all globs against tracked files in apps/**/src/**",
-          "Confirm non-UI rules retain routing coverage"
-        ]
-      },
-      {
-        "id": "scripts_ai_route_view_scaffold_mjs",
-        "path": "scripts/ai-route-view-scaffold.mjs",
-        "futureOwner": "scripts/ai-route-view-scaffold.mjs (rewritten)",
-        "retirementPrerequisites": [
-          "Update scaffold template to emit page.state.ts",
-          "Add UIDesignState import and default shape",
-          "Validate against 04-design-state-contract.mdc"
-        ]
-      },
-      {
-        "id": "scripts_drift_check_mjs",
-        "path": "scripts/drift-check.mjs",
-        "futureOwner": "scripts/drift-check.mjs (rewritten)",
-        "retirementPrerequisites": [
-          "Add negative fixture for missing page.state.ts",
-          "Exit non-zero when zero comparisons result from missing contracts",
-          "Validate against page-contract schema"
-        ]
-      }
+      "ai_manifests_rule_index_json",
+      "ai_manifests_skill_routing_json",
+      "ai_protocol_adapter_manifest_json",
+      "ai_protocol_adapters_claude_md",
+      "gitignore",
+      "AGENTS_md",
+      "CLAUDE_md",
+      "scripts_ai_route_view_scaffold_mjs",
+      "scripts_ai_sync_mjs",
+      "scripts_drift_check_mjs",
+      "scripts_generate_ai_protocol_adapters_mjs"
     ],
     "retireAfterReplacementAssets": [],
     "legacyAssetsUnchangedUntilValidation": [
