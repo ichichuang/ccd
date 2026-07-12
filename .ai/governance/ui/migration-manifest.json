@@ -60,9 +60,10 @@
     "manifestAssetCount": 54,
     "evidenceOnlyCount": 81,
     "dispositionCounts": {
-      "REWRITE": 11,
       "KEEP": 21,
-      "MERGE": 22
+      "MERGE": 22,
+      "REWRITE": 11,
+      "RETIRE_AFTER_REPLACEMENT": 0
     },
     "authorityCounts": {
       "generated": 4,
@@ -107,7 +108,7 @@
     "dynamicFinalRouteTotal": "statically indeterminate",
     "validationSurfaceCount": 18,
     "reusableFoundationCount": 9,
-    "atomicReplacementBoundaries": 25
+    "atomicReplacementBoundaries": 2
   },
   "assets": [
     {
