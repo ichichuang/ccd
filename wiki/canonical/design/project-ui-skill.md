@@ -39,7 +39,7 @@ The P2C semantic-quality correction re-extracts the fixed 22-source MERGE set, r
 
 ## Current Integration State
 
-project-ui remains undiscovered by the current Skill lock. project-ui remains unrouted. project-ui remains unsynchronized by the current Codex Skill sync and Claude adapter flow. Legacy design Skills remain unchanged. Legacy UI rules remain unchanged. Machine UI Policy does not exist. Page Contract Schema does not exist. P3 is blocked and has not started. P4 has not started. P5 has not started.
+project-ui remains undiscovered by the current Skill lock. project-ui remains unrouted. project-ui remains unsynchronized by the current Codex Skill sync and Claude adapter flow. project-ui is not adapter-activated. Legacy design Skills remain unchanged. Legacy UI rules remain unchanged. Machine UI Policy does not exist. Page Contract Schema does not exist. P3 has not started and requires separate authorization. P4 has not started. P5 has not started.
 
 ## Corrected Accounting
 
@@ -77,7 +77,15 @@ All nine original foundation paths are represented exactly and separately: `pack
 
 ## P2 And P3 State
 
-project-ui remains undiscovered, unrouted, and unsynchronized. P2 remains under correction until an isolated validation and commit instruction completes. P3 remains blocked and has not started.
+The project-ui semantic-quality correction is complete and tracked on main.
+
+project-ui remains undiscovered by the current Skill lock, unrouted, unsynchronized, and not adapter-activated.
+
+Legacy design Skills and legacy UI rules remain unchanged.
+
+Machine UI Policy does not exist. Page Contract Schema does not exist.
+
+P3 has not started and requires separate authorization. P4 has not started. P5 has not started.
 
 ## Files
 
@@ -97,4 +105,10 @@ project-ui remains undiscovered, unrouted, and unsynchronized. P2 remains under 
 
 ## Handoff
 
-P2C.2R3 leaves the correction change set unstaged. No future correction commit SHA is asserted here. P2C.3 may be re-executed only as a separate validation and isolated-commit instruction after validation confirms semantic-quality pass, protected paths unchanged, GitHub main unchanged, all rejected candidates source-assigned, all nine foundations reconciled, and the index empty.
+The semantic source correction was introduced by commit `b3b6d59b6b29a15cce518d7cd35f025da0665cde`.
+
+The corrected source contains one public entrypoint, ten internal references, one semantic-quality support script, 345 active requirements, 24 retired non-propositional markers, 39 rejected candidates, 15 duplicate occurrences, 2,124 excluded fragments, 22 source assets, and nine exact foundation records.
+
+P2 project-ui source construction and semantic correction are complete.
+
+Discovery, routing, synchronization, adapter activation, Machine UI Policy, Page Contract Schema, P3, P4, and P5 remain outside this completed P2 source phase.

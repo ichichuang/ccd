@@ -44274,6 +44274,7 @@
       "coverage accounting",
       "conflict checks",
       "canonical-state checks",
+      "current lifecycle-state checks",
       "quality summary comparison",
       "closed-class standalone-marker rejection",
       "false-positive complete-proposition protection",
@@ -44438,13 +44439,18 @@
     "legacy rule retirement"
   ],
   "handoff": {
-    "status": "P2C.2R3 semantic correction artifact; P2 remains under correction until isolated validation/commit instructions complete.",
-    "p3": "blocked and not started; P2C.3 may be re-executed only as a separate validation and isolated-commit instruction after P2C.2R3 passes.",
+    "status": "P2 project-ui source construction and semantic correction are complete and tracked on main.",
+    "semanticCorrectionCommit": "b3b6d59b6b29a15cce518d7cd35f025da0665cde",
+    "p2SourcePhase": "complete",
+    "p3": "not started and requires separate authorization",
     "p4": "not started",
     "p5": "not started",
-    "discovery": "project-ui remains undiscovered",
+    "discovery": "project-ui remains undiscovered by the current Skill lock",
     "routing": "project-ui remains unrouted",
-    "synchronization": "project-ui remains unsynchronized"
+    "synchronization": "project-ui remains unsynchronized",
+    "adapterActivation": "project-ui is not adapter-activated",
+    "machineUiPolicy": "not present",
+    "pageContractSchema": "not present"
   },
   "retiredRequirements": [
     {
@@ -45761,5 +45767,26 @@
       "replacementRequirementId": null,
       "noSemanticLoss": true
     }
-  ]
+  ],
+  "canonicalState": {
+    "projectUiSource": "complete-and-tracked",
+    "semanticCorrectionCommit": "b3b6d59b6b29a15cce518d7cd35f025da0665cde",
+    "p2SourcePhase": "complete",
+    "skillLockDiscovered": false,
+    "routed": false,
+    "synchronized": false,
+    "adapterActivated": false,
+    "machineUiPolicyPresent": false,
+    "pageContractSchemaPresent": false,
+    "p3Started": false,
+    "p4Started": false,
+    "p5Started": false
+  },
+  "activeRequirementCount": 345,
+  "retiredRequirementCount": 24,
+  "duplicateNormativeOccurrenceCount": 15,
+  "rejectedCandidateOccurrenceCount": 39,
+  "excludedNonCandidateFragmentCount": 2124,
+  "foundationPathCount": 9,
+  "staleCanonicalStatementCount": 0
 }

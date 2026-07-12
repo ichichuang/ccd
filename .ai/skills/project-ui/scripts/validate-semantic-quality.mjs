@@ -95,6 +95,47 @@ const STALE_PATTERNS = [
   'not present on GitHub remote main',
 ]
 
+const EXPECTED_SEMANTIC_CORRECTION_COMMIT = 'b3b6d59b6b29a15cce518d7cd35f025da0665cde'
+
+const EXPECTED_CANONICAL_STATE = {
+  projectUiSource: 'complete-and-tracked',
+  semanticCorrectionCommit: EXPECTED_SEMANTIC_CORRECTION_COMMIT,
+  p2SourcePhase: 'complete',
+  skillLockDiscovered: false,
+  routed: false,
+  synchronized: false,
+  adapterActivated: false,
+  machineUiPolicyPresent: false,
+  pageContractSchemaPresent: false,
+  p3Started: false,
+  p4Started: false,
+  p5Started: false,
+}
+
+const STALE_LIFECYCLE_PATTERNS = [
+  { label: 'p2-under-correction', regex: /\bp2 remains under correction\b/ },
+  { label: 'p2-correction-pending', regex: /\bp2 correction (?:is )?pending\b/ },
+  {
+    label: 'change-set-unstaged',
+    regex:
+      /\b(?:correction (?:is |was |remains )?unstaged|(?:correction )?change set (?:is |remains |leaves the correction change set )?unstaged)\b/,
+  },
+  {
+    label: 'change-set-uncommitted',
+    regex: /\b(?:correction )?change set (?:is |remains )?uncommitted\b/,
+  },
+  { label: 'pending-commit', regex: /\bpending commit\b/ },
+  { label: 'pending-push', regex: /\bpending push\b/ },
+  { label: 'awaiting-remote-verification', regex: /\bawaiting remote verification\b/ },
+  { label: 'pending-remote-verification', regex: /\bpending remote verification\b/ },
+  { label: 'p2c3-reentry', regex: /\bp2c\.3 may be re-executed\b/ },
+  { label: 'ready-before-push', regex: /\bready\b.*\bbefore push\b/ },
+  {
+    label: 'remote-push-not-verified',
+    regex: /\bremote push (?:is )?not (?:yet )?verified\b/,
+  },
+]
+
 const EPHEMERAL_PATH_PATTERNS = [
   { label: 'file:///private/tmp/', regex: /file:\/\/\/private\/tmp\// },
   { label: 'file:///tmp/', regex: /file:\/\/\/tmp\// },
@@ -130,6 +171,7 @@ const ALLOWED_RECONCILIATION_STATES = new Set([
 const args = process.argv.slice(2)
 let jsonOutput = null
 let coverageOverride = null
+let selfTest = false
 for (let index = 0; index < args.length; index += 1) {
   if (args[index] === '--json-output') {
     jsonOutput = args[index + 1]
@@ -139,6 +181,10 @@ for (let index = 0; index < args.length; index += 1) {
   if (args[index] === '--coverage-json') {
     coverageOverride = args[index + 1]
     index += 1
+    continue
+  }
+  if (args[index] === '--self-test') {
+    selfTest = true
     continue
   }
   console.error(`Unknown argument: ${args[index]}`)
@@ -375,6 +421,181 @@ function scanTextLines(file, text, findings) {
   }
 }
 
+function normalizeLifecycleText(text) {
+  return String(text ?? '')
+    .replace(/[`*_]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase()
+}
+
+function staleLifecycleMatches(text) {
+  const normalized = normalizeLifecycleText(text)
+  return STALE_LIFECYCLE_PATTERNS.filter(pattern => pattern.regex.test(normalized)).map(
+    pattern => pattern.label
+  )
+}
+
+function isCurrentLifecycleHeading(heading) {
+  return /\b(?:current integration state|p2 and p3 state|handoff|current state|canonical state)\b/i.test(
+    String(heading ?? '')
+  )
+}
+
+function isHistoricalHeading(heading) {
+  return /\b(?:history|historical|before|prior)\b/i.test(String(heading ?? ''))
+}
+
+function isCurrentLifecycleField(field) {
+  return /\b(?:handoff|canonicalState|currentState|coverageSummary|qualityGate\.summary)\b/.test(
+    field
+  )
+}
+
+function isHistoricalField(field) {
+  return /\b(?:history|historical|previous|prior)\b/i.test(field)
+}
+
+function hasExplicitHistoricalMarker(text) {
+  return /\b(?:historical note|historically|before commit|prior to commit|previously)\b/i.test(
+    String(text ?? '')
+  )
+}
+
+function shouldRejectLifecycleAssertion({ text, heading, field }) {
+  const matches = staleLifecycleMatches(text)
+  if (matches.length === 0) return null
+
+  const currentContext =
+    isCurrentLifecycleHeading(heading) || (field ? isCurrentLifecycleField(field) : false)
+  const historicalContext =
+    hasExplicitHistoricalMarker(text) &&
+    (isHistoricalHeading(heading) || (field ? isHistoricalField(field) : false))
+
+  if (historicalContext && !currentContext) return null
+
+  return {
+    matches,
+    classification: 'stale-current-lifecycle-state',
+  }
+}
+
+function scanMarkdownLifecycleAssertions(file, text) {
+  const findings = []
+  const lines = text.split(/\r?\n/)
+  let heading = null
+  for (let index = 0; index < lines.length; index += 1) {
+    const match = /^(#{1,6})\s+(.+?)\s*$/.exec(lines[index])
+    if (match) heading = match[2]
+    const rejection = shouldRejectLifecycleAssertion({ text: lines[index], heading })
+    if (rejection) {
+      findings.push({
+        file,
+        heading,
+        line: index + 1,
+        text: lines[index].trim(),
+        ...rejection,
+      })
+    }
+  }
+  return findings
+}
+
+function scanJsonLifecycleAssertions(value, fieldPath = [], file = COVERAGE_ARTIFACT) {
+  if (typeof value === 'string') {
+    const field = fieldPath.join('.')
+    const rejection = shouldRejectLifecycleAssertion({ text: value, field })
+    return rejection
+      ? [
+          {
+            file,
+            field,
+            text: value,
+            ...rejection,
+          },
+        ]
+      : []
+  }
+
+  if (!value || typeof value !== 'object') return []
+
+  if (Array.isArray(value)) {
+    return value.flatMap((nestedValue, index) =>
+      scanJsonLifecycleAssertions(nestedValue, fieldPath.concat(String(index)), file)
+    )
+  }
+
+  return Object.entries(value).flatMap(([key, nestedValue]) =>
+    scanJsonLifecycleAssertions(nestedValue, fieldPath.concat(key), file)
+  )
+}
+
+function scanCurrentLifecycleState(coverageData) {
+  const findings = coverageData ? scanJsonLifecycleAssertions(coverageData) : []
+
+  for (const file of PERMANENT_PROJECT_UI_ARTIFACTS) {
+    if (file === COVERAGE_ARTIFACT) continue
+    if (!exists(file)) continue
+    findings.push(...scanMarkdownLifecycleAssertions(file, read(file)))
+  }
+
+  return findings
+}
+
+function extractSectionBody(markdown, heading) {
+  return sections(markdown).find(section => section.heading === heading)?.body ?? ''
+}
+
+function assertExpectedCanonicalState(coverageData, wiki) {
+  const localFailures = []
+  const canonicalState = coverageData?.canonicalState ?? {}
+  for (const [key, expected] of Object.entries(EXPECTED_CANONICAL_STATE)) {
+    if (canonicalState[key] !== expected) {
+      localFailures.push({
+        code: 'canonical-state-mismatch',
+        message: 'Coverage canonicalState does not match the expected current lifecycle state.',
+        field: `canonicalState.${key}`,
+        expected,
+        actual: canonicalState[key],
+      })
+    }
+  }
+
+  const p2State = extractSectionBody(wiki, 'P2 And P3 State')
+  const handoff = extractSectionBody(wiki, 'Handoff')
+  for (const [label, phrase, body] of [
+    [
+      'p2-complete',
+      'The project-ui semantic-quality correction is complete and tracked on main.',
+      p2State,
+    ],
+    ['skill-lock', 'project-ui remains undiscovered by the current Skill lock', p2State],
+    ['not-adapter-activated', 'not adapter-activated', p2State],
+    ['machine-ui-policy', 'Machine UI Policy does not exist.', p2State],
+    ['page-contract-schema', 'Page Contract Schema does not exist.', p2State],
+    ['p3-not-started', 'P3 has not started', p2State],
+    ['p4-not-started', 'P4 has not started.', p2State],
+    ['p5-not-started', 'P5 has not started.', p2State],
+    ['semantic-commit', EXPECTED_SEMANTIC_CORRECTION_COMMIT, handoff],
+    [
+      'p2-source-complete',
+      'P2 project-ui source construction and semantic correction are complete.',
+      handoff,
+    ],
+  ]) {
+    if (!body.includes(phrase)) {
+      localFailures.push({
+        code: 'wiki-canonical-state-mismatch',
+        message: 'Wiki canonical state does not match coverage canonicalState.',
+        label,
+        expected: phrase,
+      })
+    }
+  }
+
+  return localFailures
+}
+
 function scanPermanentProjectUiArtifacts() {
   const findings = []
   if (coverage) scanJsonStrings(coverage, [], COVERAGE_ARTIFACT, findings)
@@ -387,6 +608,137 @@ function scanPermanentProjectUiArtifacts() {
 
   return findings
 }
+
+function runSelfTest() {
+  const negativeTexts = [
+    'P2 remains under correction.',
+    'P2 correction pending.',
+    'P2 correction is pending.',
+    'The correction change set is unstaged.',
+    'The correction change set remains unstaged.',
+    'The correction change set is uncommitted.',
+    'The correction change set remains uncommitted.',
+    'The state has a pending commit.',
+    'The state has a pending push.',
+    'The change is awaiting remote verification.',
+    'The change has pending remote verification.',
+    'P2C.3 may be re-executed after validation.',
+    'The controller is ready before push.',
+    'The controller is ready for controller remote recheck before push.',
+    'The remote push is not verified.',
+    'The remote push is not yet verified.',
+    'Current state: P2 remains under correction.',
+    'Current state: P2 correction pending.',
+    'Current state: correction change set unstaged.',
+    'Current state: correction change set uncommitted.',
+    'Current state: pending commit.',
+    'Current state: pending push.',
+    'Current state: awaiting remote verification.',
+    'Current state: pending remote verification.',
+    'Current state: P2C.3 may be re-executed.',
+    'Current state: ready for controller remote recheck before push.',
+    'Current state: remote push not verified.',
+    'Handoff: P2 remains under correction.',
+    'Handoff: the correction change set is unstaged.',
+    'Handoff: the correction change set is uncommitted.',
+    'Handoff: pending commit and pending push remain.',
+    'Handoff: awaiting remote verification.',
+    'Handoff: remote push not yet verified.',
+    'P2 remains under correction until validation and commit complete.',
+    'The correction change set is unstaged and pending push.',
+    'P2C.3 may be re-executed before remote acceptance.',
+  ]
+
+  const negativeResults = negativeTexts.map((text, index) => {
+    const findings = scanMarkdownLifecycleAssertions(
+      'self-test.md',
+      `## P2 And P3 State\n\n${text}\n`
+    )
+    return {
+      id: index + 1,
+      text,
+      passed:
+        findings.length > 0 &&
+        findings.every(finding => finding.classification === 'stale-current-lifecycle-state'),
+      findings,
+    }
+  })
+
+  const positiveResults = [
+    {
+      id: 1,
+      text: 'Historical note: before commit b3b6d59..., the correction was unstaged.',
+      findings: scanMarkdownLifecycleAssertions(
+        'self-test.md',
+        '## Historical Notes\n\nHistorical note: before commit b3b6d59..., the correction was unstaged.\n'
+      ),
+    },
+    {
+      id: 2,
+      text: 'Historical note: before commit b3b6d59..., the correction was unstaged.',
+      findings: scanJsonLifecycleAssertions({
+        history: {
+          historicalNote: 'Historical note: before commit b3b6d59..., the correction was unstaged.',
+        },
+      }),
+    },
+  ].map(result => ({ ...result, passed: result.findings.length === 0 }))
+
+  const report = {
+    status:
+      negativeResults.every(result => result.passed) &&
+      positiveResults.every(result => result.passed)
+        ? 'pass'
+        : 'fail',
+    negative: {
+      count: negativeResults.length,
+      falsePasses: negativeResults.filter(result => result.findings.length === 0).length,
+      wrongReasonFailures: negativeResults.filter(
+        result =>
+          result.findings.length > 0 &&
+          result.findings.some(
+            finding => finding.classification !== 'stale-current-lifecycle-state'
+          )
+      ).length,
+      results: negativeResults,
+    },
+    positive: {
+      count: positiveResults.length,
+      falsePositiveFailures: positiveResults.filter(result => result.findings.length > 0).length,
+      results: positiveResults,
+    },
+  }
+
+  if (jsonOutput) {
+    const outputPath = path.resolve(jsonOutput)
+    fs.mkdirSync(path.dirname(outputPath), { recursive: true })
+    fs.writeFileSync(outputPath, `${JSON.stringify(report, null, 2)}\n`)
+  }
+
+  if (report.status !== 'pass') {
+    console.log('project-ui semantic quality self-test: FAIL')
+    console.error(JSON.stringify(report, null, 2))
+    process.exit(1)
+  }
+
+  console.log('project-ui semantic quality self-test: PASS')
+  console.log(
+    JSON.stringify(
+      {
+        negativeTestCount: report.negative.count,
+        positiveTestCount: report.positive.count,
+        falsePasses: report.negative.falsePasses,
+        wrongReasonFailures: report.negative.wrongReasonFailures,
+        falsePositiveFailures: report.positive.falsePositiveFailures,
+      },
+      null,
+      2
+    )
+  )
+  process.exit(0)
+}
+
+if (selfTest) runSelfTest()
 
 let coverage = null
 try {
@@ -843,10 +1195,38 @@ if (coverage) {
       addFailure('quality-summary', 'Quality terminal count is nonzero.', { key, value })
   }
 
-  const coverageText = JSON.stringify(coverage)
-  for (const phrase of STALE_PATTERNS) {
-    if (coverageText.includes(phrase))
-      addFailure('stale-canonical', 'Stale canonical phrase found in coverage.', { phrase })
+  const lifecycleFindings = scanCurrentLifecycleState(coverage)
+  const staleCanonicalStatementCount = lifecycleFindings.length
+  for (const finding of lifecycleFindings) {
+    addFailure(
+      'stale-current-lifecycle-state',
+      'Stale current lifecycle state found in permanent project-ui artifact.',
+      finding
+    )
+  }
+  for (const [field, value] of [
+    ['staleCanonicalStatementCount', coverage.staleCanonicalStatementCount],
+    ['coverageSummary.staleCanonicalStatementCount', summary.staleCanonicalStatementCount],
+    ['coverageSummary.quality.staleCanonicalStatementCount', quality.staleCanonicalStatementCount],
+    [
+      'qualityGate.summary.staleCanonicalStatementCount',
+      coverage.qualityGate?.summary?.staleCanonicalStatementCount,
+    ],
+  ]) {
+    if (value !== staleCanonicalStatementCount) {
+      addFailure('stale-canonical-summary', 'Stale canonical statement summary mismatch.', {
+        field,
+        summary: value,
+        actual: staleCanonicalStatementCount,
+      })
+    }
+  }
+
+  if (exists(WIKI_ARTIFACT)) {
+    const wiki = read(WIKI_ARTIFACT)
+    for (const failure of assertExpectedCanonicalState(coverage, wiki)) {
+      addFailure(failure.code, failure.message, failure)
+    }
   }
 
   for (const requirement of requirements) {
@@ -891,10 +1271,6 @@ if (coverage) {
 
 if (exists('wiki/canonical/design/project-ui-skill.md')) {
   const wiki = read('wiki/canonical/design/project-ui-skill.md')
-  for (const phrase of STALE_PATTERNS) {
-    if (wiki.includes(phrase))
-      addFailure('stale-wiki', 'Stale canonical phrase found in wiki.', { phrase })
-  }
   const obsoletePattern = hasObsoleteActivePath(wiki)
   if (obsoletePattern)
     addFailure('obsolete-wiki-path', 'Obsolete path found in wiki.', {
@@ -919,6 +1295,7 @@ const report = {
     rejectedCandidateOccurrenceCount: coverage?.rejectedCandidateOccurrences?.length ?? 0,
     excludedFragmentCount: coverage?.excludedFragments?.length ?? 0,
     foundationPathCount: coverage?.foundationReuse?.length ?? 0,
+    staleCanonicalStatementCount: coverage ? scanCurrentLifecycleState(coverage).length : 0,
     concreteEphemeralPathCount:
       coverage?.coverageSummary?.quality?.concreteEphemeralPathCount ??
       coverage?.coverageSummary?.concreteEphemeralPathCount ??
