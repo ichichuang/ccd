@@ -87,6 +87,14 @@ Machine UI Policy does not exist. Page Contract Schema does not exist.
 
 P3 has not started and requires separate authorization. P4 has not started. P5 has not started.
 
+## Corrected P3 Handoff Model
+
+The canonical P2-to-P3 handoff unit is 14 semantic-obligation clusters referencing 68 current active P2 requirements. The historical count of 16 records historical deferred-to-P3 marker dispositions only; it is lineage evidence and does not define 16 current active requirements or require one-to-one parity with the current clusters.
+
+The handoff separately records 12 P3 plan-owned contracts for the Machine UI Policy document and schema, Product UI Profile schema and CCD profile, UI exception schema and empty registry, schema fixtures, rule cases, policy validator, validator self-tests, canonical Wiki documentation, and lifecycle integration. These contracts create no new UI semantics and derive implementation authority from the P3 controller while depending on accepted P2 semantics where applicable.
+
+There are zero unresolved P2 semantic gaps and zero unresolved blocking handoff items. The corrected handoff is ready for P3 baseline revalidation, but it does not start P3: Machine UI Policy remains absent, Page Contract Schema remains absent, P3 remains not started, and P4 and P5 remain not started. project-ui remains undiscovered, unrouted, unsynchronized, and not adapter-activated.
+
 ## Files
 
 - `.ai/skills/project-ui/SKILL.md`

@@ -45788,5 +45788,2466 @@
   "rejectedCandidateOccurrenceCount": 39,
   "excludedNonCandidateFragmentCount": 2124,
   "foundationPathCount": 9,
-  "staleCanonicalStatementCount": 0
+  "staleCanonicalStatementCount": 0,
+  "p3Handoff": {
+    "schemaVersion": "ccd-p3-handoff/v1",
+    "status": "ready-for-p3-baseline-revalidation",
+    "sourceBaselines": {
+      "sourceBaselineCommit": "624948ea9058507f8fae91975dabc715d984703a",
+      "semanticCorrectionCommit": "b3b6d59b6b29a15cce518d7cd35f025da0665cde",
+      "canonicalClosureCommit": "0767895a53005f326767cfdf3102f6b72709aa31"
+    },
+    "counts": {
+      "historicalMarkerCount": 16,
+      "semanticObligationClusterCount": 14,
+      "currentCandidateMemberCount": 68,
+      "planOwnedContractCount": 12,
+      "unresolvedBlockingItemCount": 0
+    },
+    "authorityLayers": [
+      {
+        "layer": 1,
+        "name": "Accepted P2 semantic source universe",
+        "governingAuthority": [
+          ".ai/governance/ui/project-ui-semantic-coverage.json",
+          ".ai/skills/project-ui/SKILL.md",
+          ".ai/skills/project-ui/references/**"
+        ],
+        "count": 345,
+        "meaning": "Complete accepted project-ui semantic requirements and canonical project-ui source propositions; not automatically the P3 handoff set."
+      },
+      {
+        "layer": 2,
+        "name": "P3 semantic inputs",
+        "governingAuthority": "P2 semantics filtered by the P3 controller scope and the P3.1B adversarial disposition model.",
+        "count": 180,
+        "strictNormativeCount": 167,
+        "humanReviewBackgroundCount": 13,
+        "meaning": "P3-relevant source inputs and human-review context; not the canonical handoff unit."
+      },
+      {
+        "layer": 3,
+        "name": "Canonical P3 handoff candidates",
+        "governingAuthority": "Current P2 requirement records selected into controller-approved semantic obligation clusters.",
+        "currentRequirementMemberCount": 68,
+        "semanticObligationClusterCount": 14,
+        "meaning": "The proposed exact handoff unit is the semantic obligation cluster, each backed by current active IDs and exact source propositions."
+      },
+      {
+        "layer": 4,
+        "name": "P3 machine-policy rules",
+        "governingAuthority": "Future P3.2 Machine UI Policy design under controller authorization.",
+        "count": 0,
+        "meaning": "Future CCD-UI rule identities do not exist and are not assigned in P3.1B."
+      },
+      {
+        "layer": 5,
+        "name": "P3 plan-owned implementation contracts",
+        "governingAuthority": "The P3 controller plan supplied in the current instruction.",
+        "count": 12,
+        "meaning": "Schemas, profile structure, empty registry, fixtures, validator, self-tests, Wiki, and lifecycle packaging are P3-owned and are not P2 candidate requirements."
+      }
+    ],
+    "semanticCandidates": {
+      "canonicalUnit": "semantic-obligation-cluster",
+      "currentRequirementMemberCount": 68,
+      "currentRequirementIds": [
+        "P2C-REQ-0003",
+        "P2C-REQ-0007",
+        "P2C-REQ-0011",
+        "P2C-REQ-0012",
+        "P2C-REQ-0013",
+        "P2C-REQ-0014",
+        "P2C-REQ-0015",
+        "P2C-REQ-0020",
+        "P2C-REQ-0021",
+        "P2C-REQ-0023",
+        "P2C-REQ-0024",
+        "P2C-REQ-0025",
+        "P2C-REQ-0044",
+        "P2C-REQ-0047",
+        "P2C-REQ-0048",
+        "P2C-REQ-0068",
+        "P2C-REQ-0119",
+        "P2C-REQ-0120",
+        "P2C-REQ-0139",
+        "P2C-REQ-0140",
+        "P2C-REQ-0144",
+        "P2C-REQ-0149",
+        "P2C-REQ-0155",
+        "P2C-REQ-0156",
+        "P2C-REQ-0158",
+        "P2C-REQ-0177",
+        "P2C-REQ-0181",
+        "P2C-REQ-0198",
+        "P2C-REQ-0201",
+        "P2C-REQ-0202",
+        "P2C-REQ-0204",
+        "P2C-REQ-0206",
+        "P2C-REQ-0208",
+        "P2C-REQ-0220",
+        "P2C-REQ-0221",
+        "P2C-REQ-0240",
+        "P2C-REQ-0241",
+        "P2C-REQ-0242",
+        "P2C-REQ-0243",
+        "P2C-REQ-0244",
+        "P2C-REQ-0248",
+        "P2C-REQ-0249",
+        "P2C-REQ-0253",
+        "P2C-REQ-0254",
+        "P2C-REQ-0256",
+        "P2C-REQ-0266",
+        "P2C-REQ-0269",
+        "P2C-REQ-0270",
+        "P2C-REQ-0276",
+        "P2C-REQ-0278",
+        "P2C-REQ-0287",
+        "P2C-REQ-0288",
+        "P2C-REQ-0295",
+        "P2C-REQ-0301",
+        "P2C-REQ-0304",
+        "P2C-REQ-0308",
+        "P2C-REQ-0309",
+        "P2C-REQ-0310",
+        "P2C-REQ-0320",
+        "P2C-REQ-0325",
+        "P2C-REQ-0329",
+        "P2C-REQ-0330",
+        "P2C-REQ-0347",
+        "P2C-REQ-0348",
+        "P2C-REQ-0349",
+        "P2C-REQ-0350",
+        "P2C-REQ-0352",
+        "P2C-REQ-0354"
+      ],
+      "clusterCount": 14,
+      "clusterIds": [
+        "P3-HO-CLUSTER-001",
+        "P3-HO-CLUSTER-002",
+        "P3-HO-CLUSTER-003",
+        "P3-HO-CLUSTER-004",
+        "P3-HO-CLUSTER-005",
+        "P3-HO-CLUSTER-006",
+        "P3-HO-CLUSTER-007",
+        "P3-HO-CLUSTER-008",
+        "P3-HO-CLUSTER-009",
+        "P3-HO-CLUSTER-010",
+        "P3-HO-CLUSTER-011",
+        "P3-HO-CLUSTER-012",
+        "P3-HO-CLUSTER-013",
+        "P3-HO-CLUSTER-014"
+      ],
+      "futurePolicyRuleIds": []
+    },
+    "semanticObligationClusters": [
+      {
+        "clusterId": "P3-HO-CLUSTER-001",
+        "label": "component-and-adapter-ownership",
+        "canonicalUnit": "semantic-obligation-cluster",
+        "layer": 3,
+        "candidateRequirementCount": 5,
+        "currentRequirementIds": [
+          "P2C-REQ-0003",
+          "P2C-REQ-0007",
+          "P2C-REQ-0025",
+          "P2C-REQ-0044",
+          "P2C-REQ-0068"
+        ],
+        "normalizedRequirementTexts": [
+          {
+            "requirementId": "P2C-REQ-0003",
+            "normalizedRequirementText": "When a project Pro-wrapper equivalent exists, direct raw PrimeVue usage is also **FORBIDDEN**:",
+            "normalizedTextHash": "358cefede6c21ba0f9b5aede910a82c37a4ff0bd5677956f7753d220dd14c6c9"
+          },
+          {
+            "requirementId": "P2C-REQ-0007",
+            "normalizedRequirementText": "**Permitted native elements** (structural/semantic only): `<div>`, `<span>`, `<section>`, `<header>`, `<footer>`, `<main>`, `<nav>`, `<aside>`, `<article>`, `<ul>`, `<ol>`, `<li>`, `<label>`, `<form>`, `<h1>`–`<h6>`, `<p>`, `<a>` (external links only — internal navigation MUST use `<RouterLink>`).",
+            "normalizedTextHash": "d1c999a7b169cede312035a3db781967f0aefc22d6ab467718497a6fbb362586"
+          },
+          {
+            "requirementId": "P2C-REQ-0025",
+            "normalizedRequirementText": "PrimeVue equivalent exists? → Use it.",
+            "normalizedTextHash": "4531ee90730ae42770ed20363e71122ae77713ceeafc4483982ada2ea0f76211"
+          },
+          {
+            "requirementId": "P2C-REQ-0044",
+            "normalizedRequirementText": "**NEVER use:** `<table>`, `<tr>`, `<td>`, `<th>`, `<thead>`, `<tbody>`, `<form>`, `<input>`, `<select>`, `<textarea>`, `<button>` (use PrimeVue `<Button>` instead).",
+            "normalizedTextHash": "6855b23f7af5728306429cf12c7e493d1a8cb0ed1096533759b4b0c9003053bd"
+          },
+          {
+            "requirementId": "P2C-REQ-0068",
+            "normalizedRequirementText": "**FORBIDDEN:** Raw `vue-echarts` initialization (`echarts.init(...)`, direct `VChart` mounting in business code).",
+            "normalizedTextHash": "ac89c938fb5e0bdec6c713ddf35563bd5f83973b62f4ba00d066965d68a6585c"
+          }
+        ],
+        "semanticSourceIds": [
+          "358cefede6c21ba0f9b5aede910a82c37a4ff0bd5677956f7753d220dd14c6c9",
+          "4531ee90730ae42770ed20363e71122ae77713ceeafc4483982ada2ea0f76211",
+          "6855b23f7af5728306429cf12c7e493d1a8cb0ed1096533759b4b0c9003053bd",
+          "ac89c938fb5e0bdec6c713ddf35563bd5f83973b62f4ba00d066965d68a6585c",
+          "d1c999a7b169cede312035a3db781967f0aefc22d6ab467718497a6fbb362586"
+        ],
+        "semanticSourcePaths": [
+          ".ai/rules/components/00-primevue-ecosystem.mdc",
+          ".ai/rules/components/02-pro-components.mdc",
+          ".ai/rules/components/03-echarts-theming.mdc"
+        ],
+        "sourceSections": [
+          "1.1 ABSOLUTE RULE",
+          "Absolute Ban",
+          "LAW 1 — PrimeVue Purity (The Iron Law)",
+          "Step 1 — ELEMENT AUDIT"
+        ],
+        "sourceLocations": [
+          {
+            "path": ".ai/rules/components/00-primevue-ecosystem.mdc",
+            "section": "1.1 ABSOLUTE RULE",
+            "startLine": 22,
+            "endLine": 22,
+            "sourceSliceSha256": "358cefede6c21ba0f9b5aede910a82c37a4ff0bd5677956f7753d220dd14c6c9"
+          },
+          {
+            "path": ".ai/rules/components/00-primevue-ecosystem.mdc",
+            "section": "1.1 ABSOLUTE RULE",
+            "startLine": 27,
+            "endLine": 27,
+            "sourceSliceSha256": "d1c999a7b169cede312035a3db781967f0aefc22d6ab467718497a6fbb362586"
+          },
+          {
+            "path": ".ai/rules/components/00-primevue-ecosystem.mdc",
+            "section": "Step 1 — ELEMENT AUDIT",
+            "startLine": 171,
+            "endLine": 171,
+            "sourceSliceSha256": "4531ee90730ae42770ed20363e71122ae77713ceeafc4483982ada2ea0f76211"
+          },
+          {
+            "path": ".ai/rules/components/02-pro-components.mdc",
+            "section": "LAW 1 — PrimeVue Purity (The Iron Law)",
+            "startLine": 32,
+            "endLine": 32,
+            "sourceSliceSha256": "6855b23f7af5728306429cf12c7e493d1a8cb0ed1096533759b4b0c9003053bd"
+          },
+          {
+            "path": ".ai/rules/components/03-echarts-theming.mdc",
+            "section": "Absolute Ban",
+            "startLine": 19,
+            "endLine": 19,
+            "sourceSliceSha256": "ac89c938fb5e0bdec6c713ddf35563bd5f83973b62f4ba00d066965d68a6585c"
+          }
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/component-priority.md",
+          ".ai/skills/project-ui/references/platform-invariants.md"
+        ],
+        "normativeInvariant": "Business UI must prefer approved CCD or PrimeVue owners, permit native elements only for structural semantics, reject native interactive and data controls where governed equivalents exist, and keep chart integration behind the approved owner.",
+        "scope": "Business UI components, native element eligibility, forms and tables at the platform boundary, and chart component ownership.",
+        "machineClassifiability": "machine-enforceable with context-sensitive owner lookup",
+        "currentEnforcement": "Repository rules, component review, existing wrappers and adapters, and current architecture checks; no P3 Machine UI Policy exists.",
+        "futureSourceScannerBoundary": "A later source scanner may detect native controls, raw component imports, and raw chart integration; P3 only records the policy and enforcement state.",
+        "futurePageContractBoundary": "Per-page component composition, form schema shape, table columns, and archetype choices remain Page Contract concerns.",
+        "historicalLineage": [
+          "P2-REQ-0121 contributes P2C-REQ-0044 after a mixed split; the historical marker itself is not the canonical unit."
+        ],
+        "redundancyRationale": "Specific ProTable, ProForm, Dialog, and UseEcharts examples remain supporting context; the selected propositions define the owner hierarchy, allowlist, prohibition, and chart-owner boundary without repeating each example.",
+        "selectionRationale": "These current records are the smallest non-duplicative rule-source set that defines component ownership rather than implementation evidence.",
+        "permanentPolicyRuleIdsAssigned": false
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-002",
+        "label": "feedback-and-overlay-abstraction",
+        "canonicalUnit": "semantic-obligation-cluster",
+        "layer": 3,
+        "candidateRequirementCount": 3,
+        "currentRequirementIds": ["P2C-REQ-0012", "P2C-REQ-0013", "P2C-REQ-0014"],
+        "normalizedRequirementTexts": [
+          {
+            "requirementId": "P2C-REQ-0012",
+            "normalizedRequirementText": "**Feedback Channel (ABSOLUTE RULE):** NEVER use raw PrimeVue `Toast` instances in business code and NEVER use native `alert` / `confirm` for user feedback.",
+            "normalizedTextHash": "fcb754d2955b23f81e6756cd4f4e77b5c077f71365cb552d66b810f6a2540b9d"
+          },
+          {
+            "requirementId": "P2C-REQ-0013",
+            "normalizedRequirementText": "You MUST route feedback through the internal abstraction (`@/components/ProToast` or the project's configured toast service APIs such as `window.$toast` / `window.$message`) to preserve queue policy, theme consistency, and cross-module UX behavior.",
+            "normalizedTextHash": "22dd93c10ad807f4118bb9ff5ba94b8e353108be56deee3f823e31c8418ac9ba"
+          },
+          {
+            "requirementId": "P2C-REQ-0014",
+            "normalizedRequirementText": "**Dialogs (ARCHITECTURAL PRIORITY):** Prefer the internal dialog abstraction (`@/components/PrimeDialog` or equivalent architecture-approved wrapper / `useDialog`) over raw PrimeVue `Dialog` declarations when implementing business dialogs, so lifecycle orchestration, layout constraints, and close behaviors remain centralized.",
+            "normalizedTextHash": "7207fc75b004ce474b9ffba83bae29d1ed1a304c40207de16baf715b5e621bb0"
+          }
+        ],
+        "semanticSourceIds": [
+          "22dd93c10ad807f4118bb9ff5ba94b8e353108be56deee3f823e31c8418ac9ba",
+          "7207fc75b004ce474b9ffba83bae29d1ed1a304c40207de16baf715b5e621bb0",
+          "fcb754d2955b23f81e6756cd4f4e77b5c077f71365cb552d66b810f6a2540b9d"
+        ],
+        "semanticSourcePaths": [".ai/rules/components/00-primevue-ecosystem.mdc"],
+        "sourceSections": ["1.5 🚨 Internal Abstraction Mandates (CRITICAL)"],
+        "sourceLocations": [
+          {
+            "path": ".ai/rules/components/00-primevue-ecosystem.mdc",
+            "section": "1.5 🚨 Internal Abstraction Mandates (CRITICAL)",
+            "startLine": 80,
+            "endLine": 80,
+            "sourceSliceSha256": "fcb754d2955b23f81e6756cd4f4e77b5c077f71365cb552d66b810f6a2540b9d"
+          },
+          {
+            "path": ".ai/rules/components/00-primevue-ecosystem.mdc",
+            "section": "1.5 🚨 Internal Abstraction Mandates (CRITICAL)",
+            "startLine": 80,
+            "endLine": 80,
+            "sourceSliceSha256": "22dd93c10ad807f4118bb9ff5ba94b8e353108be56deee3f823e31c8418ac9ba"
+          },
+          {
+            "path": ".ai/rules/components/00-primevue-ecosystem.mdc",
+            "section": "1.5 🚨 Internal Abstraction Mandates (CRITICAL)",
+            "startLine": 81,
+            "endLine": 81,
+            "sourceSliceSha256": "7207fc75b004ce474b9ffba83bae29d1ed1a304c40207de16baf715b5e621bb0"
+          }
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/component-priority.md",
+          ".ai/skills/project-ui/references/platform-invariants.md"
+        ],
+        "normativeInvariant": "Business feedback and dialogs must avoid raw Toast, alert, confirm, and ad hoc dialog ownership, and must route through approved abstractions that preserve queue, theme, lifecycle, layout, and close behavior.",
+        "scope": "Business feedback channels, dialogs, drawers, overlays, and cross-module UX behavior.",
+        "machineClassifiability": "mixed machine-classifiable and human-review boundary",
+        "currentEnforcement": "Repository rules and human review; some raw calls are source-detectable, but no P3 policy validator enforces application source.",
+        "futureSourceScannerBoundary": "A later scanner may detect raw alert, confirm, Toast, Dialog, or Drawer usage; P3 defines policy metadata and fixtures only.",
+        "futurePageContractBoundary": "Per-page feedback timing and overlay composition remain outside the platform policy unless a Page Contract later owns them.",
+        "historicalLineage": [
+          "P2-REQ-0016 split into P2C-REQ-0012 and P2C-REQ-0013; P2C-REQ-0014 supplies the adjacent dialog boundary."
+        ],
+        "redundancyRationale": "The prohibition and required abstraction are complementary split propositions, not duplicates; the dialog rule is a distinct overlay owner boundary.",
+        "selectionRationale": "All three current records are needed to preserve the complete required/prohibited feedback obligation.",
+        "permanentPolicyRuleIdsAssigned": false
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-003",
+        "label": "primevue-styling-and-passthrough",
+        "canonicalUnit": "semantic-obligation-cluster",
+        "layer": 3,
+        "candidateRequirementCount": 3,
+        "currentRequirementIds": ["P2C-REQ-0020", "P2C-REQ-0021", "P2C-REQ-0024"],
+        "normalizedRequirementTexts": [
+          {
+            "requirementId": "P2C-REQ-0020",
+            "normalizedRequirementText": "All visual customization of PrimeVue components MUST use the Pass-Through (`pt`) system.",
+            "normalizedTextHash": "41f9a730ec09e1abf3f10b5522c029d52bfc86bae3a7aafd4b4f580989ece125"
+          },
+          {
+            "requirementId": "P2C-REQ-0021",
+            "normalizedRequirementText": "`:deep(.p-*)` targeting PrimeVue internal classes is **FORBIDDEN** in business code.",
+            "normalizedTextHash": "4cb9d16eac236f42c312d60226307dd8aa915abf21d963f80f146e824b4db597"
+          },
+          {
+            "requirementId": "P2C-REQ-0024",
+            "normalizedRequirementText": "If a global PT exists, your local `:pt` should only **ADD** classes, not **DUPLICATE** or **CONFLICT** with the global preset.",
+            "normalizedTextHash": "60237d7f70331a7f406617f42e37227fcf89020a3c580b1d8171cce64508a99f"
+          }
+        ],
+        "semanticSourceIds": [
+          "41f9a730ec09e1abf3f10b5522c029d52bfc86bae3a7aafd4b4f580989ece125",
+          "4cb9d16eac236f42c312d60226307dd8aa915abf21d963f80f146e824b4db597",
+          "60237d7f70331a7f406617f42e37227fcf89020a3c580b1d8171cce64508a99f"
+        ],
+        "semanticSourcePaths": [".ai/rules/components/00-primevue-ecosystem.mdc"],
+        "sourceSections": [
+          "3.1 PT-First Principle",
+          "3.2 `:deep()` Prohibition — Exhaustive Exception List",
+          "3.3 Global PT Presets — Check Before Writing"
+        ],
+        "sourceLocations": [
+          {
+            "path": ".ai/rules/components/00-primevue-ecosystem.mdc",
+            "section": "3.1 PT-First Principle",
+            "startLine": 140,
+            "endLine": 140,
+            "sourceSliceSha256": "41f9a730ec09e1abf3f10b5522c029d52bfc86bae3a7aafd4b4f580989ece125"
+          },
+          {
+            "path": ".ai/rules/components/00-primevue-ecosystem.mdc",
+            "section": "3.2 `:deep()` Prohibition — Exhaustive Exception List",
+            "startLine": 144,
+            "endLine": 144,
+            "sourceSliceSha256": "4cb9d16eac236f42c312d60226307dd8aa915abf21d963f80f146e824b4db597"
+          },
+          {
+            "path": ".ai/rules/components/00-primevue-ecosystem.mdc",
+            "section": "3.3 Global PT Presets — Check Before Writing",
+            "startLine": 160,
+            "endLine": 160,
+            "sourceSliceSha256": "60237d7f70331a7f406617f42e37227fcf89020a3c580b1d8171cce64508a99f"
+          }
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/component-priority.md",
+          ".ai/skills/project-ui/references/tokens-unocss.md"
+        ],
+        "normativeInvariant": "PrimeVue visual customization must use PassThrough ownership, must not target internal PrimeVue classes from business code, and must not duplicate or conflict with global PassThrough presets.",
+        "scope": "PrimeVue component styling and local/global PassThrough ownership.",
+        "machineClassifiability": "machine-enforceable with preset-aware classification",
+        "currentEnforcement": "Repository rules, human review, and any existing targeted source checks; no Machine UI Policy exists.",
+        "futureSourceScannerBoundary": "A later scanner may detect deep selectors and local PassThrough duplication; P3 does not implement repository source scanning.",
+        "futurePageContractBoundary": "Per-page component choice remains separate; this cluster governs styling ownership only.",
+        "historicalLineage": [],
+        "redundancyRationale": "Checklist restatements and exact code examples are supporting context; these three records retain the required mechanism, forbidden mechanism, and global/local conflict rule.",
+        "selectionRationale": "The selected records form a closed non-duplicative styling ownership obligation.",
+        "permanentPolicyRuleIdsAssigned": false
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-004",
+        "label": "visual-constant-and-token-ownership",
+        "canonicalUnit": "semantic-obligation-cluster",
+        "layer": 3,
+        "candidateRequirementCount": 5,
+        "currentRequirementIds": [
+          "P2C-REQ-0119",
+          "P2C-REQ-0120",
+          "P2C-REQ-0144",
+          "P2C-REQ-0149",
+          "P2C-REQ-0177"
+        ],
+        "normalizedRequirementTexts": [
+          {
+            "requirementId": "P2C-REQ-0119",
+            "normalizedRequirementText": "**SOURCE-AUTHORING BAN:** `rem` / `em` are forbidden for source-authored sizing and spacing utilities, style blocks, and arbitrary values.",
+            "normalizedTextHash": "de12aeb7fe38ed441e1c3d004db1a02c71b49a442259c2f952f8467054c73aaf"
+          },
+          {
+            "requirementId": "P2C-REQ-0120",
+            "normalizedRequirementText": "`px`, `%`, `vw`, `vh` are allowed when token classes cannot express the intent.",
+            "normalizedTextHash": "495ac84c649d20ae122a4108e0adaae818f2b2a69555d196f52c8c75edff12ac"
+          },
+          {
+            "requirementId": "P2C-REQ-0144",
+            "normalizedRequirementText": "Nonexistent shortcuts must never be invented.",
+            "normalizedTextHash": "9843eb267836672e1f05476f3b8a303ca8b2969d875c1fa6d16537997ad8b63c"
+          },
+          {
+            "requirementId": "P2C-REQ-0149",
+            "normalizedRequirementText": "**NEVER** use raw hex codes, RGB values, or `rem`/`em` sizing in templates or styles.",
+            "normalizedTextHash": "3facc3c15a835db31947ccdbae9937b1cf14172d5cb57c3c34a133fc3763d52b"
+          },
+          {
+            "requirementId": "P2C-REQ-0177",
+            "normalizedRequirementText": "ALL layout dimensions, font sizes, spacing, and border radii MUST be derived from these presets via CSS variables. **Hardcoded pixel values for layout dimensions are FORBIDDEN.**",
+            "normalizedTextHash": "b7451cb40926701bbfdf6738c50737b7eaff33e5201a6e66ef440bc5df9119c0"
+          }
+        ],
+        "semanticSourceIds": [
+          "3facc3c15a835db31947ccdbae9937b1cf14172d5cb57c3c34a133fc3763d52b",
+          "495ac84c649d20ae122a4108e0adaae818f2b2a69555d196f52c8c75edff12ac",
+          "9843eb267836672e1f05476f3b8a303ca8b2969d875c1fa6d16537997ad8b63c",
+          "b7451cb40926701bbfdf6738c50737b7eaff33e5201a6e66ef440bc5df9119c0",
+          "de12aeb7fe38ed441e1c3d004db1a02c71b49a442259c2f952f8467054c73aaf"
+        ],
+        "semanticSourcePaths": [
+          ".ai/rules/design-system/00-unocss-guardrails.mdc",
+          ".ai/rules/design-system/01-design-tokens.mdc",
+          ".ai/rules/design-system/02-size-density-system.mdc"
+        ],
+        "sourceSections": [
+          "Core Architecture",
+          "Core Philosophy (CRITICAL)",
+          "GUARDRAIL 5 — Sizes: Token Scale ONLY",
+          "Shortcut Closed Set Contract"
+        ],
+        "sourceLocations": [
+          {
+            "path": ".ai/rules/design-system/00-unocss-guardrails.mdc",
+            "section": "GUARDRAIL 5 — Sizes: Token Scale ONLY",
+            "startLine": 141,
+            "endLine": 141,
+            "sourceSliceSha256": "de12aeb7fe38ed441e1c3d004db1a02c71b49a442259c2f952f8467054c73aaf"
+          },
+          {
+            "path": ".ai/rules/design-system/00-unocss-guardrails.mdc",
+            "section": "GUARDRAIL 5 — Sizes: Token Scale ONLY",
+            "startLine": 144,
+            "endLine": 144,
+            "sourceSliceSha256": "495ac84c649d20ae122a4108e0adaae818f2b2a69555d196f52c8c75edff12ac"
+          },
+          {
+            "path": ".ai/rules/design-system/00-unocss-guardrails.mdc",
+            "section": "Shortcut Closed Set Contract",
+            "startLine": 274,
+            "endLine": 274,
+            "sourceSliceSha256": "9843eb267836672e1f05476f3b8a303ca8b2969d875c1fa6d16537997ad8b63c"
+          },
+          {
+            "path": ".ai/rules/design-system/01-design-tokens.mdc",
+            "section": "Core Philosophy (CRITICAL)",
+            "startLine": 22,
+            "endLine": 22,
+            "sourceSliceSha256": "3facc3c15a835db31947ccdbae9937b1cf14172d5cb57c3c34a133fc3763d52b"
+          },
+          {
+            "path": ".ai/rules/design-system/02-size-density-system.mdc",
+            "section": "Core Architecture",
+            "startLine": 13,
+            "endLine": 13,
+            "sourceSliceSha256": "b7451cb40926701bbfdf6738c50737b7eaff33e5201a6e66ef440bc5df9119c0"
+          }
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/platform-invariants.md",
+          ".ai/skills/project-ui/references/tokens-unocss.md"
+        ],
+        "normativeInvariant": "Business UI must consume registered tokens, variables, presets, and closed shortcut sets; raw colors and rem/em values are forbidden, explicit structural units are conditional fallbacks, and layout dimensions, typography, spacing, and radii remain size-engine owned.",
+        "scope": "Colors, units, spacing, typography, radii, shortcuts, CSS variables, and registered structural grammar.",
+        "machineClassifiability": "machine-enforceable with registered-token lookup",
+        "currentEnforcement": "UnoCSS configuration, token validators, repository rules, and human review; P3 policy is absent.",
+        "futureSourceScannerBoundary": "A later scanner may enforce literal-unit, color, and shortcut usage; P3 records the closed rule semantics and enforcement status.",
+        "futurePageContractBoundary": "Page-specific spatial composition remains a Page Contract concern; token ownership remains platform policy.",
+        "historicalLineage": [],
+        "redundancyRationale": "Repeated examples of prohibited utility classes and duplicate rem/em bans remain supporting context. The selected records preserve prohibition, conditional allowance, closed-set ownership, and size-engine ownership.",
+        "selectionRationale": "These records cover distinct required/prohibited concepts without selecting every utility example.",
+        "permanentPolicyRuleIdsAssigned": false
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-005",
+        "label": "semantic-theme-color-and-contrast",
+        "canonicalUnit": "semantic-obligation-cluster",
+        "layer": 3,
+        "candidateRequirementCount": 6,
+        "currentRequirementIds": [
+          "P2C-REQ-0156",
+          "P2C-REQ-0158",
+          "P2C-REQ-0241",
+          "P2C-REQ-0242",
+          "P2C-REQ-0243",
+          "P2C-REQ-0244"
+        ],
+        "normalizedRequirementTexts": [
+          {
+            "requirementId": "P2C-REQ-0156",
+            "normalizedRequirementText": "`THEME_PRESETS` SHOULD use `CompleteThemePreset[]` and define both `light` and `dark` mode explicitly.",
+            "normalizedTextHash": "a9e6f81452c7f8e027e867b3bfcda86c0886dbe93270bf120fab09501816e30a"
+          },
+          {
+            "requirementId": "P2C-REQ-0158",
+            "normalizedRequirementText": "Every preset and mode MUST include complete semantic families: `primary`, `accent`, `success`, `warn`, `danger`, `info`, `help`, base scalar tokens, neutral tokens, and independent `sidebar` tokens.",
+            "normalizedTextHash": "d90ae442dfd87f43d8912df5f0b085a715a686e9692b65841825df291a612cac"
+          },
+          {
+            "requirementId": "P2C-REQ-0241",
+            "normalizedRequirementText": "AI MUST preserve the intended semantic tier of each token instead of assuming a uniform contrast bar.",
+            "normalizedTextHash": "a398ef620cce4f01e4bc9553ac417e1fb74aa49c17cebc77f075a4059101ba99"
+          },
+          {
+            "requirementId": "P2C-REQ-0242",
+            "normalizedRequirementText": "Contract: these pairs MUST remain readable at `>= 4.5`",
+            "normalizedTextHash": "49c30afecd55ed6cd5b2b7be2a1dd1e23d96ebeaa43ffa72763990bccae74795"
+          },
+          {
+            "requirementId": "P2C-REQ-0243",
+            "normalizedRequirementText": "Contract: these pairs MUST remain readable at `>= 3.0`",
+            "normalizedTextHash": "fd7d95a78af1773b6cb1ec5a6a420d25449e93e86b7f706ffe4b1656f37b5aba"
+          },
+          {
+            "requirementId": "P2C-REQ-0244",
+            "normalizedRequirementText": "Do NOT use `*-light` or `*-light-foreground` as the primary readable text/fill pair for CTAs, primary buttons, or body content.",
+            "normalizedTextHash": "82291a26a710392f274554a3d3ebe3c201b5216170faa888e7d971ed31cdbb2e"
+          }
+        ],
+        "semanticSourceIds": [
+          "49c30afecd55ed6cd5b2b7be2a1dd1e23d96ebeaa43ffa72763990bccae74795",
+          "82291a26a710392f274554a3d3ebe3c201b5216170faa888e7d971ed31cdbb2e",
+          "a398ef620cce4f01e4bc9553ac417e1fb74aa49c17cebc77f075a4059101ba99",
+          "a9e6f81452c7f8e027e867b3bfcda86c0886dbe93270bf120fab09501816e30a",
+          "d90ae442dfd87f43d8912df5f0b085a715a686e9692b65841825df291a612cac",
+          "fd7d95a78af1773b6cb1ec5a6a420d25449e93e86b7f706ffe4b1656f37b5aba"
+        ],
+        "semanticSourcePaths": [
+          ".ai/rules/design-system/01-design-tokens.mdc",
+          ".ai/rules/design-system/05-semantic-color-usage-contract.mdc"
+        ],
+        "sourceSections": ["Semantic Validation Rules", "Theme Preset Source-Data Exception"],
+        "sourceLocations": [
+          {
+            "path": ".ai/rules/design-system/01-design-tokens.mdc",
+            "section": "Theme Preset Source-Data Exception",
+            "startLine": 43,
+            "endLine": 43,
+            "sourceSliceSha256": "a9e6f81452c7f8e027e867b3bfcda86c0886dbe93270bf120fab09501816e30a"
+          },
+          {
+            "path": ".ai/rules/design-system/01-design-tokens.mdc",
+            "section": "Theme Preset Source-Data Exception",
+            "startLine": 45,
+            "endLine": 45,
+            "sourceSliceSha256": "d90ae442dfd87f43d8912df5f0b085a715a686e9692b65841825df291a612cac"
+          },
+          {
+            "path": ".ai/rules/design-system/05-semantic-color-usage-contract.mdc",
+            "section": "Semantic Validation Rules",
+            "startLine": 48,
+            "endLine": 48,
+            "sourceSliceSha256": "a398ef620cce4f01e4bc9553ac417e1fb74aa49c17cebc77f075a4059101ba99"
+          },
+          {
+            "path": ".ai/rules/design-system/05-semantic-color-usage-contract.mdc",
+            "section": "Semantic Validation Rules",
+            "startLine": 54,
+            "endLine": 54,
+            "sourceSliceSha256": "49c30afecd55ed6cd5b2b7be2a1dd1e23d96ebeaa43ffa72763990bccae74795"
+          },
+          {
+            "path": ".ai/rules/design-system/05-semantic-color-usage-contract.mdc",
+            "section": "Semantic Validation Rules",
+            "startLine": 57,
+            "endLine": 57,
+            "sourceSliceSha256": "49c30afecd55ed6cd5b2b7be2a1dd1e23d96ebeaa43ffa72763990bccae74795"
+          },
+          {
+            "path": ".ai/rules/design-system/05-semantic-color-usage-contract.mdc",
+            "section": "Semantic Validation Rules",
+            "startLine": 60,
+            "endLine": 60,
+            "sourceSliceSha256": "fd7d95a78af1773b6cb1ec5a6a420d25449e93e86b7f706ffe4b1656f37b5aba"
+          },
+          {
+            "path": ".ai/rules/design-system/05-semantic-color-usage-contract.mdc",
+            "section": "Semantic Validation Rules",
+            "startLine": 67,
+            "endLine": 67,
+            "sourceSliceSha256": "82291a26a710392f274554a3d3ebe3c201b5216170faa888e7d971ed31cdbb2e"
+          }
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/accessibility.md",
+          ".ai/skills/project-ui/references/product-ui-profile.md",
+          ".ai/skills/project-ui/references/tokens-unocss.md"
+        ],
+        "normativeInvariant": "Themes must define light and dark modes with complete semantic families, preserve token semantic tiers, enforce the accepted 4.5 and 3.0 readability classes, and prevent decorative light tokens from serving as primary readable content pairs.",
+        "scope": "Theme presets, semantic color families, contrast classes, readable content, and light/dark parity.",
+        "machineClassifiability": "machine-enforceable for schema and contrast data, human-review for semantic intent",
+        "currentEnforcement": "Theme-token source contracts and validate:tokens behavior plus human review; no P3 policy artifact exists.",
+        "futureSourceScannerBoundary": "P3 may classify enforcement as current validator, future scanner, or human review; it must not replace the existing token validator.",
+        "futurePageContractBoundary": "Page-specific color emphasis and state presentation remain subject to Page Contract and human review.",
+        "historicalLineage": [
+          "P2-REQ-0265 maps to P2C-REQ-0159 and P2C-REQ-0160 as already-implemented validation foundation, not canonical candidate members."
+        ],
+        "redundancyRationale": "The 4.5 and 3.0 records are retained despite lexical similarity because they govern different semantic contrast tiers; family-name examples remain supporting context.",
+        "selectionRationale": "The selected propositions define theme completeness, semantic intent, and the two accepted contrast boundaries.",
+        "permanentPolicyRuleIdsAssigned": false
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-006",
+        "label": "size-density-and-responsive-ownership",
+        "canonicalUnit": "semantic-obligation-cluster",
+        "layer": 3,
+        "candidateRequirementCount": 5,
+        "currentRequirementIds": [
+          "P2C-REQ-0181",
+          "P2C-REQ-0253",
+          "P2C-REQ-0256",
+          "P2C-REQ-0269",
+          "P2C-REQ-0270"
+        ],
+        "normalizedRequirementTexts": [
+          {
+            "requirementId": "P2C-REQ-0181",
+            "normalizedRequirementText": "**Layout dimensions** — PC expanded layout dimensions scale by breakpoint via `LAYOUT_SCALE_RATIOS`; Mobile/Tablet always use ratio = 1.",
+            "normalizedTextHash": "b49257b909802b9371e8a5f890852abc57313eefb3d0fb395a37f574949b3c90"
+          },
+          {
+            "requirementId": "P2C-REQ-0253",
+            "normalizedRequirementText": "Device store owns raw device, viewport, breakpoint, orientation, pixel ratio, and resize lifecycle state.",
+            "normalizedTextHash": "86494e7d09b9e5fdcb86ab434417e20a4211b47b38f247258bd0b110931fba5b"
+          },
+          {
+            "requirementId": "P2C-REQ-0256",
+            "normalizedRequirementText": "Size engine owns CSS variable dimensions, typography scaling, breakpoint scaling, pixel-ratio-aware sizing, and density presets.",
+            "normalizedTextHash": "13b0848e26724bb3ddc62413114e1ddc0adfcf05616ad522b9f2a566cb45b397"
+          },
+          {
+            "requirementId": "P2C-REQ-0269",
+            "normalizedRequirementText": "Use `v-if`/`v-show` with runtime flags, never responsive utility classes on shell structures.",
+            "normalizedTextHash": "e46e44dedb6730dc5eeff480b7e53be44aee8067da42dc49b01c829d85b3ab1f"
+          },
+          {
+            "requirementId": "P2C-REQ-0270",
+            "normalizedRequirementText": "Child components may render from props, but MUST NOT infer mobile/tablet/drawer behavior locally.",
+            "normalizedTextHash": "91c1f2deea5a1c0c081363aa053c261d6e5b9714564f4b6c5da9a2cb3d0a0ac7"
+          }
+        ],
+        "semanticSourceIds": [
+          "13b0848e26724bb3ddc62413114e1ddc0adfcf05616ad522b9f2a566cb45b397",
+          "86494e7d09b9e5fdcb86ab434417e20a4211b47b38f247258bd0b110931fba5b",
+          "91c1f2deea5a1c0c081363aa053c261d6e5b9714564f4b6c5da9a2cb3d0a0ac7",
+          "b49257b909802b9371e8a5f890852abc57313eefb3d0fb395a37f574949b3c90",
+          "e46e44dedb6730dc5eeff480b7e53be44aee8067da42dc49b01c829d85b3ab1f"
+        ],
+        "semanticSourcePaths": [
+          ".ai/rules/design-system/02-size-density-system.mdc",
+          ".ai/rules/integrations/03-layout-architecture.mdc"
+        ],
+        "sourceSections": [
+          "Integration Guidance",
+          "Path B — Responsive Variables (device + breakpoint + preset)",
+          "Runtime Ownership Boundaries"
+        ],
+        "sourceLocations": [
+          {
+            "path": ".ai/rules/design-system/02-size-density-system.mdc",
+            "section": "Path B — Responsive Variables (device + breakpoint + preset)",
+            "startLine": 86,
+            "endLine": 86,
+            "sourceSliceSha256": "b49257b909802b9371e8a5f890852abc57313eefb3d0fb395a37f574949b3c90"
+          },
+          {
+            "path": ".ai/rules/integrations/03-layout-architecture.mdc",
+            "section": "Runtime Ownership Boundaries",
+            "startLine": 96,
+            "endLine": 96,
+            "sourceSliceSha256": "86494e7d09b9e5fdcb86ab434417e20a4211b47b38f247258bd0b110931fba5b"
+          },
+          {
+            "path": ".ai/rules/integrations/03-layout-architecture.mdc",
+            "section": "Runtime Ownership Boundaries",
+            "startLine": 100,
+            "endLine": 100,
+            "sourceSliceSha256": "13b0848e26724bb3ddc62413114e1ddc0adfcf05616ad522b9f2a566cb45b397"
+          },
+          {
+            "path": ".ai/rules/integrations/03-layout-architecture.mdc",
+            "section": "Integration Guidance",
+            "startLine": 146,
+            "endLine": 146,
+            "sourceSliceSha256": "e46e44dedb6730dc5eeff480b7e53be44aee8067da42dc49b01c829d85b3ab1f"
+          },
+          {
+            "path": ".ai/rules/integrations/03-layout-architecture.mdc",
+            "section": "Integration Guidance",
+            "startLine": 148,
+            "endLine": 148,
+            "sourceSliceSha256": "91c1f2deea5a1c0c081363aa053c261d6e5b9714564f4b6c5da9a2cb3d0a0ac7"
+          }
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/layout-scroll.md",
+          ".ai/skills/project-ui/references/platform-invariants.md",
+          ".ai/skills/project-ui/references/tokens-unocss.md"
+        ],
+        "normativeInvariant": "Responsive UI must consume device and size-engine state, apply accepted breakpoint scaling, use runtime flags for shell structure, and prevent child components from independently inferring device behavior.",
+        "scope": "Density, breakpoint scaling, viewport state, shell visibility, and responsive ownership.",
+        "machineClassifiability": "mixed runtime-state classification and source-detectable ownership",
+        "currentEnforcement": "Existing device store, size engine, runtime tests, repository rules, and human review.",
+        "futureSourceScannerBoundary": "A later scanner may detect responsive utility misuse and local device inference; P3 does not change runtime state ownership.",
+        "futurePageContractBoundary": "Per-page responsive transformations, region collapse, and action priority remain Page Contract inputs.",
+        "historicalLineage": [],
+        "redundancyRationale": "Geometry-specific sidebar records remain supporting context; the selected propositions preserve the breakpoint, raw-state, size-engine, shell, and child-owner boundaries.",
+        "selectionRationale": "These records express the minimum distinct responsive ownership chain.",
+        "permanentPolicyRuleIdsAssigned": false
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-007",
+        "label": "layout-root-scroll-and-safe-area",
+        "canonicalUnit": "semantic-obligation-cluster",
+        "layer": 3,
+        "candidateRequirementCount": 7,
+        "currentRequirementIds": [
+          "P2C-REQ-0015",
+          "P2C-REQ-0047",
+          "P2C-REQ-0048",
+          "P2C-REQ-0139",
+          "P2C-REQ-0140",
+          "P2C-REQ-0248",
+          "P2C-REQ-0266"
+        ],
+        "normalizedRequirementTexts": [
+          {
+            "requirementId": "P2C-REQ-0015",
+            "normalizedRequirementText": "All scrollable regions MUST use `<CScrollbar>`. **STRICT PROHIBITION:** NEVER use `overflow-auto` or `overflow-scroll` on generic containers for primary page scrolling.",
+            "normalizedTextHash": "0c55442ee77ad2e74659a731ff3624d086e132e7a8208cc5b506e5bc664cf938"
+          },
+          {
+            "requirementId": "P2C-REQ-0047",
+            "normalizedRequirementText": "<!-- ✅ REQUIRED: transparent root — Transparent Root Policy -->",
+            "normalizedTextHash": "778fd767507f575ebec824a0ce0e17753cdf79228567fad523152d5e6fd0a940"
+          },
+          {
+            "requirementId": "P2C-REQ-0048",
+            "normalizedRequirementText": "<!-- ❌ FORBIDDEN: any bg-* / surface-* / material-* on root wrapper -->",
+            "normalizedTextHash": "5ad6eed9b953d0dbb512c05b9c5e60cb52092d28b231957a2e3a528d98961c37"
+          },
+          {
+            "requirementId": "P2C-REQ-0139",
+            "normalizedRequirementText": "**FORBIDDEN AS DEFAULT ROOT:** NEVER use `col-fill` as the root wrapper for standard flowing pages where the parent layout handles scrolling.",
+            "normalizedTextHash": "87d0bbe4d70b7045be16e5c33d3977b30665f1ce4b7e5c2fde129d6bfcf4264d"
+          },
+          {
+            "requirementId": "P2C-REQ-0140",
+            "normalizedRequirementText": "**PERMITTED ONLY WHEN VIEW TAKES OVER SCROLL:** Use `col-fill` at root ONLY if the view intentionally owns viewport-height + internal scrolling.",
+            "normalizedTextHash": "c3884932a1ff3e03aac69a3e5f6ea850b5cb04abe98fb6248a4d25d9c3cbc973"
+          },
+          {
+            "requirementId": "P2C-REQ-0248",
+            "normalizedRequirementText": "Structural visibility (Sidebar/Top Menu/Drawer) MUST NOT rely on CSS media query visibility toggles.",
+            "normalizedTextHash": "dfea0da04f5c99c31d2200413dc6a55e60125525c3541279cfbb1a27ff7e1620"
+          },
+          {
+            "requirementId": "P2C-REQ-0266",
+            "normalizedRequirementText": "All layout safe-area consumption must use centralized variables exposed by runtime styles:",
+            "normalizedTextHash": "dcadfffaa47ed4a9416ca544a1fc499616858f7c2dcade831a3ab73562ccf270"
+          }
+        ],
+        "semanticSourceIds": [
+          "0c55442ee77ad2e74659a731ff3624d086e132e7a8208cc5b506e5bc664cf938",
+          "5ad6eed9b953d0dbb512c05b9c5e60cb52092d28b231957a2e3a528d98961c37",
+          "778fd767507f575ebec824a0ce0e17753cdf79228567fad523152d5e6fd0a940",
+          "87d0bbe4d70b7045be16e5c33d3977b30665f1ce4b7e5c2fde129d6bfcf4264d",
+          "c3884932a1ff3e03aac69a3e5f6ea850b5cb04abe98fb6248a4d25d9c3cbc973",
+          "dcadfffaa47ed4a9416ca544a1fc499616858f7c2dcade831a3ab73562ccf270",
+          "dfea0da04f5c99c31d2200413dc6a55e60125525c3541279cfbb1a27ff7e1620"
+        ],
+        "semanticSourcePaths": [
+          ".ai/rules/components/00-primevue-ecosystem.mdc",
+          ".ai/rules/components/02-pro-components.mdc",
+          ".ai/rules/design-system/00-unocss-guardrails.mdc",
+          ".ai/rules/integrations/03-layout-architecture.mdc"
+        ],
+        "sourceSections": [
+          "1.5 🚨 Internal Abstraction Mandates (CRITICAL)",
+          "2.1 — Root Wrapper",
+          "Core Philosophy (CRITICAL)",
+          "Safe Area Runtime",
+          "The `col-fill` Scope Contract"
+        ],
+        "sourceLocations": [
+          {
+            "path": ".ai/rules/components/00-primevue-ecosystem.mdc",
+            "section": "1.5 🚨 Internal Abstraction Mandates (CRITICAL)",
+            "startLine": 82,
+            "endLine": 82,
+            "sourceSliceSha256": "0c55442ee77ad2e74659a731ff3624d086e132e7a8208cc5b506e5bc664cf938"
+          },
+          {
+            "path": ".ai/rules/components/02-pro-components.mdc",
+            "section": "2.1 — Root Wrapper",
+            "startLine": 84,
+            "endLine": 84,
+            "sourceSliceSha256": "778fd767507f575ebec824a0ce0e17753cdf79228567fad523152d5e6fd0a940"
+          },
+          {
+            "path": ".ai/rules/components/02-pro-components.mdc",
+            "section": "2.1 — Root Wrapper",
+            "startLine": 85,
+            "endLine": 85,
+            "sourceSliceSha256": "5ad6eed9b953d0dbb512c05b9c5e60cb52092d28b231957a2e3a528d98961c37"
+          },
+          {
+            "path": ".ai/rules/design-system/00-unocss-guardrails.mdc",
+            "section": "The `col-fill` Scope Contract",
+            "startLine": 263,
+            "endLine": 263,
+            "sourceSliceSha256": "87d0bbe4d70b7045be16e5c33d3977b30665f1ce4b7e5c2fde129d6bfcf4264d"
+          },
+          {
+            "path": ".ai/rules/design-system/00-unocss-guardrails.mdc",
+            "section": "The `col-fill` Scope Contract",
+            "startLine": 264,
+            "endLine": 264,
+            "sourceSliceSha256": "c3884932a1ff3e03aac69a3e5f6ea850b5cb04abe98fb6248a4d25d9c3cbc973"
+          },
+          {
+            "path": ".ai/rules/integrations/03-layout-architecture.mdc",
+            "section": "Core Philosophy (CRITICAL)",
+            "startLine": 10,
+            "endLine": 10,
+            "sourceSliceSha256": "dfea0da04f5c99c31d2200413dc6a55e60125525c3541279cfbb1a27ff7e1620"
+          },
+          {
+            "path": ".ai/rules/integrations/03-layout-architecture.mdc",
+            "section": "Safe Area Runtime",
+            "startLine": 134,
+            "endLine": 134,
+            "sourceSliceSha256": "dcadfffaa47ed4a9416ca544a1fc499616858f7c2dcade831a3ab73562ccf270"
+          }
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/layout-scroll.md",
+          ".ai/skills/project-ui/references/platform-invariants.md"
+        ],
+        "normativeInvariant": "Page roots must preserve transparent shell ownership, primary scroll must use the approved scroll owner, col-fill is conditional on explicit view-owned scrolling, shell visibility must not depend on CSS media hiding, and safe-area values must be centrally provided.",
+        "scope": "Page roots, app shell, primary scrolling, structural visibility, viewport ownership, and safe areas.",
+        "machineClassifiability": "mixed machine-classifiable and human layout-owner review",
+        "currentEnforcement": "Repository rules, AppContainer/runtime evidence, and targeted visual or layout tests; no P3 policy exists.",
+        "futureSourceScannerBoundary": "A later scanner may detect overflow, root material, col-fill, media-query, and safe-area literals; P3 only records rule semantics.",
+        "futurePageContractBoundary": "Named page regions, exact scroll owners, same-axis exceptions, and per-breakpoint topology remain Page Contract responsibilities.",
+        "historicalLineage": [
+          "P2-REQ-0092 maps one-to-one to P2C-REQ-0047 and remains eligible in this cluster."
+        ],
+        "redundancyRationale": "CScrollbar restatements and layout examples remain supporting context; the selected records retain the root, scroll, conditional takeover, shell, and safe-area invariants.",
+        "selectionRationale": "Each selected proposition controls a distinct layout owner or exception boundary.",
+        "permanentPolicyRuleIdsAssigned": false
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-008",
+        "label": "material-depth-and-z-index",
+        "canonicalUnit": "semantic-obligation-cluster",
+        "layer": 3,
+        "candidateRequirementCount": 8,
+        "currentRequirementIds": [
+          "P2C-REQ-0198",
+          "P2C-REQ-0201",
+          "P2C-REQ-0202",
+          "P2C-REQ-0204",
+          "P2C-REQ-0206",
+          "P2C-REQ-0208",
+          "P2C-REQ-0308",
+          "P2C-REQ-0310"
+        ],
+        "normalizedRequirementTexts": [
+          {
+            "requirementId": "P2C-REQ-0198",
+            "normalizedRequirementText": "**REQUIRED:** You must use semantic material tokens: `material-solid`, `material-elevated`, `glass-panel`, `glass-capsule`.",
+            "normalizedTextHash": "ed1d61cb56d02806ae76bb601b0df3c9c8b19163f1dbfd99e04e6051c73098e8"
+          },
+          {
+            "requirementId": "P2C-REQ-0201",
+            "normalizedRequirementText": "**NEVER** use `glass-*` inside: `<ProTable>`, virtual lists, scrollable containers, or nested inside another `glass` element.",
+            "normalizedTextHash": "a70e7ff8bd0e161c44c345be7b720d55a14d69467a3239e1a3b40d92159f87ff"
+          },
+          {
+            "requirementId": "P2C-REQ-0202",
+            "normalizedRequirementText": "**FORBIDDEN — ALL raw z-index utilities (Tailwind scale AND arbitrary)**:",
+            "normalizedTextHash": "f96f6bdae2089dfa8630cf1dc7cab94f8817209d3fdfc5a6feadecf2ce85245b"
+          },
+          {
+            "requirementId": "P2C-REQ-0204",
+            "normalizedRequirementText": "> If the required stacking order cannot be expressed with these 6 tokens, the solution is to restructure the DOM stacking context — NEVER to invent new z-index values.",
+            "normalizedTextHash": "6e106775fff8f0da352541061426fcbef2750421f5b28b638beccfd2483ec48a"
+          },
+          {
+            "requirementId": "P2C-REQ-0206",
+            "normalizedRequirementText": "**Canvas vs card separation (mandatory):** The page canvas MUST read as a **slightly gray field**; elevated surfaces MUST read as **brighter / near-white** with **downward, dark-tinted shadow** (e.g.",
+            "normalizedTextHash": "65e7e5d8e110a358ba5bf0625008089d9b81c88d61188fc568e8533380d6657b"
+          },
+          {
+            "requirementId": "P2C-REQ-0208",
+            "normalizedRequirementText": "**REQUIRED pattern:** Communicate elevation with **top-edge internal luminosity (inset highlight)** plus a **sharp semantic border** (`border border-solid border-border` or `border border-solid border-foreground/20`), not with “light-mode style” drop shadows alone.",
+            "normalizedTextHash": "0591b0e32b27dcc4d5f8883b3c40e3bfbb592eec4f572b80f5688c28268dc723"
+          },
+          {
+            "requirementId": "P2C-REQ-0308",
+            "normalizedRequirementText": "Do not add borders everywhere.",
+            "normalizedTextHash": "5855a6021846e8ec1f0dba213c1bc7ceafe43106722f1fd2be48bb9edb4281c2"
+          },
+          {
+            "requirementId": "P2C-REQ-0310",
+            "normalizedRequirementText": "Use shadows to show elevation, not style.",
+            "normalizedTextHash": "68d647074706d68e7be5d9ea08a93659a91e5142734efb0dccc7467b8227dc0d"
+          }
+        ],
+        "semanticSourceIds": [
+          "0591b0e32b27dcc4d5f8883b3c40e3bfbb592eec4f572b80f5688c28268dc723",
+          "5855a6021846e8ec1f0dba213c1bc7ceafe43106722f1fd2be48bb9edb4281c2",
+          "65e7e5d8e110a358ba5bf0625008089d9b81c88d61188fc568e8533380d6657b",
+          "68d647074706d68e7be5d9ea08a93659a91e5142734efb0dccc7467b8227dc0d",
+          "6e106775fff8f0da352541061426fcbef2750421f5b28b638beccfd2483ec48a",
+          "a70e7ff8bd0e161c44c345be7b720d55a14d69467a3239e1a3b40d92159f87ff",
+          "ed1d61cb56d02806ae76bb601b0df3c9c8b19163f1dbfd99e04e6051c73098e8",
+          "f96f6bdae2089dfa8630cf1dc7cab94f8817209d3fdfc5a6feadecf2ce85245b"
+        ],
+        "semanticSourcePaths": [
+          ".ai/rules/design-system/03-material-system.mdc",
+          ".ai/skills/design/ccd-material-system/SKILL.md"
+        ],
+        "sourceSections": [
+          "1. Material Usage",
+          "3. Performance Guards (GPU Protection)",
+          "4. Z-Index System",
+          "Borders",
+          "Dark Mode — Absorbed Shadow & Inset Glow",
+          "Light Mode — Physical Shadow Read",
+          "Shadows"
+        ],
+        "sourceLocations": [
+          {
+            "path": ".ai/rules/design-system/03-material-system.mdc",
+            "section": "1. Material Usage",
+            "startLine": 19,
+            "endLine": 19,
+            "sourceSliceSha256": "ed1d61cb56d02806ae76bb601b0df3c9c8b19163f1dbfd99e04e6051c73098e8"
+          },
+          {
+            "path": ".ai/rules/design-system/03-material-system.mdc",
+            "section": "3. Performance Guards (GPU Protection)",
+            "startLine": 47,
+            "endLine": 47,
+            "sourceSliceSha256": "a70e7ff8bd0e161c44c345be7b720d55a14d69467a3239e1a3b40d92159f87ff"
+          },
+          {
+            "path": ".ai/rules/design-system/03-material-system.mdc",
+            "section": "4. Z-Index System",
+            "startLine": 51,
+            "endLine": 51,
+            "sourceSliceSha256": "f96f6bdae2089dfa8630cf1dc7cab94f8817209d3fdfc5a6feadecf2ce85245b"
+          },
+          {
+            "path": ".ai/rules/design-system/03-material-system.mdc",
+            "section": "4. Z-Index System",
+            "startLine": 67,
+            "endLine": 67,
+            "sourceSliceSha256": "6e106775fff8f0da352541061426fcbef2750421f5b28b638beccfd2483ec48a"
+          },
+          {
+            "path": ".ai/rules/design-system/03-material-system.mdc",
+            "section": "Light Mode — Physical Shadow Read",
+            "startLine": 75,
+            "endLine": 75,
+            "sourceSliceSha256": "65e7e5d8e110a358ba5bf0625008089d9b81c88d61188fc568e8533380d6657b"
+          },
+          {
+            "path": ".ai/rules/design-system/03-material-system.mdc",
+            "section": "Dark Mode — Absorbed Shadow & Inset Glow",
+            "startLine": 81,
+            "endLine": 81,
+            "sourceSliceSha256": "0591b0e32b27dcc4d5f8883b3c40e3bfbb592eec4f572b80f5688c28268dc723"
+          },
+          {
+            "path": ".ai/skills/design/ccd-material-system/SKILL.md",
+            "section": "Borders",
+            "startLine": 136,
+            "endLine": 136,
+            "sourceSliceSha256": "5855a6021846e8ec1f0dba213c1bc7ceafe43106722f1fd2be48bb9edb4281c2"
+          },
+          {
+            "path": ".ai/skills/design/ccd-material-system/SKILL.md",
+            "section": "Shadows",
+            "startLine": 140,
+            "endLine": 140,
+            "sourceSliceSha256": "68d647074706d68e7be5d9ea08a93659a91e5142734efb0dccc7467b8227dc0d"
+          }
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/product-ui-profile.md",
+          ".ai/skills/project-ui/references/tokens-unocss.md"
+        ],
+        "normativeInvariant": "Materials must use approved semantic surfaces, avoid nested or data-heavy glass, use only governed z-index structure, preserve theme-appropriate depth cues, and use borders and shadows for grouping or elevation rather than decoration.",
+        "scope": "Material shortcuts, glass limits, GPU-sensitive surfaces, elevation, borders, shadows, and stacking.",
+        "machineClassifiability": "mixed source-enforceable limits and human optical review",
+        "currentEnforcement": "Material rules, UnoCSS/token ownership, and human light/dark review.",
+        "futureSourceScannerBoundary": "A later scanner may detect raw z-index, nested glass, and hardcoded shadows; optical depth remains human-review classified.",
+        "futurePageContractBoundary": "Per-page material hierarchy remains Page Contract/profile composition, while platform limits remain policy.",
+        "historicalLineage": [],
+        "redundancyRationale": "Specific material examples remain supporting context. The selected records preserve allowed material, prohibited nesting, z-index closure, two theme depth models, and restrained border/shadow purpose.",
+        "selectionRationale": "The set separates machine-detectable material limits from necessary human optical boundaries.",
+        "permanentPolicyRuleIdsAssigned": false
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-009",
+        "label": "product-ui-profile-architectural-glass",
+        "canonicalUnit": "semantic-obligation-cluster",
+        "layer": 3,
+        "candidateRequirementCount": 5,
+        "currentRequirementIds": [
+          "P2C-REQ-0301",
+          "P2C-REQ-0304",
+          "P2C-REQ-0348",
+          "P2C-REQ-0350",
+          "P2C-REQ-0352"
+        ],
+        "normalizedRequirementTexts": [
+          {
+            "requirementId": "P2C-REQ-0301",
+            "normalizedRequirementText": "Light mode should feel calm, not empty.",
+            "normalizedTextHash": "0b886cb6f151b6427fd99a806e3ba0e70a181dae34060ea8aa851e7a71c452fa"
+          },
+          {
+            "requirementId": "P2C-REQ-0304",
+            "normalizedRequirementText": "Dark mode should feel rich, not muddy.",
+            "normalizedTextHash": "0dd4f0a91cb3385ec03f0e4416e40e99b852601978285a44f8da4d28ba00d09d"
+          },
+          {
+            "requirementId": "P2C-REQ-0348",
+            "normalizedRequirementText": "Liquid material: use restrained material transitions and luminous surfaces only where they clarify foreground/background separation.",
+            "normalizedTextHash": "c0fd19a9a8278893a6c7c2aca27766b38393d332f3da8e4fb25855594c55f820"
+          },
+          {
+            "requirementId": "P2C-REQ-0350",
+            "normalizedRequirementText": "Do not make CCD look like an Apple marketing page.",
+            "normalizedTextHash": "c1b1711f8401587e52c8d546097c8b51db47faa1d26000680cec570645905d13"
+          },
+          {
+            "requirementId": "P2C-REQ-0352",
+            "normalizedRequirementText": "Do not import Material UI or copy Google components.",
+            "normalizedTextHash": "c9c02862e929c6ecad768a3d9062ea2fc06e2d06b49175d404d253d8a2316719"
+          }
+        ],
+        "semanticSourceIds": [
+          "0b886cb6f151b6427fd99a806e3ba0e70a181dae34060ea8aa851e7a71c452fa",
+          "0dd4f0a91cb3385ec03f0e4416e40e99b852601978285a44f8da4d28ba00d09d",
+          "c0fd19a9a8278893a6c7c2aca27766b38393d332f3da8e4fb25855594c55f820",
+          "c1b1711f8401587e52c8d546097c8b51db47faa1d26000680cec570645905d13",
+          "c9c02862e929c6ecad768a3d9062ea2fc06e2d06b49175d404d253d8a2316719"
+        ],
+        "semanticSourcePaths": [
+          ".ai/skills/design/ccd-material-system/SKILL.md",
+          ".ai/skills/design/ccd-product-language/SKILL.md"
+        ],
+        "sourceSections": [
+          "Apple-inspired translation",
+          "Dark mode optics",
+          "Google-inspired translation",
+          "Light mode optics"
+        ],
+        "sourceLocations": [
+          {
+            "path": ".ai/skills/design/ccd-material-system/SKILL.md",
+            "section": "Light mode optics",
+            "startLine": 63,
+            "endLine": 63,
+            "sourceSliceSha256": "0b886cb6f151b6427fd99a806e3ba0e70a181dae34060ea8aa851e7a71c452fa"
+          },
+          {
+            "path": ".ai/skills/design/ccd-material-system/SKILL.md",
+            "section": "Dark mode optics",
+            "startLine": 82,
+            "endLine": 82,
+            "sourceSliceSha256": "0dd4f0a91cb3385ec03f0e4416e40e99b852601978285a44f8da4d28ba00d09d"
+          },
+          {
+            "path": ".ai/skills/design/ccd-product-language/SKILL.md",
+            "section": "Apple-inspired translation",
+            "startLine": 68,
+            "endLine": 68,
+            "sourceSliceSha256": "c0fd19a9a8278893a6c7c2aca27766b38393d332f3da8e4fb25855594c55f820"
+          },
+          {
+            "path": ".ai/skills/design/ccd-product-language/SKILL.md",
+            "section": "Apple-inspired translation",
+            "startLine": 71,
+            "endLine": 71,
+            "sourceSliceSha256": "c1b1711f8401587e52c8d546097c8b51db47faa1d26000680cec570645905d13"
+          },
+          {
+            "path": ".ai/skills/design/ccd-product-language/SKILL.md",
+            "section": "Google-inspired translation",
+            "startLine": 82,
+            "endLine": 82,
+            "sourceSliceSha256": "c9c02862e929c6ecad768a3d9062ea2fc06e2d06b49175d404d253d8a2316719"
+          }
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/product-language.md",
+          ".ai/skills/project-ui/references/product-ui-profile.md"
+        ],
+        "normativeInvariant": "The CCD Architectural Glass profile must remain calm in light mode, rich but readable in dark mode, use luminous or transparent material only to clarify hierarchy, and reject Apple-marketing or copied Material UI composition.",
+        "scope": "Replaceable Product UI Profile content and CCD Architectural Glass expression.",
+        "machineClassifiability": "human-review-only profile semantics with machine-classifiable prohibited excess",
+        "currentEnforcement": "Canonical project-ui profile and product-language references plus human review; no profile schema exists.",
+        "futureSourceScannerBoundary": "Only narrow prohibited patterns may be source-classified; profile quality remains explicitly human-review metadata.",
+        "futurePageContractBoundary": "A page may select profile applications through a future Page Contract, but cannot weaken platform invariants.",
+        "historicalLineage": [],
+        "redundancyRationale": "Related material and product-language records remain in their own clusters; these five define the profile-specific light, dark, purposeful material, and anti-copy boundaries.",
+        "selectionRationale": "This is the minimum exact source set that supplies profile contents without treating the P3 profile document structure as a P2 requirement.",
+        "permanentPolicyRuleIdsAssigned": false
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-010",
+        "label": "accessibility-input-and-state",
+        "canonicalUnit": "semantic-obligation-cluster",
+        "layer": 3,
+        "candidateRequirementCount": 4,
+        "currentRequirementIds": ["P2C-REQ-0276", "P2C-REQ-0278", "P2C-REQ-0309", "P2C-REQ-0320"],
+        "normalizedRequirementTexts": [
+          {
+            "requirementId": "P2C-REQ-0276",
+            "normalizedRequirementText": "`@mouseenter`, `@mouseleave` (use CSS `:hover` gated by media query)",
+            "normalizedTextHash": "3cbae65994ae13ae20becca88412e046c0a51613b98c353d7f5e28dc463083d6"
+          },
+          {
+            "requirementId": "P2C-REQ-0278",
+            "normalizedRequirementText": "**Tooltip**: Use `{ event: 'focus' }` config on `v-tooltip` for touch devices",
+            "normalizedTextHash": "576379630dc0a8e80bc72381b7120076b75943b35691a03e0205a6507237e5e6"
+          },
+          {
+            "requirementId": "P2C-REQ-0309",
+            "normalizedRequirementText": "Use borders to clarify grouping, selected state, focus, and overlay boundaries.",
+            "normalizedTextHash": "db312ec389296e3d50bf9be008810529d704662a4c56a9544e47f6f41d464f31"
+          },
+          {
+            "requirementId": "P2C-REQ-0320",
+            "normalizedRequirementText": "Changing light/dark mode must not remount visual-stage roots or reset form input.",
+            "normalizedTextHash": "4476c096909613eecb8bc875c664fab9cb2fb3b1435d0ae88c76687c949f3ebc"
+          }
+        ],
+        "semanticSourceIds": [
+          "3cbae65994ae13ae20becca88412e046c0a51613b98c353d7f5e28dc463083d6",
+          "4476c096909613eecb8bc875c664fab9cb2fb3b1435d0ae88c76687c949f3ebc",
+          "576379630dc0a8e80bc72381b7120076b75943b35691a03e0205a6507237e5e6",
+          "db312ec389296e3d50bf9be008810529d704662a4c56a9544e47f6f41d464f31"
+        ],
+        "semanticSourcePaths": [
+          ".ai/rules/integrations/07-interaction-patterns.mdc",
+          ".ai/skills/design/ccd-material-system/SKILL.md",
+          ".ai/skills/design/ccd-motion-system/SKILL.md"
+        ],
+        "sourceSections": [
+          "Borders",
+          "FORBIDDEN in templates:",
+          "Law 3 — PrimeVue Touch Workarounds",
+          "Theme switching rule"
+        ],
+        "sourceLocations": [
+          {
+            "path": ".ai/rules/integrations/07-interaction-patterns.mdc",
+            "section": "FORBIDDEN in templates:",
+            "startLine": 23,
+            "endLine": 23,
+            "sourceSliceSha256": "3cbae65994ae13ae20becca88412e046c0a51613b98c353d7f5e28dc463083d6"
+          },
+          {
+            "path": ".ai/rules/integrations/07-interaction-patterns.mdc",
+            "section": "Law 3 — PrimeVue Touch Workarounds",
+            "startLine": 44,
+            "endLine": 44,
+            "sourceSliceSha256": "576379630dc0a8e80bc72381b7120076b75943b35691a03e0205a6507237e5e6"
+          },
+          {
+            "path": ".ai/skills/design/ccd-material-system/SKILL.md",
+            "section": "Borders",
+            "startLine": 136,
+            "endLine": 136,
+            "sourceSliceSha256": "db312ec389296e3d50bf9be008810529d704662a4c56a9544e47f6f41d464f31"
+          },
+          {
+            "path": ".ai/skills/design/ccd-motion-system/SKILL.md",
+            "section": "Theme switching rule",
+            "startLine": 102,
+            "endLine": 102,
+            "sourceSliceSha256": "4476c096909613eecb8bc875c664fab9cb2fb3b1435d0ae88c76687c949f3ebc"
+          }
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/accessibility.md",
+          ".ai/skills/project-ui/references/platform-invariants.md"
+        ],
+        "normativeInvariant": "Interaction must avoid pointer-only hover handlers, provide focus-capable tooltip behavior, use visible boundaries for selected, focus, and overlay states, and preserve form and visual-stage state across theme changes.",
+        "scope": "Pointer, touch, focus, state visibility, overlay boundaries, and state continuity.",
+        "machineClassifiability": "mixed source-detectable input rules and human accessibility review",
+        "currentEnforcement": "PrimeVue behavior, interaction rules, project-ui accessibility reference, tests where present, and human review.",
+        "futureSourceScannerBoundary": "A later scanner may detect pointer-only handlers and destabilizing theme patterns; keyboard order, accessible naming, and announcements remain mixed automated/human checks.",
+        "futurePageContractBoundary": "Per-page state matrices and focus sequences remain Page Contract data; platform accessibility cannot be weakened.",
+        "historicalLineage": [],
+        "redundancyRationale": "Contrast rules remain in the theme cluster and narrow sidebar examples remain supporting context; these records preserve distinct input, focus, state-boundary, and continuity propositions.",
+        "selectionRationale": "The cluster references exact active source propositions while the accepted project-ui accessibility reference supplies the broader human-review boundary.",
+        "permanentPolicyRuleIdsAssigned": false
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-011",
+        "label": "motion-and-interaction-safety",
+        "canonicalUnit": "semantic-obligation-cluster",
+        "layer": 3,
+        "candidateRequirementCount": 7,
+        "currentRequirementIds": [
+          "P2C-REQ-0220",
+          "P2C-REQ-0221",
+          "P2C-REQ-0287",
+          "P2C-REQ-0288",
+          "P2C-REQ-0295",
+          "P2C-REQ-0325",
+          "P2C-REQ-0349"
+        ],
+        "normalizedRequirementTexts": [
+          {
+            "requirementId": "P2C-REQ-0220",
+            "normalizedRequirementText": "**FORBIDDEN:** `ease-in-out` for layout elements.",
+            "normalizedTextHash": "903c81d5eeb0c46e9b37435fbcad226fdd499a77676dbbbb6900efa60ffb5f74"
+          },
+          {
+            "requirementId": "P2C-REQ-0221",
+            "normalizedRequirementText": "**REQUIRED:** `ease-spring` for spatial transitions (drawers, layout shifts) and `ease-smooth` for opacity fades.",
+            "normalizedTextHash": "0800d061592f55c82aa6f26aea3849172b91dd98a13b3aae934f4bd47d05edb5"
+          },
+          {
+            "requirementId": "P2C-REQ-0287",
+            "normalizedRequirementText": "Use GSAP for controlled Level 1 or Level 2 interaction and timeline work when CSS, Vue `<Transition>`, or local animate-lite is insufficient.",
+            "normalizedTextHash": "e0b0f9035eeca39ff420c978d0ccdbc8947823392d0b08d5083c62393d433172"
+          },
+          {
+            "requirementId": "P2C-REQ-0288",
+            "normalizedRequirementText": "Prefer opacity and transform over layout properties.",
+            "normalizedTextHash": "a24fb6f471b2cc1121f257cfb5c43e00b68be589d11330b078d21a15dd4372c6"
+          },
+          {
+            "requirementId": "P2C-REQ-0295",
+            "normalizedRequirementText": "Do not use GSAP as default page decoration.",
+            "normalizedTextHash": "4d8e6bb182207b97cfb5ba3ddba99cd0a54d1fd1956fe94b7d362aa9612cfac2"
+          },
+          {
+            "requirementId": "P2C-REQ-0325",
+            "normalizedRequirementText": "Do not scatter `will-change`, `transform-gpu`, or large blur across pages.",
+            "normalizedTextHash": "a3dbb6147dfb486402d491766e3c21f0751ed3a441a27e13c1680c3c7755e896"
+          },
+          {
+            "requirementId": "P2C-REQ-0349",
+            "normalizedRequirementText": "Motion: use motion to show continuity, not to entertain.",
+            "normalizedTextHash": "3e8998de460175e4c9835f8faf0e6a6c6f2ff1b452252ea8b62cacccb652758c"
+          }
+        ],
+        "semanticSourceIds": [
+          "0800d061592f55c82aa6f26aea3849172b91dd98a13b3aae934f4bd47d05edb5",
+          "3e8998de460175e4c9835f8faf0e6a6c6f2ff1b452252ea8b62cacccb652758c",
+          "4d8e6bb182207b97cfb5ba3ddba99cd0a54d1fd1956fe94b7d362aa9612cfac2",
+          "903c81d5eeb0c46e9b37435fbcad226fdd499a77676dbbbb6900efa60ffb5f74",
+          "a24fb6f471b2cc1121f257cfb5c43e00b68be589d11330b078d21a15dd4372c6",
+          "a3dbb6147dfb486402d491766e3c21f0751ed3a441a27e13c1680c3c7755e896",
+          "e0b0f9035eeca39ff420c978d0ccdbc8947823392d0b08d5083c62393d433172"
+        ],
+        "semanticSourcePaths": [
+          ".ai/rules/design-system/03-material-system.mdc",
+          ".ai/skills/design/ccd-gsap-motion/SKILL.md",
+          ".ai/skills/design/ccd-motion-system/SKILL.md",
+          ".ai/skills/design/ccd-product-language/SKILL.md"
+        ],
+        "sourceSections": [
+          "6. Motion",
+          "Allowed use",
+          "Apple-inspired translation",
+          "Forbidden by default",
+          "Performance rules",
+          "Required constraints"
+        ],
+        "sourceLocations": [
+          {
+            "path": ".ai/rules/design-system/03-material-system.mdc",
+            "section": "6. Motion",
+            "startLine": 124,
+            "endLine": 124,
+            "sourceSliceSha256": "903c81d5eeb0c46e9b37435fbcad226fdd499a77676dbbbb6900efa60ffb5f74"
+          },
+          {
+            "path": ".ai/rules/design-system/03-material-system.mdc",
+            "section": "6. Motion",
+            "startLine": 125,
+            "endLine": 125,
+            "sourceSliceSha256": "0800d061592f55c82aa6f26aea3849172b91dd98a13b3aae934f4bd47d05edb5"
+          },
+          {
+            "path": ".ai/skills/design/ccd-gsap-motion/SKILL.md",
+            "section": "Allowed use",
+            "startLine": 17,
+            "endLine": 17,
+            "sourceSliceSha256": "e0b0f9035eeca39ff420c978d0ccdbc8947823392d0b08d5083c62393d433172"
+          },
+          {
+            "path": ".ai/skills/design/ccd-gsap-motion/SKILL.md",
+            "section": "Required constraints",
+            "startLine": 31,
+            "endLine": 31,
+            "sourceSliceSha256": "a24fb6f471b2cc1121f257cfb5c43e00b68be589d11330b078d21a15dd4372c6"
+          },
+          {
+            "path": ".ai/skills/design/ccd-gsap-motion/SKILL.md",
+            "section": "Forbidden by default",
+            "startLine": 41,
+            "endLine": 41,
+            "sourceSliceSha256": "4d8e6bb182207b97cfb5ba3ddba99cd0a54d1fd1956fe94b7d362aa9612cfac2"
+          },
+          {
+            "path": ".ai/skills/design/ccd-motion-system/SKILL.md",
+            "section": "Performance rules",
+            "startLine": 132,
+            "endLine": 132,
+            "sourceSliceSha256": "a3dbb6147dfb486402d491766e3c21f0751ed3a441a27e13c1680c3c7755e896"
+          },
+          {
+            "path": ".ai/skills/design/ccd-product-language/SKILL.md",
+            "section": "Apple-inspired translation",
+            "startLine": 69,
+            "endLine": 69,
+            "sourceSliceSha256": "3e8998de460175e4c9835f8faf0e6a6c6f2ff1b452252ea8b62cacccb652758c"
+          }
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/accessibility.md",
+          ".ai/skills/project-ui/references/interaction-motion.md",
+          ".ai/skills/project-ui/references/platform-invariants.md"
+        ],
+        "normativeInvariant": "Motion must use governed easing and the smallest sufficient tool, prefer opacity and transform, avoid default decoration and broad GPU hints, and explain continuity rather than entertain.",
+        "scope": "Layout transitions, animation-tool eligibility, performance, decorative motion, and interaction continuity.",
+        "machineClassifiability": "mixed source-enforceable limits and human motion-purpose review",
+        "currentEnforcement": "Motion rules, design skills, project-ui motion and accessibility references, and human review.",
+        "futureSourceScannerBoundary": "A later scanner may detect forbidden easing, layout-property animation, global GPU hints, or unconditional GSAP; reduced-motion behavior remains a required mixed validation boundary.",
+        "futurePageContractBoundary": "Per-page choreography and state transition sequences remain Page Contract or explicitly approved motion scope.",
+        "historicalLineage": [],
+        "redundancyRationale": "Tool-trigger and checklist records are routing or background; the selected propositions retain easing, tool, property, decoration, performance, and purpose boundaries.",
+        "selectionRationale": "These current records are mutually distinct and sufficient to seed policy classification without assigning future rule IDs.",
+        "permanentPolicyRuleIdsAssigned": false
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-012",
+        "label": "product-language-human-review-boundary",
+        "canonicalUnit": "semantic-obligation-cluster",
+        "layer": 3,
+        "candidateRequirementCount": 4,
+        "currentRequirementIds": ["P2C-REQ-0329", "P2C-REQ-0330", "P2C-REQ-0347", "P2C-REQ-0354"],
+        "normalizedRequirementTexts": [
+          {
+            "requirementId": "P2C-REQ-0329",
+            "normalizedRequirementText": "use status color only for real status;",
+            "normalizedTextHash": "8bd337f17583903b751e28fad7ac33b33973a1892e3f4fc33407637541543f08"
+          },
+          {
+            "requirementId": "P2C-REQ-0330",
+            "normalizedRequirementText": "avoid fake product metrics;",
+            "normalizedTextHash": "957a667925728a79c09859b908eca21a40720feda2479138e5b56c9ff1cccbcc"
+          },
+          {
+            "requirementId": "P2C-REQ-0347",
+            "normalizedRequirementText": "Clarity: the primary task must be visible within three seconds.",
+            "normalizedTextHash": "099f7c10e90e74930624b4816689ce683105be15d2a2db48ee127632ca3161dc"
+          },
+          {
+            "requirementId": "P2C-REQ-0354",
+            "normalizedRequirementText": "Icons must support recognition or action affordance.",
+            "normalizedTextHash": "0e5f1f5f6404623d5f6d981b69451f1aa8afb8f54d0b2154095cd0879bd8b412"
+          }
+        ],
+        "semanticSourceIds": [
+          "099f7c10e90e74930624b4816689ce683105be15d2a2db48ee127632ca3161dc",
+          "0e5f1f5f6404623d5f6d981b69451f1aa8afb8f54d0b2154095cd0879bd8b412",
+          "8bd337f17583903b751e28fad7ac33b33973a1892e3f4fc33407637541543f08",
+          "957a667925728a79c09859b908eca21a40720feda2479138e5b56c9ff1cccbcc"
+        ],
+        "semanticSourcePaths": [
+          ".ai/skills/design/ccd-page-archetypes/SKILL.md",
+          ".ai/skills/design/ccd-product-language/SKILL.md"
+        ],
+        "sourceSections": ["Apple-inspired translation", "Dashboard", "Icon policy"],
+        "sourceLocations": [
+          {
+            "path": ".ai/skills/design/ccd-page-archetypes/SKILL.md",
+            "section": "Dashboard",
+            "startLine": 57,
+            "endLine": 57,
+            "sourceSliceSha256": "8bd337f17583903b751e28fad7ac33b33973a1892e3f4fc33407637541543f08"
+          },
+          {
+            "path": ".ai/skills/design/ccd-page-archetypes/SKILL.md",
+            "section": "Dashboard",
+            "startLine": 58,
+            "endLine": 58,
+            "sourceSliceSha256": "957a667925728a79c09859b908eca21a40720feda2479138e5b56c9ff1cccbcc"
+          },
+          {
+            "path": ".ai/skills/design/ccd-product-language/SKILL.md",
+            "section": "Apple-inspired translation",
+            "startLine": 65,
+            "endLine": 65,
+            "sourceSliceSha256": "099f7c10e90e74930624b4816689ce683105be15d2a2db48ee127632ca3161dc"
+          },
+          {
+            "path": ".ai/skills/design/ccd-product-language/SKILL.md",
+            "section": "Icon policy",
+            "startLine": 130,
+            "endLine": 130,
+            "sourceSliceSha256": "0e5f1f5f6404623d5f6d981b69451f1aa8afb8f54d0b2154095cd0879bd8b412"
+          }
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/product-language.md",
+          ".ai/skills/project-ui/references/product-ui-profile.md"
+        ],
+        "normativeInvariant": "Human UI review must reserve status color for real status, reject fabricated metrics, make the primary task promptly legible, and require icons to support recognition or action affordance.",
+        "scope": "Product-language quality and explicit human-review-only policy boundaries.",
+        "machineClassifiability": "human-review-only, with limited classifiable evidence",
+        "currentEnforcement": "Project-ui product language and human review.",
+        "futureSourceScannerBoundary": "P3 must label this cluster human-review-only and must not claim deterministic enforcement from superficial source patterns.",
+        "futurePageContractBoundary": "Page job, primary action, metrics, and information hierarchy may be recorded by a future Page Contract.",
+        "historicalLineage": [],
+        "redundancyRationale": "General aesthetic slogans remain human-review background; these four are stable, distinct, and decision-bearing human-review boundaries.",
+        "selectionRationale": "They satisfy the controller requirement that necessary human-review-only boundaries remain explicit without becoming fake machine rules.",
+        "permanentPolicyRuleIdsAssigned": false
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-013",
+        "label": "finite-explicit-exception-eligibility",
+        "canonicalUnit": "semantic-obligation-cluster",
+        "layer": 3,
+        "candidateRequirementCount": 4,
+        "currentRequirementIds": ["P2C-REQ-0011", "P2C-REQ-0023", "P2C-REQ-0155", "P2C-REQ-0240"],
+        "normalizedRequirementTexts": [
+          {
+            "requirementId": "P2C-REQ-0011",
+            "normalizedRequirementText": "**Custom ProForm field wrappers** (`packages/vue-ui/src/ProForm/renderers/components/`) — may use native elements for fine-grained internal control.",
+            "normalizedTextHash": "c3aee044fce602a5f376949c9a2c04fbee28c2adb311646cc1e8a5dc02c75ac4"
+          },
+          {
+            "requirementId": "P2C-REQ-0023",
+            "normalizedRequirementText": "Any NEW `:deep(.p-*)` usage requires explicit architectural justification and MUST be added to this exception list.",
+            "normalizedTextHash": "704aed0428dba71170b734b886581e54f7b67f460dd7710749264fd75410490e"
+          },
+          {
+            "requirementId": "P2C-REQ-0155",
+            "normalizedRequirementText": "Preset colors MUST remain valid full HEX values (`#RRGGBB`, no alpha, no shorthand).",
+            "normalizedTextHash": "c8fbada1112107ac9195e9d490c1842c03614eef951d9ef67857e80128aaa989"
+          },
+          {
+            "requirementId": "P2C-REQ-0240",
+            "normalizedRequirementText": "Outside this adapter boundary, do not introduce `warning` as semantic family.",
+            "normalizedTextHash": "87e8942d61eda418db5f596f6e611bd958f01d91bfbc81bc5d611f92293a08d8"
+          }
+        ],
+        "semanticSourceIds": [
+          "704aed0428dba71170b734b886581e54f7b67f460dd7710749264fd75410490e",
+          "87e8942d61eda418db5f596f6e611bd958f01d91bfbc81bc5d611f92293a08d8",
+          "c3aee044fce602a5f376949c9a2c04fbee28c2adb311646cc1e8a5dc02c75ac4",
+          "c8fbada1112107ac9195e9d490c1842c03614eef951d9ef67857e80128aaa989"
+        ],
+        "semanticSourcePaths": [
+          ".ai/rules/components/00-primevue-ecosystem.mdc",
+          ".ai/rules/design-system/01-design-tokens.mdc",
+          ".ai/rules/design-system/05-semantic-color-usage-contract.mdc"
+        ],
+        "sourceSections": [
+          "1.4 Permitted Exceptions",
+          "3.2 `:deep()` Prohibition — Exhaustive Exception List",
+          "PrimeVue Adapter Boundary Exception",
+          "Theme Preset Source-Data Exception"
+        ],
+        "sourceLocations": [
+          {
+            "path": ".ai/rules/components/00-primevue-ecosystem.mdc",
+            "section": "1.4 Permitted Exceptions",
+            "startLine": 74,
+            "endLine": 74,
+            "sourceSliceSha256": "c3aee044fce602a5f376949c9a2c04fbee28c2adb311646cc1e8a5dc02c75ac4"
+          },
+          {
+            "path": ".ai/rules/components/00-primevue-ecosystem.mdc",
+            "section": "3.2 `:deep()` Prohibition — Exhaustive Exception List",
+            "startLine": 150,
+            "endLine": 150,
+            "sourceSliceSha256": "704aed0428dba71170b734b886581e54f7b67f460dd7710749264fd75410490e"
+          },
+          {
+            "path": ".ai/rules/design-system/01-design-tokens.mdc",
+            "section": "Theme Preset Source-Data Exception",
+            "startLine": 42,
+            "endLine": 42,
+            "sourceSliceSha256": "c8fbada1112107ac9195e9d490c1842c03614eef951d9ef67857e80128aaa989"
+          },
+          {
+            "path": ".ai/rules/design-system/05-semantic-color-usage-contract.mdc",
+            "section": "PrimeVue Adapter Boundary Exception",
+            "startLine": 44,
+            "endLine": 44,
+            "sourceSliceSha256": "87e8942d61eda418db5f596f6e611bd958f01d91bfbc81bc5d611f92293a08d8"
+          }
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/component-priority.md",
+          ".ai/skills/project-ui/references/platform-invariants.md",
+          ".ai/skills/project-ui/references/tokens-unocss.md"
+        ],
+        "normativeInvariant": "Policy exceptions must be narrowly scoped to an owned boundary, explicitly justified, finite, and expressed as a governed exception rather than an untracked bypass.",
+        "scope": "Native-control internals, PrimeVue deep styling, theme-preset source data, and adapter naming boundaries.",
+        "machineClassifiability": "machine-classifiable exception eligibility with human approval",
+        "currentEnforcement": "Source-specific allowlists, architecture justification, and human review; no UI exception registry exists.",
+        "futureSourceScannerBoundary": "A later scanner may resolve registered exceptions against source findings; P3 creates schema and an initially empty registry but not source scanning.",
+        "futurePageContractBoundary": "Page-local deviations require a future Page Contract or separately approved exception; they cannot silently enter the platform registry.",
+        "historicalLineage": [],
+        "redundancyRationale": "Exact allowlist examples remain supporting context. The selected records represent four distinct eligible exception classes and establish boundedness without inventing registry mechanics.",
+        "selectionRationale": "These propositions provide P2 semantic authority for exception eligibility; the empty registry and schemas remain plan-owned contracts.",
+        "permanentPolicyRuleIdsAssigned": false
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-014",
+        "label": "runtime-behavior-preservation",
+        "canonicalUnit": "semantic-obligation-cluster",
+        "layer": 3,
+        "candidateRequirementCount": 2,
+        "currentRequirementIds": ["P2C-REQ-0249", "P2C-REQ-0254"],
+        "normalizedRequirementTexts": [
+          {
+            "requirementId": "P2C-REQ-0249",
+            "normalizedRequirementText": "Layout renderers MUST be pure consumers of finalized runtime state.",
+            "normalizedTextHash": "0c8c344861c8b586e0dd13be2b992aab169adbaad7f96c14c8425409427af1ee"
+          },
+          {
+            "requirementId": "P2C-REQ-0254",
+            "normalizedRequirementText": "Device store initialization MUST be singleton and idempotent; duplicate resize/orientation/visualViewport listeners are forbidden.",
+            "normalizedTextHash": "887196a092404f4abea00584aec05b3913d9f4e062eabc5bd403a59394658b90"
+          }
+        ],
+        "semanticSourceIds": [
+          "0c8c344861c8b586e0dd13be2b992aab169adbaad7f96c14c8425409427af1ee",
+          "887196a092404f4abea00584aec05b3913d9f4e062eabc5bd403a59394658b90"
+        ],
+        "semanticSourcePaths": [".ai/rules/integrations/03-layout-architecture.mdc"],
+        "sourceSections": ["Core Philosophy (CRITICAL)", "Runtime Ownership Boundaries"],
+        "sourceLocations": [
+          {
+            "path": ".ai/rules/integrations/03-layout-architecture.mdc",
+            "section": "Core Philosophy (CRITICAL)",
+            "startLine": 12,
+            "endLine": 12,
+            "sourceSliceSha256": "0c8c344861c8b586e0dd13be2b992aab169adbaad7f96c14c8425409427af1ee"
+          },
+          {
+            "path": ".ai/rules/integrations/03-layout-architecture.mdc",
+            "section": "Runtime Ownership Boundaries",
+            "startLine": 97,
+            "endLine": 97,
+            "sourceSliceSha256": "887196a092404f4abea00584aec05b3913d9f4e062eabc5bd403a59394658b90"
+          }
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/platform-invariants.md",
+          ".ai/skills/project-ui/references/validation.md"
+        ],
+        "normativeInvariant": "UI policy must consume finalized runtime state and must not duplicate viewport listeners or derive competing runtime behavior inside renderers.",
+        "scope": "UI/runtime ownership, responsive state consumption, and listener lifecycle.",
+        "machineClassifiability": "machine-classifiable architecture boundary with runtime-test evidence",
+        "currentEnforcement": "Existing runtime owners, architecture checks, and tests; P3 must remain representation-only.",
+        "futureSourceScannerBoundary": "A later scanner may detect local runtime derivation or duplicate listeners; P3 does not mutate runtime code.",
+        "futurePageContractBoundary": "A Page Contract may consume runtime capabilities but cannot redefine their owners.",
+        "historicalLineage": [],
+        "redundancyRationale": "Additional device-store and renderer records support the boundary; these two propositions retain the pure-consumer and singleton-listener obligations without duplicating size/responsive members.",
+        "selectionRationale": "They make the P2 runtime-preservation boundary explicit while keeping P3 policy work runtime-neutral.",
+        "permanentPolicyRuleIdsAssigned": false
+      }
+    ],
+    "supportingRequirementIds": [
+      "P2C-REQ-0004",
+      "P2C-REQ-0005",
+      "P2C-REQ-0016",
+      "P2C-REQ-0026",
+      "P2C-REQ-0027",
+      "P2C-REQ-0029",
+      "P2C-REQ-0031",
+      "P2C-REQ-0032",
+      "P2C-REQ-0033",
+      "P2C-REQ-0034",
+      "P2C-REQ-0037",
+      "P2C-REQ-0038",
+      "P2C-REQ-0040",
+      "P2C-REQ-0041",
+      "P2C-REQ-0052",
+      "P2C-REQ-0053",
+      "P2C-REQ-0054",
+      "P2C-REQ-0056",
+      "P2C-REQ-0057",
+      "P2C-REQ-0058",
+      "P2C-REQ-0069",
+      "P2C-REQ-0070",
+      "P2C-REQ-0071",
+      "P2C-REQ-0072",
+      "P2C-REQ-0073",
+      "P2C-REQ-0077",
+      "P2C-REQ-0078",
+      "P2C-REQ-0081",
+      "P2C-REQ-0088",
+      "P2C-REQ-0114",
+      "P2C-REQ-0116",
+      "P2C-REQ-0118",
+      "P2C-REQ-0121",
+      "P2C-REQ-0124",
+      "P2C-REQ-0126",
+      "P2C-REQ-0127",
+      "P2C-REQ-0131",
+      "P2C-REQ-0141",
+      "P2C-REQ-0142",
+      "P2C-REQ-0150",
+      "P2C-REQ-0151",
+      "P2C-REQ-0152",
+      "P2C-REQ-0153",
+      "P2C-REQ-0154",
+      "P2C-REQ-0162",
+      "P2C-REQ-0163",
+      "P2C-REQ-0166",
+      "P2C-REQ-0167",
+      "P2C-REQ-0168",
+      "P2C-REQ-0169",
+      "P2C-REQ-0171",
+      "P2C-REQ-0172",
+      "P2C-REQ-0173",
+      "P2C-REQ-0174",
+      "P2C-REQ-0175",
+      "P2C-REQ-0179",
+      "P2C-REQ-0182",
+      "P2C-REQ-0186",
+      "P2C-REQ-0187",
+      "P2C-REQ-0191",
+      "P2C-REQ-0192",
+      "P2C-REQ-0193",
+      "P2C-REQ-0195",
+      "P2C-REQ-0197",
+      "P2C-REQ-0199",
+      "P2C-REQ-0200",
+      "P2C-REQ-0207",
+      "P2C-REQ-0209",
+      "P2C-REQ-0212",
+      "P2C-REQ-0214",
+      "P2C-REQ-0215",
+      "P2C-REQ-0218",
+      "P2C-REQ-0224",
+      "P2C-REQ-0228",
+      "P2C-REQ-0236",
+      "P2C-REQ-0237",
+      "P2C-REQ-0238",
+      "P2C-REQ-0239",
+      "P2C-REQ-0245",
+      "P2C-REQ-0246",
+      "P2C-REQ-0257",
+      "P2C-REQ-0258",
+      "P2C-REQ-0259",
+      "P2C-REQ-0260",
+      "P2C-REQ-0261",
+      "P2C-REQ-0262",
+      "P2C-REQ-0263",
+      "P2C-REQ-0264",
+      "P2C-REQ-0265",
+      "P2C-REQ-0267",
+      "P2C-REQ-0271",
+      "P2C-REQ-0277",
+      "P2C-REQ-0311",
+      "P2C-REQ-0317",
+      "P2C-REQ-0321",
+      "P2C-REQ-0322",
+      "P2C-REQ-0323",
+      "P2C-REQ-0338",
+      "P2C-REQ-0368"
+    ],
+    "humanReviewBackgroundRequirementIds": [
+      "P2C-REQ-0001",
+      "P2C-REQ-0205",
+      "P2C-REQ-0219",
+      "P2C-REQ-0284",
+      "P2C-REQ-0293",
+      "P2C-REQ-0296",
+      "P2C-REQ-0297",
+      "P2C-REQ-0305",
+      "P2C-REQ-0306",
+      "P2C-REQ-0307",
+      "P2C-REQ-0328",
+      "P2C-REQ-0343",
+      "P2C-REQ-0369"
+    ],
+    "planOwnedContracts": [
+      {
+        "id": "machine-policy-document-contract",
+        "controllerAuthority": "P3 controller directly requires .ai/governance/policies/ui.json as the machine-policy document.",
+        "repositorySemanticDependencies": [
+          "P3-HO-CLUSTER-001",
+          "P3-HO-CLUSTER-002",
+          "P3-HO-CLUSTER-003",
+          "P3-HO-CLUSTER-004",
+          "P3-HO-CLUSTER-005",
+          "P3-HO-CLUSTER-006",
+          "P3-HO-CLUSTER-007",
+          "P3-HO-CLUSTER-008",
+          "P3-HO-CLUSTER-009",
+          "P3-HO-CLUSTER-010",
+          "P3-HO-CLUSTER-011",
+          "P3-HO-CLUSTER-012",
+          "P3-HO-CLUSTER-013",
+          "P3-HO-CLUSTER-014"
+        ],
+        "createsNewUiSemantics": false,
+        "requiredP3Deliverables": [".ai/governance/policies/ui.json"],
+        "validationBoundary": "Validate document identity, closed top-level structure, semantic traceability, and lifecycle metadata; do not scan application source."
+      },
+      {
+        "id": "machine-policy-schema-contract",
+        "controllerAuthority": "P3 controller directly requires a closed Machine UI Policy schema and closed rule metadata contract.",
+        "repositorySemanticDependencies": [
+          "P3-HO-CLUSTER-001",
+          "P3-HO-CLUSTER-002",
+          "P3-HO-CLUSTER-003",
+          "P3-HO-CLUSTER-004",
+          "P3-HO-CLUSTER-005",
+          "P3-HO-CLUSTER-006",
+          "P3-HO-CLUSTER-007",
+          "P3-HO-CLUSTER-008",
+          "P3-HO-CLUSTER-009",
+          "P3-HO-CLUSTER-010",
+          "P3-HO-CLUSTER-011",
+          "P3-HO-CLUSTER-012",
+          "P3-HO-CLUSTER-013",
+          "P3-HO-CLUSTER-014"
+        ],
+        "createsNewUiSemantics": false,
+        "requiredP3Deliverables": [".ai/governance/ui/schemas/ui-policy.schema.json"],
+        "validationBoundary": "Validate the policy document and closed metadata fields; schema structure is P3-owned representation."
+      },
+      {
+        "id": "product-ui-profile-schema-contract",
+        "controllerAuthority": "P3 controller directly requires the Product UI Profile schema.",
+        "repositorySemanticDependencies": [
+          "P3-HO-CLUSTER-005",
+          "P3-HO-CLUSTER-008",
+          "P3-HO-CLUSTER-009",
+          "P3-HO-CLUSTER-012"
+        ],
+        "createsNewUiSemantics": false,
+        "requiredP3Deliverables": [".ai/governance/ui/schemas/product-ui-profile.schema.json"],
+        "validationBoundary": "Validate profile representation and invariant references without weakening platform semantics."
+      },
+      {
+        "id": "ccd-profile-document-contract",
+        "controllerAuthority": "P3 controller directly requires the CCD Architectural Glass profile document.",
+        "repositorySemanticDependencies": [
+          "P3-HO-CLUSTER-005",
+          "P3-HO-CLUSTER-008",
+          "P3-HO-CLUSTER-009",
+          "P3-HO-CLUSTER-012"
+        ],
+        "createsNewUiSemantics": false,
+        "requiredP3Deliverables": [".ai/governance/ui/profiles/ccd-architectural-glass.json"],
+        "validationBoundary": "Validate profile identity, replaceability, light/dark parity, and references to accepted P2 semantics."
+      },
+      {
+        "id": "ui-exception-schema-contract",
+        "controllerAuthority": "P3 controller directly requires UI exception and exception-registry schemas.",
+        "repositorySemanticDependencies": ["P3-HO-CLUSTER-013"],
+        "createsNewUiSemantics": false,
+        "requiredP3Deliverables": [
+          ".ai/governance/ui/schemas/ui-exception.schema.json",
+          ".ai/governance/ui/schemas/ui-exception-registry.schema.json"
+        ],
+        "validationBoundary": "Validate finite exception shape, authority, reason, scope, expiry or lifecycle data, and registry closure."
+      },
+      {
+        "id": "empty-exception-registry-contract",
+        "controllerAuthority": "P3 controller directly requires an initially empty UI exception registry.",
+        "repositorySemanticDependencies": ["P3-HO-CLUSTER-013"],
+        "createsNewUiSemantics": false,
+        "requiredP3Deliverables": [".ai/governance/ui/exceptions.json"],
+        "validationBoundary": "Validate that the initial registry is structurally valid and contains zero exceptions; emptiness is a P3 initialization contract."
+      },
+      {
+        "id": "schema-fixture-contract",
+        "controllerAuthority": "P3 controller directly requires positive and negative schema fixtures.",
+        "repositorySemanticDependencies": [
+          "P3-HO-CLUSTER-001",
+          "P3-HO-CLUSTER-002",
+          "P3-HO-CLUSTER-003",
+          "P3-HO-CLUSTER-004",
+          "P3-HO-CLUSTER-005",
+          "P3-HO-CLUSTER-006",
+          "P3-HO-CLUSTER-007",
+          "P3-HO-CLUSTER-008",
+          "P3-HO-CLUSTER-009",
+          "P3-HO-CLUSTER-010",
+          "P3-HO-CLUSTER-011",
+          "P3-HO-CLUSTER-012",
+          "P3-HO-CLUSTER-013",
+          "P3-HO-CLUSTER-014"
+        ],
+        "createsNewUiSemantics": false,
+        "requiredP3Deliverables": [
+          ".ai/governance/ui/fixtures/schema-valid/**",
+          ".ai/governance/ui/fixtures/schema-invalid/**"
+        ],
+        "validationBoundary": "Valid fixtures must pass and invalid fixtures must fail for the intended schema reason."
+      },
+      {
+        "id": "rule-case-contract",
+        "controllerAuthority": "P3 controller directly requires pass and fail rule cases.",
+        "repositorySemanticDependencies": [
+          "P3-HO-CLUSTER-001",
+          "P3-HO-CLUSTER-002",
+          "P3-HO-CLUSTER-003",
+          "P3-HO-CLUSTER-004",
+          "P3-HO-CLUSTER-005",
+          "P3-HO-CLUSTER-006",
+          "P3-HO-CLUSTER-007",
+          "P3-HO-CLUSTER-008",
+          "P3-HO-CLUSTER-009",
+          "P3-HO-CLUSTER-010",
+          "P3-HO-CLUSTER-011",
+          "P3-HO-CLUSTER-012",
+          "P3-HO-CLUSTER-013",
+          "P3-HO-CLUSTER-014"
+        ],
+        "createsNewUiSemantics": false,
+        "requiredP3Deliverables": [".ai/governance/ui/fixtures/rule-cases.json"],
+        "validationBoundary": "Validate deterministic rule-case outcomes without treating case inventory as application source scanning."
+      },
+      {
+        "id": "policy-validator-contract",
+        "controllerAuthority": "P3 controller directly requires a deterministic P3 policy and fixture validator.",
+        "repositorySemanticDependencies": [
+          "P3-HO-CLUSTER-001",
+          "P3-HO-CLUSTER-002",
+          "P3-HO-CLUSTER-003",
+          "P3-HO-CLUSTER-004",
+          "P3-HO-CLUSTER-005",
+          "P3-HO-CLUSTER-006",
+          "P3-HO-CLUSTER-007",
+          "P3-HO-CLUSTER-008",
+          "P3-HO-CLUSTER-009",
+          "P3-HO-CLUSTER-010",
+          "P3-HO-CLUSTER-011",
+          "P3-HO-CLUSTER-012",
+          "P3-HO-CLUSTER-013",
+          "P3-HO-CLUSTER-014"
+        ],
+        "createsNewUiSemantics": false,
+        "requiredP3Deliverables": [".ai/governance/ui/scripts/validate-ui-policy.mjs"],
+        "validationBoundary": "Validate policy, schemas, profile, exceptions, fixtures, rule cases, traceability, and lifecycle metadata only."
+      },
+      {
+        "id": "validator-self-test-contract",
+        "controllerAuthority": "P3 controller directly requires validator self-tests.",
+        "repositorySemanticDependencies": [
+          "P3-HO-CLUSTER-001",
+          "P3-HO-CLUSTER-002",
+          "P3-HO-CLUSTER-003",
+          "P3-HO-CLUSTER-004",
+          "P3-HO-CLUSTER-005",
+          "P3-HO-CLUSTER-006",
+          "P3-HO-CLUSTER-007",
+          "P3-HO-CLUSTER-008",
+          "P3-HO-CLUSTER-009",
+          "P3-HO-CLUSTER-010",
+          "P3-HO-CLUSTER-011",
+          "P3-HO-CLUSTER-012",
+          "P3-HO-CLUSTER-013",
+          "P3-HO-CLUSTER-014"
+        ],
+        "createsNewUiSemantics": false,
+        "requiredP3Deliverables": [
+          ".ai/governance/ui/fixtures/schema-valid/**",
+          ".ai/governance/ui/fixtures/schema-invalid/**",
+          ".ai/governance/ui/fixtures/rule-cases.json",
+          ".ai/governance/ui/scripts/validate-ui-policy.mjs"
+        ],
+        "validationBoundary": "Mutated negative cases must fail deterministically and positive cases must pass; self-tests do not alter P2."
+      },
+      {
+        "id": "canonical-wiki-contract",
+        "controllerAuthority": "P3 controller directly requires canonical Machine UI Policy documentation.",
+        "repositorySemanticDependencies": [
+          "P3-HO-CLUSTER-001",
+          "P3-HO-CLUSTER-002",
+          "P3-HO-CLUSTER-003",
+          "P3-HO-CLUSTER-004",
+          "P3-HO-CLUSTER-005",
+          "P3-HO-CLUSTER-006",
+          "P3-HO-CLUSTER-007",
+          "P3-HO-CLUSTER-008",
+          "P3-HO-CLUSTER-009",
+          "P3-HO-CLUSTER-010",
+          "P3-HO-CLUSTER-011",
+          "P3-HO-CLUSTER-012",
+          "P3-HO-CLUSTER-013",
+          "P3-HO-CLUSTER-014"
+        ],
+        "createsNewUiSemantics": false,
+        "requiredP3Deliverables": ["wiki/canonical/design/machine-ui-policy.md"],
+        "validationBoundary": "Document authority layers, rule metadata, profile, exceptions, validation, and lifecycle without becoming an independent semantic source."
+      },
+      {
+        "id": "lifecycle-integration-contract",
+        "controllerAuthority": "P3 controller directly requires current-versus-future enforcement metadata and lifecycle integration.",
+        "repositorySemanticDependencies": [
+          "P3-HO-CLUSTER-014",
+          ".ai/skills/project-ui/SKILL.md",
+          ".ai/skills/project-ui/references/validation.md"
+        ],
+        "createsNewUiSemantics": false,
+        "requiredP3Deliverables": [
+          ".ai/governance/policies/ui.json",
+          ".ai/governance/ui/scripts/validate-ui-policy.mjs",
+          "wiki/canonical/design/machine-ui-policy.md"
+        ],
+        "validationBoundary": "Keep Machine UI Policy, Page Contract, P4, P5, discovery, routing, synchronization, and adapter states explicit and phase-correct."
+      }
+    ],
+    "historicalMarkerDispositions": [
+      {
+        "historicalRequirementId": "P2-REQ-0007",
+        "currentReplacementRequirementIds": ["P2C-REQ-0006"],
+        "currentClassification": "page-contract-only",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0016",
+        "currentReplacementRequirementIds": ["P2C-REQ-0012", "P2C-REQ-0013"],
+        "currentClassification": "canonical semantic obligation cluster P3-HO-CLUSTER-002",
+        "historicalMarkerEligibleAsCanonicalUnit": true
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0054",
+        "currentReplacementRequirementIds": ["P2C-REQ-0028"],
+        "currentClassification": "page-contract-only",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0092",
+        "currentReplacementRequirementIds": ["P2C-REQ-0047"],
+        "currentClassification": "canonical semantic obligation cluster P3-HO-CLUSTER-007",
+        "historicalMarkerEligibleAsCanonicalUnit": true
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0114",
+        "currentReplacementRequirementIds": ["P2C-REQ-0065"],
+        "currentClassification": "page-contract-only",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0118",
+        "currentReplacementRequirementIds": ["P2C-REQ-0067"],
+        "currentClassification": "page-contract-only",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0121",
+        "currentReplacementRequirementIds": ["P2C-REQ-0006", "P2C-REQ-0008", "P2C-REQ-0044"],
+        "currentClassification": "mixed split: one canonical current member, one Page Contract record, one invalid-monorepo record",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0184",
+        "currentReplacementRequirementIds": [],
+        "currentClassification": "retired non-propositional marker",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0265",
+        "currentReplacementRequirementIds": ["P2C-REQ-0159", "P2C-REQ-0160"],
+        "currentClassification": "already-implemented-foundation",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0581",
+        "currentReplacementRequirementIds": [],
+        "currentClassification": "rejected frontmatter fragment",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0583",
+        "currentReplacementRequirementIds": [],
+        "currentClassification": "rejected heading",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0596",
+        "currentReplacementRequirementIds": [],
+        "currentClassification": "retired heading",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0599",
+        "currentReplacementRequirementIds": [],
+        "currentClassification": "retired heading",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0604",
+        "currentReplacementRequirementIds": [],
+        "currentClassification": "retired heading",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0613",
+        "currentReplacementRequirementIds": [],
+        "currentClassification": "rejected command fragment",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0614",
+        "currentReplacementRequirementIds": ["P2C-REQ-0366"],
+        "currentClassification": "not-P3 current validation command",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      }
+    ],
+    "semanticAreaCoverage": [
+      {
+        "clusterId": "P3-HO-CLUSTER-001",
+        "candidateRequirementIds": [
+          "P2C-REQ-0003",
+          "P2C-REQ-0007",
+          "P2C-REQ-0025",
+          "P2C-REQ-0044",
+          "P2C-REQ-0068"
+        ],
+        "semanticSourcePaths": [
+          ".ai/rules/components/00-primevue-ecosystem.mdc",
+          ".ai/rules/components/02-pro-components.mdc",
+          ".ai/rules/components/03-echarts-theming.mdc"
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/component-priority.md",
+          ".ai/skills/project-ui/references/platform-invariants.md"
+        ]
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-002",
+        "candidateRequirementIds": ["P2C-REQ-0012", "P2C-REQ-0013", "P2C-REQ-0014"],
+        "semanticSourcePaths": [".ai/rules/components/00-primevue-ecosystem.mdc"],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/component-priority.md",
+          ".ai/skills/project-ui/references/platform-invariants.md"
+        ]
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-003",
+        "candidateRequirementIds": ["P2C-REQ-0020", "P2C-REQ-0021", "P2C-REQ-0024"],
+        "semanticSourcePaths": [".ai/rules/components/00-primevue-ecosystem.mdc"],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/component-priority.md",
+          ".ai/skills/project-ui/references/tokens-unocss.md"
+        ]
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-004",
+        "candidateRequirementIds": [
+          "P2C-REQ-0119",
+          "P2C-REQ-0120",
+          "P2C-REQ-0144",
+          "P2C-REQ-0149",
+          "P2C-REQ-0177"
+        ],
+        "semanticSourcePaths": [
+          ".ai/rules/design-system/00-unocss-guardrails.mdc",
+          ".ai/rules/design-system/01-design-tokens.mdc",
+          ".ai/rules/design-system/02-size-density-system.mdc"
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/platform-invariants.md",
+          ".ai/skills/project-ui/references/tokens-unocss.md"
+        ]
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-005",
+        "candidateRequirementIds": [
+          "P2C-REQ-0156",
+          "P2C-REQ-0158",
+          "P2C-REQ-0241",
+          "P2C-REQ-0242",
+          "P2C-REQ-0243",
+          "P2C-REQ-0244"
+        ],
+        "semanticSourcePaths": [
+          ".ai/rules/design-system/01-design-tokens.mdc",
+          ".ai/rules/design-system/05-semantic-color-usage-contract.mdc"
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/accessibility.md",
+          ".ai/skills/project-ui/references/product-ui-profile.md",
+          ".ai/skills/project-ui/references/tokens-unocss.md"
+        ]
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-006",
+        "candidateRequirementIds": [
+          "P2C-REQ-0181",
+          "P2C-REQ-0253",
+          "P2C-REQ-0256",
+          "P2C-REQ-0269",
+          "P2C-REQ-0270"
+        ],
+        "semanticSourcePaths": [
+          ".ai/rules/design-system/02-size-density-system.mdc",
+          ".ai/rules/integrations/03-layout-architecture.mdc"
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/layout-scroll.md",
+          ".ai/skills/project-ui/references/platform-invariants.md",
+          ".ai/skills/project-ui/references/tokens-unocss.md"
+        ]
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-007",
+        "candidateRequirementIds": [
+          "P2C-REQ-0015",
+          "P2C-REQ-0047",
+          "P2C-REQ-0048",
+          "P2C-REQ-0139",
+          "P2C-REQ-0140",
+          "P2C-REQ-0248",
+          "P2C-REQ-0266"
+        ],
+        "semanticSourcePaths": [
+          ".ai/rules/components/00-primevue-ecosystem.mdc",
+          ".ai/rules/components/02-pro-components.mdc",
+          ".ai/rules/design-system/00-unocss-guardrails.mdc",
+          ".ai/rules/integrations/03-layout-architecture.mdc"
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/layout-scroll.md",
+          ".ai/skills/project-ui/references/platform-invariants.md"
+        ]
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-008",
+        "candidateRequirementIds": [
+          "P2C-REQ-0198",
+          "P2C-REQ-0201",
+          "P2C-REQ-0202",
+          "P2C-REQ-0204",
+          "P2C-REQ-0206",
+          "P2C-REQ-0208",
+          "P2C-REQ-0308",
+          "P2C-REQ-0310"
+        ],
+        "semanticSourcePaths": [
+          ".ai/rules/design-system/03-material-system.mdc",
+          ".ai/skills/design/ccd-material-system/SKILL.md"
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/product-ui-profile.md",
+          ".ai/skills/project-ui/references/tokens-unocss.md"
+        ]
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-009",
+        "candidateRequirementIds": [
+          "P2C-REQ-0301",
+          "P2C-REQ-0304",
+          "P2C-REQ-0348",
+          "P2C-REQ-0350",
+          "P2C-REQ-0352"
+        ],
+        "semanticSourcePaths": [
+          ".ai/skills/design/ccd-material-system/SKILL.md",
+          ".ai/skills/design/ccd-product-language/SKILL.md"
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/product-language.md",
+          ".ai/skills/project-ui/references/product-ui-profile.md"
+        ]
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-010",
+        "candidateRequirementIds": ["P2C-REQ-0276", "P2C-REQ-0278", "P2C-REQ-0309", "P2C-REQ-0320"],
+        "semanticSourcePaths": [
+          ".ai/rules/integrations/07-interaction-patterns.mdc",
+          ".ai/skills/design/ccd-material-system/SKILL.md",
+          ".ai/skills/design/ccd-motion-system/SKILL.md"
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/accessibility.md",
+          ".ai/skills/project-ui/references/platform-invariants.md"
+        ]
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-011",
+        "candidateRequirementIds": [
+          "P2C-REQ-0220",
+          "P2C-REQ-0221",
+          "P2C-REQ-0287",
+          "P2C-REQ-0288",
+          "P2C-REQ-0295",
+          "P2C-REQ-0325",
+          "P2C-REQ-0349"
+        ],
+        "semanticSourcePaths": [
+          ".ai/rules/design-system/03-material-system.mdc",
+          ".ai/skills/design/ccd-gsap-motion/SKILL.md",
+          ".ai/skills/design/ccd-motion-system/SKILL.md",
+          ".ai/skills/design/ccd-product-language/SKILL.md"
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/accessibility.md",
+          ".ai/skills/project-ui/references/interaction-motion.md",
+          ".ai/skills/project-ui/references/platform-invariants.md"
+        ]
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-012",
+        "candidateRequirementIds": ["P2C-REQ-0329", "P2C-REQ-0330", "P2C-REQ-0347", "P2C-REQ-0354"],
+        "semanticSourcePaths": [
+          ".ai/skills/design/ccd-page-archetypes/SKILL.md",
+          ".ai/skills/design/ccd-product-language/SKILL.md"
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/product-language.md",
+          ".ai/skills/project-ui/references/product-ui-profile.md"
+        ]
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-013",
+        "candidateRequirementIds": ["P2C-REQ-0011", "P2C-REQ-0023", "P2C-REQ-0155", "P2C-REQ-0240"],
+        "semanticSourcePaths": [
+          ".ai/rules/components/00-primevue-ecosystem.mdc",
+          ".ai/rules/design-system/01-design-tokens.mdc",
+          ".ai/rules/design-system/05-semantic-color-usage-contract.mdc"
+        ],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/component-priority.md",
+          ".ai/skills/project-ui/references/platform-invariants.md",
+          ".ai/skills/project-ui/references/tokens-unocss.md"
+        ]
+      },
+      {
+        "clusterId": "P3-HO-CLUSTER-014",
+        "candidateRequirementIds": ["P2C-REQ-0249", "P2C-REQ-0254"],
+        "semanticSourcePaths": [".ai/rules/integrations/03-layout-architecture.mdc"],
+        "projectUiAuthorityPaths": [
+          ".ai/skills/project-ui/references/platform-invariants.md",
+          ".ai/skills/project-ui/references/validation.md"
+        ]
+      }
+    ],
+    "unresolvedItems": [],
+    "nonBlockingExcludedAmbiguities": [
+      {
+        "requirementId": "P2C-REQ-0018",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0019",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0022",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0036",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0039",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0042",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0043",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0064",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0090",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0125",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0170",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0213",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0216",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0250",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0285",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0314",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0316",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0318",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0332",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0337",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0340",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0346",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0351",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      },
+      {
+        "requirementId": "P2C-REQ-0357",
+        "blocksHandoff": false,
+        "reason": "Record is context-dependent, fragmentary, or antecedent-dependent as a standalone handoff proposition. It is excluded non-blockingly because no selected cluster depends solely on it."
+      }
+    ],
+    "validation": {
+      "semanticCandidateIntegrity": "required",
+      "semanticClusterIntegrity": "required",
+      "supportingContextSeparation": "required",
+      "historicalMarkerDisposition": "required",
+      "planOwnedContractInventory": "required",
+      "p2AccountingPreservation": "required",
+      "lifecycleStatePreservation": "required",
+      "futureP3CompletionState": "phase-gated"
+    },
+    "preservedP2State": {
+      "activeRequirementCount": 345,
+      "retiredRequirementCount": 24,
+      "rejectedCandidateOccurrenceCount": 39,
+      "duplicateNormativeOccurrenceCount": 15,
+      "excludedNonCandidateFragmentCount": 2124,
+      "foundationPathCount": 9,
+      "staleCanonicalStatementCount": 0,
+      "coverageDecisionValuesUnchanged": true,
+      "projectUiSemanticsUnchanged": true,
+      "coverageDecisionSha256": "70aa7fb52c8d0234c693c3cd2aab427a12117992c7c0e19cca5ee1f3f443e40a",
+      "requirementStateSha256": "8a36e20ed43296065801b61cefebf0d701d09846a2059268f546b4569d034a00",
+      "conflictResolutionSha256": "740996fac616c4cea9509a0253f6734055a8f57867e6db28e28294c09f3bb037"
+    },
+    "preservedLifecycleState": {
+      "machineUiPolicyPresent": false,
+      "pageContractSchemaPresent": false,
+      "p3Started": false,
+      "p4Started": false,
+      "p5Started": false,
+      "skillLockDiscovered": false,
+      "routed": false,
+      "synchronized": false,
+      "adapterActivated": false
+    }
+  }
 }
