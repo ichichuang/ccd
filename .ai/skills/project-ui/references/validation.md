@@ -1,10 +1,10 @@
 # UI Validation
 
-UI validation governs the current human-executable review sequence. Agents must separate current P2 validation from future P3 machine policy, future Page Contract validation, P5 routing validation, and later UI-gate orchestration.
+UI validation governs the current human-executable review sequence and the completed P3 machine-policy artifact checks. Agents must separate these checks from absent application-source scanning, future Page Contract validation, P5 routing validation, and later UI-gate orchestration.
 
 ## Validation Scope
 
-This procedure validates project-ui governance and human UI work. It separates current human validation from future machine policy, page contracts, routing validation, and later UI-gate orchestration.
+This procedure validates project-ui governance, the completed P3 machine-policy artifacts, and human UI work. It separates current policy validation from absent source scanning, page contracts, routing validation, and later UI-gate orchestration.
 
 ## Architecture Preflight
 
@@ -64,7 +64,29 @@ Current P2 validation is human-executable and deterministic. It may include sema
 
 ## P3 Machine Policy Boundary
 
-P3 Machine UI Policy exists at `.ai/governance/policies/ui.json` and is validated by `node .ai/governance/ui/scripts/validate-ui-policy.mjs`. The source scanner is not yet implemented, so P3 enforcement is policy and schema validation only. Do not claim source-scanning enforcement from P2 scripts.
+P3 Machine UI Policy implementation is complete at `.ai/governance/policies/ui.json` and is validated by `node .ai/governance/ui/scripts/validate-ui-policy.mjs`. The source scanner is not implemented, so application-source enforcement remains baseline-only. Do not claim source-scanning enforcement from policy or semantic-quality validation.
+
+## Lifecycle State
+
+```text
+P3_COMPLETE=yes
+MACHINE_UI_POLICY_COMPLETE=yes
+MACHINE_UI_POLICY_PRESENT=yes
+POLICY_SCHEMAS_PRESENT=yes
+PRODUCT_UI_PROFILE_PRESENT=yes
+EXCEPTION_REGISTRY_PRESENT=yes
+EXCEPTION_COUNT=0
+POLICY_FIXTURES_PRESENT=yes
+POLICY_VALIDATOR_PRESENT=yes
+SOURCE_SCANNER_IMPLEMENTED=no
+PAGE_CONTRACT_CREATED=no
+P4_STARTED=no
+P5_STARTED=no
+PROJECT_UI_DISCOVERED=no
+PROJECT_UI_ROUTED=no
+PROJECT_UI_SYNCHRONIZED=no
+PROJECT_UI_ADAPTER_ACTIVATED=no
+```
 
 ## Page Contract Validation Boundary
 

@@ -14,7 +14,7 @@ project-ui is the canonical CCD project-level UI governance source for planning,
 
 ## Transitional Status
 
-The initial project-ui source was introduced on main by commit `624948ea9058507f8fae91975dabc715d984703a` with subject `feat(governance): 建立唯一项目级 UI Skill`. The P3 Machine UI Policy has been created as `.ai/governance/policies/ui.json` and is validated by `node .ai/governance/ui/scripts/validate-ui-policy.mjs`. project-ui remains undiscovered by the current Skill lock, unrouted, and unsynchronized; legacy design Skills and legacy UI rules remain unchanged.
+The initial project-ui source was introduced on main by commit `624948ea9058507f8fae91975dabc715d984703a` with subject `feat(governance): 建立唯一项目级 UI Skill`. P3 Machine UI Policy implementation is complete at `.ai/governance/policies/ui.json` and is validated by `node .ai/governance/ui/scripts/validate-ui-policy.mjs`. Application-source enforcement remains baseline-only because the source scanner is not implemented. project-ui remains undiscovered by the current Skill lock, unrouted, and unsynchronized; legacy design Skills and legacy UI rules remain unchanged.
 
 ## Future Activation Intent
 
@@ -66,11 +66,33 @@ GSAP is eligible only for timeline-heavy, scroll-linked, or complex choreography
 
 ## Future Integration Boundaries
 
-Future phases own future enforcement and routing. Current project-ui provides human-readable canonical governance plus semantic-quality validation only; it does not create machine enforcement, cold-start activation, or sync.
+Future phases own source-scanning enforcement and routing. Current project-ui provides human-readable canonical governance plus deterministic policy and semantic-quality validation; it does not provide source-scanning enforcement, cold-start activation, or sync.
 
 ## P3 Machine UI Policy Boundary
 
-P3 Machine UI Policy now exists at `.ai/governance/policies/ui.json` with 68 canonical rules across 14 semantic-obligation clusters. The policy validator is `node .ai/governance/ui/scripts/validate-ui-policy.mjs`. The source scanner is not yet implemented; P3 only records policy, schemas, profile, empty exception registry, fixtures, and deterministic validation.
+P3 Machine UI Policy is complete at `.ai/governance/policies/ui.json` with 68 canonical rules across 14 semantic-obligation clusters. Its schemas, Product UI Profile, empty exception registry, fixtures, and deterministic validator are present. The source scanner is not implemented, so application-source enforcement remains baseline-only.
+
+## Lifecycle State
+
+```text
+P3_COMPLETE=yes
+MACHINE_UI_POLICY_COMPLETE=yes
+MACHINE_UI_POLICY_PRESENT=yes
+POLICY_SCHEMAS_PRESENT=yes
+PRODUCT_UI_PROFILE_PRESENT=yes
+EXCEPTION_REGISTRY_PRESENT=yes
+EXCEPTION_COUNT=0
+POLICY_FIXTURES_PRESENT=yes
+POLICY_VALIDATOR_PRESENT=yes
+SOURCE_SCANNER_IMPLEMENTED=no
+PAGE_CONTRACT_CREATED=no
+P4_STARTED=no
+P5_STARTED=no
+PROJECT_UI_DISCOVERED=no
+PROJECT_UI_ROUTED=no
+PROJECT_UI_SYNCHRONIZED=no
+PROJECT_UI_ADAPTER_ACTIVATED=no
+```
 
 ## Page Contract Boundary
 

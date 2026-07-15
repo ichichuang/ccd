@@ -34,11 +34,11 @@ wiki_owner: LLM-maintained CCD architecture wiki
 
 ## Transitional Status
 
-The P3 Machine UI Policy has been created at `.ai/governance/policies/ui.json` with 68 canonical rules across 14 semantic-obligation clusters. The policy validator is `node .ai/governance/ui/scripts/validate-ui-policy.mjs`. The source scanner is not yet implemented, and `project-ui` remains undiscovered by the current Skill lock, unrouted, and unsynchronized.
+P3 Machine UI Policy implementation is complete at `.ai/governance/policies/ui.json` with 68 canonical rules across 14 semantic-obligation clusters. The policy validator is `node .ai/governance/ui/scripts/validate-ui-policy.mjs`. Application-source enforcement remains baseline-only because the source scanner is not implemented, and `project-ui` remains undiscovered by the current Skill lock, unrouted, and unsynchronized.
 
 ## P2 And P3 State
 
-The project-ui semantic-quality correction is complete and tracked on main. Machine UI Policy exists at `.ai/governance/policies/ui.json` and the P3 Machine UI Policy baseline is created. Page Contract Schema does not exist. P4 has not started. P5 has not started. project-ui remains undiscovered by the current Skill lock, unrouted, unsynchronized, and not adapter-activated.
+The project-ui semantic-quality correction is complete and tracked on main. Machine UI Policy exists at `.ai/governance/policies/ui.json`, and P3 Machine UI Policy implementation is complete. Page Contract Schema does not exist. P4 has not started. P5 has not started. project-ui remains undiscovered by the current Skill lock, unrouted, unsynchronized, and not adapter-activated.
 
 ## Handoff
 
@@ -95,7 +95,29 @@ Do not claim source-scanning enforcement; the scanner is not yet implemented.
 
 ## Boundaries
 
-- **Machine UI Policy**: baseline created, scanner not implemented.
+- **Machine UI Policy**: P3 implementation complete; application-source enforcement baseline-only because the scanner is not implemented.
 - **Page Contract Schema**: does not exist.
 - **P4 Cold-Start**: not started.
 - **P5 Routing and Synchronization**: not started.
+
+## Lifecycle State
+
+```text
+P3_COMPLETE=yes
+MACHINE_UI_POLICY_COMPLETE=yes
+MACHINE_UI_POLICY_PRESENT=yes
+POLICY_SCHEMAS_PRESENT=yes
+PRODUCT_UI_PROFILE_PRESENT=yes
+EXCEPTION_REGISTRY_PRESENT=yes
+EXCEPTION_COUNT=0
+POLICY_FIXTURES_PRESENT=yes
+POLICY_VALIDATOR_PRESENT=yes
+SOURCE_SCANNER_IMPLEMENTED=no
+PAGE_CONTRACT_CREATED=no
+P4_STARTED=no
+P5_STARTED=no
+PROJECT_UI_DISCOVERED=no
+PROJECT_UI_ROUTED=no
+PROJECT_UI_SYNCHRONIZED=no
+PROJECT_UI_ADAPTER_ACTIVATED=no
+```

@@ -8,7 +8,7 @@
   "additionalProperties": false,
   "properties": {
     "schemaVersion": { "type": "string", "pattern": "^ccd-ui-exception-registry/v\\d+$" },
-    "policyId": { "type": "string", "pattern": "^ccd-ui-policy/v\\d+$" },
+    "policyId": { "const": "ccd-ui-policy/v2" },
     "exceptions": {
       "type": "array",
       "items": { "$ref": "ui-exception.schema.json" }

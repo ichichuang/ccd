@@ -1,76 +1,1100 @@
 {
-  "schemaVersion": "ccd-ui-rule-cases/v1",
-  "description": "Deterministic pass/fail test cases for policy rule semantics.",
+  "schemaVersion": "ccd-ui-rule-cases/v2",
+  "description": "Deterministic fixture-only detector coverage. This inventory does not claim application-source scanning.",
+  "declaredCounts": {
+    "ruleCount": 68,
+    "passCaseCount": 68,
+    "failCaseCount": 68,
+    "totalCaseCount": 136
+  },
   "cases": [
     {
-      "id": "case-001",
+      "id": "CCD-UI-001-pass",
       "ruleId": "CCD-UI-001",
-      "intent": "pass",
-      "description": "Pro-wrapper usage follows component priority.",
-      "fixture": "<ProTable :columns=\"columns\" :data=\"rows\" />"
+      "detector": "PrimeVueComponentPriorityScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Prefer project Pro-wrappers over raw PrimeVue.",
+      "fixture": "<ProTable :data=\"rows\" />"
     },
     {
-      "id": "case-002",
+      "id": "CCD-UI-001-fail",
       "ruleId": "CCD-UI-001",
-      "intent": "fail",
-      "description": "Raw PrimeVue DataTable used when ProTable exists.",
-      "fixture": "<DataTable :value=\"rows\"><Column field=\"name\" /></DataTable>"
+      "detector": "PrimeVueComponentPriorityScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Prefer project Pro-wrappers over raw PrimeVue.",
+      "fixture": "<DataTable :value=\"rows\" />"
     },
     {
-      "id": "case-003",
-      "ruleId": "CCD-UI-010",
-      "intent": "fail",
-      "description": "Deep selector targets PrimeVue internal class in business code.",
-      "fixture": ":deep(.p-button) { background: red; }"
+      "id": "CCD-UI-002-pass",
+      "ruleId": "CCD-UI-002",
+      "detector": "PrimeVueComponentPriorityScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Native elements restricted to structural/semantic allowlist.",
+      "fixture": "<section aria-labelledby=\"title\">content</section>"
     },
     {
-      "id": "case-004",
-      "ruleId": "CCD-UI-064",
-      "intent": "pass",
-      "description": "New deep selector added to documented three-file whitelist.",
-      "fixture": "packages/vue-ui/src/ProTable/ProTable.vue"
+      "id": "CCD-UI-002-fail",
+      "ruleId": "CCD-UI-002",
+      "detector": "PrimeVueComponentPriorityScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Native elements restricted to structural/semantic allowlist.",
+      "fixture": "<input v-model=\"name\" />"
     },
     {
-      "id": "case-005",
+      "id": "CCD-UI-003-pass",
+      "ruleId": "CCD-UI-003",
+      "detector": "PrimeVueComponentPriorityScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Use PrimeVue equivalent when available.",
+      "fixture": "<Button label=\"Save\" />"
+    },
+    {
+      "id": "CCD-UI-003-fail",
+      "ruleId": "CCD-UI-003",
+      "detector": "PrimeVueComponentPriorityScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Use PrimeVue equivalent when available.",
+      "fixture": "<button type=\"button\">Save</button>"
+    },
+    {
+      "id": "CCD-UI-004-pass",
+      "ruleId": "CCD-UI-004",
+      "detector": "NativeControlScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Forbidden native interactive and data controls.",
+      "fixture": "<Select v-model=\"choice\" :options=\"options\" />"
+    },
+    {
+      "id": "CCD-UI-004-fail",
+      "ruleId": "CCD-UI-004",
+      "detector": "NativeControlScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Forbidden native interactive and data controls.",
+      "fixture": "<select v-model=\"choice\"></select>"
+    },
+    {
+      "id": "CCD-UI-005-pass",
       "ruleId": "CCD-UI-005",
-      "intent": "fail",
-      "description": "Raw vue-echarts initialization in business code.",
-      "fixture": "import VChart from 'vue-echarts'"
+      "detector": "EchartsOwnershipScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Raw vue-echarts initialization forbidden.",
+      "fixture": "const chart = useEcharts(container)"
     },
     {
-      "id": "case-006",
+      "id": "CCD-UI-005-fail",
+      "ruleId": "CCD-UI-005",
+      "detector": "EchartsOwnershipScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Raw vue-echarts initialization forbidden.",
+      "fixture": "const chart = echarts.init(container)"
+    },
+    {
+      "id": "CCD-UI-006-pass",
       "ruleId": "CCD-UI-006",
-      "intent": "fail",
-      "description": "Native alert used for user feedback.",
-      "fixture": "alert('saved')"
+      "detector": "FeedbackAbstractionScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Feedback must use approved abstraction.",
+      "fixture": "window.$toast.success('Saved')"
     },
     {
-      "id": "case-007",
-      "ruleId": "CCD-UI-015",
-      "intent": "fail",
-      "description": "Raw hex color used in template.",
-      "fixture": "class=\"text-[#ff0000]\""
+      "id": "CCD-UI-006-fail",
+      "ruleId": "CCD-UI-006",
+      "detector": "FeedbackAbstractionScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Feedback must use approved abstraction.",
+      "fixture": "alert('Saved')"
     },
     {
-      "id": "case-008",
+      "id": "CCD-UI-007-pass",
+      "ruleId": "CCD-UI-007",
+      "detector": "FeedbackAbstractionScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Route feedback through internal abstraction.",
+      "fixture": "window.$message.info('Queued')"
+    },
+    {
+      "id": "CCD-UI-007-fail",
+      "ruleId": "CCD-UI-007",
+      "detector": "FeedbackAbstractionScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Route feedback through internal abstraction.",
+      "fixture": "new ToastService().add(message)"
+    },
+    {
+      "id": "CCD-UI-008-pass",
+      "ruleId": "CCD-UI-008",
+      "detector": "FeedbackAbstractionScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Business dialogs must use approved wrapper.",
+      "fixture": "<PrimeDialog v-model:visible=\"open\" />"
+    },
+    {
+      "id": "CCD-UI-008-fail",
+      "ruleId": "CCD-UI-008",
+      "detector": "FeedbackAbstractionScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Business dialogs must use approved wrapper.",
+      "fixture": "<Dialog v-model:visible=\"open\" />"
+    },
+    {
+      "id": "CCD-UI-009-pass",
+      "ruleId": "CCD-UI-009",
+      "detector": "PassThroughConflictScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for PrimeVue customization must use PassThrough.",
+      "fixture": ":pt=\"{ root: { class: 'text-foreground' } }\""
+    },
+    {
+      "id": "CCD-UI-009-fail",
+      "ruleId": "CCD-UI-009",
+      "detector": "PassThroughConflictScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for PrimeVue customization must use PassThrough.",
+      "fixture": ".p-button { color: red; }"
+    },
+    {
+      "id": "CCD-UI-010-pass",
+      "ruleId": "CCD-UI-010",
+      "detector": "DeepSelectorExceptionScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Deep selectors targeting PrimeVue internals forbidden.",
+      "fixture": ".business-button { color: var(--foreground); }"
+    },
+    {
+      "id": "CCD-UI-010-fail",
+      "ruleId": "CCD-UI-010",
+      "detector": "DeepSelectorExceptionScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Deep selectors targeting PrimeVue internals forbidden.",
+      "fixture": ":deep(.p-button) { color: red; }"
+    },
+    {
+      "id": "CCD-UI-011-pass",
+      "ruleId": "CCD-UI-011",
+      "detector": "PassThroughConflictScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Local PT must not duplicate or conflict with global preset.",
+      "fixture": ":pt=\"{ root: { class: 'local-addon' } }\""
+    },
+    {
+      "id": "CCD-UI-011-fail",
+      "ruleId": "CCD-UI-011",
+      "detector": "PassThroughConflictScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Local PT must not duplicate or conflict with global preset.",
+      "fixture": ":pt=\"{ root: { class: 'duplicate-global-preset' } }\""
+    },
+    {
+      "id": "CCD-UI-012-pass",
       "ruleId": "CCD-UI-012",
-      "intent": "fail",
-      "description": "rem unit used for source-authored sizing.",
+      "detector": "TokenLiteralScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for rem and em forbidden for source-authored sizing.",
+      "fixture": "class=\"w-[var(--control-width)]\""
+    },
+    {
+      "id": "CCD-UI-012-fail",
+      "ruleId": "CCD-UI-012",
+      "detector": "TokenLiteralScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for rem and em forbidden for source-authored sizing.",
       "fixture": "class=\"w-[16rem]\""
     },
     {
-      "id": "case-009",
+      "id": "CCD-UI-013-pass",
       "ruleId": "CCD-UI-013",
-      "intent": "pass",
-      "description": "Valid structural fallback unit.",
-      "fixture": "height: calc(100dvh - var(--header-height))"
+      "detector": "TokenLiteralScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Explicit structural units allowed only as fallback.",
+      "fixture": "height: calc(100dvh - var(--header-height));"
     },
     {
-      "id": "case-010",
+      "id": "CCD-UI-013-fail",
       "ruleId": "CCD-UI-013",
-      "intent": "fail",
-      "description": "Invalid arbitrary rem fallback.",
+      "detector": "TokenLiteralScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Explicit structural units allowed only as fallback.",
       "fixture": "class=\"h-[2em]\""
+    },
+    {
+      "id": "CCD-UI-014-pass",
+      "ruleId": "CCD-UI-014",
+      "detector": "TokenLiteralScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Shortcuts are a closed set.",
+      "fixture": "class=\"page-shell\""
+    },
+    {
+      "id": "CCD-UI-014-fail",
+      "ruleId": "CCD-UI-014",
+      "detector": "TokenLiteralScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Shortcuts are a closed set.",
+      "fixture": "class=\"invented-dashboard-shell\""
+    },
+    {
+      "id": "CCD-UI-015-pass",
+      "ruleId": "CCD-UI-015",
+      "detector": "TokenLiteralScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for No raw hex or rem/em sizing in templates or styles.",
+      "fixture": "class=\"text-foreground bg-background\""
+    },
+    {
+      "id": "CCD-UI-015-fail",
+      "ruleId": "CCD-UI-015",
+      "detector": "TokenLiteralScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for No raw hex or rem/em sizing in templates or styles.",
+      "fixture": "style=\"color: #ff0000\""
+    },
+    {
+      "id": "CCD-UI-016-pass",
+      "ruleId": "CCD-UI-016",
+      "detector": "TokenLiteralScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Layout dimensions must derive from size presets.",
+      "fixture": "width: var(--sidebar-width);"
+    },
+    {
+      "id": "CCD-UI-016-fail",
+      "ruleId": "CCD-UI-016",
+      "detector": "TokenLiteralScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Layout dimensions must derive from size presets.",
+      "fixture": "width: 312px;"
+    },
+    {
+      "id": "CCD-UI-017-pass",
+      "ruleId": "CCD-UI-017",
+      "detector": "ThemePresetValidator",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Theme presets must define light and dark modes.",
+      "fixture": "{\"modes\":[\"light\",\"dark\"]}"
+    },
+    {
+      "id": "CCD-UI-017-fail",
+      "ruleId": "CCD-UI-017",
+      "detector": "ThemePresetValidator",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Theme presets must define light and dark modes.",
+      "fixture": "{\"modes\":[\"light\"]}"
+    },
+    {
+      "id": "CCD-UI-018-pass",
+      "ruleId": "CCD-UI-018",
+      "detector": "ThemePresetValidator",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Theme presets must include complete semantic families.",
+      "fixture": "{\"families\":[\"primary\",\"accent\",\"success\",\"warn\",\"danger\",\"info\",\"help\",\"sidebar\"]}"
+    },
+    {
+      "id": "CCD-UI-018-fail",
+      "ruleId": "CCD-UI-018",
+      "detector": "ThemePresetValidator",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Theme presets must include complete semantic families.",
+      "fixture": "{\"families\":[\"primary\",\"surface\"]}"
+    },
+    {
+      "id": "CCD-UI-019-pass",
+      "ruleId": "CCD-UI-019",
+      "detector": "ThemePresetValidator",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Preserve semantic tier in token contrast validation.",
+      "fixture": "{\"token\":\"foreground\",\"semanticTier\":\"readable\"}"
+    },
+    {
+      "id": "CCD-UI-019-fail",
+      "ruleId": "CCD-UI-019",
+      "detector": "ThemePresetValidator",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Preserve semantic tier in token contrast validation.",
+      "fixture": "{\"token\":\"foreground\",\"semanticTier\":\"decorative\"}"
+    },
+    {
+      "id": "CCD-UI-020-pass",
+      "ruleId": "CCD-UI-020",
+      "detector": "ThemePresetValidator",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Action and text pairs must meet 4.5 contrast.",
+      "fixture": "{\"pair\":\"action\",\"contrast\":4.5}"
+    },
+    {
+      "id": "CCD-UI-020-fail",
+      "ruleId": "CCD-UI-020",
+      "detector": "ThemePresetValidator",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Action and text pairs must meet 4.5 contrast.",
+      "fixture": "{\"pair\":\"action\",\"contrast\":4.49}"
+    },
+    {
+      "id": "CCD-UI-021-pass",
+      "ruleId": "CCD-UI-021",
+      "detector": "ThemePresetValidator",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Subtle pairs must meet 3.0 contrast.",
+      "fixture": "{\"pair\":\"subtle\",\"contrast\":3}"
+    },
+    {
+      "id": "CCD-UI-021-fail",
+      "ruleId": "CCD-UI-021",
+      "detector": "ThemePresetValidator",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Subtle pairs must meet 3.0 contrast.",
+      "fixture": "{\"pair\":\"subtle\",\"contrast\":2.99}"
+    },
+    {
+      "id": "CCD-UI-022-pass",
+      "ruleId": "CCD-UI-022",
+      "detector": "ThemePresetValidator",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Decorative light tokens must not be primary readable pairs.",
+      "fixture": "{\"token\":\"primary-light\",\"role\":\"decorative\"}"
+    },
+    {
+      "id": "CCD-UI-022-fail",
+      "ruleId": "CCD-UI-022",
+      "detector": "ThemePresetValidator",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Decorative light tokens must not be primary readable pairs.",
+      "fixture": "{\"token\":\"primary-light\",\"role\":\"primary-readable-text\"}"
+    },
+    {
+      "id": "CCD-UI-023-pass",
+      "ruleId": "CCD-UI-023",
+      "detector": "ResponsiveOwnershipScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Layout dimensions scale by breakpoint.",
+      "fixture": "const width = baseWidth * LAYOUT_SCALE_RATIOS[breakpoint]"
+    },
+    {
+      "id": "CCD-UI-023-fail",
+      "ruleId": "CCD-UI-023",
+      "detector": "ResponsiveOwnershipScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Layout dimensions scale by breakpoint.",
+      "fixture": "const width = 1280"
+    },
+    {
+      "id": "CCD-UI-024-pass",
+      "ruleId": "CCD-UI-024",
+      "detector": "ResponsiveOwnershipScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Device store owns raw viewport state.",
+      "fixture": "const viewport = deviceStore.viewport"
+    },
+    {
+      "id": "CCD-UI-024-fail",
+      "ruleId": "CCD-UI-024",
+      "detector": "ResponsiveOwnershipScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Device store owns raw viewport state.",
+      "fixture": "const viewport = window.innerWidth"
+    },
+    {
+      "id": "CCD-UI-025-pass",
+      "ruleId": "CCD-UI-025",
+      "detector": "ResponsiveOwnershipScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Size engine owns CSS variable dimensions.",
+      "fixture": "style.setProperty(\"--sidebar-width\", sizeEngine.sidebarWidth)"
+    },
+    {
+      "id": "CCD-UI-025-fail",
+      "ruleId": "CCD-UI-025",
+      "detector": "ResponsiveOwnershipScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Size engine owns CSS variable dimensions.",
+      "fixture": "const sidebarWidth = 320"
+    },
+    {
+      "id": "CCD-UI-026-pass",
+      "ruleId": "CCD-UI-026",
+      "detector": "ResponsiveOwnershipScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Shell visibility must use runtime flags.",
+      "fixture": "<Sidebar v-if=\"runtimeFlags.showSidebar\" />"
+    },
+    {
+      "id": "CCD-UI-026-fail",
+      "ruleId": "CCD-UI-026",
+      "detector": "ResponsiveOwnershipScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Shell visibility must use runtime flags.",
+      "fixture": "<Sidebar class=\"hidden md:block\" />"
+    },
+    {
+      "id": "CCD-UI-027-pass",
+      "ruleId": "CCD-UI-027",
+      "detector": "ResponsiveOwnershipScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Child components must not infer device behavior.",
+      "fixture": "defineProps<{ isMobile: boolean }>()"
+    },
+    {
+      "id": "CCD-UI-027-fail",
+      "ruleId": "CCD-UI-027",
+      "detector": "ResponsiveOwnershipScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Child components must not infer device behavior.",
+      "fixture": "const { width } = useWindowSize()"
+    },
+    {
+      "id": "CCD-UI-028-pass",
+      "ruleId": "CCD-UI-028",
+      "detector": "LayoutScrollScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Scrollable regions must use CScrollbar.",
+      "fixture": "<CScrollbar class=\"page-scroll\">content</CScrollbar>"
+    },
+    {
+      "id": "CCD-UI-028-fail",
+      "ruleId": "CCD-UI-028",
+      "detector": "LayoutScrollScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Scrollable regions must use CScrollbar.",
+      "fixture": "<div class=\"overflow-auto\">content</div>"
+    },
+    {
+      "id": "CCD-UI-029-pass",
+      "ruleId": "CCD-UI-029",
+      "detector": "LayoutScrollScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for View root must be transparent.",
+      "fixture": "<main class=\"bg-transparent\">content</main>"
+    },
+    {
+      "id": "CCD-UI-029-fail",
+      "ruleId": "CCD-UI-029",
+      "detector": "LayoutScrollScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for View root must be transparent.",
+      "fixture": "<main class=\"bg-surface\">content</main>"
+    },
+    {
+      "id": "CCD-UI-030-pass",
+      "ruleId": "CCD-UI-030",
+      "detector": "LayoutScrollScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for No background or surface tokens on root wrapper.",
+      "fixture": "<main><section class=\"material-solid\">content</section></main>"
+    },
+    {
+      "id": "CCD-UI-030-fail",
+      "ruleId": "CCD-UI-030",
+      "detector": "LayoutScrollScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for No background or surface tokens on root wrapper.",
+      "fixture": "<main class=\"material-solid\">content</main>"
+    },
+    {
+      "id": "CCD-UI-031-pass",
+      "ruleId": "CCD-UI-031",
+      "detector": "LayoutScrollScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for col-fill forbidden as default root.",
+      "fixture": "<main class=\"min-h-full\">content</main>"
+    },
+    {
+      "id": "CCD-UI-031-fail",
+      "ruleId": "CCD-UI-031",
+      "detector": "LayoutScrollScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for col-fill forbidden as default root.",
+      "fixture": "<main class=\"col-fill\">content</main>"
+    },
+    {
+      "id": "CCD-UI-032-pass",
+      "ruleId": "CCD-UI-032",
+      "detector": "LayoutScrollScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for col-fill permitted only when view owns scroll.",
+      "fixture": "<main class=\"col-fill\" data-scroll-owner=\"view\">content</main>"
+    },
+    {
+      "id": "CCD-UI-032-fail",
+      "ruleId": "CCD-UI-032",
+      "detector": "LayoutScrollScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for col-fill permitted only when view owns scroll.",
+      "fixture": "<main class=\"col-fill\">content</main>"
+    },
+    {
+      "id": "CCD-UI-033-pass",
+      "ruleId": "CCD-UI-033",
+      "detector": "LayoutScrollScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Structural visibility must not use media-query toggles.",
+      "fixture": "<TopMenu v-if=\"runtimeFlags.showTopMenu\" />"
+    },
+    {
+      "id": "CCD-UI-033-fail",
+      "ruleId": "CCD-UI-033",
+      "detector": "LayoutScrollScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Structural visibility must not use media-query toggles.",
+      "fixture": "@media (max-width: 768px) { .top-menu { display: none; } }"
+    },
+    {
+      "id": "CCD-UI-034-pass",
+      "ruleId": "CCD-UI-034",
+      "detector": "LayoutScrollScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Safe areas must consume centralized runtime variables.",
+      "fixture": "padding-top: var(--safe-area-top);"
+    },
+    {
+      "id": "CCD-UI-034-fail",
+      "ruleId": "CCD-UI-034",
+      "detector": "LayoutScrollScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Safe areas must consume centralized runtime variables.",
+      "fixture": "padding-top: env(safe-area-inset-top);"
+    },
+    {
+      "id": "CCD-UI-035-pass",
+      "ruleId": "CCD-UI-035",
+      "detector": "MaterialZIndexScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Use semantic material tokens.",
+      "fixture": "class=\"material-elevated\""
+    },
+    {
+      "id": "CCD-UI-035-fail",
+      "ruleId": "CCD-UI-035",
+      "detector": "MaterialZIndexScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Use semantic material tokens.",
+      "fixture": "class=\"backdrop-blur-xl bg-white/30\""
+    },
+    {
+      "id": "CCD-UI-036-pass",
+      "ruleId": "CCD-UI-036",
+      "detector": "MaterialZIndexScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Glass forbidden inside tables, lists, scrollers, and nested glass.",
+      "fixture": "<ProTable class=\"material-solid\" />"
+    },
+    {
+      "id": "CCD-UI-036-fail",
+      "ruleId": "CCD-UI-036",
+      "detector": "MaterialZIndexScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Glass forbidden inside tables, lists, scrollers, and nested glass.",
+      "fixture": "<ProTable class=\"glass-panel\" />"
+    },
+    {
+      "id": "CCD-UI-037-pass",
+      "ruleId": "CCD-UI-037",
+      "detector": "MaterialZIndexScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Raw z-index utilities forbidden.",
+      "fixture": "class=\"z-overlay\""
+    },
+    {
+      "id": "CCD-UI-037-fail",
+      "ruleId": "CCD-UI-037",
+      "detector": "MaterialZIndexScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Raw z-index utilities forbidden.",
+      "fixture": "class=\"z-[9999]\""
+    },
+    {
+      "id": "CCD-UI-038-pass",
+      "ruleId": "CCD-UI-038",
+      "detector": "MaterialZIndexScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Restructure stacking context instead of inventing z-index.",
+      "fixture": "class=\"isolate\""
+    },
+    {
+      "id": "CCD-UI-038-fail",
+      "ruleId": "CCD-UI-038",
+      "detector": "MaterialZIndexScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Restructure stacking context instead of inventing z-index.",
+      "fixture": "style=\"z-index: 999999\""
+    },
+    {
+      "id": "CCD-UI-039-pass",
+      "ruleId": "CCD-UI-039",
+      "detector": "MaterialZIndexScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Light-mode canvas/card optical separation.",
+      "fixture": "review:light-mode-optical-separation=clear"
+    },
+    {
+      "id": "CCD-UI-039-fail",
+      "ruleId": "CCD-UI-039",
+      "detector": "MaterialZIndexScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Light-mode canvas/card optical separation.",
+      "fixture": "review:light-mode-optical-separation=indistinct"
+    },
+    {
+      "id": "CCD-UI-040-pass",
+      "ruleId": "CCD-UI-040",
+      "detector": "MaterialZIndexScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Dark-mode elevation via inset glow and semantic border.",
+      "fixture": "review:dark-mode-elevation=semantic-border-and-inset-glow"
+    },
+    {
+      "id": "CCD-UI-040-fail",
+      "ruleId": "CCD-UI-040",
+      "detector": "MaterialZIndexScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Dark-mode elevation via inset glow and semantic border.",
+      "fixture": "review:dark-mode-elevation=drop-shadow-only"
+    },
+    {
+      "id": "CCD-UI-041-pass",
+      "ruleId": "CCD-UI-041",
+      "detector": "MaterialZIndexScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Do not add borders everywhere.",
+      "fixture": "review:border-use=semantic-boundaries-only"
+    },
+    {
+      "id": "CCD-UI-041-fail",
+      "ruleId": "CCD-UI-041",
+      "detector": "MaterialZIndexScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Do not add borders everywhere.",
+      "fixture": "review:border-use=every-container"
+    },
+    {
+      "id": "CCD-UI-042-pass",
+      "ruleId": "CCD-UI-042",
+      "detector": "MaterialZIndexScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Shadows express elevation not style.",
+      "fixture": "review:shadow-use=elevation-only"
+    },
+    {
+      "id": "CCD-UI-042-fail",
+      "ruleId": "CCD-UI-042",
+      "detector": "MaterialZIndexScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Shadows express elevation not style.",
+      "fixture": "review:shadow-use=decorative"
+    },
+    {
+      "id": "CCD-UI-043-pass",
+      "ruleId": "CCD-UI-043",
+      "detector": "ProductLanguageReviewer",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Profile defines replaceable visual expression.",
+      "fixture": "review:profile-replaceable=true"
+    },
+    {
+      "id": "CCD-UI-043-fail",
+      "ruleId": "CCD-UI-043",
+      "detector": "ProductLanguageReviewer",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Profile defines replaceable visual expression.",
+      "fixture": "review:profile-replaceable=false"
+    },
+    {
+      "id": "CCD-UI-044-pass",
+      "ruleId": "CCD-UI-044",
+      "detector": "ProductLanguageReviewer",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Profile replacement preserves platform invariants.",
+      "fixture": "review:profile-preserves-platform-invariants=true"
+    },
+    {
+      "id": "CCD-UI-044-fail",
+      "ruleId": "CCD-UI-044",
+      "detector": "ProductLanguageReviewer",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Profile replacement preserves platform invariants.",
+      "fixture": "review:profile-preserves-platform-invariants=false"
+    },
+    {
+      "id": "CCD-UI-045-pass",
+      "ruleId": "CCD-UI-045",
+      "detector": "ProductLanguageReviewer",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Product language rejects generic dashboard decoration.",
+      "fixture": "review:dashboard-expression=restrained-hierarchy"
+    },
+    {
+      "id": "CCD-UI-045-fail",
+      "ruleId": "CCD-UI-045",
+      "detector": "ProductLanguageReviewer",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Product language rejects generic dashboard decoration.",
+      "fixture": "review:dashboard-expression=generic-decoration-wall"
+    },
+    {
+      "id": "CCD-UI-046-pass",
+      "ruleId": "CCD-UI-046",
+      "detector": "ProductLanguageReviewer",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Product language governs before material and motion choices.",
+      "fixture": "review:decision-order=product-language-first"
+    },
+    {
+      "id": "CCD-UI-046-fail",
+      "ruleId": "CCD-UI-046",
+      "detector": "ProductLanguageReviewer",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Product language governs before material and motion choices.",
+      "fixture": "review:decision-order=material-first-apple-marketing"
+    },
+    {
+      "id": "CCD-UI-047-pass",
+      "ruleId": "CCD-UI-047",
+      "detector": "ProductLanguageReviewer",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Product language enforces calm precision and inspectability.",
+      "fixture": "review:component-language=ccd-owned"
+    },
+    {
+      "id": "CCD-UI-047-fail",
+      "ruleId": "CCD-UI-047",
+      "detector": "ProductLanguageReviewer",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Product language enforces calm precision and inspectability.",
+      "fixture": "review:component-language=copied-material-ui"
+    },
+    {
+      "id": "CCD-UI-048-pass",
+      "ruleId": "CCD-UI-048",
+      "detector": "AccessibilityReviewer",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Pointer enter/leave events forbidden in templates.",
+      "fixture": "<button @focus=\"showHint\" @blur=\"hideHint\">Help</button>"
+    },
+    {
+      "id": "CCD-UI-048-fail",
+      "ruleId": "CCD-UI-048",
+      "detector": "AccessibilityReviewer",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Pointer enter/leave events forbidden in templates.",
+      "fixture": "<button @mouseenter=\"showHint\">Help</button>"
+    },
+    {
+      "id": "CCD-UI-049-pass",
+      "ruleId": "CCD-UI-049",
+      "detector": "AccessibilityReviewer",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Tooltip touch config uses focus event.",
+      "fixture": "v-tooltip=\"{ value: hint, event: 'focus' }\""
+    },
+    {
+      "id": "CCD-UI-049-fail",
+      "ruleId": "CCD-UI-049",
+      "detector": "AccessibilityReviewer",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Tooltip touch config uses focus event.",
+      "fixture": "v-tooltip=\"{ value: hint, event: 'hover' }\""
+    },
+    {
+      "id": "CCD-UI-050-pass",
+      "ruleId": "CCD-UI-050",
+      "detector": "AccessibilityReviewer",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Borders clarify grouping, selected, focus, and overlay boundaries.",
+      "fixture": "class=\"border-selected focus-visible:border-focus\""
+    },
+    {
+      "id": "CCD-UI-050-fail",
+      "ruleId": "CCD-UI-050",
+      "detector": "AccessibilityReviewer",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Borders clarify grouping, selected, focus, and overlay boundaries.",
+      "fixture": "class=\"border-decorative-on-every-surface\""
+    },
+    {
+      "id": "CCD-UI-051-pass",
+      "ruleId": "CCD-UI-051",
+      "detector": "AccessibilityReviewer",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Theme switching must preserve visual-stage roots and form state.",
+      "fixture": "<VisualStage :theme=\"theme\" />"
+    },
+    {
+      "id": "CCD-UI-051-fail",
+      "ruleId": "CCD-UI-051",
+      "detector": "AccessibilityReviewer",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Theme switching must preserve visual-stage roots and form state.",
+      "fixture": "<VisualStage :key=\"theme\" />"
+    },
+    {
+      "id": "CCD-UI-052-pass",
+      "ruleId": "CCD-UI-052",
+      "detector": "MotionLifecycleScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for ease-in-out forbidden for layout elements.",
+      "fixture": "class=\"transition ease-smooth\""
+    },
+    {
+      "id": "CCD-UI-052-fail",
+      "ruleId": "CCD-UI-052",
+      "detector": "MotionLifecycleScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for ease-in-out forbidden for layout elements.",
+      "fixture": "class=\"transition ease-in-out\""
+    },
+    {
+      "id": "CCD-UI-053-pass",
+      "ruleId": "CCD-UI-053",
+      "detector": "MotionLifecycleScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Use semantic easing curves.",
+      "fixture": "class=\"transition ease-spring\""
+    },
+    {
+      "id": "CCD-UI-053-fail",
+      "ruleId": "CCD-UI-053",
+      "detector": "MotionLifecycleScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Use semantic easing curves.",
+      "fixture": "style=\"transition-timing-function: linear\""
+    },
+    {
+      "id": "CCD-UI-054-pass",
+      "ruleId": "CCD-UI-054",
+      "detector": "MotionLifecycleScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for GSAP eligibility limited to complex choreography.",
+      "fixture": "gsap.timeline().to(panel, { x: 0 }).to(overlay, { opacity: 1 })"
+    },
+    {
+      "id": "CCD-UI-054-fail",
+      "ruleId": "CCD-UI-054",
+      "detector": "MotionLifecycleScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for GSAP eligibility limited to complex choreography.",
+      "fixture": "gsap.to(button, { scale: 1.02 })"
+    },
+    {
+      "id": "CCD-UI-055-pass",
+      "ruleId": "CCD-UI-055",
+      "detector": "MotionLifecycleScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Prefer opacity and transform for motion.",
+      "fixture": "animate(element, { opacity: 1, transform: \"translateY(0)\" })"
+    },
+    {
+      "id": "CCD-UI-055-fail",
+      "ruleId": "CCD-UI-055",
+      "detector": "MotionLifecycleScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Prefer opacity and transform for motion.",
+      "fixture": "animate(element, { top: 0, width: 400 })"
+    },
+    {
+      "id": "CCD-UI-056-pass",
+      "ruleId": "CCD-UI-056",
+      "detector": "MotionLifecycleScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Do not use GSAP as default decoration.",
+      "fixture": "<Transition name=\"fade\"><Panel /></Transition>"
+    },
+    {
+      "id": "CCD-UI-056-fail",
+      "ruleId": "CCD-UI-056",
+      "detector": "MotionLifecycleScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Do not use GSAP as default decoration.",
+      "fixture": "gsap.to(pageDecoration, { rotation: 360, repeat: -1 })"
+    },
+    {
+      "id": "CCD-UI-057-pass",
+      "ruleId": "CCD-UI-057",
+      "detector": "MotionLifecycleScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Do not scatter will-change, transform-gpu, or large blur.",
+      "fixture": "onBeforeEnter(() => element.style.willChange = \"transform\")"
+    },
+    {
+      "id": "CCD-UI-057-fail",
+      "ruleId": "CCD-UI-057",
+      "detector": "MotionLifecycleScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Do not scatter will-change, transform-gpu, or large blur.",
+      "fixture": "* { will-change: transform; transform: translateZ(0); }"
+    },
+    {
+      "id": "CCD-UI-058-pass",
+      "ruleId": "CCD-UI-058",
+      "detector": "MotionLifecycleScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Motion communicates continuity not entertainment.",
+      "fixture": "review:motion-purpose=continuity"
+    },
+    {
+      "id": "CCD-UI-058-fail",
+      "ruleId": "CCD-UI-058",
+      "detector": "MotionLifecycleScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Motion communicates continuity not entertainment.",
+      "fixture": "review:motion-purpose=entertainment"
+    },
+    {
+      "id": "CCD-UI-059-pass",
+      "ruleId": "CCD-UI-059",
+      "detector": "ProductLanguageReviewer",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Region ownership is part of product language.",
+      "fixture": "review:status-color=real-status-only"
+    },
+    {
+      "id": "CCD-UI-059-fail",
+      "ruleId": "CCD-UI-059",
+      "detector": "ProductLanguageReviewer",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Region ownership is part of product language.",
+      "fixture": "review:status-color=decorative-accent"
+    },
+    {
+      "id": "CCD-UI-060-pass",
+      "ruleId": "CCD-UI-060",
+      "detector": "ProductLanguageReviewer",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Decorative restraint required in product language.",
+      "fixture": "review:metrics=source-backed"
+    },
+    {
+      "id": "CCD-UI-060-fail",
+      "ruleId": "CCD-UI-060",
+      "detector": "ProductLanguageReviewer",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Decorative restraint required in product language.",
+      "fixture": "review:metrics=fabricated"
+    },
+    {
+      "id": "CCD-UI-061-pass",
+      "ruleId": "CCD-UI-061",
+      "detector": "ProductLanguageReviewer",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Reject decorative patterns that obscure architecture.",
+      "fixture": "review:primary-task-visible-within=3s"
+    },
+    {
+      "id": "CCD-UI-061-fail",
+      "ruleId": "CCD-UI-061",
+      "detector": "ProductLanguageReviewer",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Reject decorative patterns that obscure architecture.",
+      "fixture": "review:primary-task-obscured-by-decoration"
+    },
+    {
+      "id": "CCD-UI-062-pass",
+      "ruleId": "CCD-UI-062",
+      "detector": "ProductLanguageReviewer",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Product language prioritizes system structure.",
+      "fixture": "review:icons=recognition-or-action"
+    },
+    {
+      "id": "CCD-UI-062-fail",
+      "ruleId": "CCD-UI-062",
+      "detector": "ProductLanguageReviewer",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Product language prioritizes system structure.",
+      "fixture": "review:icons=decoration-only"
+    },
+    {
+      "id": "CCD-UI-063-pass",
+      "ruleId": "CCD-UI-063",
+      "detector": "DeepSelectorExceptionScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for ProForm field wrappers may use native elements internally.",
+      "fixture": "packages/vue-ui/src/ProForm/renderers/components/TextField.vue:<input />"
+    },
+    {
+      "id": "CCD-UI-063-fail",
+      "ruleId": "CCD-UI-063",
+      "detector": "DeepSelectorExceptionScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for ProForm field wrappers may use native elements internally.",
+      "fixture": "apps/web-demo/src/views/account/index.vue:<input />"
+    },
+    {
+      "id": "CCD-UI-064-pass",
+      "ruleId": "CCD-UI-064",
+      "detector": "DeepSelectorExceptionScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for New deep-selector usage requires documented exception.",
+      "fixture": "exception:CCD-UI-064:packages/vue-ui/src/ProTable/ProTable.vue::deep(.p-table)"
+    },
+    {
+      "id": "CCD-UI-064-fail",
+      "ruleId": "CCD-UI-064",
+      "detector": "DeepSelectorExceptionScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for New deep-selector usage requires documented exception.",
+      "fixture": "unregistered:apps/web-demo/src/views/demo.vue::deep(.p-button)"
+    },
+    {
+      "id": "CCD-UI-065-pass",
+      "ruleId": "CCD-UI-065",
+      "detector": "DeepSelectorExceptionScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Preset colors must be full HEX source data.",
+      "fixture": "{\"presetColor\":\"#A1B2C3\"}"
+    },
+    {
+      "id": "CCD-UI-065-fail",
+      "ruleId": "CCD-UI-065",
+      "detector": "DeepSelectorExceptionScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Preset colors must be full HEX source data.",
+      "fixture": "{\"presetColor\":\"#ABC\"}"
+    },
+    {
+      "id": "CCD-UI-066-pass",
+      "ruleId": "CCD-UI-066",
+      "detector": "DeepSelectorExceptionScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Warning alias restricted to adapter boundary.",
+      "fixture": "packages/vue-primevue-adapter:semanticFamily=warning-alias"
+    },
+    {
+      "id": "CCD-UI-066-fail",
+      "ruleId": "CCD-UI-066",
+      "detector": "DeepSelectorExceptionScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Warning alias restricted to adapter boundary.",
+      "fixture": "apps/web-demo:semanticFamily=warning"
+    },
+    {
+      "id": "CCD-UI-067-pass",
+      "ruleId": "CCD-UI-067",
+      "detector": "MotionLifecycleScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Layout renderers must consume finalized runtime state.",
+      "fixture": "render(layoutStore.finalizedState)"
+    },
+    {
+      "id": "CCD-UI-067-fail",
+      "ruleId": "CCD-UI-067",
+      "detector": "MotionLifecycleScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Layout renderers must consume finalized runtime state.",
+      "fixture": "render({ width: window.innerWidth })"
+    },
+    {
+      "id": "CCD-UI-068-pass",
+      "ruleId": "CCD-UI-068",
+      "detector": "MotionLifecycleScanner",
+      "expectedOutcome": "pass",
+      "description": "Deterministic passing fixture for Device store initialization must be singleton and idempotent.",
+      "fixture": "deviceStore.initializeSingleton()"
+    },
+    {
+      "id": "CCD-UI-068-fail",
+      "ruleId": "CCD-UI-068",
+      "detector": "MotionLifecycleScanner",
+      "expectedOutcome": "fail",
+      "description": "Deterministic failing fixture for Device store initialization must be singleton and idempotent.",
+      "fixture": "deviceStore.initialize(); deviceStore.initialize(); addEventListener(\"resize\", handler)"
     }
   ]
 }

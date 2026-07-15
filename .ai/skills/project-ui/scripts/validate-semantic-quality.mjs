@@ -101,30 +101,76 @@ const EXPECTED_CANONICAL_STATE = {
   projectUiSource: 'complete-and-tracked',
   semanticCorrectionCommit: EXPECTED_SEMANTIC_CORRECTION_COMMIT,
   p2SourcePhase: 'complete',
+  implementationState: 'P3_COMPLETE',
+  machineUiPolicyState: 'MACHINE_UI_POLICY_COMPLETE',
+  applicationSourceEnforcementState: 'BASELINE_ONLY',
+  machineUiPolicyPresent: true,
+  policySchemasPresent: true,
+  productUiProfilePresent: true,
+  exceptionRegistryPresent: true,
+  exceptionCount: 0,
+  fixturesPresent: true,
+  validatorPresent: true,
+  sourceScannerImplemented: false,
+  pageContractCreated: false,
+  p3Started: true,
+  p4Started: false,
+  p5Started: false,
   skillLockDiscovered: false,
   routed: false,
   synchronized: false,
   adapterActivated: false,
-  machineUiPolicyPresent: false,
-  pageContractSchemaPresent: false,
-  p3Started: false,
-  p4Started: false,
-  p5Started: false,
 }
 
 const EXPECTED_P3_HANDOFF_SOURCE_BASELINES = {
   sourceBaselineCommit: '624948ea9058507f8fae91975dabc715d984703a',
   semanticCorrectionCommit: EXPECTED_SEMANTIC_CORRECTION_COMMIT,
   canonicalClosureCommit: '0767895a53005f326767cfdf3102f6b72709aa31',
+  p3HandoffCommit: '5bb5a0e92e9847d62691284c26180dfaf0b43aa5',
+  implementationCommit: '86f6f71045a8778a0540d11fed15ca4c0eae6fa3',
 }
 
 const EXPECTED_P3_HANDOFF_COUNTS = {
-  historicalMarkerCount: 16,
+  historicalLineageCount: 16,
   semanticObligationClusterCount: 14,
   currentCandidateMemberCount: 68,
+  candidateDispositionCount: 68,
+  permanentRuleDispositionCount: 54,
+  humanReviewOnlyDispositionCount: 14,
+  futurePageContractDeferralCount: 4,
   planOwnedContractCount: 12,
+  plannedArtifactPathCount: 12,
   unresolvedBlockingItemCount: 0,
 }
+
+const EXPECTED_P3_COMPLETION_RULE_IDS = Array.from(
+  { length: 68 },
+  (_, index) => `CCD-UI-${String(index + 1).padStart(3, '0')}`
+)
+
+const EXPECTED_PAGE_CONTRACT_DEFERRAL_IDS = [
+  'P2C-REQ-0006',
+  'P2C-REQ-0028',
+  'P2C-REQ-0065',
+  'P2C-REQ-0067',
+]
+
+const EXPECTED_HUMAN_REVIEW_REQUIREMENT_IDS = [
+  'P2C-REQ-0206',
+  'P2C-REQ-0208',
+  'P2C-REQ-0308',
+  'P2C-REQ-0310',
+  'P2C-REQ-0301',
+  'P2C-REQ-0304',
+  'P2C-REQ-0348',
+  'P2C-REQ-0350',
+  'P2C-REQ-0352',
+  'P2C-REQ-0349',
+  'P2C-REQ-0329',
+  'P2C-REQ-0330',
+  'P2C-REQ-0347',
+  'P2C-REQ-0354',
+]
 
 const EXPECTED_P2_COUNTS = {
   activeRequirementCount: 345,
@@ -259,6 +305,8 @@ const P3_MACHINE_POLICY_PATHS = [
   '.ai/governance/ui/profiles/ccd-architectural-glass.json',
   '.ai/governance/ui/exceptions.json',
   '.ai/governance/ui/fixtures/rule-cases.json',
+  '.ai/governance/ui/fixtures/schema-valid',
+  '.ai/governance/ui/fixtures/schema-invalid',
   '.ai/governance/ui/scripts/validate-ui-policy.mjs',
   'wiki/canonical/design/machine-ui-policy.md',
 ]
@@ -398,16 +446,18 @@ function validateP3Handoff(coverageData) {
     'authorityLayers',
     'semanticCandidates',
     'semanticObligationClusters',
-    'supportingRequirementIds',
+    'candidateRequirementDispositions',
+    'futurePageContractDeferrals',
+    'supportingNonCandidateRequirementIds',
     'humanReviewBackgroundRequirementIds',
     'planOwnedContracts',
-    'historicalMarkerDispositions',
+    'historicalLineage',
     'semanticAreaCoverage',
     'unresolvedItems',
     'nonBlockingExcludedAmbiguities',
     'validation',
     'preservedP2State',
-    'preservedLifecycleState',
+    'preImplementationLifecycleState',
   ]
   for (const field of requiredCollections) {
     if (!(field in handoff)) {
@@ -417,13 +467,20 @@ function validateP3Handoff(coverageData) {
     }
   }
 
-  if (handoff.schemaVersion !== 'ccd-p3-handoff/v1')
+  if (handoff.schemaVersion !== 'ccd-p3-handoff/v2')
     fail('p3-handoff-schema-version', 'P3 handoff schema version is not recognized.', {
       actual: handoff.schemaVersion,
     })
-  if (handoff.status !== 'ready-for-p3-baseline-revalidation')
-    fail('p3-handoff-status', 'P3 handoff is not ready for P3 baseline revalidation.', {
+  if (
+    handoff.status !== 'consumed-by-p3-completion' ||
+    handoff.snapshotKind !== 'PRE_IMPLEMENTATION_HANDOFF' ||
+    handoff.consumedByImplementationCommit !==
+      EXPECTED_P3_HANDOFF_SOURCE_BASELINES.implementationCommit
+  )
+    fail('p3-handoff-status', 'P3 handoff is not marked as consumed by the completed P3.', {
       actual: handoff.status,
+      snapshotKind: handoff.snapshotKind,
+      consumedByImplementationCommit: handoff.consumedByImplementationCommit,
     })
 
   for (const [field, expected] of Object.entries(EXPECTED_P3_HANDOFF_SOURCE_BASELINES)) {
@@ -449,6 +506,11 @@ function validateP3Handoff(coverageData) {
     new Set(authorityLayers.map(layer => layer.layer)).size !== authorityLayers.length
   )
     fail('p3-handoff-authority-layers', 'P3 handoff must keep five unique authority layers.')
+  if (authorityLayers.find(layer => layer.layer === 4)?.count !== 68)
+    fail(
+      'p3-handoff-authority-layers',
+      'Completed P3 machine-policy authority layer must declare 68 current rules.'
+    )
 
   const requirements = Array.isArray(coverageData?.requirements) ? coverageData.requirements : []
   const requirementById = new Map(
@@ -475,12 +537,20 @@ function validateP3Handoff(coverageData) {
   if (JSON.stringify(semanticCandidates.clusterIds) !== JSON.stringify(expectedClusterIds))
     fail('p3-handoff-cluster-inventory', 'P3 handoff cluster inventory is incorrect.')
   if (
-    !Array.isArray(semanticCandidates.futurePolicyRuleIds) ||
-    semanticCandidates.futurePolicyRuleIds.length !== 0
+    !Array.isArray(semanticCandidates.handoffTimeFuturePolicyRuleIds) ||
+    semanticCandidates.handoffTimeFuturePolicyRuleIds.length !== 0
   )
     fail(
       'p3-handoff-premature-policy-rule-id',
-      'Permanent Machine UI Policy rule IDs must not exist during P3.1C.'
+      'The preserved pre-implementation handoff must not contain completion rule IDs.'
+    )
+  if (
+    JSON.stringify(semanticCandidates.completionRuleIds) !==
+    JSON.stringify(EXPECTED_P3_COMPLETION_RULE_IDS)
+  )
+    fail(
+      'p3-handoff-completion-rule-inventory',
+      'P3 completion must declare the exact 68 current Machine UI Policy rule IDs.'
     )
   if (candidateIdSet.size !== candidateIds.length)
     fail('p3-handoff-duplicate-candidate', 'P3 semantic candidate IDs must be unique.', {
@@ -529,6 +599,7 @@ function validateP3Handoff(coverageData) {
     fail('p3-handoff-cluster-inventory', 'P3 handoff cluster IDs are incorrect.')
 
   const ownerCounts = new Map()
+  const clusterRuleIds = []
   for (const cluster of clusters) {
     const expectedMembers = EXPECTED_P3_HANDOFF_CLUSTERS[cluster.clusterId]
     const currentRequirementIds = Array.isArray(cluster.currentRequirementIds)
@@ -588,10 +659,21 @@ function validateP3Handoff(coverageData) {
       fail('p3-handoff-cluster-lineage', 'Cluster historical lineage must be explicit.', {
         clusterId: cluster.clusterId,
       })
-    if (cluster.permanentPolicyRuleIdsAssigned !== false)
+    if (cluster.permanentPolicyRuleIdsAssignedAtHandoff !== false)
       fail(
         'p3-handoff-premature-policy-rule-id',
-        'Clusters must not assign permanent Machine UI Policy rule IDs during P3.1C.',
+        'The preserved handoff snapshot must record that permanent rule IDs were not assigned.',
+        { clusterId: cluster.clusterId }
+      )
+    const policyRuleIds = Array.isArray(cluster.policyRuleIds) ? cluster.policyRuleIds : []
+    clusterRuleIds.push(...policyRuleIds)
+    if (
+      policyRuleIds.length !== expectedMembers.length ||
+      policyRuleIds.some(ruleId => !EXPECTED_P3_COMPLETION_RULE_IDS.includes(ruleId))
+    )
+      fail(
+        'p3-handoff-completion-rule-inventory',
+        'Each completed cluster must map one current rule to each candidate member.',
         { clusterId: cluster.clusterId }
       )
 
@@ -688,8 +770,115 @@ function validateP3Handoff(coverageData) {
       )
   }
 
-  const supportingRequirementIds = Array.isArray(handoff.supportingRequirementIds)
-    ? handoff.supportingRequirementIds
+  if (
+    clusterRuleIds.length !== EXPECTED_P3_COMPLETION_RULE_IDS.length ||
+    new Set(clusterRuleIds).size !== clusterRuleIds.length ||
+    EXPECTED_P3_COMPLETION_RULE_IDS.some(ruleId => !clusterRuleIds.includes(ruleId))
+  )
+    fail(
+      'p3-handoff-completion-rule-inventory',
+      'Completed cluster mappings must contain each of the 68 current rule IDs exactly once.'
+    )
+
+  const candidateDispositions = Array.isArray(handoff.candidateRequirementDispositions)
+    ? handoff.candidateRequirementDispositions
+    : []
+  const dispositionRequirementIds = candidateDispositions.map(item => item.requirementId)
+  const dispositionRuleIds = candidateDispositions.map(item => item.ruleId)
+  const permanentDispositionCount = candidateDispositions.filter(
+    item => item.disposition === 'permanent-rule'
+  ).length
+  const humanDispositionCount = candidateDispositions.filter(
+    item => item.disposition === 'human-review-only'
+  ).length
+  if (
+    candidateDispositions.length !== 68 ||
+    new Set(dispositionRequirementIds).size !== 68 ||
+    new Set(dispositionRuleIds).size !== 68 ||
+    expectedCandidateIds.some(
+      requirementId => !dispositionRequirementIds.includes(requirementId)
+    ) ||
+    EXPECTED_P3_COMPLETION_RULE_IDS.some(ruleId => !dispositionRuleIds.includes(ruleId))
+  )
+    fail(
+      'p3-handoff-candidate-disposition-inventory',
+      'P3 completion must disposition exactly the 68 handoff candidates and 68 completion rules.'
+    )
+  if (permanentDispositionCount !== 54 || humanDispositionCount !== 14)
+    fail(
+      'p3-handoff-candidate-disposition-count',
+      'P3 candidate dispositions must resolve to 54 permanent rules and 14 human-review-only rules.',
+      { permanentDispositionCount, humanDispositionCount }
+    )
+  const actualHumanReviewRequirementIds = candidateDispositions
+    .filter(item => item.disposition === 'human-review-only')
+    .map(item => item.requirementId)
+  if (
+    actualHumanReviewRequirementIds.length !== EXPECTED_HUMAN_REVIEW_REQUIREMENT_IDS.length ||
+    EXPECTED_HUMAN_REVIEW_REQUIREMENT_IDS.some(
+      requirementId => !actualHumanReviewRequirementIds.includes(requirementId)
+    )
+  )
+    fail(
+      'p3-handoff-candidate-disposition-inventory',
+      'Human-review dispositions must equal the canonical 14-requirement inventory.'
+    )
+  for (const disposition of candidateDispositions) {
+    const cluster = clusters.find(item => item.clusterId === disposition.clusterId)
+    const requirementIndex =
+      cluster?.currentRequirementIds?.indexOf(disposition.requirementId) ?? -1
+    if (!candidateIdSet.has(disposition.requirementId))
+      fail(
+        'p3-handoff-non-candidate-disposition',
+        'Only the exact 68 handoff candidates may receive P3 dispositions.',
+        { requirementId: disposition.requirementId }
+      )
+    if (
+      (disposition.disposition === 'human-review-only' &&
+        disposition.enforcement !== 'human-review-only') ||
+      (disposition.disposition === 'permanent-rule' &&
+        disposition.enforcement === 'human-review-only')
+    )
+      fail(
+        'p3-handoff-candidate-disposition-enforcement',
+        'Candidate disposition and enforcement classifications must remain coupled.',
+        { requirementId: disposition.requirementId }
+      )
+    if (
+      !['permanent-rule', 'human-review-only'].includes(disposition.disposition) ||
+      requirementIndex < 0 ||
+      cluster?.policyRuleIds?.[requirementIndex] !== disposition.ruleId
+    )
+      fail(
+        'p3-handoff-candidate-disposition-mapping',
+        'Candidate disposition must match its completed cluster and rule mapping.',
+        { requirementId: disposition.requirementId, ruleId: disposition.ruleId }
+      )
+  }
+
+  const futurePageContractDeferrals = Array.isArray(handoff.futurePageContractDeferrals)
+    ? handoff.futurePageContractDeferrals
+    : []
+  if (
+    JSON.stringify(futurePageContractDeferrals) !==
+      JSON.stringify(EXPECTED_PAGE_CONTRACT_DEFERRAL_IDS) ||
+    futurePageContractDeferrals.some(requirementId => candidateIdSet.has(requirementId))
+  )
+    fail(
+      'p3-handoff-page-contract-deferral-inventory',
+      'The four Page Contract deferrals must remain exact and outside the 68 candidates.'
+    )
+  for (const requirementId of futurePageContractDeferrals) {
+    if (!requirementById.has(requirementId))
+      fail(
+        'p3-handoff-page-contract-deferral-inventory',
+        'Every Page Contract deferral must resolve to an active P2 requirement.',
+        { requirementId }
+      )
+  }
+
+  const supportingRequirementIds = Array.isArray(handoff.supportingNonCandidateRequirementIds)
+    ? handoff.supportingNonCandidateRequirementIds
     : []
   const humanReviewRequirementIds = Array.isArray(handoff.humanReviewBackgroundRequirementIds)
     ? handoff.humanReviewBackgroundRequirementIds
@@ -698,7 +887,7 @@ function validateP3Handoff(coverageData) {
     ? handoff.nonBlockingExcludedAmbiguities.map(item => item.requirementId)
     : []
   for (const [collection, ids] of [
-    ['supportingRequirementIds', supportingRequirementIds],
+    ['supportingNonCandidateRequirementIds', supportingRequirementIds],
     ['humanReviewBackgroundRequirementIds', humanReviewRequirementIds],
     ['nonBlockingExcludedAmbiguities', ambiguityIds],
   ]) {
@@ -716,6 +905,7 @@ function validateP3Handoff(coverageData) {
     }
   }
   const separatedContextIds = [
+    ...futurePageContractDeferrals,
     ...supportingRequirementIds,
     ...humanReviewRequirementIds,
     ...ambiguityIds,
@@ -734,8 +924,8 @@ function validateP3Handoff(coverageData) {
       )
   }
 
-  const historicalDispositions = Array.isArray(handoff.historicalMarkerDispositions)
-    ? handoff.historicalMarkerDispositions
+  const historicalDispositions = Array.isArray(handoff.historicalLineage)
+    ? handoff.historicalLineage
     : []
   const historicalIds = historicalDispositions.map(item => item.historicalRequirementId)
   const expectedHistoricalIds = Object.keys(EXPECTED_P3_HISTORICAL_MARKERS)
@@ -749,6 +939,12 @@ function validateP3Handoff(coverageData) {
       'P3 handoff must disposition all 16 historical markers without parity assumptions.'
     )
   for (const disposition of historicalDispositions) {
+    if (!/^P2-REQ-\d{4}$/.test(disposition.historicalRequirementId ?? ''))
+      fail(
+        'p3-handoff-historical-id-format',
+        'Historical lineage must use canonical P2-REQ identifiers, never retired P2C markers.',
+        { historicalRequirementId: disposition.historicalRequirementId }
+      )
     const expectedReplacements = EXPECTED_P3_HISTORICAL_MARKERS[disposition.historicalRequirementId]
     if (
       !expectedReplacements ||
@@ -761,7 +957,7 @@ function validateP3Handoff(coverageData) {
     if (
       typeof disposition.currentClassification !== 'string' ||
       disposition.currentClassification.trim() === '' ||
-      typeof disposition.historicalMarkerEligibleAsCanonicalUnit !== 'boolean'
+      disposition.historicalMarkerEligibleAsCanonicalUnit !== false
     )
       fail(
         'p3-handoff-historical-disposition',
@@ -853,12 +1049,13 @@ function validateP3Handoff(coverageData) {
     'planOwnedContractInventory',
     'p2AccountingPreservation',
     'lifecycleStatePreservation',
-    'futureP3CompletionState',
+    'p3CompletionState',
+    'candidateDispositionReconciliation',
+    'ruleCaseCoverage',
+    'scopeAndAuthorityValidation',
   ]
   for (const key of requiredValidationKeys) {
-    if (
-      handoff.validation?.[key] !== (key === 'futureP3CompletionState' ? 'phase-gated' : 'required')
-    )
+    if (handoff.validation?.[key] !== 'required')
       fail('p3-handoff-validation-contract', 'P3 handoff validation contract is incomplete.', {
         key,
         actual: handoff.validation?.[key],
@@ -931,7 +1128,57 @@ function validateP3Handoff(coverageData) {
     fail('p3-handoff-p2-conflict-drift', 'P2 conflict decisions changed during handoff.')
 
   const canonicalState = coverageData?.canonicalState ?? {}
-  if (canonicalState.pageContractSchemaPresent !== false)
+  if (
+    coverageData?.implementationState !== 'P3_COMPLETE' ||
+    canonicalState.implementationState !== 'P3_COMPLETE' ||
+    canonicalState.p3Started !== true
+  )
+    fail(
+      'p3-handoff-implementation-state',
+      'P3 implementation must be explicitly complete after its artifacts exist.'
+    )
+  if (
+    coverageData?.machineUiPolicyState !== 'MACHINE_UI_POLICY_COMPLETE' ||
+    coverageData?.machineUiPolicyPresent !== true ||
+    canonicalState.machineUiPolicyState !== 'MACHINE_UI_POLICY_COMPLETE' ||
+    canonicalState.machineUiPolicyPresent !== true
+  )
+    fail(
+      'p3-handoff-machine-policy-state',
+      'Machine UI Policy must be explicitly present and complete.'
+    )
+  for (const field of [
+    'policySchemasPresent',
+    'productUiProfilePresent',
+    'exceptionRegistryPresent',
+    'fixturesPresent',
+    'validatorPresent',
+  ]) {
+    if (canonicalState[field] !== true)
+      fail(
+        'p3-handoff-machine-policy-state',
+        `Completed Machine UI Policy artifact state ${field} must be true.`,
+        { field, actual: canonicalState[field] }
+      )
+  }
+  if (canonicalState.exceptionCount !== 0)
+    fail(
+      'p3-handoff-machine-policy-state',
+      'Completed Machine UI Policy exception count must be exactly zero.',
+      { actual: canonicalState.exceptionCount }
+    )
+  if (
+    coverageData?.applicationSourceEnforcementState !== 'BASELINE_ONLY' ||
+    canonicalState.applicationSourceEnforcementState !== 'BASELINE_ONLY'
+  )
+    fail(
+      'p3-handoff-source-enforcement-state',
+      'Application-source enforcement must remain baseline-only until a scanner exists.'
+    )
+  if (
+    canonicalState.pageContractCreated !== false ||
+    canonicalState.pageContractSchemaPresent === true
+  )
     fail(
       'p3-handoff-page-contract-presence',
       'Page Contract Schema must remain absent after handoff correction.'
@@ -961,6 +1208,8 @@ function validateP3Handoff(coverageData) {
       { actual: coverageData?.machinePolicyPath }
     )
   for (const field of [
+    'sourceScannerImplemented',
+    'pageContractCreated',
     'p4Started',
     'p5Started',
     'skillLockDiscovered',
@@ -974,12 +1223,23 @@ function validateP3Handoff(coverageData) {
         actual: canonicalState[field],
       })
   }
-  for (const [field, expected] of Object.entries(handoff.preservedLifecycleState ?? {})) {
-    if (expected !== false || canonicalState[field] !== expected)
-      fail('p3-handoff-lifecycle-state', 'Preserved lifecycle state does not match P2.', {
+  const expectedPreImplementationLifecycleState = {
+    machineUiPolicyPresent: false,
+    pageContractSchemaPresent: false,
+    p3Started: false,
+    p4Started: false,
+    p5Started: false,
+    skillLockDiscovered: false,
+    routed: false,
+    synchronized: false,
+    adapterActivated: false,
+  }
+  for (const [field, expected] of Object.entries(expectedPreImplementationLifecycleState)) {
+    if (handoff.preImplementationLifecycleState?.[field] !== expected)
+      fail('p3-handoff-lifecycle-state', 'Pre-implementation handoff state is not preserved.', {
         field,
         expected,
-        actual: canonicalState[field],
+        actual: handoff.preImplementationLifecycleState?.[field],
       })
   }
   for (const machinePolicyPath of P3_MACHINE_POLICY_PATHS) {
@@ -990,12 +1250,15 @@ function validateP3Handoff(coverageData) {
         { path: machinePolicyPath }
       )
   }
-  const prematurePolicyRuleIds = JSON.stringify(handoff).match(/\bCCD-UI-\d{3}\b/g) ?? []
-  if (prematurePolicyRuleIds.length > 0)
+  const declaredPolicyRuleIds = JSON.stringify(handoff).match(/\bCCD-UI-\d{3}\b/g) ?? []
+  const unknownPolicyRuleIds = [
+    ...new Set(declaredPolicyRuleIds.filter(id => !EXPECTED_P3_COMPLETION_RULE_IDS.includes(id))),
+  ]
+  if (unknownPolicyRuleIds.length > 0)
     fail(
-      'p3-handoff-premature-policy-rule-id',
-      'Permanent CCD-UI rule IDs must not exist before P3 starts.',
-      { ids: [...new Set(prematurePolicyRuleIds)] }
+      'p3-handoff-completion-rule-inventory',
+      'P3 handoff completion metadata contains an unknown Machine UI Policy rule ID.',
+      { ids: unknownPolicyRuleIds }
     )
 
   return localFailures
@@ -1343,7 +1606,7 @@ function assertExpectedCanonicalState(coverageData, wiki) {
     ['not-adapter-activated', 'not adapter-activated', p2State],
     ['machine-ui-policy', 'Machine UI Policy exists at', p2State],
     ['page-contract-schema', 'Page Contract Schema does not exist.', p2State],
-    ['p3-baseline', 'P3 Machine UI Policy baseline is created', p2State],
+    ['p3-complete', 'P3 Machine UI Policy implementation is complete.', p2State],
     ['p4-not-started', 'P4 has not started.', p2State],
     ['p5-not-started', 'P5 has not started.', p2State],
     ['semantic-commit', EXPECTED_SEMANTIC_CORRECTION_COMMIT, handoff],
@@ -1517,7 +1780,7 @@ function runSelfTest() {
       id: 'historical-marker-without-disposition',
       expectedCode: 'p3-handoff-historical-disposition',
       mutate: fixture => {
-        delete fixture.p3Handoff.historicalMarkerDispositions[0].currentClassification
+        delete fixture.p3Handoff.historicalLineage[0].currentClassification
       },
     },
     {
@@ -1551,10 +1814,81 @@ function runSelfTest() {
       },
     },
     {
-      id: 'false-machine-ui-policy-presence',
-      expectedCode: 'p3-handoff-lifecycle-state',
+      id: 'p3-marked-incomplete-after-artifacts-exist',
+      expectedCode: 'p3-handoff-implementation-state',
       mutate: fixture => {
-        fixture.canonicalState.machineUiPolicyPresent = true
+        fixture.canonicalState.implementationState = 'P3_INCOMPLETE'
+      },
+    },
+    {
+      id: 'machine-ui-policy-marked-absent',
+      expectedCode: 'p3-handoff-machine-policy-state',
+      mutate: fixture => {
+        fixture.canonicalState.machineUiPolicyPresent = false
+      },
+    },
+    {
+      id: 'non-candidate-reclassified-as-human-review',
+      expectedCode: 'p3-handoff-non-candidate-disposition',
+      mutate: fixture => {
+        fixture.p3Handoff.candidateRequirementDispositions = [
+          ...(fixture.p3Handoff.candidateRequirementDispositions ?? []),
+          {
+            requirementId: fixture.p3Handoff.supportingNonCandidateRequirementIds[0],
+            disposition: 'human-review-only',
+            ruleId: 'CCD-UI-001',
+          },
+        ]
+      },
+    },
+    {
+      id: 'p2c-marker-substituted-for-historical-record',
+      expectedCode: 'p3-handoff-historical-id-format',
+      mutate: fixture => {
+        const source =
+          fixture.p3Handoff.historicalLineage ?? fixture.p3Handoff.historicalMarkerDispositions
+        fixture.p3Handoff.historicalLineage = structuredClone(source)
+        fixture.p3Handoff.historicalLineage[0].historicalRequirementId = 'P2C-REQ-0007'
+      },
+    },
+    {
+      id: 'completion-rule-list-empty',
+      expectedCode: 'p3-handoff-completion-rule-inventory',
+      mutate: fixture => {
+        fixture.p3Handoff.semanticCandidates.completionRuleIds = []
+      },
+    },
+    {
+      id: 'candidate-rule-positional-binding-swapped',
+      expectedCode: 'p3-handoff-candidate-disposition-mapping',
+      mutate: fixture => {
+        const dispositions = fixture.p3Handoff.candidateRequirementDispositions
+        const firstRuleId = dispositions[0].ruleId
+        dispositions[0].ruleId = dispositions[1].ruleId
+        dispositions[1].ruleId = firstRuleId
+      },
+    },
+    {
+      id: 'human-review-disposition-claims-schema-enforcement',
+      expectedCode: 'p3-handoff-candidate-disposition-enforcement',
+      mutate: fixture => {
+        const disposition = fixture.p3Handoff.candidateRequirementDispositions.find(
+          item => item.disposition === 'human-review-only'
+        )
+        disposition.enforcement = 'schema-validated'
+      },
+    },
+    {
+      id: 'canonical-human-review-classification-swapped',
+      expectedCode: 'p3-handoff-candidate-disposition-inventory',
+      mutate: fixture => {
+        const dispositions = fixture.p3Handoff.candidateRequirementDispositions
+        const permanent = dispositions.find(item => item.disposition === 'permanent-rule')
+        const human = dispositions.find(item => item.disposition === 'human-review-only')
+        permanent.disposition = 'human-review-only'
+        permanent.enforcement = 'human-review-only'
+        human.disposition = 'permanent-rule'
+        human.enforcement = 'source-scanner-not-yet-implemented'
       },
     },
     {
@@ -1582,14 +1916,14 @@ function runSelfTest() {
       id: 'false-page-contract-presence',
       expectedCode: 'p3-handoff-page-contract-presence',
       mutate: fixture => {
-        fixture.canonicalState.pageContractSchemaPresent = true
+        fixture.canonicalState.pageContractCreated = true
       },
     },
     {
-      id: 'premature-permanent-policy-rule-id',
-      expectedCode: 'p3-handoff-premature-policy-rule-id',
+      id: 'unknown-completion-policy-rule-id',
+      expectedCode: 'p3-handoff-completion-rule-inventory',
       mutate: fixture => {
-        fixture.p3Handoff.semanticCandidates.futurePolicyRuleIds = [['CCD', 'UI', '001'].join('-')]
+        fixture.p3Handoff.semanticCandidates.completionRuleIds[0] = 'CCD-UI-999'
       },
     },
   ]
@@ -1768,7 +2102,7 @@ if (coverage) {
     }
   }
 
-  if (coverage.schemaVersion !== 'project-ui-semantic-coverage/v2') {
+  if (coverage.schemaVersion !== 'project-ui-semantic-coverage/v3') {
     addBaselineFailure('schema-version', 'Unexpected coverage schema version.', {
       schemaVersion: coverage.schemaVersion,
     })

@@ -30,7 +30,7 @@ wiki_owner: LLM-maintained CCD architecture wiki
 
 # Machine UI Policy
 
-The CCD Machine UI Policy is the canonical machine-readable UI governance artifact for the CCD monorepo. It records P3 baseline rules, schemas, the Product UI Profile, an empty exception registry, fixtures, and a deterministic validator.
+The CCD Machine UI Policy is the canonical machine-readable UI governance artifact for the CCD monorepo. P3 implementation is complete: the policy records 68 rules, schemas, the Product UI Profile, an empty exception registry, fixtures, and a deterministic validator. Application-source enforcement remains baseline-only because the source scanner is not implemented.
 
 ## Policy Location
 
@@ -66,8 +66,9 @@ The policy covers 14 semantic-obligation clusters:
 
 - 68 canonical rules: `CCD-UI-001` through `CCD-UI-068`.
 - Each rule maps from one current P2 candidate requirement (`P2C-REQ-XXXX`).
-- Dispositions: `permanent-rule`, `human-review-only`, `future-page-contract`.
-- Enforcement states: `schema-validated`, `fixture-covered`, `source-scanner-not-yet-implemented`, `human-review-only`, `future-page-contract`.
+- Candidate dispositions: `permanent-rule` or `human-review-only` across the exact 68-member handoff inventory.
+- Rule enforcement states: `schema-validated`, `source-scanner-not-yet-implemented`, or `human-review-only`.
+- Four future Page Contract deferrals remain a separate non-candidate collection.
 - Exception eligibility is narrowly scoped to the deep-selector rule (`CCD-UI-064`).
 
 ## Schemas
@@ -93,7 +94,29 @@ Current profile: `CCD Architectural Glass` at `.ai/governance/ui/profiles/ccd-ar
 
 ## Lifecycle
 
+- P3 Machine UI Policy: complete.
+- Policy schemas, Product UI Profile, exception registry, fixtures, and validator: present.
 - Source scanner: not implemented.
 - Page Contract Schema: not created.
 - P4 cold-start: not started.
 - P5 routing/synchronization: not started.
+
+```text
+P3_COMPLETE=yes
+MACHINE_UI_POLICY_COMPLETE=yes
+MACHINE_UI_POLICY_PRESENT=yes
+POLICY_SCHEMAS_PRESENT=yes
+PRODUCT_UI_PROFILE_PRESENT=yes
+EXCEPTION_REGISTRY_PRESENT=yes
+EXCEPTION_COUNT=0
+POLICY_FIXTURES_PRESENT=yes
+POLICY_VALIDATOR_PRESENT=yes
+SOURCE_SCANNER_IMPLEMENTED=no
+PAGE_CONTRACT_CREATED=no
+P4_STARTED=no
+P5_STARTED=no
+PROJECT_UI_DISCOVERED=no
+PROJECT_UI_ROUTED=no
+PROJECT_UI_SYNCHRONIZED=no
+PROJECT_UI_ADAPTER_ACTIVATED=no
+```

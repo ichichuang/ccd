@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "project-ui-semantic-coverage/v2",
+  "schemaVersion": "project-ui-semantic-coverage/v3",
   "repository": "ichichuang/ccd",
   "history": {
     "initialProjectUiCommit": "624948ea9058507f8fae91975dabc715d984703a",
@@ -46233,18 +46233,18 @@
     "legacy rule retirement"
   ],
   "handoff": {
-    "status": "P2 project-ui source construction and semantic correction are complete and tracked on main.",
-    "semanticCorrectionCommit": "b3b6d59b6b29a15cce518d7cd35f025da0665cde",
+    "status": "P3 implementation and Machine UI Policy are complete on main.",
     "p2SourcePhase": "complete",
-    "p3": "not started and requires separate authorization",
+    "p3": "P3_COMPLETE",
+    "machineUiPolicy": "MACHINE_UI_POLICY_COMPLETE",
+    "sourceScanner": "not implemented; application-source enforcement remains baseline-only",
+    "pageContract": "not created",
     "p4": "not started",
     "p5": "not started",
     "discovery": "project-ui remains undiscovered by the current Skill lock",
     "routing": "project-ui remains unrouted",
     "synchronization": "project-ui remains unsynchronized",
-    "adapterActivation": "project-ui is not adapter-activated",
-    "machineUiPolicy": "created",
-    "pageContractSchema": "not present"
+    "adapterActivation": "project-ui is not adapter-activated"
   },
   "retiredRequirements": [
     {
@@ -47566,15 +47566,25 @@
     "projectUiSource": "complete-and-tracked",
     "semanticCorrectionCommit": "b3b6d59b6b29a15cce518d7cd35f025da0665cde",
     "p2SourcePhase": "complete",
+    "implementationState": "P3_COMPLETE",
+    "machineUiPolicyState": "MACHINE_UI_POLICY_COMPLETE",
+    "applicationSourceEnforcementState": "BASELINE_ONLY",
+    "machineUiPolicyPresent": true,
+    "policySchemasPresent": true,
+    "productUiProfilePresent": true,
+    "exceptionRegistryPresent": true,
+    "exceptionCount": 0,
+    "fixturesPresent": true,
+    "validatorPresent": true,
+    "sourceScannerImplemented": false,
+    "pageContractCreated": false,
+    "p3Started": true,
+    "p4Started": false,
+    "p5Started": false,
     "skillLockDiscovered": false,
     "routed": false,
     "synchronized": false,
-    "adapterActivated": false,
-    "machineUiPolicyPresent": false,
-    "pageContractSchemaPresent": false,
-    "p3Started": false,
-    "p4Started": false,
-    "p5Started": false
+    "adapterActivated": false
   },
   "activeRequirementCount": 345,
   "retiredRequirementCount": 24,
@@ -47584,18 +47594,25 @@
   "foundationPathCount": 9,
   "staleCanonicalStatementCount": 0,
   "p3Handoff": {
-    "schemaVersion": "ccd-p3-handoff/v1",
-    "status": "ready-for-p3-baseline-revalidation",
+    "schemaVersion": "ccd-p3-handoff/v2",
+    "status": "consumed-by-p3-completion",
     "sourceBaselines": {
       "sourceBaselineCommit": "624948ea9058507f8fae91975dabc715d984703a",
       "semanticCorrectionCommit": "b3b6d59b6b29a15cce518d7cd35f025da0665cde",
-      "canonicalClosureCommit": "0767895a53005f326767cfdf3102f6b72709aa31"
+      "canonicalClosureCommit": "0767895a53005f326767cfdf3102f6b72709aa31",
+      "p3HandoffCommit": "5bb5a0e92e9847d62691284c26180dfaf0b43aa5",
+      "implementationCommit": "86f6f71045a8778a0540d11fed15ca4c0eae6fa3"
     },
     "counts": {
-      "historicalMarkerCount": 16,
+      "historicalLineageCount": 16,
       "semanticObligationClusterCount": 14,
       "currentCandidateMemberCount": 68,
+      "candidateDispositionCount": 68,
+      "permanentRuleDispositionCount": 54,
+      "humanReviewOnlyDispositionCount": 14,
+      "futurePageContractDeferralCount": 4,
       "planOwnedContractCount": 12,
+      "plannedArtifactPathCount": 12,
       "unresolvedBlockingItemCount": 0
     },
     "authorityLayers": [
@@ -47630,9 +47647,9 @@
       {
         "layer": 4,
         "name": "P3 machine-policy rules",
-        "governingAuthority": "Future P3.2 Machine UI Policy design under controller authorization.",
-        "count": 0,
-        "meaning": "Future CCD-UI rule identities do not exist and are not assigned in P3.1B."
+        "governingAuthority": "Completed P3 Machine UI Policy under controller authorization.",
+        "count": 68,
+        "meaning": "The 68 CCD-UI identities are current completion rules; application-source enforcement remains baseline-only."
       },
       {
         "layer": 5,
@@ -47732,7 +47749,77 @@
         "P3-HO-CLUSTER-013",
         "P3-HO-CLUSTER-014"
       ],
-      "futurePolicyRuleIds": []
+      "handoffTimeFuturePolicyRuleIds": [],
+      "completionRuleIds": [
+        "CCD-UI-001",
+        "CCD-UI-002",
+        "CCD-UI-003",
+        "CCD-UI-004",
+        "CCD-UI-005",
+        "CCD-UI-006",
+        "CCD-UI-007",
+        "CCD-UI-008",
+        "CCD-UI-009",
+        "CCD-UI-010",
+        "CCD-UI-011",
+        "CCD-UI-012",
+        "CCD-UI-013",
+        "CCD-UI-014",
+        "CCD-UI-015",
+        "CCD-UI-016",
+        "CCD-UI-017",
+        "CCD-UI-018",
+        "CCD-UI-019",
+        "CCD-UI-020",
+        "CCD-UI-021",
+        "CCD-UI-022",
+        "CCD-UI-023",
+        "CCD-UI-024",
+        "CCD-UI-025",
+        "CCD-UI-026",
+        "CCD-UI-027",
+        "CCD-UI-028",
+        "CCD-UI-029",
+        "CCD-UI-030",
+        "CCD-UI-031",
+        "CCD-UI-032",
+        "CCD-UI-033",
+        "CCD-UI-034",
+        "CCD-UI-035",
+        "CCD-UI-036",
+        "CCD-UI-037",
+        "CCD-UI-038",
+        "CCD-UI-039",
+        "CCD-UI-040",
+        "CCD-UI-041",
+        "CCD-UI-042",
+        "CCD-UI-043",
+        "CCD-UI-044",
+        "CCD-UI-045",
+        "CCD-UI-046",
+        "CCD-UI-047",
+        "CCD-UI-048",
+        "CCD-UI-049",
+        "CCD-UI-050",
+        "CCD-UI-051",
+        "CCD-UI-052",
+        "CCD-UI-053",
+        "CCD-UI-054",
+        "CCD-UI-055",
+        "CCD-UI-056",
+        "CCD-UI-057",
+        "CCD-UI-058",
+        "CCD-UI-059",
+        "CCD-UI-060",
+        "CCD-UI-061",
+        "CCD-UI-062",
+        "CCD-UI-063",
+        "CCD-UI-064",
+        "CCD-UI-065",
+        "CCD-UI-066",
+        "CCD-UI-067",
+        "CCD-UI-068"
+      ]
     },
     "semanticObligationClusters": [
       {
@@ -47837,15 +47924,22 @@
         "normativeInvariant": "Business UI must prefer approved CCD or PrimeVue owners, permit native elements only for structural semantics, reject native interactive and data controls where governed equivalents exist, and keep chart integration behind the approved owner.",
         "scope": "Business UI components, native element eligibility, forms and tables at the platform boundary, and chart component ownership.",
         "machineClassifiability": "machine-enforceable with context-sensitive owner lookup",
-        "currentEnforcement": "Repository rules, component review, existing wrappers and adapters, and current architecture checks; no P3 Machine UI Policy exists.",
-        "futureSourceScannerBoundary": "A later source scanner may detect native controls, raw component imports, and raw chart integration; P3 only records the policy and enforcement state.",
+        "currentEnforcement": "Repository rules, component review, existing wrappers and adapters, current architecture checks, and the completed P3 Machine UI Policy validator; no application-source scanner exists.",
+        "futureSourceScannerBoundary": "The completed P3 policy records this rule and its enforcement boundary; a later source scanner may detect native controls, raw component imports, and raw chart integration.",
         "futurePageContractBoundary": "Per-page component composition, form schema shape, table columns, and archetype choices remain Page Contract concerns.",
         "historicalLineage": [
           "P2-REQ-0121 contributes P2C-REQ-0044 after a mixed split; the historical marker itself is not the canonical unit."
         ],
         "redundancyRationale": "Specific ProTable, ProForm, Dialog, and UseEcharts examples remain supporting context; the selected propositions define the owner hierarchy, allowlist, prohibition, and chart-owner boundary without repeating each example.",
         "selectionRationale": "These current records are the smallest non-duplicative rule-source set that defines component ownership rather than implementation evidence.",
-        "permanentPolicyRuleIdsAssigned": false
+        "permanentPolicyRuleIdsAssignedAtHandoff": false,
+        "policyRuleIds": [
+          "CCD-UI-001",
+          "CCD-UI-002",
+          "CCD-UI-003",
+          "CCD-UI-004",
+          "CCD-UI-005"
+        ]
       },
       {
         "clusterId": "P3-HO-CLUSTER-002",
@@ -47916,7 +48010,7 @@
         "normativeInvariant": "Business feedback and dialogs must avoid raw Toast, alert, confirm, and ad hoc dialog ownership, and must route through approved abstractions that preserve queue, theme, lifecycle, layout, and close behavior.",
         "scope": "Business feedback channels, dialogs, drawers, overlays, and cross-module UX behavior.",
         "machineClassifiability": "mixed machine-classifiable and human-review boundary",
-        "currentEnforcement": "Repository rules and human review; some raw calls are source-detectable, but no P3 policy validator enforces application source.",
+        "currentEnforcement": "Repository rules, human review, and the completed P3 policy validator govern the artifacts; no scanner enforces application source.",
         "futureSourceScannerBoundary": "A later scanner may detect raw alert, confirm, Toast, Dialog, or Drawer usage; P3 defines policy metadata and fixtures only.",
         "futurePageContractBoundary": "Per-page feedback timing and overlay composition remain outside the platform policy unless a Page Contract later owns them.",
         "historicalLineage": [
@@ -47924,7 +48018,12 @@
         ],
         "redundancyRationale": "The prohibition and required abstraction are complementary split propositions, not duplicates; the dialog rule is a distinct overlay owner boundary.",
         "selectionRationale": "All three current records are needed to preserve the complete required/prohibited feedback obligation.",
-        "permanentPolicyRuleIdsAssigned": false
+        "permanentPolicyRuleIdsAssignedAtHandoff": false,
+        "policyRuleIds": [
+          "CCD-UI-006",
+          "CCD-UI-007",
+          "CCD-UI-008"
+        ]
       },
       {
         "clusterId": "P3-HO-CLUSTER-003",
@@ -48003,7 +48102,12 @@
         "historicalLineage": [],
         "redundancyRationale": "Checklist restatements and exact code examples are supporting context; these three records retain the required mechanism, forbidden mechanism, and global/local conflict rule.",
         "selectionRationale": "The selected records form a closed non-duplicative styling ownership obligation.",
-        "permanentPolicyRuleIdsAssigned": false
+        "permanentPolicyRuleIdsAssignedAtHandoff": false,
+        "policyRuleIds": [
+          "CCD-UI-009",
+          "CCD-UI-010",
+          "CCD-UI-011"
+        ]
       },
       {
         "clusterId": "P3-HO-CLUSTER-004",
@@ -48113,7 +48217,14 @@
         "historicalLineage": [],
         "redundancyRationale": "Repeated examples of prohibited utility classes and duplicate rem/em bans remain supporting context. The selected records preserve prohibition, conditional allowance, closed-set ownership, and size-engine ownership.",
         "selectionRationale": "These records cover distinct required/prohibited concepts without selecting every utility example.",
-        "permanentPolicyRuleIdsAssigned": false
+        "permanentPolicyRuleIdsAssignedAtHandoff": false,
+        "policyRuleIds": [
+          "CCD-UI-012",
+          "CCD-UI-013",
+          "CCD-UI-014",
+          "CCD-UI-015",
+          "CCD-UI-016"
+        ]
       },
       {
         "clusterId": "P3-HO-CLUSTER-005",
@@ -48236,7 +48347,7 @@
         "normativeInvariant": "Themes must define light and dark modes with complete semantic families, preserve token semantic tiers, enforce the accepted 4.5 and 3.0 readability classes, and prevent decorative light tokens from serving as primary readable content pairs.",
         "scope": "Theme presets, semantic color families, contrast classes, readable content, and light/dark parity.",
         "machineClassifiability": "machine-enforceable for schema and contrast data, human-review for semantic intent",
-        "currentEnforcement": "Theme-token source contracts and validate:tokens behavior plus human review; no P3 policy artifact exists.",
+        "currentEnforcement": "Theme-token source contracts, validate:tokens behavior, human review, and the completed P3 policy artifact govern this cluster.",
         "futureSourceScannerBoundary": "P3 may classify enforcement as current validator, future scanner, or human review; it must not replace the existing token validator.",
         "futurePageContractBoundary": "Page-specific color emphasis and state presentation remain subject to Page Contract and human review.",
         "historicalLineage": [
@@ -48244,7 +48355,15 @@
         ],
         "redundancyRationale": "The 4.5 and 3.0 records are retained despite lexical similarity because they govern different semantic contrast tiers; family-name examples remain supporting context.",
         "selectionRationale": "The selected propositions define theme completeness, semantic intent, and the two accepted contrast boundaries.",
-        "permanentPolicyRuleIdsAssigned": false
+        "permanentPolicyRuleIdsAssignedAtHandoff": false,
+        "policyRuleIds": [
+          "CCD-UI-017",
+          "CCD-UI-018",
+          "CCD-UI-019",
+          "CCD-UI-020",
+          "CCD-UI-021",
+          "CCD-UI-022"
+        ]
       },
       {
         "clusterId": "P3-HO-CLUSTER-006",
@@ -48353,7 +48472,14 @@
         "historicalLineage": [],
         "redundancyRationale": "Geometry-specific sidebar records remain supporting context; the selected propositions preserve the breakpoint, raw-state, size-engine, shell, and child-owner boundaries.",
         "selectionRationale": "These records express the minimum distinct responsive ownership chain.",
-        "permanentPolicyRuleIdsAssigned": false
+        "permanentPolicyRuleIdsAssignedAtHandoff": false,
+        "policyRuleIds": [
+          "CCD-UI-023",
+          "CCD-UI-024",
+          "CCD-UI-025",
+          "CCD-UI-026",
+          "CCD-UI-027"
+        ]
       },
       {
         "clusterId": "P3-HO-CLUSTER-007",
@@ -48487,15 +48613,24 @@
         "normativeInvariant": "Page roots must preserve transparent shell ownership, primary scroll must use the approved scroll owner, col-fill is conditional on explicit view-owned scrolling, shell visibility must not depend on CSS media hiding, and safe-area values must be centrally provided.",
         "scope": "Page roots, app shell, primary scrolling, structural visibility, viewport ownership, and safe areas.",
         "machineClassifiability": "mixed machine-classifiable and human layout-owner review",
-        "currentEnforcement": "Repository rules, AppContainer/runtime evidence, and targeted visual or layout tests; no P3 policy exists.",
-        "futureSourceScannerBoundary": "A later scanner may detect overflow, root material, col-fill, media-query, and safe-area literals; P3 only records rule semantics.",
+        "currentEnforcement": "Repository rules, AppContainer/runtime evidence, targeted visual or layout tests, and the completed P3 policy govern this cluster.",
+        "futureSourceScannerBoundary": "The completed P3 policy records these rule semantics; a later scanner may detect overflow, root material, col-fill, media-query, and safe-area literals.",
         "futurePageContractBoundary": "Named page regions, exact scroll owners, same-axis exceptions, and per-breakpoint topology remain Page Contract responsibilities.",
         "historicalLineage": [
           "P2-REQ-0092 maps one-to-one to P2C-REQ-0047 and remains eligible in this cluster."
         ],
         "redundancyRationale": "CScrollbar restatements and layout examples remain supporting context; the selected records retain the root, scroll, conditional takeover, shell, and safe-area invariants.",
         "selectionRationale": "Each selected proposition controls a distinct layout owner or exception boundary.",
-        "permanentPolicyRuleIdsAssigned": false
+        "permanentPolicyRuleIdsAssignedAtHandoff": false,
+        "policyRuleIds": [
+          "CCD-UI-028",
+          "CCD-UI-029",
+          "CCD-UI-030",
+          "CCD-UI-031",
+          "CCD-UI-032",
+          "CCD-UI-033",
+          "CCD-UI-034"
+        ]
       },
       {
         "clusterId": "P3-HO-CLUSTER-008",
@@ -48649,7 +48784,17 @@
         "historicalLineage": [],
         "redundancyRationale": "Specific material examples remain supporting context. The selected records preserve allowed material, prohibited nesting, z-index closure, two theme depth models, and restrained border/shadow purpose.",
         "selectionRationale": "The set separates machine-detectable material limits from necessary human optical boundaries.",
-        "permanentPolicyRuleIdsAssigned": false
+        "permanentPolicyRuleIdsAssignedAtHandoff": false,
+        "policyRuleIds": [
+          "CCD-UI-035",
+          "CCD-UI-036",
+          "CCD-UI-037",
+          "CCD-UI-038",
+          "CCD-UI-039",
+          "CCD-UI-040",
+          "CCD-UI-041",
+          "CCD-UI-042"
+        ]
       },
       {
         "clusterId": "P3-HO-CLUSTER-009",
@@ -48758,7 +48903,14 @@
         "historicalLineage": [],
         "redundancyRationale": "Related material and product-language records remain in their own clusters; these five define the profile-specific light, dark, purposeful material, and anti-copy boundaries.",
         "selectionRationale": "This is the minimum exact source set that supplies profile contents without treating the P3 profile document structure as a P2 requirement.",
-        "permanentPolicyRuleIdsAssigned": false
+        "permanentPolicyRuleIdsAssignedAtHandoff": false,
+        "policyRuleIds": [
+          "CCD-UI-043",
+          "CCD-UI-044",
+          "CCD-UI-045",
+          "CCD-UI-046",
+          "CCD-UI-047"
+        ]
       },
       {
         "clusterId": "P3-HO-CLUSTER-010",
@@ -48854,7 +49006,13 @@
         "historicalLineage": [],
         "redundancyRationale": "Contrast rules remain in the theme cluster and narrow sidebar examples remain supporting context; these records preserve distinct input, focus, state-boundary, and continuity propositions.",
         "selectionRationale": "The cluster references exact active source propositions while the accepted project-ui accessibility reference supplies the broader human-review boundary.",
-        "permanentPolicyRuleIdsAssigned": false
+        "permanentPolicyRuleIdsAssignedAtHandoff": false,
+        "policyRuleIds": [
+          "CCD-UI-048",
+          "CCD-UI-049",
+          "CCD-UI-050",
+          "CCD-UI-051"
+        ]
       },
       {
         "clusterId": "P3-HO-CLUSTER-011",
@@ -48996,7 +49154,16 @@
         "historicalLineage": [],
         "redundancyRationale": "Tool-trigger and checklist records are routing or background; the selected propositions retain easing, tool, property, decoration, performance, and purpose boundaries.",
         "selectionRationale": "These current records are mutually distinct and sufficient to seed policy classification without assigning future rule IDs.",
-        "permanentPolicyRuleIdsAssigned": false
+        "permanentPolicyRuleIdsAssignedAtHandoff": false,
+        "policyRuleIds": [
+          "CCD-UI-052",
+          "CCD-UI-053",
+          "CCD-UI-054",
+          "CCD-UI-055",
+          "CCD-UI-056",
+          "CCD-UI-057",
+          "CCD-UI-058"
+        ]
       },
       {
         "clusterId": "P3-HO-CLUSTER-012",
@@ -49090,7 +49257,13 @@
         "historicalLineage": [],
         "redundancyRationale": "General aesthetic slogans remain human-review background; these four are stable, distinct, and decision-bearing human-review boundaries.",
         "selectionRationale": "They satisfy the controller requirement that necessary human-review-only boundaries remain explicit without becoming fake machine rules.",
-        "permanentPolicyRuleIdsAssigned": false
+        "permanentPolicyRuleIdsAssignedAtHandoff": false,
+        "policyRuleIds": [
+          "CCD-UI-059",
+          "CCD-UI-060",
+          "CCD-UI-061",
+          "CCD-UI-062"
+        ]
       },
       {
         "clusterId": "P3-HO-CLUSTER-013",
@@ -49187,7 +49360,13 @@
         "historicalLineage": [],
         "redundancyRationale": "Exact allowlist examples remain supporting context. The selected records represent four distinct eligible exception classes and establish boundedness without inventing registry mechanics.",
         "selectionRationale": "These propositions provide P2 semantic authority for exception eligibility; the empty registry and schemas remain plan-owned contracts.",
-        "permanentPolicyRuleIdsAssigned": false
+        "permanentPolicyRuleIdsAssignedAtHandoff": false,
+        "policyRuleIds": [
+          "CCD-UI-063",
+          "CCD-UI-064",
+          "CCD-UI-065",
+          "CCD-UI-066"
+        ]
       },
       {
         "clusterId": "P3-HO-CLUSTER-014",
@@ -49251,109 +49430,12 @@
         "historicalLineage": [],
         "redundancyRationale": "Additional device-store and renderer records support the boundary; these two propositions retain the pure-consumer and singleton-listener obligations without duplicating size/responsive members.",
         "selectionRationale": "They make the P2 runtime-preservation boundary explicit while keeping P3 policy work runtime-neutral.",
-        "permanentPolicyRuleIdsAssigned": false
+        "permanentPolicyRuleIdsAssignedAtHandoff": false,
+        "policyRuleIds": [
+          "CCD-UI-067",
+          "CCD-UI-068"
+        ]
       }
-    ],
-    "supportingRequirementIds": [
-      "P2C-REQ-0004",
-      "P2C-REQ-0005",
-      "P2C-REQ-0016",
-      "P2C-REQ-0026",
-      "P2C-REQ-0027",
-      "P2C-REQ-0029",
-      "P2C-REQ-0031",
-      "P2C-REQ-0032",
-      "P2C-REQ-0033",
-      "P2C-REQ-0034",
-      "P2C-REQ-0037",
-      "P2C-REQ-0038",
-      "P2C-REQ-0040",
-      "P2C-REQ-0041",
-      "P2C-REQ-0052",
-      "P2C-REQ-0053",
-      "P2C-REQ-0054",
-      "P2C-REQ-0056",
-      "P2C-REQ-0057",
-      "P2C-REQ-0058",
-      "P2C-REQ-0069",
-      "P2C-REQ-0070",
-      "P2C-REQ-0071",
-      "P2C-REQ-0072",
-      "P2C-REQ-0073",
-      "P2C-REQ-0077",
-      "P2C-REQ-0078",
-      "P2C-REQ-0081",
-      "P2C-REQ-0088",
-      "P2C-REQ-0114",
-      "P2C-REQ-0116",
-      "P2C-REQ-0118",
-      "P2C-REQ-0121",
-      "P2C-REQ-0124",
-      "P2C-REQ-0126",
-      "P2C-REQ-0127",
-      "P2C-REQ-0131",
-      "P2C-REQ-0141",
-      "P2C-REQ-0142",
-      "P2C-REQ-0150",
-      "P2C-REQ-0151",
-      "P2C-REQ-0152",
-      "P2C-REQ-0153",
-      "P2C-REQ-0154",
-      "P2C-REQ-0162",
-      "P2C-REQ-0163",
-      "P2C-REQ-0166",
-      "P2C-REQ-0167",
-      "P2C-REQ-0168",
-      "P2C-REQ-0169",
-      "P2C-REQ-0171",
-      "P2C-REQ-0172",
-      "P2C-REQ-0173",
-      "P2C-REQ-0174",
-      "P2C-REQ-0175",
-      "P2C-REQ-0179",
-      "P2C-REQ-0182",
-      "P2C-REQ-0186",
-      "P2C-REQ-0187",
-      "P2C-REQ-0191",
-      "P2C-REQ-0192",
-      "P2C-REQ-0193",
-      "P2C-REQ-0195",
-      "P2C-REQ-0197",
-      "P2C-REQ-0199",
-      "P2C-REQ-0200",
-      "P2C-REQ-0207",
-      "P2C-REQ-0209",
-      "P2C-REQ-0212",
-      "P2C-REQ-0214",
-      "P2C-REQ-0215",
-      "P2C-REQ-0218",
-      "P2C-REQ-0224",
-      "P2C-REQ-0228",
-      "P2C-REQ-0236",
-      "P2C-REQ-0237",
-      "P2C-REQ-0238",
-      "P2C-REQ-0239",
-      "P2C-REQ-0245",
-      "P2C-REQ-0246",
-      "P2C-REQ-0257",
-      "P2C-REQ-0258",
-      "P2C-REQ-0259",
-      "P2C-REQ-0260",
-      "P2C-REQ-0261",
-      "P2C-REQ-0262",
-      "P2C-REQ-0263",
-      "P2C-REQ-0264",
-      "P2C-REQ-0265",
-      "P2C-REQ-0267",
-      "P2C-REQ-0271",
-      "P2C-REQ-0277",
-      "P2C-REQ-0311",
-      "P2C-REQ-0317",
-      "P2C-REQ-0321",
-      "P2C-REQ-0322",
-      "P2C-REQ-0323",
-      "P2C-REQ-0338",
-      "P2C-REQ-0368"
     ],
     "humanReviewBackgroundRequirementIds": [
       "P2C-REQ-0001",
@@ -49620,126 +49702,6 @@
           "wiki/canonical/design/machine-ui-policy.md"
         ],
         "validationBoundary": "Keep Machine UI Policy, Page Contract, P4, P5, discovery, routing, synchronization, and adapter states explicit and phase-correct."
-      }
-    ],
-    "historicalMarkerDispositions": [
-      {
-        "historicalRequirementId": "P2-REQ-0007",
-        "currentReplacementRequirementIds": [
-          "P2C-REQ-0006"
-        ],
-        "currentClassification": "page-contract-only",
-        "historicalMarkerEligibleAsCanonicalUnit": false
-      },
-      {
-        "historicalRequirementId": "P2-REQ-0016",
-        "currentReplacementRequirementIds": [
-          "P2C-REQ-0012",
-          "P2C-REQ-0013"
-        ],
-        "currentClassification": "canonical semantic obligation cluster P3-HO-CLUSTER-002",
-        "historicalMarkerEligibleAsCanonicalUnit": true
-      },
-      {
-        "historicalRequirementId": "P2-REQ-0054",
-        "currentReplacementRequirementIds": [
-          "P2C-REQ-0028"
-        ],
-        "currentClassification": "page-contract-only",
-        "historicalMarkerEligibleAsCanonicalUnit": false
-      },
-      {
-        "historicalRequirementId": "P2-REQ-0092",
-        "currentReplacementRequirementIds": [
-          "P2C-REQ-0047"
-        ],
-        "currentClassification": "canonical semantic obligation cluster P3-HO-CLUSTER-007",
-        "historicalMarkerEligibleAsCanonicalUnit": true
-      },
-      {
-        "historicalRequirementId": "P2-REQ-0114",
-        "currentReplacementRequirementIds": [
-          "P2C-REQ-0065"
-        ],
-        "currentClassification": "page-contract-only",
-        "historicalMarkerEligibleAsCanonicalUnit": false
-      },
-      {
-        "historicalRequirementId": "P2-REQ-0118",
-        "currentReplacementRequirementIds": [
-          "P2C-REQ-0067"
-        ],
-        "currentClassification": "page-contract-only",
-        "historicalMarkerEligibleAsCanonicalUnit": false
-      },
-      {
-        "historicalRequirementId": "P2-REQ-0121",
-        "currentReplacementRequirementIds": [
-          "P2C-REQ-0006",
-          "P2C-REQ-0008",
-          "P2C-REQ-0044"
-        ],
-        "currentClassification": "mixed split: one canonical current member, one Page Contract record, one invalid-monorepo record",
-        "historicalMarkerEligibleAsCanonicalUnit": false
-      },
-      {
-        "historicalRequirementId": "P2-REQ-0184",
-        "currentReplacementRequirementIds": [],
-        "currentClassification": "retired non-propositional marker",
-        "historicalMarkerEligibleAsCanonicalUnit": false
-      },
-      {
-        "historicalRequirementId": "P2-REQ-0265",
-        "currentReplacementRequirementIds": [
-          "P2C-REQ-0159",
-          "P2C-REQ-0160"
-        ],
-        "currentClassification": "already-implemented-foundation",
-        "historicalMarkerEligibleAsCanonicalUnit": false
-      },
-      {
-        "historicalRequirementId": "P2-REQ-0581",
-        "currentReplacementRequirementIds": [],
-        "currentClassification": "rejected frontmatter fragment",
-        "historicalMarkerEligibleAsCanonicalUnit": false
-      },
-      {
-        "historicalRequirementId": "P2-REQ-0583",
-        "currentReplacementRequirementIds": [],
-        "currentClassification": "rejected heading",
-        "historicalMarkerEligibleAsCanonicalUnit": false
-      },
-      {
-        "historicalRequirementId": "P2-REQ-0596",
-        "currentReplacementRequirementIds": [],
-        "currentClassification": "retired heading",
-        "historicalMarkerEligibleAsCanonicalUnit": false
-      },
-      {
-        "historicalRequirementId": "P2-REQ-0599",
-        "currentReplacementRequirementIds": [],
-        "currentClassification": "retired heading",
-        "historicalMarkerEligibleAsCanonicalUnit": false
-      },
-      {
-        "historicalRequirementId": "P2-REQ-0604",
-        "currentReplacementRequirementIds": [],
-        "currentClassification": "retired heading",
-        "historicalMarkerEligibleAsCanonicalUnit": false
-      },
-      {
-        "historicalRequirementId": "P2-REQ-0613",
-        "currentReplacementRequirementIds": [],
-        "currentClassification": "rejected command fragment",
-        "historicalMarkerEligibleAsCanonicalUnit": false
-      },
-      {
-        "historicalRequirementId": "P2-REQ-0614",
-        "currentReplacementRequirementIds": [
-          "P2C-REQ-0366"
-        ],
-        "currentClassification": "not-P3 current validation command",
-        "historicalMarkerEligibleAsCanonicalUnit": false
       }
     ],
     "semanticAreaCoverage": [
@@ -50134,7 +50096,10 @@
       "planOwnedContractInventory": "required",
       "p2AccountingPreservation": "required",
       "lifecycleStatePreservation": "required",
-      "futureP3CompletionState": "phase-gated"
+      "p3CompletionState": "required",
+      "candidateDispositionReconciliation": "required",
+      "ruleCaseCoverage": "required",
+      "scopeAndAuthorityValidation": "required"
     },
     "preservedP2State": {
       "activeRequirementCount": 345,
@@ -50150,7 +50115,714 @@
       "requirementStateSha256": "8a36e20ed43296065801b61cefebf0d701d09846a2059268f546b4569d034a00",
       "conflictResolutionSha256": "fd036893e656f7938dc6b2bc30fcb879456ac789ef490225818618635bf15da6"
     },
-    "preservedLifecycleState": {
+    "snapshotKind": "PRE_IMPLEMENTATION_HANDOFF",
+    "consumedByImplementationCommit": "86f6f71045a8778a0540d11fed15ca4c0eae6fa3",
+    "candidateRequirementDispositions": [
+      {
+        "requirementId": "P2C-REQ-0003",
+        "ruleId": "CCD-UI-001",
+        "clusterId": "P3-HO-CLUSTER-001",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0007",
+        "ruleId": "CCD-UI-002",
+        "clusterId": "P3-HO-CLUSTER-001",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0011",
+        "ruleId": "CCD-UI-063",
+        "clusterId": "P3-HO-CLUSTER-013",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0012",
+        "ruleId": "CCD-UI-006",
+        "clusterId": "P3-HO-CLUSTER-002",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0013",
+        "ruleId": "CCD-UI-007",
+        "clusterId": "P3-HO-CLUSTER-002",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0014",
+        "ruleId": "CCD-UI-008",
+        "clusterId": "P3-HO-CLUSTER-002",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0015",
+        "ruleId": "CCD-UI-028",
+        "clusterId": "P3-HO-CLUSTER-007",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0020",
+        "ruleId": "CCD-UI-009",
+        "clusterId": "P3-HO-CLUSTER-003",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0021",
+        "ruleId": "CCD-UI-010",
+        "clusterId": "P3-HO-CLUSTER-003",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0023",
+        "ruleId": "CCD-UI-064",
+        "clusterId": "P3-HO-CLUSTER-013",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0024",
+        "ruleId": "CCD-UI-011",
+        "clusterId": "P3-HO-CLUSTER-003",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0025",
+        "ruleId": "CCD-UI-003",
+        "clusterId": "P3-HO-CLUSTER-001",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0044",
+        "ruleId": "CCD-UI-004",
+        "clusterId": "P3-HO-CLUSTER-001",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0047",
+        "ruleId": "CCD-UI-029",
+        "clusterId": "P3-HO-CLUSTER-007",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0048",
+        "ruleId": "CCD-UI-030",
+        "clusterId": "P3-HO-CLUSTER-007",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0068",
+        "ruleId": "CCD-UI-005",
+        "clusterId": "P3-HO-CLUSTER-001",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0119",
+        "ruleId": "CCD-UI-012",
+        "clusterId": "P3-HO-CLUSTER-004",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0120",
+        "ruleId": "CCD-UI-013",
+        "clusterId": "P3-HO-CLUSTER-004",
+        "disposition": "permanent-rule",
+        "enforcement": "schema-validated"
+      },
+      {
+        "requirementId": "P2C-REQ-0139",
+        "ruleId": "CCD-UI-031",
+        "clusterId": "P3-HO-CLUSTER-007",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0140",
+        "ruleId": "CCD-UI-032",
+        "clusterId": "P3-HO-CLUSTER-007",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0144",
+        "ruleId": "CCD-UI-014",
+        "clusterId": "P3-HO-CLUSTER-004",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0149",
+        "ruleId": "CCD-UI-015",
+        "clusterId": "P3-HO-CLUSTER-004",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0155",
+        "ruleId": "CCD-UI-065",
+        "clusterId": "P3-HO-CLUSTER-013",
+        "disposition": "permanent-rule",
+        "enforcement": "schema-validated"
+      },
+      {
+        "requirementId": "P2C-REQ-0156",
+        "ruleId": "CCD-UI-017",
+        "clusterId": "P3-HO-CLUSTER-005",
+        "disposition": "permanent-rule",
+        "enforcement": "schema-validated"
+      },
+      {
+        "requirementId": "P2C-REQ-0158",
+        "ruleId": "CCD-UI-018",
+        "clusterId": "P3-HO-CLUSTER-005",
+        "disposition": "permanent-rule",
+        "enforcement": "schema-validated"
+      },
+      {
+        "requirementId": "P2C-REQ-0177",
+        "ruleId": "CCD-UI-016",
+        "clusterId": "P3-HO-CLUSTER-004",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0181",
+        "ruleId": "CCD-UI-023",
+        "clusterId": "P3-HO-CLUSTER-006",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0198",
+        "ruleId": "CCD-UI-035",
+        "clusterId": "P3-HO-CLUSTER-008",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0201",
+        "ruleId": "CCD-UI-036",
+        "clusterId": "P3-HO-CLUSTER-008",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0202",
+        "ruleId": "CCD-UI-037",
+        "clusterId": "P3-HO-CLUSTER-008",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0204",
+        "ruleId": "CCD-UI-038",
+        "clusterId": "P3-HO-CLUSTER-008",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0206",
+        "ruleId": "CCD-UI-039",
+        "clusterId": "P3-HO-CLUSTER-008",
+        "disposition": "human-review-only",
+        "enforcement": "human-review-only"
+      },
+      {
+        "requirementId": "P2C-REQ-0208",
+        "ruleId": "CCD-UI-040",
+        "clusterId": "P3-HO-CLUSTER-008",
+        "disposition": "human-review-only",
+        "enforcement": "human-review-only"
+      },
+      {
+        "requirementId": "P2C-REQ-0220",
+        "ruleId": "CCD-UI-052",
+        "clusterId": "P3-HO-CLUSTER-011",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0221",
+        "ruleId": "CCD-UI-053",
+        "clusterId": "P3-HO-CLUSTER-011",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0240",
+        "ruleId": "CCD-UI-066",
+        "clusterId": "P3-HO-CLUSTER-013",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0241",
+        "ruleId": "CCD-UI-019",
+        "clusterId": "P3-HO-CLUSTER-005",
+        "disposition": "permanent-rule",
+        "enforcement": "schema-validated"
+      },
+      {
+        "requirementId": "P2C-REQ-0242",
+        "ruleId": "CCD-UI-020",
+        "clusterId": "P3-HO-CLUSTER-005",
+        "disposition": "permanent-rule",
+        "enforcement": "schema-validated"
+      },
+      {
+        "requirementId": "P2C-REQ-0243",
+        "ruleId": "CCD-UI-021",
+        "clusterId": "P3-HO-CLUSTER-005",
+        "disposition": "permanent-rule",
+        "enforcement": "schema-validated"
+      },
+      {
+        "requirementId": "P2C-REQ-0244",
+        "ruleId": "CCD-UI-022",
+        "clusterId": "P3-HO-CLUSTER-005",
+        "disposition": "permanent-rule",
+        "enforcement": "schema-validated"
+      },
+      {
+        "requirementId": "P2C-REQ-0248",
+        "ruleId": "CCD-UI-033",
+        "clusterId": "P3-HO-CLUSTER-007",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0249",
+        "ruleId": "CCD-UI-067",
+        "clusterId": "P3-HO-CLUSTER-014",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0253",
+        "ruleId": "CCD-UI-024",
+        "clusterId": "P3-HO-CLUSTER-006",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0254",
+        "ruleId": "CCD-UI-068",
+        "clusterId": "P3-HO-CLUSTER-014",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0256",
+        "ruleId": "CCD-UI-025",
+        "clusterId": "P3-HO-CLUSTER-006",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0266",
+        "ruleId": "CCD-UI-034",
+        "clusterId": "P3-HO-CLUSTER-007",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0269",
+        "ruleId": "CCD-UI-026",
+        "clusterId": "P3-HO-CLUSTER-006",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0270",
+        "ruleId": "CCD-UI-027",
+        "clusterId": "P3-HO-CLUSTER-006",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0276",
+        "ruleId": "CCD-UI-048",
+        "clusterId": "P3-HO-CLUSTER-010",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0278",
+        "ruleId": "CCD-UI-049",
+        "clusterId": "P3-HO-CLUSTER-010",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0287",
+        "ruleId": "CCD-UI-054",
+        "clusterId": "P3-HO-CLUSTER-011",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0288",
+        "ruleId": "CCD-UI-055",
+        "clusterId": "P3-HO-CLUSTER-011",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0295",
+        "ruleId": "CCD-UI-056",
+        "clusterId": "P3-HO-CLUSTER-011",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0301",
+        "ruleId": "CCD-UI-043",
+        "clusterId": "P3-HO-CLUSTER-009",
+        "disposition": "human-review-only",
+        "enforcement": "human-review-only"
+      },
+      {
+        "requirementId": "P2C-REQ-0304",
+        "ruleId": "CCD-UI-044",
+        "clusterId": "P3-HO-CLUSTER-009",
+        "disposition": "human-review-only",
+        "enforcement": "human-review-only"
+      },
+      {
+        "requirementId": "P2C-REQ-0308",
+        "ruleId": "CCD-UI-041",
+        "clusterId": "P3-HO-CLUSTER-008",
+        "disposition": "human-review-only",
+        "enforcement": "human-review-only"
+      },
+      {
+        "requirementId": "P2C-REQ-0309",
+        "ruleId": "CCD-UI-050",
+        "clusterId": "P3-HO-CLUSTER-010",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0310",
+        "ruleId": "CCD-UI-042",
+        "clusterId": "P3-HO-CLUSTER-008",
+        "disposition": "human-review-only",
+        "enforcement": "human-review-only"
+      },
+      {
+        "requirementId": "P2C-REQ-0320",
+        "ruleId": "CCD-UI-051",
+        "clusterId": "P3-HO-CLUSTER-010",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0325",
+        "ruleId": "CCD-UI-057",
+        "clusterId": "P3-HO-CLUSTER-011",
+        "disposition": "permanent-rule",
+        "enforcement": "source-scanner-not-yet-implemented"
+      },
+      {
+        "requirementId": "P2C-REQ-0329",
+        "ruleId": "CCD-UI-059",
+        "clusterId": "P3-HO-CLUSTER-012",
+        "disposition": "human-review-only",
+        "enforcement": "human-review-only"
+      },
+      {
+        "requirementId": "P2C-REQ-0330",
+        "ruleId": "CCD-UI-060",
+        "clusterId": "P3-HO-CLUSTER-012",
+        "disposition": "human-review-only",
+        "enforcement": "human-review-only"
+      },
+      {
+        "requirementId": "P2C-REQ-0347",
+        "ruleId": "CCD-UI-061",
+        "clusterId": "P3-HO-CLUSTER-012",
+        "disposition": "human-review-only",
+        "enforcement": "human-review-only"
+      },
+      {
+        "requirementId": "P2C-REQ-0348",
+        "ruleId": "CCD-UI-045",
+        "clusterId": "P3-HO-CLUSTER-009",
+        "disposition": "human-review-only",
+        "enforcement": "human-review-only"
+      },
+      {
+        "requirementId": "P2C-REQ-0349",
+        "ruleId": "CCD-UI-058",
+        "clusterId": "P3-HO-CLUSTER-011",
+        "disposition": "human-review-only",
+        "enforcement": "human-review-only"
+      },
+      {
+        "requirementId": "P2C-REQ-0350",
+        "ruleId": "CCD-UI-046",
+        "clusterId": "P3-HO-CLUSTER-009",
+        "disposition": "human-review-only",
+        "enforcement": "human-review-only"
+      },
+      {
+        "requirementId": "P2C-REQ-0352",
+        "ruleId": "CCD-UI-047",
+        "clusterId": "P3-HO-CLUSTER-009",
+        "disposition": "human-review-only",
+        "enforcement": "human-review-only"
+      },
+      {
+        "requirementId": "P2C-REQ-0354",
+        "ruleId": "CCD-UI-062",
+        "clusterId": "P3-HO-CLUSTER-012",
+        "disposition": "human-review-only",
+        "enforcement": "human-review-only"
+      }
+    ],
+    "futurePageContractDeferrals": [
+      "P2C-REQ-0006",
+      "P2C-REQ-0028",
+      "P2C-REQ-0065",
+      "P2C-REQ-0067"
+    ],
+    "supportingNonCandidateRequirementIds": [
+      "P2C-REQ-0004",
+      "P2C-REQ-0005",
+      "P2C-REQ-0016",
+      "P2C-REQ-0026",
+      "P2C-REQ-0027",
+      "P2C-REQ-0029",
+      "P2C-REQ-0031",
+      "P2C-REQ-0032",
+      "P2C-REQ-0033",
+      "P2C-REQ-0034",
+      "P2C-REQ-0037",
+      "P2C-REQ-0038",
+      "P2C-REQ-0040",
+      "P2C-REQ-0041",
+      "P2C-REQ-0052",
+      "P2C-REQ-0053",
+      "P2C-REQ-0054",
+      "P2C-REQ-0056",
+      "P2C-REQ-0057",
+      "P2C-REQ-0058",
+      "P2C-REQ-0069",
+      "P2C-REQ-0070",
+      "P2C-REQ-0071",
+      "P2C-REQ-0072",
+      "P2C-REQ-0073",
+      "P2C-REQ-0077",
+      "P2C-REQ-0078",
+      "P2C-REQ-0081",
+      "P2C-REQ-0088",
+      "P2C-REQ-0114",
+      "P2C-REQ-0116",
+      "P2C-REQ-0118",
+      "P2C-REQ-0121",
+      "P2C-REQ-0124",
+      "P2C-REQ-0126",
+      "P2C-REQ-0127",
+      "P2C-REQ-0131",
+      "P2C-REQ-0141",
+      "P2C-REQ-0142",
+      "P2C-REQ-0150",
+      "P2C-REQ-0151",
+      "P2C-REQ-0152",
+      "P2C-REQ-0153",
+      "P2C-REQ-0154",
+      "P2C-REQ-0162",
+      "P2C-REQ-0163",
+      "P2C-REQ-0166",
+      "P2C-REQ-0167",
+      "P2C-REQ-0168",
+      "P2C-REQ-0169",
+      "P2C-REQ-0171",
+      "P2C-REQ-0172",
+      "P2C-REQ-0173",
+      "P2C-REQ-0174",
+      "P2C-REQ-0175",
+      "P2C-REQ-0179",
+      "P2C-REQ-0182",
+      "P2C-REQ-0186",
+      "P2C-REQ-0187",
+      "P2C-REQ-0191",
+      "P2C-REQ-0192",
+      "P2C-REQ-0193",
+      "P2C-REQ-0195",
+      "P2C-REQ-0197",
+      "P2C-REQ-0199",
+      "P2C-REQ-0200",
+      "P2C-REQ-0207",
+      "P2C-REQ-0209",
+      "P2C-REQ-0212",
+      "P2C-REQ-0214",
+      "P2C-REQ-0215",
+      "P2C-REQ-0218",
+      "P2C-REQ-0224",
+      "P2C-REQ-0228",
+      "P2C-REQ-0236",
+      "P2C-REQ-0237",
+      "P2C-REQ-0238",
+      "P2C-REQ-0239",
+      "P2C-REQ-0245",
+      "P2C-REQ-0246",
+      "P2C-REQ-0257",
+      "P2C-REQ-0258",
+      "P2C-REQ-0259",
+      "P2C-REQ-0260",
+      "P2C-REQ-0261",
+      "P2C-REQ-0262",
+      "P2C-REQ-0263",
+      "P2C-REQ-0264",
+      "P2C-REQ-0265",
+      "P2C-REQ-0267",
+      "P2C-REQ-0271",
+      "P2C-REQ-0277",
+      "P2C-REQ-0311",
+      "P2C-REQ-0317",
+      "P2C-REQ-0321",
+      "P2C-REQ-0322",
+      "P2C-REQ-0323",
+      "P2C-REQ-0338",
+      "P2C-REQ-0368"
+    ],
+    "historicalLineage": [
+      {
+        "historicalRequirementId": "P2-REQ-0007",
+        "currentReplacementRequirementIds": [
+          "P2C-REQ-0006"
+        ],
+        "currentClassification": "page-contract-only",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0016",
+        "currentReplacementRequirementIds": [
+          "P2C-REQ-0012",
+          "P2C-REQ-0013"
+        ],
+        "currentClassification": "canonical semantic obligation cluster P3-HO-CLUSTER-002",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0054",
+        "currentReplacementRequirementIds": [
+          "P2C-REQ-0028"
+        ],
+        "currentClassification": "page-contract-only",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0092",
+        "currentReplacementRequirementIds": [
+          "P2C-REQ-0047"
+        ],
+        "currentClassification": "canonical semantic obligation cluster P3-HO-CLUSTER-007",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0114",
+        "currentReplacementRequirementIds": [
+          "P2C-REQ-0065"
+        ],
+        "currentClassification": "page-contract-only",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0118",
+        "currentReplacementRequirementIds": [
+          "P2C-REQ-0067"
+        ],
+        "currentClassification": "page-contract-only",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0121",
+        "currentReplacementRequirementIds": [
+          "P2C-REQ-0006",
+          "P2C-REQ-0008",
+          "P2C-REQ-0044"
+        ],
+        "currentClassification": "mixed split: one canonical current member, one Page Contract record, one invalid-monorepo record",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0184",
+        "currentReplacementRequirementIds": [],
+        "currentClassification": "retired non-propositional marker",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0265",
+        "currentReplacementRequirementIds": [
+          "P2C-REQ-0159",
+          "P2C-REQ-0160"
+        ],
+        "currentClassification": "already-implemented-foundation",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0581",
+        "currentReplacementRequirementIds": [],
+        "currentClassification": "rejected frontmatter fragment",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0583",
+        "currentReplacementRequirementIds": [],
+        "currentClassification": "rejected heading",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0596",
+        "currentReplacementRequirementIds": [],
+        "currentClassification": "retired heading",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0599",
+        "currentReplacementRequirementIds": [],
+        "currentClassification": "retired heading",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0604",
+        "currentReplacementRequirementIds": [],
+        "currentClassification": "retired heading",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0613",
+        "currentReplacementRequirementIds": [],
+        "currentClassification": "rejected command fragment",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      },
+      {
+        "historicalRequirementId": "P2-REQ-0614",
+        "currentReplacementRequirementIds": [
+          "P2C-REQ-0366"
+        ],
+        "currentClassification": "not-P3 current validation command",
+        "historicalMarkerEligibleAsCanonicalUnit": false
+      }
+    ],
+    "preImplementationLifecycleState": {
       "machineUiPolicyPresent": false,
       "pageContractSchemaPresent": false,
       "p3Started": false,
@@ -50162,10 +50834,21 @@
       "adapterActivated": false
     }
   },
-  "metadata": {},
+  "metadata": {
+    "p3FinalCorrection": {
+      "baselineCommit": "86f6f71045a8778a0540d11fed15ca4c0eae6fa3",
+      "implementationState": "P3_COMPLETE",
+      "machineUiPolicyState": "MACHINE_UI_POLICY_COMPLETE",
+      "applicationSourceEnforcementState": "BASELINE_ONLY"
+    }
+  },
   "sourceScannerImplemented": false,
   "pageContractCreated": false,
   "p4Started": false,
   "p5Started": false,
-  "machinePolicyPath": ".ai/governance/policies/ui.json"
+  "machinePolicyPath": ".ai/governance/policies/ui.json",
+  "implementationState": "P3_COMPLETE",
+  "machineUiPolicyState": "MACHINE_UI_POLICY_COMPLETE",
+  "applicationSourceEnforcementState": "BASELINE_ONLY",
+  "machineUiPolicyPresent": true
 }

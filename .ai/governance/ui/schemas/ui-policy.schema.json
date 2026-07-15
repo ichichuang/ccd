@@ -1,24 +1,41 @@
 {
-  "$id": "https://ccd.wzdxcc.cloudns.org/governance/ui/ui-policy.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ccd.wzdxcc.cloudns.org/governance/ui/ui-policy.schema.json",
   "title": "CCD Machine UI Policy",
-  "description": "Canonical machine-readable UI governance policy for the CCD monorepo.",
+  "description": "Closed P3-complete Machine UI Policy metadata. Application-source enforcement remains baseline-only until a source scanner is implemented.",
   "type": "object",
   "required": [
     "schemaVersion",
     "repository",
     "status",
     "p3BaselineCommit",
+    "implementationState",
+    "machineUiPolicyState",
+    "machineUiPolicyPresent",
+    "policySchemasPresent",
+    "productUiProfilePresent",
+    "exceptionRegistryPresent",
+    "exceptionCount",
+    "fixturesPresent",
+    "validatorPresent",
+    "applicationSourceEnforcementState",
+    "projectUiDiscovered",
+    "projectUiRouted",
+    "projectUiSynchronized",
+    "projectUiAdapterActivated",
     "sourceScannerImplemented",
     "pageContractCreated",
     "p4Started",
     "p5Started",
     "counts",
+    "scopeRegistry",
+    "plannedArtifactPaths",
     "clusters",
     "rules",
+    "candidateRequirementDispositions",
     "humanReviewOnly",
     "futurePageContract",
-    "lineageOnlyMarkers",
+    "historicalLineage",
     "sourceRequirementMappings",
     "ruleToSourceMappings",
     "exceptionPolicy",
@@ -27,121 +44,358 @@
   ],
   "additionalProperties": false,
   "properties": {
-    "schemaVersion": { "type": "string", "pattern": "^ccd-ui-policy/v\\d+$" },
-    "repository": { "type": "string" },
-    "status": { "type": "string" },
-    "p3BaselineCommit": { "type": "string" },
-    "sourceScannerImplemented": { "type": "boolean", "enum": [false] },
-    "pageContractCreated": { "type": "boolean", "enum": [false] },
-    "p4Started": { "type": "boolean", "enum": [false] },
-    "p5Started": { "type": "boolean", "enum": [false] },
+    "schemaVersion": {
+      "const": "ccd-ui-policy/v2"
+    },
+    "repository": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "const": "P3_COMPLETE / MACHINE_UI_POLICY_COMPLETE / SOURCE_ENFORCEMENT_BASELINE"
+    },
+    "p3BaselineCommit": {
+      "const": "86f6f71045a8778a0540d11fed15ca4c0eae6fa3"
+    },
+    "implementationState": {
+      "const": "P3_COMPLETE"
+    },
+    "machineUiPolicyState": {
+      "const": "MACHINE_UI_POLICY_COMPLETE"
+    },
+    "machineUiPolicyPresent": {
+      "const": true
+    },
+    "policySchemasPresent": {
+      "const": true
+    },
+    "productUiProfilePresent": {
+      "const": true
+    },
+    "exceptionRegistryPresent": {
+      "const": true
+    },
+    "exceptionCount": {
+      "const": 0
+    },
+    "fixturesPresent": {
+      "const": true
+    },
+    "validatorPresent": {
+      "const": true
+    },
+    "applicationSourceEnforcementState": {
+      "const": "BASELINE_ONLY"
+    },
+    "projectUiDiscovered": {
+      "const": false
+    },
+    "projectUiRouted": {
+      "const": false
+    },
+    "projectUiSynchronized": {
+      "const": false
+    },
+    "projectUiAdapterActivated": {
+      "const": false
+    },
+    "sourceScannerImplemented": {
+      "const": false
+    },
+    "pageContractCreated": {
+      "const": false
+    },
+    "p4Started": {
+      "const": false
+    },
+    "p5Started": {
+      "const": false
+    },
     "counts": {
       "type": "object",
       "required": [
         "ruleCount",
         "clusterCount",
-        "humanReviewOnlyCount",
-        "futurePageContractCount",
-        "lineageOnlyMarkerCount",
-        "sourceRequirementCount"
+        "candidateDispositionCount",
+        "permanentRuleDispositionCount",
+        "humanReviewOnlyDispositionCount",
+        "futurePageContractDeferralCount",
+        "historicalLineageCount",
+        "activeP2RequirementCount",
+        "scopeRegistryCount",
+        "plannedArtifactPathCount",
+        "passRuleCaseCount",
+        "failRuleCaseCount",
+        "exceptionCount"
       ],
+      "additionalProperties": false,
       "properties": {
-        "ruleCount": { "type": "integer", "minimum": 1 },
-        "clusterCount": { "type": "integer", "minimum": 1 },
-        "humanReviewOnlyCount": { "type": "integer", "minimum": 0 },
-        "futurePageContractCount": { "type": "integer", "minimum": 0 },
-        "lineageOnlyMarkerCount": { "type": "integer", "minimum": 0 },
-        "sourceRequirementCount": { "type": "integer", "minimum": 1 }
+        "ruleCount": { "const": 68 },
+        "clusterCount": { "const": 14 },
+        "candidateDispositionCount": { "const": 68 },
+        "permanentRuleDispositionCount": { "const": 54 },
+        "humanReviewOnlyDispositionCount": { "const": 14 },
+        "futurePageContractDeferralCount": { "const": 4 },
+        "historicalLineageCount": { "const": 16 },
+        "activeP2RequirementCount": { "const": 345 },
+        "scopeRegistryCount": { "const": 10 },
+        "plannedArtifactPathCount": { "const": 12 },
+        "passRuleCaseCount": { "const": 68 },
+        "failRuleCaseCount": { "const": 68 },
+        "exceptionCount": { "const": 0 }
+      }
+    },
+    "scopeRegistry": {
+      "type": "object",
+      "required": [
+        "app-views",
+        "app-layouts",
+        "app-router",
+        "vue-ui",
+        "prime",
+        "charts",
+        "tokens",
+        "unocss",
+        "platform",
+        "hooks"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "app-views": { "const": "apps/*/src/views/**" },
+        "app-layouts": { "const": "apps/*/src/layouts/**" },
+        "app-router": { "const": "apps/*/src/router/**" },
+        "vue-ui": { "const": "packages/vue-ui/**" },
+        "prime": { "const": "packages/vue-primevue-adapter/**" },
+        "charts": { "const": "packages/vue-charts/**" },
+        "tokens": { "const": "packages/design-tokens/**" },
+        "unocss": { "const": "packages/unocss-preset/**" },
+        "platform": { "const": "packages/vue-app-platform/**" },
+        "hooks": { "const": "packages/vue-hooks/**" }
+      }
+    },
+    "plannedArtifactPaths": {
+      "type": "array",
+      "minItems": 12,
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
       }
     },
     "clusters": {
       "type": "array",
+      "minItems": 14,
+      "maxItems": 14,
+      "uniqueItems": true,
       "items": {
-        "type": "object",
-        "required": ["id", "name"],
-        "properties": {
-          "id": { "type": "string", "pattern": "^[A-N]$" },
-          "name": { "type": "string", "minLength": 1 }
-        }
+        "$ref": "#/definitions/cluster"
       }
     },
     "rules": {
       "type": "array",
-      "items": { "$ref": "#/definitions/rule" }
+      "minItems": 68,
+      "maxItems": 68,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/rule"
+      }
+    },
+    "candidateRequirementDispositions": {
+      "type": "array",
+      "minItems": 68,
+      "maxItems": 68,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/candidateDisposition"
+      }
     },
     "humanReviewOnly": {
       "type": "array",
-      "items": { "type": "string", "pattern": "^P2C-REQ-\\d{4}$" }
+      "minItems": 14,
+      "maxItems": 14,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^P2C-REQ-\\d{4}$"
+      }
     },
     "futurePageContract": {
       "type": "array",
-      "items": { "type": "string", "pattern": "^P2C-REQ-\\d{4}$" }
+      "minItems": 4,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^P2C-REQ-\\d{4}$"
+      }
     },
-    "lineageOnlyMarkers": {
+    "historicalLineage": {
       "type": "array",
-      "items": { "type": "string", "pattern": "^P2C-REQ-\\d{4}$" }
+      "minItems": 16,
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/historicalLineage"
+      }
     },
     "sourceRequirementMappings": {
       "type": "object",
-      "propertyNames": { "pattern": "^P2C-REQ-\\d{4}$" },
+      "minProperties": 68,
+      "maxProperties": 68,
+      "propertyNames": {
+        "pattern": "^P2C-REQ-\\d{4}$"
+      },
       "additionalProperties": {
-        "oneOf": [
-          { "type": "string", "pattern": "^CCD-UI-\\d{3}$" },
-          {
-            "type": "string",
-            "enum": ["human-review-only", "future-page-contract", "historical-marker"]
-          }
-        ]
+        "type": "string",
+        "pattern": "^CCD-UI-\\d{3}$"
       }
     },
     "ruleToSourceMappings": {
       "type": "object",
+      "minProperties": 68,
+      "maxProperties": 68,
+      "propertyNames": {
+        "pattern": "^CCD-UI-\\d{3}$"
+      },
       "additionalProperties": {
         "type": "array",
-        "items": { "type": "string", "pattern": "^P2C-REQ-\\d{4}$" }
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "pattern": "^P2C-REQ-\\d{4}$"
+        }
       }
     },
     "exceptionPolicy": {
       "type": "object",
       "required": ["exceptionEligibleRuleIds", "realExceptionCount", "registryPath"],
+      "additionalProperties": false,
       "properties": {
         "exceptionEligibleRuleIds": {
           "type": "array",
-          "items": { "type": "string", "pattern": "^CCD-UI-\\d{3}$" }
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "const": "CCD-UI-064"
+          }
         },
-        "realExceptionCount": { "type": "integer", "minimum": 0 },
-        "registryPath": { "type": "string" }
+        "realExceptionCount": {
+          "const": 0
+        },
+        "registryPath": {
+          "const": ".ai/governance/ui/exceptions.json"
+        }
       }
     },
     "lifecycles": {
       "type": "object",
-      "required": ["baselineRuleIds", "completionRuleIds"],
+      "required": ["completionRuleIds", "sourceEnforcementBaselineRuleIds"],
+      "additionalProperties": false,
       "properties": {
-        "baselineRuleIds": {
-          "type": "array",
-          "items": { "type": "string", "pattern": "^CCD-UI-\\d{3}$" }
-        },
         "completionRuleIds": {
           "type": "array",
-          "items": { "type": "string", "pattern": "^CCD-UI-\\d{3}$" }
+          "minItems": 68,
+          "maxItems": 68,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^CCD-UI-\\d{3}$"
+          }
+        },
+        "sourceEnforcementBaselineRuleIds": {
+          "type": "array",
+          "minItems": 68,
+          "maxItems": 68,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^CCD-UI-\\d{3}$"
+          }
         }
       }
     },
     "governance": {
       "type": "object",
       "required": ["policyPath", "schemaPaths", "validatorPath", "coveragePath"],
+      "additionalProperties": false,
       "properties": {
-        "policyPath": { "type": "string" },
+        "policyPath": { "type": "string", "minLength": 1 },
         "schemaPaths": {
           "type": "array",
-          "items": { "type": "string" }
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
         },
-        "validatorPath": { "type": "string" },
-        "coveragePath": { "type": "string" }
+        "validatorPath": { "type": "string", "minLength": 1 },
+        "coveragePath": { "type": "string", "minLength": 1 }
       }
     }
   },
   "definitions": {
+    "cluster": {
+      "type": "object",
+      "required": ["id", "name", "sourceRequirementIds"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^P3-HO-CLUSTER-\\d{3}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceRequirementIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^P2C-REQ-\\d{4}$"
+          }
+        }
+      }
+    },
+    "detector": {
+      "type": "object",
+      "required": ["id", "fixturePassPattern", "fixtureFailPattern", "sourceScannerState"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": [
+            "AccessibilityReviewer",
+            "DeepSelectorExceptionScanner",
+            "EchartsOwnershipScanner",
+            "FeedbackAbstractionScanner",
+            "LayoutScrollScanner",
+            "MaterialZIndexScanner",
+            "MotionLifecycleScanner",
+            "NativeControlScanner",
+            "PassThroughConflictScanner",
+            "PrimeVueComponentPriorityScanner",
+            "ProductLanguageReviewer",
+            "ResponsiveOwnershipScanner",
+            "ThemePresetValidator",
+            "TokenLiteralScanner"
+          ]
+        },
+        "fixturePassPattern": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fixtureFailPattern": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceScannerState": {
+          "const": "NOT_IMPLEMENTED"
+        }
+      }
+    },
     "rule": {
       "type": "object",
       "required": [
@@ -167,11 +421,26 @@
       ],
       "additionalProperties": false,
       "properties": {
-        "id": { "type": "string", "pattern": "^CCD-UI-\\d{3}$" },
-        "title": { "type": "string", "minLength": 1 },
-        "description": { "type": "string", "minLength": 1 },
-        "cluster": { "type": "string", "minLength": 1 },
-        "severity": { "type": "string", "enum": ["error", "warning"] },
+        "id": {
+          "type": "string",
+          "pattern": "^CCD-UI-\\d{3}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cluster": {
+          "type": "string",
+          "pattern": "^P3-HO-CLUSTER-\\d{3}$"
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["error", "warning"]
+        },
         "owner": {
           "type": "string",
           "enum": [
@@ -191,28 +460,44 @@
         "scope": {
           "type": "array",
           "minItems": 1,
-          "items": { "type": "string", "minLength": 1, "pattern": "^(?!\\.\\.)[^/\\\\].*$" }
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "app-views",
+              "app-layouts",
+              "app-router",
+              "vue-ui",
+              "prime",
+              "charts",
+              "tokens",
+              "unocss",
+              "platform",
+              "hooks"
+            ]
+          }
         },
         "sourceRequirementIds": {
           "type": "array",
           "minItems": 1,
-          "items": { "type": "string", "pattern": "^P2C-REQ-\\d{4}$" }
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^P2C-REQ-\\d{4}$"
+          }
         },
         "disposition": {
           "type": "string",
-          "enum": ["permanent-rule", "human-review-only", "future-page-contract"]
+          "enum": ["permanent-rule", "human-review-only"]
         },
         "enforcement": {
           "type": "string",
-          "enum": [
-            "schema-validated",
-            "fixture-covered",
-            "source-scanner-not-yet-implemented",
-            "human-review-only",
-            "future-page-contract"
-          ]
+          "enum": ["schema-validated", "source-scanner-not-yet-implemented", "human-review-only"]
         },
-        "exceptionEligible": { "type": "boolean" },
+        "exceptionEligible": {
+          "type": "boolean"
+        },
         "evidenceKind": {
           "type": "string",
           "enum": [
@@ -224,11 +509,21 @@
             "none"
           ]
         },
-        "authorityPath": { "type": "string", "minLength": 1 },
-        "authoritySection": { "type": "string", "minLength": 1 },
-        "detector": { "type": "string", "minLength": 1 },
+        "authorityPath": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?!.*\\.\\.)[^\\\\]+$"
+        },
+        "authoritySection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "detector": {
+          "$ref": "#/definitions/detector"
+        },
         "structuralGrammar": {
           "type": "array",
+          "uniqueItems": true,
           "items": {
             "type": "string",
             "enum": [
@@ -248,9 +543,75 @@
             ]
           }
         },
-        "message": { "type": "string", "minLength": 1 },
-        "pageContractDependency": { "type": ["string", "null"], "pattern": "^P2C-REQ-\\d{4}$" },
-        "lifecycle": { "type": "string", "enum": ["baseline", "completion"] }
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pageContractDependency": {
+          "type": ["string", "null"],
+          "pattern": "^P2C-REQ-\\d{4}$"
+        },
+        "lifecycle": {
+          "const": "completion"
+        }
+      }
+    },
+    "candidateDisposition": {
+      "type": "object",
+      "required": ["requirementId", "ruleId", "clusterId", "disposition", "enforcement"],
+      "additionalProperties": false,
+      "properties": {
+        "requirementId": {
+          "type": "string",
+          "pattern": "^P2C-REQ-\\d{4}$"
+        },
+        "ruleId": {
+          "type": "string",
+          "pattern": "^CCD-UI-\\d{3}$"
+        },
+        "clusterId": {
+          "type": "string",
+          "pattern": "^P3-HO-CLUSTER-\\d{3}$"
+        },
+        "disposition": {
+          "type": "string",
+          "enum": ["permanent-rule", "human-review-only"]
+        },
+        "enforcement": {
+          "type": "string",
+          "enum": ["schema-validated", "source-scanner-not-yet-implemented", "human-review-only"]
+        }
+      }
+    },
+    "historicalLineage": {
+      "type": "object",
+      "required": [
+        "historicalRequirementId",
+        "currentReplacementRequirementIds",
+        "currentClassification",
+        "historicalMarkerEligibleAsCanonicalUnit"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "historicalRequirementId": {
+          "type": "string",
+          "pattern": "^P2-REQ-\\d{4}$"
+        },
+        "currentReplacementRequirementIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^P2C-REQ-\\d{4}$"
+          }
+        },
+        "currentClassification": {
+          "type": "string",
+          "minLength": 1
+        },
+        "historicalMarkerEligibleAsCanonicalUnit": {
+          "const": false
+        }
       }
     }
   }

@@ -1,5 +1,5 @@
 {
   "schemaVersion": "ccd-ui-exception-registry/v1",
-  "policyId": "ccd-ui-policy/v1",
+  "policyId": "ccd-ui-policy/v2",
   "exceptions": []
 }
