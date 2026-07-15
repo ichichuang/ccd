@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "ccd-ui-profile/v1",
+  "name": "CCD Architectural Glass",
+  "version": "1.0.0",
+  "status": "published",
+  "identity": {
+    "purpose": "Quiet, structured, premium, architectural, token-driven, accessible, and restrained visual expression for CCD product UI.",
+    "expression": [
+      "quiet",
+      "structured",
+      "premium",
+      "architectural",
+      "token-driven",
+      "accessible",
+      "restrained"
+    ]
+  },
+  "invariants": {
+    "mustPreserve": [
+      "Platform invariants from platform-invariants.md",
+      "Accessibility requirements from accessibility.md",
+      "Token ownership from tokens-unocss.md",
+      "Component priority from component-priority.md",
+      "Layout and scroll ownership from layout-scroll.md",
+      "Motion ownership and reduced-motion from interaction-motion.md"
+    ]
+  },
+  "tokens": {
+    "sourceOfTruth": [
+      "packages/design-tokens/src/metadata.ts",
+      "src/utils/theme/metadata.ts",
+      "packages/unocss-preset/src/shortcuts/semanticShortcuts.ts"
+    ],
+    "families": [
+      "background",
+      "foreground",
+      "border",
+      "input",
+      "ring",
+      "card",
+      "popover",
+      "secondary",
+      "muted",
+      "primary",
+      "accent",
+      "danger",
+      "warn",
+      "success",
+      "info",
+      "help",
+      "sidebar"
+    ]
+  },
+  "surfaces": {
+    "materialMapping": {
+      "ProTable / Data Grid": "material-solid",
+      "ProForm / Form containers": "material-elevated",
+      "Dialogs / Modals / Dropdowns / ContextMenus": "glass-panel",
+      "Layout Shell (Header, Sidebar)": "glass-shell",
+      "Dashboard cards (glass style)": "glass-card",
+      "Icon boxes (glass style)": "glass-icon-box",
+      "Decorative floating pills": "glass-capsule",
+      "Status badges / KPI cards": "surface-{status}"
+    },
+    "prohibited": [
+      "glass-base direct use",
+      "glass inside ProTable, virtual lists, scrollable containers, or nested glass",
+      "raw z-index utilities",
+      "raw opacity on non-semantic neutrals",
+      "random gradients, excessive blur, over-layered glass, large ornamental heroes"
+    ]
+  },
+  "motionCeiling": {
+    "defaultTool": "none",
+    "conditionalTools": ["css", "animate-lite", "gsap"]
+  },
+  "replacementBoundary": {
+    "requiresGovernanceApproval": true,
+    "cannotWeaken": [
+      "Platform invariants",
+      "Accessibility",
+      "Token ownership",
+      "Component priority",
+      "Layout and scroll ownership",
+      "Runtime behavior preservation"
+    ]
+  }
+}

@@ -1,0 +1,257 @@
+{
+  "$id": "https://ccd.wzdxcc.cloudns.org/governance/ui/ui-policy.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CCD Machine UI Policy",
+  "description": "Canonical machine-readable UI governance policy for the CCD monorepo.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "repository",
+    "status",
+    "p3BaselineCommit",
+    "sourceScannerImplemented",
+    "pageContractCreated",
+    "p4Started",
+    "p5Started",
+    "counts",
+    "clusters",
+    "rules",
+    "humanReviewOnly",
+    "futurePageContract",
+    "lineageOnlyMarkers",
+    "sourceRequirementMappings",
+    "ruleToSourceMappings",
+    "exceptionPolicy",
+    "lifecycles",
+    "governance"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "type": "string", "pattern": "^ccd-ui-policy/v\\d+$" },
+    "repository": { "type": "string" },
+    "status": { "type": "string" },
+    "p3BaselineCommit": { "type": "string" },
+    "sourceScannerImplemented": { "type": "boolean", "enum": [false] },
+    "pageContractCreated": { "type": "boolean", "enum": [false] },
+    "p4Started": { "type": "boolean", "enum": [false] },
+    "p5Started": { "type": "boolean", "enum": [false] },
+    "counts": {
+      "type": "object",
+      "required": [
+        "ruleCount",
+        "clusterCount",
+        "humanReviewOnlyCount",
+        "futurePageContractCount",
+        "lineageOnlyMarkerCount",
+        "sourceRequirementCount"
+      ],
+      "properties": {
+        "ruleCount": { "type": "integer", "minimum": 1 },
+        "clusterCount": { "type": "integer", "minimum": 1 },
+        "humanReviewOnlyCount": { "type": "integer", "minimum": 0 },
+        "futurePageContractCount": { "type": "integer", "minimum": 0 },
+        "lineageOnlyMarkerCount": { "type": "integer", "minimum": 0 },
+        "sourceRequirementCount": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "clusters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[A-N]$" },
+          "name": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "rules": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/rule" }
+    },
+    "humanReviewOnly": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^P2C-REQ-\\d{4}$" }
+    },
+    "futurePageContract": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^P2C-REQ-\\d{4}$" }
+    },
+    "lineageOnlyMarkers": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^P2C-REQ-\\d{4}$" }
+    },
+    "sourceRequirementMappings": {
+      "type": "object",
+      "propertyNames": { "pattern": "^P2C-REQ-\\d{4}$" },
+      "additionalProperties": {
+        "oneOf": [
+          { "type": "string", "pattern": "^CCD-UI-\\d{3}$" },
+          {
+            "type": "string",
+            "enum": ["human-review-only", "future-page-contract", "historical-marker"]
+          }
+        ]
+      }
+    },
+    "ruleToSourceMappings": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string", "pattern": "^P2C-REQ-\\d{4}$" }
+      }
+    },
+    "exceptionPolicy": {
+      "type": "object",
+      "required": ["exceptionEligibleRuleIds", "realExceptionCount", "registryPath"],
+      "properties": {
+        "exceptionEligibleRuleIds": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^CCD-UI-\\d{3}$" }
+        },
+        "realExceptionCount": { "type": "integer", "minimum": 0 },
+        "registryPath": { "type": "string" }
+      }
+    },
+    "lifecycles": {
+      "type": "object",
+      "required": ["baselineRuleIds", "completionRuleIds"],
+      "properties": {
+        "baselineRuleIds": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^CCD-UI-\\d{3}$" }
+        },
+        "completionRuleIds": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^CCD-UI-\\d{3}$" }
+        }
+      }
+    },
+    "governance": {
+      "type": "object",
+      "required": ["policyPath", "schemaPaths", "validatorPath", "coveragePath"],
+      "properties": {
+        "policyPath": { "type": "string" },
+        "schemaPaths": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "validatorPath": { "type": "string" },
+        "coveragePath": { "type": "string" }
+      }
+    }
+  },
+  "definitions": {
+    "rule": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "description",
+        "cluster",
+        "severity",
+        "owner",
+        "scope",
+        "sourceRequirementIds",
+        "disposition",
+        "enforcement",
+        "exceptionEligible",
+        "evidenceKind",
+        "authorityPath",
+        "authoritySection",
+        "detector",
+        "structuralGrammar",
+        "message",
+        "pageContractDependency",
+        "lifecycle"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^CCD-UI-\\d{3}$" },
+        "title": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "cluster": { "type": "string", "minLength": 1 },
+        "severity": { "type": "string", "enum": ["error", "warning"] },
+        "owner": {
+          "type": "string",
+          "enum": [
+            "token-source",
+            "unocss-preset",
+            "shared-ui",
+            "primevue-adapter",
+            "chart-wrapper",
+            "layout-runtime",
+            "business-app",
+            "product-profile",
+            "product-language-review",
+            "motion-system",
+            "accessibility"
+          ]
+        },
+        "scope": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1, "pattern": "^(?!\\.\\.)[^/\\\\].*$" }
+        },
+        "sourceRequirementIds": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "pattern": "^P2C-REQ-\\d{4}$" }
+        },
+        "disposition": {
+          "type": "string",
+          "enum": ["permanent-rule", "human-review-only", "future-page-contract"]
+        },
+        "enforcement": {
+          "type": "string",
+          "enum": [
+            "schema-validated",
+            "fixture-covered",
+            "source-scanner-not-yet-implemented",
+            "human-review-only",
+            "future-page-contract"
+          ]
+        },
+        "exceptionEligible": { "type": "boolean" },
+        "evidenceKind": {
+          "type": "string",
+          "enum": [
+            "executable-validator",
+            "automated-test",
+            "implementation-evidence",
+            "registry-evidence",
+            "authority-document",
+            "none"
+          ]
+        },
+        "authorityPath": { "type": "string", "minLength": 1 },
+        "authoritySection": { "type": "string", "minLength": 1 },
+        "detector": { "type": "string", "minLength": 1 },
+        "structuralGrammar": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "100%",
+              "100dvh",
+              "auto",
+              "min-content",
+              "max-content",
+              "fit-content",
+              "fr",
+              "minmax",
+              "var",
+              "calc",
+              "min",
+              "max",
+              "clamp"
+            ]
+          }
+        },
+        "message": { "type": "string", "minLength": 1 },
+        "pageContractDependency": { "type": ["string", "null"], "pattern": "^P2C-REQ-\\d{4}$" },
+        "lifecycle": { "type": "string", "enum": ["baseline", "completion"] }
+      }
+    }
+  }
+}

@@ -52,4 +52,4 @@ Reuse current foundations before new code: packages/design-tokens, packages/vue-
 
 ## Human and Future Machine Enforcement Boundary
 
-Current enforcement is human governance plus deterministic semantic-quality checks. P3 Machine UI Policy does not exist, and this reference must not imply machine enforcement until P3 creates it.
+Current enforcement is human governance plus deterministic semantic-quality checks. P3 Machine UI Policy exists at `.ai/governance/policies/ui.json` as a baseline policy, but the source scanner is not yet implemented. This reference must not imply active machine source-scanning enforcement.

@@ -17,7 +17,7 @@ const REQUIRED_MARKDOWN = [
   '.ai/skills/project-ui/references/validation.md',
 ]
 
-const COVERAGE_ARTIFACT = '.ai/governance/ui/project-ui-semantic-coverage.json'
+const COVERAGE_ARTIFACT = '.ai/governance/coverage/project-ui-semantic-coverage.json'
 
 const WIKI_ARTIFACT = 'wiki/canonical/design/project-ui-skill.md'
 
@@ -141,7 +141,7 @@ const EXPECTED_P2_COVERAGE_DECISION_SHA256 =
 const EXPECTED_P2_REQUIREMENT_STATE_SHA256 =
   '8a36e20ed43296065801b61cefebf0d701d09846a2059268f546b4569d034a00'
 const EXPECTED_P2_CONFLICT_RESOLUTION_SHA256 =
-  '740996fac616c4cea9509a0253f6734055a8f57867e6db28e28294c09f3bb037'
+  'fd036893e656f7938dc6b2bc30fcb879456ac789ef490225818618635bf15da6'
 
 const EXPECTED_P3_HANDOFF_CLUSTERS = {
   'P3-HO-CLUSTER-001': [
@@ -347,7 +347,8 @@ function findRoot(start) {
   while (true) {
     if (
       fs.existsSync(path.join(dir, '.ai/skills/project-ui/SKILL.md')) &&
-      fs.existsSync(path.join(dir, '.ai/governance/ui/project-ui-semantic-coverage.json'))
+      (fs.existsSync(path.join(dir, '.ai/governance/coverage/project-ui-semantic-coverage.json')) ||
+        fs.existsSync(path.join(dir, '.ai/governance/ui/project-ui-semantic-coverage.json')))
     ) {
       return dir
     }
@@ -930,17 +931,34 @@ function validateP3Handoff(coverageData) {
     fail('p3-handoff-p2-conflict-drift', 'P2 conflict decisions changed during handoff.')
 
   const canonicalState = coverageData?.canonicalState ?? {}
-  if (canonicalState.p3Started !== false)
-    fail('p3-handoff-p3-started', 'P3 must remain not started after handoff correction.')
-  if (canonicalState.machineUiPolicyPresent !== false)
-    fail(
-      'p3-handoff-machine-policy-presence',
-      'Machine UI Policy must remain absent after handoff correction.'
-    )
   if (canonicalState.pageContractSchemaPresent !== false)
     fail(
       'p3-handoff-page-contract-presence',
       'Page Contract Schema must remain absent after handoff correction.'
+    )
+  if (canonicalState.p4Started !== false)
+    fail('p3-handoff-p4-started', 'P4 must remain not started.')
+  if (canonicalState.p5Started !== false)
+    fail('p3-handoff-p5-started', 'P5 must remain not started.')
+
+  const p3StatusFields = [
+    'sourceScannerImplemented',
+    'pageContractCreated',
+    'p4Started',
+    'p5Started',
+  ]
+  for (const field of p3StatusFields) {
+    if (coverageData?.[field] !== false)
+      fail('p3-status-field', `Coverage P3 status field ${field} must be false.`, {
+        field,
+        actual: coverageData?.[field],
+      })
+  }
+  if (coverageData?.machinePolicyPath !== '.ai/governance/policies/ui.json')
+    fail(
+      'p3-status-field',
+      'Coverage machinePolicyPath must point to the canonical Machine UI Policy.',
+      { actual: coverageData?.machinePolicyPath }
     )
   for (const field of [
     'p4Started',
@@ -965,10 +983,10 @@ function validateP3Handoff(coverageData) {
       })
   }
   for (const machinePolicyPath of P3_MACHINE_POLICY_PATHS) {
-    if (exists(machinePolicyPath))
+    if (!exists(machinePolicyPath))
       fail(
-        'p3-handoff-machine-policy-presence',
-        'A permanent P3 Machine UI Policy path exists before P3 starts.',
+        'p3-handoff-machine-policy-missing',
+        'A required P3 Machine UI Policy deliverable is missing.',
         { path: machinePolicyPath }
       )
   }
@@ -1323,9 +1341,9 @@ function assertExpectedCanonicalState(coverageData, wiki) {
     ],
     ['skill-lock', 'project-ui remains undiscovered by the current Skill lock', p2State],
     ['not-adapter-activated', 'not adapter-activated', p2State],
-    ['machine-ui-policy', 'Machine UI Policy does not exist.', p2State],
+    ['machine-ui-policy', 'Machine UI Policy exists at', p2State],
     ['page-contract-schema', 'Page Contract Schema does not exist.', p2State],
-    ['p3-not-started', 'P3 has not started', p2State],
+    ['p3-baseline', 'P3 Machine UI Policy baseline is created', p2State],
     ['p4-not-started', 'P4 has not started.', p2State],
     ['p5-not-started', 'P5 has not started.', p2State],
     ['semantic-commit', EXPECTED_SEMANTIC_CORRECTION_COMMIT, handoff],
@@ -1533,17 +1551,31 @@ function runSelfTest() {
       },
     },
     {
-      id: 'false-p3-started-state',
-      expectedCode: 'p3-handoff-p3-started',
+      id: 'false-machine-ui-policy-presence',
+      expectedCode: 'p3-handoff-lifecycle-state',
       mutate: fixture => {
-        fixture.canonicalState.p3Started = true
+        fixture.canonicalState.machineUiPolicyPresent = true
       },
     },
     {
-      id: 'false-machine-ui-policy-presence',
-      expectedCode: 'p3-handoff-machine-policy-presence',
+      id: 'missing-machine-policy-path',
+      expectedCode: 'p3-status-field',
       mutate: fixture => {
-        fixture.canonicalState.machineUiPolicyPresent = true
+        fixture.machinePolicyPath = '.ai/governance/ui/project-ui-semantic-coverage.json'
+      },
+    },
+    {
+      id: 'p4-started',
+      expectedCode: 'p3-handoff-p4-started',
+      mutate: fixture => {
+        fixture.canonicalState.p4Started = true
+      },
+    },
+    {
+      id: 'p5-started',
+      expectedCode: 'p3-handoff-p5-started',
+      mutate: fixture => {
+        fixture.canonicalState.p5Started = true
       },
     },
     {

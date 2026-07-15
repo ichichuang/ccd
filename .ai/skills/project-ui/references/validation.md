@@ -64,7 +64,7 @@ Current P2 validation is human-executable and deterministic. It may include sema
 
 ## P3 Machine Policy Boundary
 
-P3 Machine UI Policy validation does not exist now. Do not claim P3 enforcement from P2 scripts.
+P3 Machine UI Policy exists at `.ai/governance/policies/ui.json` and is validated by `node .ai/governance/ui/scripts/validate-ui-policy.mjs`. The source scanner is not yet implemented, so P3 enforcement is policy and schema validation only. Do not claim source-scanning enforcement from P2 scripts.
 
 ## Page Contract Validation Boundary
 

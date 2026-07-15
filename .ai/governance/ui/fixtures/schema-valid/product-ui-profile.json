@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "ccd-ui-profile/v1",
+  "name": "Test Profile",
+  "version": "0.0.1",
+  "status": "draft",
+  "identity": {
+    "purpose": "Test profile.",
+    "expression": ["test"]
+  },
+  "invariants": {
+    "mustPreserve": ["tokens"]
+  },
+  "tokens": {
+    "sourceOfTruth": ["packages/design-tokens/**"],
+    "families": ["primary"]
+  },
+  "surfaces": {
+    "materialMapping": { "Card": "material-elevated" },
+    "prohibited": ["raw z-index"]
+  },
+  "motionCeiling": {
+    "defaultTool": "none",
+    "conditionalTools": ["css"]
+  },
+  "replacementBoundary": {
+    "requiresGovernanceApproval": true,
+    "cannotWeaken": ["accessibility"]
+  }
+}

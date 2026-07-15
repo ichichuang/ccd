@@ -14,11 +14,11 @@ project-ui is the canonical CCD project-level UI governance source for planning,
 
 ## Transitional Status
 
-The initial project-ui source was introduced on main by commit `624948ea9058507f8fae91975dabc715d984703a` with subject `feat(governance): 建立唯一项目级 UI Skill`. project-ui remains undiscovered by the current Skill lock, unrouted, and unsynchronized; legacy design Skills and legacy UI rules remain unchanged.
+The initial project-ui source was introduced on main by commit `624948ea9058507f8fae91975dabc715d984703a` with subject `feat(governance): 建立唯一项目级 UI Skill`. The P3 Machine UI Policy has been created as `.ai/governance/policies/ui.json` and is validated by `node .ai/governance/ui/scripts/validate-ui-policy.mjs`. project-ui remains undiscovered by the current Skill lock, unrouted, and unsynchronized; legacy design Skills and legacy UI rules remain unchanged.
 
 ## Future Activation Intent
 
-Future phases may route UI tasks to this Skill after their own owners create machine policy, cold-start, routing, and synchronization support. Until then, manual loading is the supported use and must not imply adapter activation or cold-start behavior.
+Future phases may route UI tasks to this Skill after P4/P5 owners create cold-start, routing, and synchronization support. Until then, manual loading is the supported use and must not imply adapter activation or cold-start behavior.
 
 ## Scope
 
@@ -58,7 +58,7 @@ Every UI report must include task classification, references loaded, foundation 
 
 ## Required Validation Sequence
 
-Validate in order: architecture boundary, loaded-reference check, token audit, component ownership, layout and scroll ownership, responsive behavior, state matrix, keyboard and focus, reduced motion, light and dark parity, visual regression when applicable, runtime behavior preservation, final diff review, and protected-path review. Do not claim machine validation where it does not exist.
+Validate in order: architecture boundary, loaded-reference check, token audit, component ownership, layout and scroll ownership, responsive behavior, state matrix, keyboard and focus, reduced motion, light and dark parity, visual regression when applicable, runtime behavior preservation, final diff review, and protected-path review. Run `node .ai/skills/project-ui/scripts/validate-semantic-quality.mjs` and `node .ai/governance/ui/scripts/validate-ui-policy.mjs` where applicable. Do not claim machine source-scanning enforcement where the scanner does not exist.
 
 ## Conditional Motion Loading
 
@@ -70,7 +70,7 @@ Future phases own future enforcement and routing. Current project-ui provides hu
 
 ## P3 Machine UI Policy Boundary
 
-P3 owns Machine UI Policy and that policy does not exist now. The semantic-quality gate checks source quality and coverage integrity only and must not be described as P3 machine UI enforcement.
+P3 Machine UI Policy now exists at `.ai/governance/policies/ui.json` with 68 canonical rules across 14 semantic-obligation clusters. The policy validator is `node .ai/governance/ui/scripts/validate-ui-policy.mjs`. The source scanner is not yet implemented; P3 only records policy, schemas, profile, empty exception registry, fixtures, and deterministic validation.
 
 ## Page Contract Boundary
 

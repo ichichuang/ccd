@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "ccd-ui-rule-cases/v1",
+  "description": "Deterministic pass/fail test cases for policy rule semantics.",
+  "cases": [
+    {
+      "id": "case-001",
+      "ruleId": "CCD-UI-001",
+      "intent": "pass",
+      "description": "Pro-wrapper usage follows component priority.",
+      "fixture": "<ProTable :columns=\"columns\" :data=\"rows\" />"
+    },
+    {
+      "id": "case-002",
+      "ruleId": "CCD-UI-001",
+      "intent": "fail",
+      "description": "Raw PrimeVue DataTable used when ProTable exists.",
+      "fixture": "<DataTable :value=\"rows\"><Column field=\"name\" /></DataTable>"
+    },
+    {
+      "id": "case-003",
+      "ruleId": "CCD-UI-010",
+      "intent": "fail",
+      "description": "Deep selector targets PrimeVue internal class in business code.",
+      "fixture": ":deep(.p-button) { background: red; }"
+    },
+    {
+      "id": "case-004",
+      "ruleId": "CCD-UI-064",
+      "intent": "pass",
+      "description": "New deep selector added to documented three-file whitelist.",
+      "fixture": "packages/vue-ui/src/ProTable/ProTable.vue"
+    },
+    {
+      "id": "case-005",
+      "ruleId": "CCD-UI-005",
+      "intent": "fail",
+      "description": "Raw vue-echarts initialization in business code.",
+      "fixture": "import VChart from 'vue-echarts'"
+    },
+    {
+      "id": "case-006",
+      "ruleId": "CCD-UI-006",
+      "intent": "fail",
+      "description": "Native alert used for user feedback.",
+      "fixture": "alert('saved')"
+    },
+    {
+      "id": "case-007",
+      "ruleId": "CCD-UI-015",
+      "intent": "fail",
+      "description": "Raw hex color used in template.",
+      "fixture": "class=\"text-[#ff0000]\""
+    },
+    {
+      "id": "case-008",
+      "ruleId": "CCD-UI-012",
+      "intent": "fail",
+      "description": "rem unit used for source-authored sizing.",
+      "fixture": "class=\"w-[16rem]\""
+    },
+    {
+      "id": "case-009",
+      "ruleId": "CCD-UI-013",
+      "intent": "pass",
+      "description": "Valid structural fallback unit.",
+      "fixture": "height: calc(100dvh - var(--header-height))"
+    },
+    {
+      "id": "case-010",
+      "ruleId": "CCD-UI-013",
+      "intent": "fail",
+      "description": "Invalid arbitrary rem fallback.",
+      "fixture": "class=\"h-[2em]\""
+    }
+  ]
+}

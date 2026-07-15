@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "ccd-ui-policy/v1",
+  "repository": "ccd",
+  "status": "baseline",
+  "p3BaselineCommit": "0767895a53005f326767cfdf3102f6b72709aa31",
+  "sourceScannerImplemented": false,
+  "pageContractCreated": false,
+  "p4Started": false,
+  "p5Started": false,
+  "counts": {
+    "ruleCount": 1,
+    "clusterCount": 1,
+    "humanReviewOnlyCount": 0,
+    "futurePageContractCount": 0,
+    "lineageOnlyMarkerCount": 0,
+    "sourceRequirementCount": 1
+  },
+  "clusters": [{ "id": "A", "name": "Test cluster" }],
+  "rules": [
+    {
+      "id": "CCD-UI-001",
+      "title": "Test rule",
+      "description": "A test rule.",
+      "cluster": "Test cluster",
+      "severity": "error",
+      "owner": "shared-ui",
+      "scope": ["apps/*/src/**/*"],
+      "sourceRequirementIds": ["P2C-REQ-0001"],
+      "disposition": "permanent-rule",
+      "enforcement": "source-scanner-not-yet-implemented",
+      "exceptionEligible": false,
+      "evidenceKind": "authority-document",
+      "authorityPath": ".ai/rules/components/00-primevue-ecosystem.mdc",
+      "authoritySection": "1.1 ABSOLUTE RULE",
+      "detector": "TestScanner",
+      "structuralGrammar": [],
+      "message": "Test failure.",
+      "pageContractDependency": null,
+      "lifecycle": "baseline"
+    }
+  ],
+  "humanReviewOnly": [],
+  "futurePageContract": [],
+  "lineageOnlyMarkers": [],
+  "sourceRequirementMappings": { "P2C-REQ-0001": "CCD-UI-001" },
+  "ruleToSourceMappings": { "CCD-UI-001": ["P2C-REQ-0001"] },
+  "exceptionPolicy": {
+    "exceptionEligibleRuleIds": [],
+    "realExceptionCount": 0,
+    "registryPath": ".ai/governance/ui/exceptions.json"
+  },
+  "lifecycles": { "baselineRuleIds": ["CCD-UI-001"], "completionRuleIds": [] },
+  "governance": {
+    "policyPath": ".ai/governance/policies/ui.json",
+    "schemaPaths": [".ai/governance/ui/schemas/ui-policy.schema.json"],
+    "validatorPath": ".ai/governance/ui/scripts/validate-ui-policy.mjs",
+    "coveragePath": ".ai/governance/coverage/project-ui-semantic-coverage.json"
+  }
+}

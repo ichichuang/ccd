@@ -33,6 +33,7 @@
     "generated:normalize": "node scripts/normalize-generated-output.mjs",
     "project:print": "node scripts/project-config.mjs print",
     "project:validate": "node scripts/project-config.mjs validate",
+    "ui:policy:validate": "node .ai/governance/ui/scripts/validate-ui-policy.mjs",
     "project:sync": "node scripts/project-config.mjs sync",
     "project:doctor": "node scripts/project-config.mjs doctor",
     "dev": "pnpm dev:web-demo",
