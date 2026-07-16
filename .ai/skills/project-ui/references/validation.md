@@ -66,6 +66,10 @@ Current P2 validation is human-executable and deterministic. It may include sema
 
 P3 Machine UI Policy implementation is complete at `.ai/governance/policies/ui.json` and is validated by `node .ai/governance/ui/scripts/validate-ui-policy.mjs`. The source scanner is not implemented, so application-source enforcement remains baseline-only. Do not claim source-scanning enforcement from policy or semantic-quality validation.
 
+## P4 Cold-Start Validation Boundary
+
+P4 AI cold-start validation is owned by `scripts/governance/cold-start-validate.mjs`, `scripts/generate-ai-protocol-adapters.mjs --check`, and `pnpm codex:preflight`. Fresh-clone AI entrypoints are available before sync through tracked `AGENTS.md`, `CLAUDE.md`, `.ai/protocol/adapters/claude.md`, and generated protocol outputs; this does not discover, route, synchronize, or adapter-activate project-ui.
+
 ## Lifecycle State
 
 ```text
@@ -78,14 +82,23 @@ EXCEPTION_REGISTRY_PRESENT=yes
 EXCEPTION_COUNT=0
 POLICY_FIXTURES_PRESENT=yes
 POLICY_VALIDATOR_PRESENT=yes
+P4_STARTED=yes
+P4_COMPLETE=yes
+COLD_START_ATOMIC_REPLACEMENT_COMPLETE=yes
+AGENTS_TRACKED=yes
+CLAUDE_TRACKED=yes
+CLAUDE_ADAPTER_TRACKED=yes
+ADAPTER_MANIFEST_COLD_START_COMPLETE=yes
+ADAPTER_GENERATION_DETERMINISTIC=yes
+AI_SYNC_IDEMPOTENT=yes
+FRESH_CLONE_ENTRYPOINTS_PASS=yes
 SOURCE_SCANNER_IMPLEMENTED=no
 PAGE_CONTRACT_CREATED=no
-P4_STARTED=no
-P5_STARTED=no
 PROJECT_UI_DISCOVERED=no
 PROJECT_UI_ROUTED=no
 PROJECT_UI_SYNCHRONIZED=no
 PROJECT_UI_ADAPTER_ACTIVATED=no
+P5_STARTED=no
 ```
 
 ## Page Contract Validation Boundary

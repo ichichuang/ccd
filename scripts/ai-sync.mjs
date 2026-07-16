@@ -1,89 +1,81 @@
+import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import { spawnSync } from 'node:child_process'
 
 const cwd = process.cwd()
-const fileAdapters = [
-  { source: '.ai/protocol/AI.entry.md', target: 'AGENTS.md' },
-]
-
-const dirAdapters = []
-
 const localRuntimeFiles = [
   {
     source: '.ai/runtime/repair_list.template.md',
     target: '.ai/runtime/repair_list.md',
   },
 ]
+const preservedRoots = ['.ai/runtime', '.cursor', '.claude']
 
-const legacyPaths = ['.cursor']
+const sha256 = value => crypto.createHash('sha256').update(value).digest('hex')
+const ensureParentDir = relPath =>
+  fs.mkdirSync(path.dirname(path.join(cwd, relPath)), { recursive: true })
 
-const ensureParentDir = relPath => fs.mkdirSync(path.dirname(path.join(cwd, relPath)), { recursive: true })
-
-const existingLocalRuntimeSnapshots = new Map()
-
-const snapshotExistingLocalRuntimeFiles = () => {
-  for (const { target } of localRuntimeFiles) {
-    const absTarget = path.join(cwd, target)
-    if (fs.existsSync(absTarget)) {
-      existingLocalRuntimeSnapshots.set(target, fs.readFileSync(absTarget))
-    }
+const describePath = relPath => {
+  const absolute = path.join(cwd, relPath)
+  const stat = fs.lstatSync(absolute)
+  const mode = stat.mode & 0o777
+  if (stat.isSymbolicLink()) {
+    return { type: 'symlink', mode, digest: sha256(Buffer.from(fs.readlinkSync(absolute), 'utf8')) }
   }
+  if (stat.isDirectory()) return { type: 'directory', mode, digest: null }
+  if (stat.isFile()) return { type: 'file', mode, digest: sha256(fs.readFileSync(absolute)) }
+  return { type: 'other', mode, digest: null }
 }
 
-const verifyExistingLocalRuntimeFilesPreserved = () => {
-  for (const [target, before] of existingLocalRuntimeSnapshots) {
-    const absTarget = path.join(cwd, target)
-    const after = fs.readFileSync(absTarget)
-    if (!before.equals(after)) {
-      console.error(`[FAIL] local runtime file was overwritten during sync: ${target}`)
+const listExistingPaths = relRoot => {
+  const absoluteRoot = path.join(cwd, relRoot)
+  if (!fs.existsSync(absoluteRoot)) return []
+  const paths = [relRoot]
+  const visit = relDirectory => {
+    const absoluteDirectory = path.join(cwd, relDirectory)
+    for (const entry of fs
+      .readdirSync(absoluteDirectory, { withFileTypes: true })
+      .sort((a, b) => a.name.localeCompare(b.name))) {
+      const relEntry = path.posix.join(relDirectory, entry.name)
+      paths.push(relEntry)
+      if (entry.isDirectory() && !entry.isSymbolicLink()) visit(relEntry)
+    }
+  }
+  if (fs.lstatSync(absoluteRoot).isDirectory()) visit(relRoot)
+  return paths
+}
+
+const snapshotPreservedPaths = () => {
+  const snapshot = new Map()
+  for (const relRoot of preservedRoots) {
+    for (const relPath of listExistingPaths(relRoot)) snapshot.set(relPath, describePath(relPath))
+  }
+  return snapshot
+}
+
+const verifyPreservedPaths = snapshot => {
+  for (const [relPath, before] of snapshot) {
+    const absolute = path.join(cwd, relPath)
+    if (!fs.existsSync(absolute)) {
+      console.error(`[FAIL] pre-existing local path was deleted: ${relPath}`)
       process.exit(1)
     }
-    console.log(`[OK] local runtime preserved: ${target}`)
-  }
-}
-
-const removePathIfExists = relPath => {
-  const absPath = path.join(cwd, relPath)
-  const stat = fs.lstatSync(absPath, { throwIfNoEntry: false })
-  if (stat) fs.rmSync(absPath, { recursive: true, force: true })
-}
-
-const syncFile = ({ source, target }) => {
-  const absSource = path.join(cwd, source)
-  const absTarget = path.join(cwd, target)
-  ensureParentDir(target)
-  removePathIfExists(target)
-  fs.copyFileSync(absSource, absTarget)
-  console.log(`[SYNC] ${target} <= ${source}`)
-}
-
-const syncMergedDir = ({ sources, target }) => {
-  const absTarget = path.join(cwd, target)
-  ensureParentDir(target)
-  removePathIfExists(target)
-  fs.mkdirSync(absTarget, { recursive: true })
-
-  for (const source of sources) {
-    const absSource = path.join(cwd, source)
-    if (!fs.existsSync(absSource)) continue
-
-    for (const entry of fs.readdirSync(absSource, { withFileTypes: true })) {
-      const sourceEntry = path.join(absSource, entry.name)
-      const targetEntry = path.join(absTarget, entry.name)
-      fs.cpSync(sourceEntry, targetEntry, { recursive: true })
+    const after = describePath(relPath)
+    if (JSON.stringify(after) !== JSON.stringify(before)) {
+      console.error(`[FAIL] pre-existing local path changed: ${relPath}`)
+      process.exit(1)
     }
   }
-
-  console.log(`[SYNC] ${target} <= ${sources.join(' + ')}`)
+  console.log(`[OK] preserved ${snapshot.size} pre-existing local runtime path(s)`)
 }
 
 const ensureLocalRuntimeFile = ({ source, target }) => {
-  const absSource = path.join(cwd, source)
-  const absTarget = path.join(cwd, target)
+  const absoluteSource = path.join(cwd, source)
+  const absoluteTarget = path.join(cwd, target)
   ensureParentDir(target)
-  if (!fs.existsSync(absTarget)) {
-    fs.copyFileSync(absSource, absTarget)
+  if (!fs.existsSync(absoluteTarget)) {
+    fs.copyFileSync(absoluteSource, absoluteTarget)
     console.log(`[CREATE] ${target} <= ${source}`)
     return
   }
@@ -98,23 +90,14 @@ const runNodeScript = script => {
   })
   if (result.stdout) process.stdout.write(result.stdout)
   if (result.stderr) process.stderr.write(result.stderr)
-  if (result.status !== 0) {
-    process.exit(result.status ?? 1)
-  }
+  if (result.status !== 0) process.exit(result.status ?? 1)
 }
 
 console.log('AI adapter sync')
 console.log('===============')
-snapshotExistingLocalRuntimeFiles()
+const preservedSnapshot = snapshotPreservedPaths()
 runNodeScript('scripts/generate-ai-protocol-adapters.mjs')
 runNodeScript('scripts/generate-rule-index.mjs')
 runNodeScript('scripts/generate-unocss-ide-data.mjs')
-for (const fileAdapter of fileAdapters) syncFile(fileAdapter)
-for (const dirAdapter of dirAdapters) syncMergedDir(dirAdapter)
 for (const runtimeFile of localRuntimeFiles) ensureLocalRuntimeFile(runtimeFile)
-runNodeScript('scripts/migrate-ledger.mjs')
-for (const legacyPath of legacyPaths) {
-  removePathIfExists(legacyPath)
-  console.log(`[CLEAN] removed legacy adapter: ${legacyPath}`)
-}
-verifyExistingLocalRuntimeFilesPreserved()
+verifyPreservedPaths(preservedSnapshot)

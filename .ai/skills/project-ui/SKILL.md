@@ -18,7 +18,7 @@ The initial project-ui source was introduced on main by commit `624948ea9058507f
 
 ## Future Activation Intent
 
-Future phases may route UI tasks to this Skill after P4/P5 owners create cold-start, routing, and synchronization support. Until then, manual loading is the supported use and must not imply adapter activation or cold-start behavior.
+Future phases may route UI tasks to this Skill after P5 owners create routing and synchronization support. Until then, manual loading is the supported use and must not imply adapter activation or project-ui cold-start loading.
 
 ## Scope
 
@@ -66,7 +66,7 @@ GSAP is eligible only for timeline-heavy, scroll-linked, or complex choreography
 
 ## Future Integration Boundaries
 
-Future phases own source-scanning enforcement and routing. Current project-ui provides human-readable canonical governance plus deterministic policy and semantic-quality validation; it does not provide source-scanning enforcement, cold-start activation, or sync.
+Future phases own source-scanning enforcement and routing. Current project-ui provides human-readable canonical governance plus deterministic policy and semantic-quality validation; it does not provide source-scanning enforcement, project-ui cold-start activation, or sync. P4 AI cold-start validation owns repository entrypoint availability, not project-ui automatic loading.
 
 ## P3 Machine UI Policy Boundary
 
@@ -84,14 +84,23 @@ EXCEPTION_REGISTRY_PRESENT=yes
 EXCEPTION_COUNT=0
 POLICY_FIXTURES_PRESENT=yes
 POLICY_VALIDATOR_PRESENT=yes
+P4_STARTED=yes
+P4_COMPLETE=yes
+COLD_START_ATOMIC_REPLACEMENT_COMPLETE=yes
+AGENTS_TRACKED=yes
+CLAUDE_TRACKED=yes
+CLAUDE_ADAPTER_TRACKED=yes
+ADAPTER_MANIFEST_COLD_START_COMPLETE=yes
+ADAPTER_GENERATION_DETERMINISTIC=yes
+AI_SYNC_IDEMPOTENT=yes
+FRESH_CLONE_ENTRYPOINTS_PASS=yes
 SOURCE_SCANNER_IMPLEMENTED=no
 PAGE_CONTRACT_CREATED=no
-P4_STARTED=no
-P5_STARTED=no
 PROJECT_UI_DISCOVERED=no
 PROJECT_UI_ROUTED=no
 PROJECT_UI_SYNCHRONIZED=no
 PROJECT_UI_ADAPTER_ACTIVATED=no
+P5_STARTED=no
 ```
 
 ## Page Contract Boundary
@@ -100,7 +109,7 @@ Page Contract Schema does not exist now. Page archetypes are conceptual patterns
 
 ## P4 Cold-Start Boundary
 
-P4 owns cold-start loading and has not started. This Skill must not claim automatic loading by Codex, Claude, adapters, or generated entrypoints.
+P4 AI cold-start atomic replacement is complete for repository entrypoints: `AGENTS.md`, `CLAUDE.md`, `.ai/protocol/adapters/claude.md`, and the protocol adapter manifest are tracked and validator-owned. This Skill still must not claim automatic project-ui loading by Codex, Claude, adapters, or generated entrypoints.
 
 ## P5 Routing and Synchronization Boundary
 

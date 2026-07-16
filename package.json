@@ -91,6 +91,7 @@
     "ai:scaffold:view-route": "node scripts/ai-route-view-scaffold.mjs",
     "ai:doctor": "node scripts/ai-doctor.mjs",
     "ai:protocol-adapters": "node scripts/generate-ai-protocol-adapters.mjs",
+    "ai:cold-start:validate": "node scripts/governance/cold-start-validate.mjs",
     "ai:rule-index": "node scripts/generate-rule-index.mjs",
     "ai:ledger:json": "node scripts/migrate-ledger.mjs",
     "unocss:ide-data": "node scripts/generate-unocss-ide-data.mjs",

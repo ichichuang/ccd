@@ -32,6 +32,12 @@ wiki_owner: LLM-maintained CCD architecture wiki
 
 P1.5 canonical deliverable derived from the accepted P1.4R2 evidence package and corrected in P1 Correction C1. project-ui does not currently exist. P2 has not started. This document records decisions and prerequisites only; it does not authorize implementation, deletion, merge execution, rewrite execution, routing changes, adapter changes, scaffold changes, page-contract implementation, runtime UI changes, or project-ui Skill creation.
 
+## Current P4.4 completion addendum
+
+P4 AI cold-start atomic replacement is complete. The canonical operating contract is [[ai-cold-start]], with `.ai/protocol/adapter-manifest.json` and `.ai/protocol/AGENTS.core.md` as the two canonical sources, six tracked generated outputs, deterministic generator checks, isolated-HOME preflight coverage, and fresh-clone entrypoint availability before sync.
+
+Historical P1, P2, P3, pre-P4, and defect evidence below is retained as lineage. Statements about ignored or absent cold-start adapters in those sections describe the pre-P4 defect state, not the current repository state.
+
 ## Executive decision
 
 - Verified facts: repository clean at `9fad207b1700615000517a0c5fee1af9661d00f8`; 135 unique assets inventoried; .gitignore reclassified as manifest-scope governance asset; skill-routing.json reclassified as canonical and REWRITE; AGENTS.md, CLAUDE.md, and `.ai/protocol/adapters/claude.md` reclassified as REWRITE because their ignored state breaks cold-start.
@@ -184,11 +190,11 @@ P1.5 canonical deliverable derived from the accepted P1.4R2 evidence package and
 
 ## AGENTS and CLAUDE cold-start findings
 
-- `AGENTS.md`, `CLAUDE.md`, and `.ai/protocol/adapters/claude.md` are currently ignored generated compatibility outputs.
-- A clean fresh clone lacks them until `pnpm ai:sync` runs.
-- `ai-doctor` and `codex-preflight` require them, so the ignored state creates a bootstrap dependency (CONF-09).
+- Historical P1 finding: `AGENTS.md`, `CLAUDE.md`, and `.ai/protocol/adapters/claude.md` were ignored generated compatibility outputs.
+- Historical P1 finding: a clean fresh clone lacked them until `pnpm ai:sync` ran.
+- Historical P1 finding: `ai-doctor` and `codex-preflight` required them, so the ignored state created a bootstrap dependency (CONF-09).
 - The false statement that an ignored fresh-clone-absent output remains independently valid for cold-start is removed.
-- Future target: tracked `AGENTS.md` and `CLAUDE.md` that are independently readable in a fresh clone; `.ai/protocol/adapters/claude.md` tracked; generator contracts updated; digest/freshness validation covers every tracked cold-start entry.
+- P4.4 result: tracked `AGENTS.md` and `CLAUDE.md` are independently readable in a fresh clone; `.ai/protocol/adapters/claude.md` is tracked; generator contracts are updated; digest/freshness validation covers every tracked cold-start entry.
 
 ## Route-level scrolling versus region ownership findings
 
@@ -339,7 +345,7 @@ P1 does not authorize deletion, merge execution, rewrite execution, retirement, 
 ## Validation evidence
 
 - 18 validation surfaces analyzed.
-- Governance gate gaps: no negative fixture for page-contract, no scroll-ownership enforcement, no motion-routing enforcement, cold-start adapters currently ignored.
+- Historical P1 validation evidence: no negative fixture for page-contract, no scroll-ownership enforcement, no motion-routing enforcement, and cold-start adapters ignored before P4.
 - All 20 known findings are recorded in `.ai/governance/ui/migration-manifest.json` under `coverageFindings.knownFindings`.
 
 ## P2 handoff

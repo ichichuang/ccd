@@ -114,13 +114,61 @@ const EXPECTED_CANONICAL_STATE = {
   sourceScannerImplemented: false,
   pageContractCreated: false,
   p3Started: true,
-  p4Started: false,
+  p4Started: true,
+  p4Complete: true,
+  coldStartAtomicReplacementComplete: true,
+  agentsTracked: true,
+  claudeTracked: true,
+  claudeAdapterTracked: true,
+  adapterManifestColdStartComplete: true,
+  adapterGenerationDeterministic: true,
+  aiSyncIdempotent: true,
+  freshCloneEntrypointsPass: true,
   p5Started: false,
   skillLockDiscovered: false,
   routed: false,
   synchronized: false,
   adapterActivated: false,
 }
+
+const LIFECYCLE_DOCUMENTS = [
+  '.ai/skills/project-ui/SKILL.md',
+  '.ai/skills/project-ui/references/platform-invariants.md',
+  '.ai/skills/project-ui/references/validation.md',
+  'wiki/canonical/design/machine-ui-policy.md',
+  'wiki/canonical/design/project-ui-skill.md',
+]
+
+const TERMINAL_LIFECYCLE_FIELDS = [
+  'P3_COMPLETE=yes',
+  'MACHINE_UI_POLICY_COMPLETE=yes',
+  'MACHINE_UI_POLICY_PRESENT=yes',
+  'POLICY_SCHEMAS_PRESENT=yes',
+  'PRODUCT_UI_PROFILE_PRESENT=yes',
+  'EXCEPTION_REGISTRY_PRESENT=yes',
+  'EXCEPTION_COUNT=0',
+  'POLICY_FIXTURES_PRESENT=yes',
+  'POLICY_VALIDATOR_PRESENT=yes',
+  'P4_STARTED=yes',
+  'P4_COMPLETE=yes',
+  'COLD_START_ATOMIC_REPLACEMENT_COMPLETE=yes',
+  'AGENTS_TRACKED=yes',
+  'CLAUDE_TRACKED=yes',
+  'CLAUDE_ADAPTER_TRACKED=yes',
+  'ADAPTER_MANIFEST_COLD_START_COMPLETE=yes',
+  'ADAPTER_GENERATION_DETERMINISTIC=yes',
+  'AI_SYNC_IDEMPOTENT=yes',
+  'FRESH_CLONE_ENTRYPOINTS_PASS=yes',
+  'SOURCE_SCANNER_IMPLEMENTED=no',
+  'PAGE_CONTRACT_CREATED=no',
+  'PROJECT_UI_DISCOVERED=no',
+  'PROJECT_UI_ROUTED=no',
+  'PROJECT_UI_SYNCHRONIZED=no',
+  'PROJECT_UI_ADAPTER_ACTIVATED=no',
+  'P5_STARTED=no',
+]
+
+const TERMINAL_LIFECYCLE_BLOCK = TERMINAL_LIFECYCLE_FIELDS.join('\n')
 
 const EXPECTED_P3_HANDOFF_SOURCE_BASELINES = {
   sourceBaselineCommit: '624948ea9058507f8fae91975dabc715d984703a',
@@ -333,6 +381,16 @@ const STALE_LIFECYCLE_PATTERNS = [
     label: 'remote-push-not-verified',
     regex: /\bremote push (?:is )?not (?:yet )?verified\b/,
   },
+  { label: 'p4-started-no', regex: /\bp4_?started=no\b/ },
+  { label: 'p4-started-false', regex: /\bp4started\s*[:=]\s*false\b/ },
+  { label: 'p4-has-not-started', regex: /\bp4 has not started\b/ },
+  { label: 'p4-not-started', regex: /\bp4 not started\b/ },
+  { label: 'cold-start-not-started', regex: /\bcold-start not started\b/ },
+  {
+    label: 'p4-owns-cold-start-not-started',
+    regex: /\bp4 owns cold-start and has not started\b/,
+  },
+  { label: 'p4-cold-start-future', regex: /\bp4 cold-start remains future\b/ },
 ]
 
 const EPHEMERAL_PATH_PATTERNS = [
@@ -1183,18 +1241,18 @@ function validateP3Handoff(coverageData) {
       'p3-handoff-page-contract-presence',
       'Page Contract Schema must remain absent after handoff correction.'
     )
-  if (canonicalState.p4Started !== false)
-    fail('p3-handoff-p4-started', 'P4 must remain not started.')
+  if (
+    coverageData?.p4Started !== true ||
+    canonicalState.p4Started !== true ||
+    canonicalState.p4Complete !== true ||
+    canonicalState.coldStartAtomicReplacementComplete !== true
+  )
+    fail('p4-terminal-state', 'P4 cold-start terminal state must remain complete.')
   if (canonicalState.p5Started !== false)
     fail('p3-handoff-p5-started', 'P5 must remain not started.')
 
-  const p3StatusFields = [
-    'sourceScannerImplemented',
-    'pageContractCreated',
-    'p4Started',
-    'p5Started',
-  ]
-  for (const field of p3StatusFields) {
+  const falseStatusFields = ['sourceScannerImplemented', 'pageContractCreated', 'p5Started']
+  for (const field of falseStatusFields) {
     if (coverageData?.[field] !== false)
       fail('p3-status-field', `Coverage P3 status field ${field} must be false.`, {
         field,
@@ -1210,7 +1268,6 @@ function validateP3Handoff(coverageData) {
   for (const field of [
     'sourceScannerImplemented',
     'pageContractCreated',
-    'p4Started',
     'p5Started',
     'skillLockDiscovered',
     'routed',
@@ -1219,6 +1276,24 @@ function validateP3Handoff(coverageData) {
   ]) {
     if (canonicalState[field] !== false)
       fail('p3-handoff-lifecycle-state', 'P3 handoff changed a protected lifecycle state.', {
+        field,
+        actual: canonicalState[field],
+      })
+  }
+  for (const field of [
+    'p4Started',
+    'p4Complete',
+    'coldStartAtomicReplacementComplete',
+    'agentsTracked',
+    'claudeTracked',
+    'claudeAdapterTracked',
+    'adapterManifestColdStartComplete',
+    'adapterGenerationDeterministic',
+    'aiSyncIdempotent',
+    'freshCloneEntrypointsPass',
+  ]) {
+    if (canonicalState[field] !== true)
+      fail('p4-terminal-state', 'P4 terminal lifecycle marker is not preserved.', {
         field,
         actual: canonicalState[field],
       })
@@ -1490,7 +1565,7 @@ function isHistoricalField(field) {
 }
 
 function hasExplicitHistoricalMarker(text) {
-  return /\b(?:historical note|historically|before commit|prior to commit|previously)\b/i.test(
+  return /\b(?:historical note|historically|before commit|before p4\.4|pre-implementation|prior to commit|previously)\b/i.test(
     String(text ?? '')
   )
 }
@@ -1607,7 +1682,7 @@ function assertExpectedCanonicalState(coverageData, wiki) {
     ['machine-ui-policy', 'Machine UI Policy exists at', p2State],
     ['page-contract-schema', 'Page Contract Schema does not exist.', p2State],
     ['p3-complete', 'P3 Machine UI Policy implementation is complete.', p2State],
-    ['p4-not-started', 'P4 has not started.', p2State],
+    ['p4-complete', 'P4 AI cold-start atomic replacement is complete.', p2State],
     ['p5-not-started', 'P5 has not started.', p2State],
     ['semantic-commit', EXPECTED_SEMANTIC_CORRECTION_COMMIT, handoff],
     [
@@ -1622,6 +1697,18 @@ function assertExpectedCanonicalState(coverageData, wiki) {
         message: 'Wiki canonical state does not match coverage canonicalState.',
         label,
         expected: phrase,
+      })
+    }
+  }
+
+  for (const file of LIFECYCLE_DOCUMENTS) {
+    if (!exists(file)) continue
+    const text = read(file)
+    if (!text.includes(TERMINAL_LIFECYCLE_BLOCK)) {
+      localFailures.push({
+        code: 'terminal-lifecycle-block-mismatch',
+        message: 'Lifecycle document does not contain the exact ordered P4.4 terminal block.',
+        file,
       })
     }
   }
@@ -1680,6 +1767,13 @@ function runSelfTest() {
     'P2 remains under correction until validation and commit complete.',
     'The correction change set is unstaged and pending push.',
     'P2C.3 may be re-executed before remote acceptance.',
+    'Current state: P4 has not started.',
+    'Current state: P4 not started.',
+    'Current state: P4_STARTED=no.',
+    'Current state: p4Started=false.',
+    'Current state: cold-start not started.',
+    'Current state: P4 owns cold-start and has not started.',
+    'Current state: P4 cold-start remains future.',
   ]
 
   const negativeResults = negativeTexts.map((text, index) => {
@@ -1712,6 +1806,23 @@ function runSelfTest() {
       findings: scanJsonLifecycleAssertions({
         history: {
           historicalNote: 'Historical note: before commit b3b6d59..., the correction was unstaged.',
+        },
+      }),
+    },
+    {
+      id: 3,
+      text: 'Historical note: before P4.4, P4 has not started.',
+      findings: scanMarkdownLifecycleAssertions(
+        'self-test.md',
+        '## Historical Notes\n\nHistorical note: before P4.4, P4 has not started.\n'
+      ),
+    },
+    {
+      id: 4,
+      text: 'Historical note: before P4.4, p4Started=false.',
+      findings: scanJsonLifecycleAssertions({
+        history: {
+          historicalNote: 'Historical note: before P4.4, p4Started=false.',
         },
       }),
     },
@@ -1899,10 +2010,18 @@ function runSelfTest() {
       },
     },
     {
-      id: 'p4-started',
-      expectedCode: 'p3-handoff-p4-started',
+      id: 'p4-current-state-regressed',
+      expectedCode: 'p4-terminal-state',
       mutate: fixture => {
-        fixture.canonicalState.p4Started = true
+        fixture.p4Started = false
+        fixture.canonicalState.p4Started = false
+      },
+    },
+    {
+      id: 'missing-p4-completion-marker',
+      expectedCode: 'p4-terminal-state',
+      mutate: fixture => {
+        fixture.canonicalState.p4Complete = false
       },
     },
     {

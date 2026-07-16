@@ -88,14 +88,35 @@ const LIFECYCLE_MARKERS = [
   'EXCEPTION_COUNT=0',
   'POLICY_FIXTURES_PRESENT=yes',
   'POLICY_VALIDATOR_PRESENT=yes',
+  'P4_STARTED=yes',
+  'P4_COMPLETE=yes',
+  'COLD_START_ATOMIC_REPLACEMENT_COMPLETE=yes',
+  'AGENTS_TRACKED=yes',
+  'CLAUDE_TRACKED=yes',
+  'CLAUDE_ADAPTER_TRACKED=yes',
+  'ADAPTER_MANIFEST_COLD_START_COMPLETE=yes',
+  'ADAPTER_GENERATION_DETERMINISTIC=yes',
+  'AI_SYNC_IDEMPOTENT=yes',
+  'FRESH_CLONE_ENTRYPOINTS_PASS=yes',
   'SOURCE_SCANNER_IMPLEMENTED=no',
   'PAGE_CONTRACT_CREATED=no',
-  'P4_STARTED=no',
-  'P5_STARTED=no',
   'PROJECT_UI_DISCOVERED=no',
   'PROJECT_UI_ROUTED=no',
   'PROJECT_UI_SYNCHRONIZED=no',
   'PROJECT_UI_ADAPTER_ACTIVATED=no',
+  'P5_STARTED=no',
+]
+
+const LIFECYCLE_BLOCK_TEXT = LIFECYCLE_MARKERS.join('\n')
+
+const STALE_CURRENT_P4_PATTERNS = [
+  /\bP4_STARTED=no\b/,
+  /\bp4Started\s*[:=]\s*false\b/i,
+  /\bP4 has not started\b/i,
+  /\bP4 not started\b/i,
+  /\bcold-start not started\b/i,
+  /\bP4 owns cold-start and has not started\b/i,
+  /\bP4 cold-start remains future\b/i,
 ]
 
 const colors = {
@@ -308,7 +329,7 @@ function validateAgainstSchema(doc, schemaPath, label) {
   }
 }
 
-function validateFixturePair(schemaPath, validPath, invalidPath, label) {
+function validateFixturePair(schemaPath, validPath, invalidPath, label, options = {}) {
   const valid = readJson(validPath)
   const invalid = readJson(invalidPath)
   validateAgainstSchema(valid, schemaPath, `${label} valid fixture`)
@@ -320,7 +341,12 @@ function validateFixturePair(schemaPath, validPath, invalidPath, label) {
     validator.validate(invalid)
     fail(`${label} invalid fixture unexpectedly passed schema`)
   } catch (e) {
-    ok(`${label} invalid fixture correctly failed schema: ${e.message.split(':').pop().trim()}`)
+    const message = e.message
+    if (options.invalidReasonIncludes && !message.includes(options.invalidReasonIncludes)) {
+      fail(`${label} invalid fixture failed for unexpected reason: ${message}`)
+    } else {
+      ok(`${label} invalid fixture correctly failed schema: ${message.split(':').pop().trim()}`)
+    }
   }
 }
 
@@ -515,7 +541,7 @@ function collectCorrectionErrors(context) {
   const expectedPolicyFlags = {
     sourceScannerImplemented: false,
     pageContractCreated: false,
-    p4Started: false,
+    p4Started: true,
     p5Started: false,
   }
   for (const [field, expected] of Object.entries(expectedPolicyFlags)) {
@@ -537,7 +563,16 @@ function collectCorrectionErrors(context) {
     sourceScannerImplemented: false,
     pageContractCreated: false,
     p3Started: true,
-    p4Started: false,
+    p4Started: true,
+    p4Complete: true,
+    coldStartAtomicReplacementComplete: true,
+    agentsTracked: true,
+    claudeTracked: true,
+    claudeAdapterTracked: true,
+    adapterManifestColdStartComplete: true,
+    adapterGenerationDeterministic: true,
+    aiSyncIdempotent: true,
+    freshCloneEntrypointsPass: true,
     p5Started: false,
     skillLockDiscovered: false,
     routed: false,
@@ -558,6 +593,22 @@ function collectCorrectionErrors(context) {
   }
   if (handoff.consumedByImplementationCommit !== policy?.p3BaselineCommit) {
     add('P3 handoff consumedByImplementationCommit must match p3BaselineCommit')
+  }
+  const expectedPreImplementationLifecycleState = {
+    machineUiPolicyPresent: false,
+    pageContractSchemaPresent: false,
+    p3Started: false,
+    p4Started: false,
+    p5Started: false,
+    skillLockDiscovered: false,
+    routed: false,
+    synchronized: false,
+    adapterActivated: false,
+  }
+  for (const [field, expected] of Object.entries(expectedPreImplementationLifecycleState)) {
+    if (handoff.preImplementationLifecycleState?.[field] !== expected) {
+      add(`P3 handoff pre-implementation ${field} must remain ${expected}`)
+    }
   }
 
   if (!sameOrderedValues(actualRuleIds, expectedRuleIds)) {
@@ -914,8 +965,14 @@ function collectCorrectionErrors(context) {
 
   for (const documentPath of LIFECYCLE_DOCUMENTS) {
     const text = fs.readFileSync(path.resolve(repoRoot, documentPath), 'utf8')
+    if (!text.includes(LIFECYCLE_BLOCK_TEXT)) {
+      add(`${documentPath} lifecycle block must match the exact ordered P4.4 terminal block`)
+    }
     for (const marker of LIFECYCLE_MARKERS) {
       if (!text.includes(marker)) add(`${documentPath} lifecycle marker missing: ${marker}`)
+    }
+    for (const pattern of STALE_CURRENT_P4_PATTERNS) {
+      if (pattern.test(text)) add(`${documentPath} contains stale current P4 lifecycle prose`)
     }
   }
 
@@ -1015,15 +1072,15 @@ function runMutationTests(context, schemaPath) {
     ok('mutation: source scanner delivered rejected')
   }
 
-  // P4 started forbidden
+  // P4 current-state regression forbidden
   const p4Started = JSON.parse(JSON.stringify(policy))
-  p4Started.p4Started = true
+  p4Started.p4Started = false
   const v9 = new MiniValidator(schema)
   try {
     v9.validate(p4Started)
-    fail('mutation: p4Started should fail')
+    fail('mutation: p4Started=false should fail')
   } catch {
-    ok('mutation: p4Started rejected')
+    ok('mutation: p4Started=false rejected')
   }
 
   // P5 started forbidden
@@ -1181,8 +1238,16 @@ function runMutationTests(context, schemaPath) {
   expectCorrectionMutationRejected('false Page Contract start', 'pageContractCreated', mutated => {
     mutated.policy.pageContractCreated = true
   })
-  expectCorrectionMutationRejected('false P4 start', 'p4Started', mutated => {
-    mutated.policy.p4Started = true
+  expectCorrectionMutationRejected('current P4 start regressed', 'p4Started', mutated => {
+    mutated.policy.p4Started = false
+    mutated.coverage.p4Started = false
+    mutated.coverage.canonicalState.p4Started = false
+  })
+  expectCorrectionMutationRejected('missing P4 completion marker', 'p4Complete', mutated => {
+    mutated.coverage.canonicalState.p4Complete = false
+  })
+  expectCorrectionMutationRejected('false tracked output marker', 'agentsTracked', mutated => {
+    mutated.coverage.canonicalState.agentsTracked = false
   })
   expectCorrectionMutationRejected('false P5 start', 'p5Started', mutated => {
     mutated.policy.p5Started = true
@@ -1272,7 +1337,8 @@ function main() {
     '.ai/governance/ui/schemas/ui-policy.schema.json',
     '.ai/governance/ui/fixtures/schema-valid/ui-policy.json',
     '.ai/governance/ui/fixtures/schema-invalid/ui-policy.json',
-    'ui-policy'
+    'ui-policy',
+    { invalidReasonIncludes: 'severity' }
   )
   validateFixturePair(
     '.ai/governance/ui/schemas/product-ui-profile.schema.json',

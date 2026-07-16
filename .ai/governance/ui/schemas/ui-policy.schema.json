@@ -106,7 +106,7 @@
       "const": false
     },
     "p4Started": {
-      "const": false
+      "const": true
     },
     "p5Started": {
       "const": false

@@ -88,13 +88,11 @@ function cargoLockedCheck() {
   ])
 }
 
-const fastSteps = [
-  step('type-check', 'pnpm', ['type-check']),
-  step('lint', 'pnpm', ['lint:check']),
-]
+const fastSteps = [step('type-check', 'pnpm', ['type-check']), step('lint', 'pnpm', ['lint:check'])]
 
 const ciSteps = [
   step('runtime summary', 'pnpm', ['runtime:summary']),
+  step('AI cold-start validation', 'pnpm', ['ai:cold-start:validate']),
   step('AI adapter sync', 'pnpm', ['ai:sync']),
   step('Codex skill sync', 'pnpm', ['ai:sync:codex']),
   step('AI doctor', 'pnpm', ['ai:doctor']),
@@ -125,6 +123,7 @@ const ciSteps = [
 ]
 
 const fullSteps = [
+  step('AI cold-start validation', 'pnpm', ['ai:cold-start:validate']),
   step('AI adapter sync', 'pnpm', ['ai:sync']),
   step('AI doctor open ledger', 'pnpm', ['ai:doctor', '--open']),
   step('Codex preflight', 'pnpm', ['codex:preflight']),

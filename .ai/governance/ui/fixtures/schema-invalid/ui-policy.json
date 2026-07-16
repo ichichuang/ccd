@@ -5,7 +5,7 @@
   "p3BaselineCommit": "86f6f71045a8778a0540d11fed15ca4c0eae6fa3",
   "sourceScannerImplemented": false,
   "pageContractCreated": false,
-  "p4Started": false,
+  "p4Started": true,
   "p5Started": false,
   "counts": {
     "ruleCount": 68,

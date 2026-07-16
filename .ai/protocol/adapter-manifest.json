@@ -1,4 +1,5 @@
 {
+  "schemaVersion": "ccd-ai-adapter-manifest/v1",
   "canonicalProtocol": ".ai/protocol/AGENTS.core.md",
   "loadOrder": [
     ".ai/protocol/AGENTS.core.md",
@@ -57,6 +58,151 @@
     "Materialize repo adapters with pnpm ai:sync and local Codex skills with pnpm ai:sync:codex.",
     "For new runtime capabilities, add contracts first, implement core logic runtime-neutrally, then inject app adapters."
   ],
+  "coldStart": {
+    "schemaVersion": "ccd-ai-cold-start/v1",
+    "generatorOwner": "scripts/generate-ai-protocol-adapters.mjs",
+    "validationOwner": "scripts/governance/cold-start-validate.mjs",
+    "digestAlgorithm": "sha256",
+    "canonicalSources": [
+      {
+        "path": ".ai/protocol/adapter-manifest.json",
+        "authority": "structured-adapter-cold-start-authority"
+      },
+      {
+        "path": ".ai/protocol/AGENTS.core.md",
+        "authority": "canonical-protocol-authority"
+      }
+    ],
+    "enums": {
+      "outputKinds": [
+        "shared-generated-entry",
+        "root-compatibility-entrypoint",
+        "root-client-pointer",
+        "client-adapter-guidance",
+        "adapter-index"
+      ],
+      "clients": ["shared", "agents-aware", "codex", "claude"],
+      "discoveryRoles": [
+        "shared-entry-content",
+        "agents-root-discovery",
+        "claude-root-discovery",
+        "client-guidance",
+        "adapter-index"
+      ],
+      "authorities": [
+        "canonical-protocol-authority",
+        "structured-adapter-cold-start-authority",
+        "generated-compatibility-output",
+        "generated-guidance-output"
+      ],
+      "contentContracts": [
+        "claude-adapter",
+        "codex-adapter",
+        "adapter-index",
+        "shared-entry",
+        "root-agents",
+        "root-claude"
+      ]
+    },
+    "outputs": [
+      {
+        "id": "CLAUDE_ADAPTER",
+        "path": ".ai/protocol/adapters/claude.md",
+        "kind": "client-adapter-guidance",
+        "targetClients": ["claude"],
+        "discoveryRole": "client-guidance",
+        "authority": "generated-guidance-output",
+        "contentContract": "claude-adapter",
+        "sourceDependencies": [".ai/protocol/adapter-manifest.json", ".ai/protocol/AGENTS.core.md"],
+        "outputDependencies": [],
+        "freshCloneRequired": true,
+        "tracked": true,
+        "owner": "scripts/generate-ai-protocol-adapters.mjs",
+        "validationOwner": "scripts/governance/cold-start-validate.mjs",
+        "order": 10
+      },
+      {
+        "id": "CODEX_ADAPTER",
+        "path": ".ai/protocol/adapters/codex.md",
+        "kind": "client-adapter-guidance",
+        "targetClients": ["codex"],
+        "discoveryRole": "client-guidance",
+        "authority": "generated-guidance-output",
+        "contentContract": "codex-adapter",
+        "sourceDependencies": [".ai/protocol/adapter-manifest.json", ".ai/protocol/AGENTS.core.md"],
+        "outputDependencies": [],
+        "freshCloneRequired": true,
+        "tracked": true,
+        "owner": "scripts/generate-ai-protocol-adapters.mjs",
+        "validationOwner": "scripts/governance/cold-start-validate.mjs",
+        "order": 20
+      },
+      {
+        "id": "ADAPTER_INDEX",
+        "path": ".ai/protocol/adapters/README.md",
+        "kind": "adapter-index",
+        "targetClients": ["shared"],
+        "discoveryRole": "adapter-index",
+        "authority": "generated-guidance-output",
+        "contentContract": "adapter-index",
+        "sourceDependencies": [".ai/protocol/adapter-manifest.json"],
+        "outputDependencies": ["CLAUDE_ADAPTER", "CODEX_ADAPTER"],
+        "freshCloneRequired": true,
+        "tracked": true,
+        "owner": "scripts/generate-ai-protocol-adapters.mjs",
+        "validationOwner": "scripts/governance/cold-start-validate.mjs",
+        "order": 30
+      },
+      {
+        "id": "AI_ENTRY",
+        "path": ".ai/protocol/AI.entry.md",
+        "kind": "shared-generated-entry",
+        "targetClients": ["shared"],
+        "discoveryRole": "shared-entry-content",
+        "authority": "generated-compatibility-output",
+        "contentContract": "shared-entry",
+        "sourceDependencies": [".ai/protocol/adapter-manifest.json"],
+        "outputDependencies": ["CLAUDE_ADAPTER", "CODEX_ADAPTER"],
+        "freshCloneRequired": true,
+        "tracked": true,
+        "owner": "scripts/generate-ai-protocol-adapters.mjs",
+        "validationOwner": "scripts/governance/cold-start-validate.mjs",
+        "order": 40
+      },
+      {
+        "id": "ROOT_AGENTS",
+        "path": "AGENTS.md",
+        "kind": "root-compatibility-entrypoint",
+        "targetClients": ["agents-aware", "codex"],
+        "discoveryRole": "agents-root-discovery",
+        "authority": "generated-compatibility-output",
+        "contentContract": "root-agents",
+        "sourceDependencies": [],
+        "outputDependencies": ["AI_ENTRY"],
+        "freshCloneRequired": true,
+        "tracked": true,
+        "owner": "scripts/generate-ai-protocol-adapters.mjs",
+        "validationOwner": "scripts/governance/cold-start-validate.mjs",
+        "order": 50
+      },
+      {
+        "id": "ROOT_CLAUDE",
+        "path": "CLAUDE.md",
+        "kind": "root-client-pointer",
+        "targetClients": ["claude"],
+        "discoveryRole": "claude-root-discovery",
+        "authority": "generated-compatibility-output",
+        "contentContract": "root-claude",
+        "sourceDependencies": [],
+        "outputDependencies": ["ROOT_AGENTS", "CLAUDE_ADAPTER"],
+        "freshCloneRequired": true,
+        "tracked": true,
+        "owner": "scripts/generate-ai-protocol-adapters.mjs",
+        "validationOwner": "scripts/governance/cold-start-validate.mjs",
+        "order": 60
+      }
+    ]
+  },
   "codex": {
     "discovery": [
       "Codex reads root AGENTS.md.",

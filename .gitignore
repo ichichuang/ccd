@@ -123,8 +123,6 @@ artifacts/browser/
 Thumbs.db
 
 # Generated AI adapters
-AGENTS.md
-CLAUDE.md
 .claude/settings.local.json
 .claude/skills/
 

@@ -98,7 +98,7 @@ Current profile: `CCD Architectural Glass` at `.ai/governance/ui/profiles/ccd-ar
 - Policy schemas, Product UI Profile, exception registry, fixtures, and validator: present.
 - Source scanner: not implemented.
 - Page Contract Schema: not created.
-- P4 cold-start: not started.
+- P4 AI cold-start atomic replacement: complete.
 - P5 routing/synchronization: not started.
 
 ```text
@@ -111,12 +111,21 @@ EXCEPTION_REGISTRY_PRESENT=yes
 EXCEPTION_COUNT=0
 POLICY_FIXTURES_PRESENT=yes
 POLICY_VALIDATOR_PRESENT=yes
+P4_STARTED=yes
+P4_COMPLETE=yes
+COLD_START_ATOMIC_REPLACEMENT_COMPLETE=yes
+AGENTS_TRACKED=yes
+CLAUDE_TRACKED=yes
+CLAUDE_ADAPTER_TRACKED=yes
+ADAPTER_MANIFEST_COLD_START_COMPLETE=yes
+ADAPTER_GENERATION_DETERMINISTIC=yes
+AI_SYNC_IDEMPOTENT=yes
+FRESH_CLONE_ENTRYPOINTS_PASS=yes
 SOURCE_SCANNER_IMPLEMENTED=no
 PAGE_CONTRACT_CREATED=no
-P4_STARTED=no
-P5_STARTED=no
 PROJECT_UI_DISCOVERED=no
 PROJECT_UI_ROUTED=no
 PROJECT_UI_SYNCHRONIZED=no
 PROJECT_UI_ADAPTER_ACTIVATED=no
+P5_STARTED=no
 ```

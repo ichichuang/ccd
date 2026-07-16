@@ -32,6 +32,7 @@ CCD design guidance for AI-generated UI work.
 | -------------------------------- | ------------------ | ----------: | ---------: |
 | [[ccd-product-design-language]]  | CCD 产品设计语言   |     `draft` |       0.82 |
 | [[ccd-ai-ui-skill-governance]]   | CCD AI UI 技能治理 |     `draft` |       0.82 |
+| [[ai-cold-start]]                | AI 冷启动契约      | `published` |       0.95 |
 | [[animation-governance]]         | 动画治理           |     `draft` |       0.82 |
 | [[ui-governance-migration-plan]] | UI 治理迁移计划    | `published` |       0.95 |
 | [[project-ui-skill]]             | 项目 UI 技能       | `published` |       0.95 |
