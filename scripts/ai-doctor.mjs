@@ -2,6 +2,7 @@ import { spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
+import { TextDecoder } from 'node:util'
 import { generateSkillsLock, validateSkillRoutingTargets } from './skill-lock-utils.mjs'
 
 const cwd = process.cwd()
@@ -60,7 +61,10 @@ const generatedContentChecks = [
 
 const dirAdapters = []
 
-const localRuntimeFiles = ['.ai/runtime/repair_list.md', '.ai/runtime/repair-ledger.json']
+const markdownLedgerPath = '.ai/runtime/repair_list.md'
+const derivedLedgerPath = '.ai/runtime/repair-ledger.json'
+const ledgerMigrationScript = 'scripts/migrate-ledger.mjs'
+const localRuntimeFiles = [markdownLedgerPath]
 const retiredShouldBeAbsent = [
   '.cursor',
   '.ai/config/cursor.settings.json',
@@ -108,8 +112,78 @@ const prepareInternalPackages = () => {
 const readBuffer = rel => fs.readFileSync(path.join(cwd, rel))
 const readText = rel => fs.readFileSync(path.join(cwd, rel), 'utf8')
 
+const validateDerivedLedger = () => {
+  const absLedger = path.join(cwd, derivedLedgerPath)
+  if (!fs.existsSync(absLedger)) {
+    ok(
+      `optional explicit derived runtime file absent: ${derivedLedgerPath} (generate explicitly with pnpm ai:ledger:json)`
+    )
+    return
+  }
+
+  let content
+  try {
+    content = new TextDecoder('utf-8', { fatal: true }).decode(readBuffer(derivedLedgerPath))
+  } catch {
+    fail(`REPAIR_LEDGER_MALFORMED_JSON: ${derivedLedgerPath} must contain valid UTF-8 JSON`)
+    return
+  }
+
+  let ledger
+  try {
+    ledger = JSON.parse(content)
+  } catch {
+    fail(`REPAIR_LEDGER_MALFORMED_JSON: ${derivedLedgerPath} must contain valid UTF-8 JSON`)
+    return
+  }
+
+  if (ledger === null || typeof ledger !== 'object' || Array.isArray(ledger)) {
+    fail(`REPAIR_LEDGER_TOP_LEVEL_OBJECT_REQUIRED: ${derivedLedgerPath}`)
+    return
+  }
+  if (ledger.schemaVersion !== 1) {
+    fail(`REPAIR_LEDGER_SCHEMA_VERSION_INVALID: ${derivedLedgerPath} schemaVersion must equal 1`)
+    return
+  }
+  if (ledger.generatedBy !== ledgerMigrationScript) {
+    fail(
+      `REPAIR_LEDGER_GENERATED_BY_INVALID: ${derivedLedgerPath} generatedBy must equal ${ledgerMigrationScript}`
+    )
+    return
+  }
+  if (ledger.source !== markdownLedgerPath) {
+    fail(
+      `REPAIR_LEDGER_SOURCE_INVALID: ${derivedLedgerPath} source must equal ${markdownLedgerPath}`
+    )
+    return
+  }
+  if (!Array.isArray(ledger.tasks)) {
+    fail(`REPAIR_LEDGER_TASKS_INVALID: ${derivedLedgerPath} tasks must be an array`)
+    return
+  }
+
+  ok(`optional derived runtime file validated: ${derivedLedgerPath}`)
+}
+
+const runLedgerParserSelfCheck = () => {
+  const script = path.join(cwd, ledgerMigrationScript)
+  const result = spawnSync(process.execPath, [script, '--self-check'], {
+    cwd,
+    encoding: 'utf8',
+    stdio: 'pipe',
+  })
+  if (result.stdout) process.stdout.write(result.stdout)
+  if (result.stderr) process.stderr.write(result.stderr)
+  if (result.status !== 0) {
+    fail(`REPAIR_LEDGER_PARSER_SELF_CHECK_FAILED: ${ledgerMigrationScript} --self-check`)
+    return
+  }
+
+  ok(`repair ledger parser self-check: ${ledgerMigrationScript} --self-check`)
+}
+
 const printOpenLedgerTasks = () => {
-  const ledgerPath = '.ai/runtime/repair_list.md'
+  const ledgerPath = markdownLedgerPath
   const absLedger = path.join(cwd, ledgerPath)
   if (!fs.existsSync(absLedger)) {
     console.error(`[FAIL] missing local runtime file: ${ledgerPath}`)
@@ -198,6 +272,9 @@ for (const rel of localRuntimeFiles) {
   if (!fs.existsSync(abs)) fail(`missing local runtime file: ${rel} (run pnpm ai:sync)`)
   else ok(`local runtime file: ${rel}`)
 }
+
+validateDerivedLedger()
+runLedgerParserSelfCheck()
 
 for (const rel of retiredShouldBeAbsent) {
   const abs = path.join(cwd, rel)
