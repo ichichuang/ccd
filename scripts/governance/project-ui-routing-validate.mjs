@@ -288,11 +288,56 @@ const run = (
   }
   return result
 }
-const gitPaths = args =>
-  run('git', [...args, '-z'])
+const gitPaths = (args, { cwd = ROOT } = {}) =>
+  run('git', [...args, '-z'], { cwd })
     .stdout.split('\0')
     .filter(Boolean)
     .sort(compareStrings)
+const repositoryChangeState = ({ root = ROOT } = {}) => {
+  const staged = gitPaths(['diff', '--cached', '--name-only'], { cwd: root })
+  const unstaged = gitPaths(['diff', '--name-only'], { cwd: root })
+  const untracked = gitPaths(['ls-files', '--others', '--exclude-standard'], { cwd: root })
+  const paths = sortedUnique([...staged, ...unstaged, ...untracked])
+  return { dirty: paths.length > 0, paths, staged, unstaged, untracked }
+}
+const resolveHistoricalComparison = ({ root = ROOT, baseline = BASELINE } = {}) => {
+  const commitish = `${baseline}^{commit}`
+  const objectCheck = run('git', ['cat-file', '-e', commitish], {
+    cwd: root,
+    allowFailure: true,
+  })
+  const shallowCheck = run('git', ['rev-parse', '--is-shallow-repository'], {
+    cwd: root,
+    allowFailure: true,
+  })
+  if (shallowCheck.status !== 0)
+    fail('BASELINE_OBJECT_RESOLUTION_FAILED', 'Unable to inspect repository history depth', {
+      baseline,
+      status: shallowCheck.status,
+      stderr: shallowCheck.stderr.trim(),
+    })
+  const shallow = shallowCheck.stdout.trim() === 'true'
+  const evidence = {
+    baseline,
+    command: `git cat-file -e ${commitish}`,
+    status: objectCheck.status,
+    stderr: objectCheck.stderr.trim(),
+    shallow,
+  }
+  if (objectCheck.status === 0)
+    return { ...evidence, available: true, code: 'BASELINE_OBJECT_AVAILABLE' }
+  if (shallow)
+    return {
+      ...evidence,
+      available: false,
+      code: 'BASELINE_OBJECT_UNAVAILABLE_IN_SHALLOW_CHECKOUT',
+    }
+  fail(
+    'BASELINE_OBJECT_RESOLUTION_FAILED',
+    'Historical baseline object is unavailable in a non-shallow repository',
+    evidence
+  )
+}
 const repositorySnapshot = () => {
   const untracked = gitPaths(['ls-files', '--others', '--exclude-standard'])
   return sha256(
@@ -1464,22 +1509,17 @@ const validateLifecycle = () => {
     fail('SOURCE_SCANNER_FALSE_POSITIVE', 'Source scanner paths must remain absent', {
       scannerPaths,
     })
-  const deletedLegacy = gitPaths([
-    'diff',
-    '--diff-filter=D',
-    '--name-only',
-    BASELINE,
-    '--',
-    '.ai/skills',
-    '.ai/rules',
-  ])
-  if (deletedLegacy.length)
-    fail('LEGACY_ASSET_DRIFT', 'Legacy Skill or rule assets were deleted', { deletedLegacy })
   return { phase, lifecycleSources: documents.length, terminalClaims: phase === 'terminal' }
 }
-const changedPathSet = () => {
-  const changed = new Set(gitPaths(['diff', '--name-only', BASELINE]))
-  for (const relPath of gitPaths(['ls-files', '--others', '--exclude-standard']))
+const changedPathSet = ({ root = ROOT, comparison }) => {
+  if (!comparison?.available)
+    fail(
+      'BASELINE_OBJECT_UNAVAILABLE_FOR_DIRTY_CANDIDATE',
+      'Dirty candidate validation requires the historical baseline object',
+      comparison ?? {}
+    )
+  const changed = new Set(gitPaths(['diff', '--name-only', comparison.baseline], { cwd: root }))
+  for (const relPath of gitPaths(['ls-files', '--others', '--exclude-standard'], { cwd: root }))
     changed.add(relPath)
   return [...changed].sort(compareStrings)
 }
@@ -1499,16 +1539,21 @@ const protectedPathsForPhase = phase =>
     ...(phase === 'p4-baseline' ? [...P5_4_PATHS, ...P5_5_PATHS] : []),
     ...(phase === 'p5-pre-terminal' ? P5_5_ONLY_PATHS : []),
   ])
-const validateProtectedPaths = phase => {
+const validateProtectedPaths = (
+  phase,
+  { root = ROOT, comparison, localState = repositoryChangeState({ root }) } = {}
+) => {
   const protectedPaths = protectedPathsForPhase(phase)
-  for (const protectedPath of protectedPaths) {
-    const result = run('git', ['diff', '--exit-code', BASELINE, '--', protectedPath], {
-      allowFailure: true,
-    })
-    if (result.status !== 0)
-      fail('PROTECTED_TRACKED_PATH_DRIFT', `Protected tracked path changed: ${protectedPath}`)
-  }
-  const protectedUntracked = gitPaths(['ls-files', '--others', '--exclude-standard']).filter(
+  if (comparison?.available)
+    for (const protectedPath of protectedPaths) {
+      const result = run('git', ['diff', '--exit-code', comparison.baseline, '--', protectedPath], {
+        cwd: root,
+        allowFailure: true,
+      })
+      if (result.status !== 0)
+        fail('PROTECTED_TRACKED_PATH_DRIFT', `Protected tracked path changed: ${protectedPath}`)
+    }
+  const protectedUntracked = localState.untracked.filter(
     relPath =>
       protectedPaths.some(protectedPath => matchesProtectedPath(relPath, protectedPath)) ||
       isForbiddenAlternative(relPath)
@@ -1517,34 +1562,106 @@ const validateProtectedPaths = phase => {
     fail('PROTECTED_UNTRACKED_PATH_PRESENT', 'Protected untracked paths are present', {
       protectedUntracked,
     })
-  return { trackedChecks: protectedPaths.length, protectedUntracked: 0 }
+  return {
+    trackedChecks: comparison?.available ? protectedPaths.length : 0,
+    trackedChecksSkipped: comparison?.available ? 0 : protectedPaths.length,
+    protectedUntracked: 0,
+  }
 }
-const validateIndexContract = ({ phase, changed, staged, unstaged, untracked }) => {
+const validateIndexContract = ({
+  phase,
+  changed,
+  localChanged = changed,
+  staged,
+  unstaged,
+  untracked,
+}) => {
   if (!staged.length) return
   if (phase !== 'p5-terminal')
     fail('INDEX_NOT_EMPTY', 'Pre-terminal P5 paths must remain unstaged', { staged })
-  if (!same(sortedUnique(staged), sortedUnique(changed)) || unstaged.length || untracked.length)
+  if (
+    !same(sortedUnique(staged), sortedUnique(localChanged)) ||
+    unstaged.length ||
+    untracked.length
+  )
     fail('P5_TERMINAL_INDEX_DRIFT', 'Terminal P5 index must stage the exact clean path contract', {
       changed: sortedUnique(changed),
+      localChanged: sortedUnique(localChanged),
       staged: sortedUnique(staged),
       unstaged: sortedUnique(unstaged),
       untracked: sortedUnique(untracked),
     })
 }
-const validateBoundary = lifecyclePhase => {
-  const changed = changedPathSet()
+const validateHistoricalLegacyState = ({ root = ROOT, comparison }) => {
+  if (!comparison.available) return { checked: false, deletedLegacy: 0 }
+  const deletedLegacy = gitPaths(
+    [
+      'diff',
+      '--diff-filter=D',
+      '--name-only',
+      comparison.baseline,
+      '--',
+      '.ai/skills',
+      '.ai/rules',
+    ],
+    { cwd: root }
+  )
+  if (deletedLegacy.length)
+    fail('LEGACY_ASSET_DRIFT', 'Legacy Skill or rule assets were deleted', { deletedLegacy })
+  return { checked: true, deletedLegacy: 0 }
+}
+const validateBoundary = (lifecyclePhase, { root = ROOT, baseline = BASELINE } = {}) => {
+  const localState = repositoryChangeState({ root })
+  const comparison = resolveHistoricalComparison({ root, baseline })
+  const boundaryMode = localState.dirty ? 'dirty-candidate' : 'committed-clean'
+  if (localState.dirty && !comparison.available)
+    fail(
+      'BASELINE_OBJECT_UNAVAILABLE_FOR_DIRTY_CANDIDATE',
+      'Dirty candidate validation requires the historical baseline object',
+      comparison
+    )
+  const changed = comparison.available ? changedPathSet({ root, comparison }) : []
   const phase = inferBoundaryPhase(lifecyclePhase, changed)
-  const contract = validatePathContract({ phase, actualPaths: changed })
-  const staged = gitPaths(['diff', '--cached', '--name-only'])
+  const protectedState = validateProtectedPaths(phase, { root, comparison, localState })
+  const legacyState = validateHistoricalLegacyState({ root, comparison })
+  const contract = comparison.available
+    ? validatePathContract({ phase, actualPaths: changed })
+    : {
+        phase,
+        actualCount: 0,
+        mandatoryCount: PATH_CONTRACTS[phase].mandatoryPaths.length,
+        allowedCount: PATH_CONTRACTS[phase].allowedPaths.length,
+        allowedPaths: [...PATH_CONTRACTS[phase].allowedPaths],
+      }
   validateIndexContract({
     phase,
     changed,
-    staged,
-    unstaged: staged.length ? gitPaths(['diff', '--name-only']) : [],
-    untracked: staged.length ? gitPaths(['ls-files', '--others', '--exclude-standard']) : [],
+    localChanged: localState.paths,
+    staged: localState.staged,
+    unstaged: localState.unstaged,
+    untracked: localState.untracked,
   })
-  const protectedState = validateProtectedPaths(phase)
-  return { ...contract, stagedCount: staged.length, ...protectedState }
+  const informational = comparison.available
+    ? []
+    : [
+        {
+          code: 'BASELINE_OBJECT_UNAVAILABLE_IN_SHALLOW_CLEAN_CHECKOUT',
+          severity: 'info',
+          message:
+            'Historical P5 path comparison was skipped for a clean shallow checkout; current-state validation remained active',
+          baseline,
+        },
+      ]
+  return {
+    ...contract,
+    boundaryMode,
+    localPathCount: localState.paths.length,
+    stagedCount: localState.staged.length,
+    historicalComparison: comparison,
+    historicalLegacyState: legacyState,
+    informational,
+    ...protectedState,
+  }
 }
 const validateActivation = () => {
   const adapterManifest = readJson('.ai/protocol/adapter-manifest.json')
@@ -1618,6 +1735,51 @@ const validateActivation = () => {
   return { scripts: Object.keys(expectedScripts).length, generatedOutputs: 6 }
 }
 
+const createBoundaryFixtureRepo = temporaryRoot => {
+  const sourceRoot = fs.mkdtempSync(path.join(temporaryRoot, 'boundary-source-'))
+  run('git', ['init', '--quiet', '--initial-branch=main'], { cwd: sourceRoot })
+  run('git', ['config', 'user.name', 'CCD Boundary Fixture'], { cwd: sourceRoot })
+  run('git', ['config', 'user.email', 'ccd-boundary-fixture@example.invalid'], {
+    cwd: sourceRoot,
+  })
+  writeFile(sourceRoot, 'fixture-retained.txt', 'retained\n')
+  writeFile(sourceRoot, 'pnpm-lock.yaml', 'baseline lock\n')
+  writeFile(sourceRoot, '.ai/rules/legacy-rule.mdc', 'legacy rule\n')
+  run('git', ['add', '--', 'fixture-retained.txt', 'pnpm-lock.yaml', '.ai/rules/legacy-rule.mdc'], {
+    cwd: sourceRoot,
+  })
+  run('git', ['commit', '--quiet', '-m', 'fixture baseline'], { cwd: sourceRoot })
+  const baseline = run('git', ['rev-parse', 'HEAD'], { cwd: sourceRoot }).stdout.trim()
+
+  for (const relPath of P5_TERMINAL_PATHS)
+    writeFile(sourceRoot, relPath, `terminal fixture: ${relPath}\n`)
+  run('git', ['add', '--', ...P5_TERMINAL_PATHS], { cwd: sourceRoot })
+  run('git', ['commit', '--quiet', '-m', 'fixture terminal'], { cwd: sourceRoot })
+
+  const cloneRepo = ({ label, shallow = false }) => {
+    const root = path.join(
+      temporaryRoot,
+      `boundary-${label}-${crypto.randomBytes(4).toString('hex')}`
+    )
+    run(
+      'git',
+      [
+        'clone',
+        '--quiet',
+        ...(shallow ? ['--depth=1'] : []),
+        '--branch',
+        'main',
+        pathToFileURL(sourceRoot).href,
+        root,
+      ],
+      { cwd: temporaryRoot }
+    )
+    return root
+  }
+
+  return { baseline, clone: cloneRepo }
+}
+
 const SELF_TEST_IDS = [
   'P5-ST-R001',
   'P5-ST-R002',
@@ -1678,9 +1840,12 @@ const SELF_TEST_IDS = [
   'P5-ST-R057',
   'P5-ST-R058',
   'P5-ST-R059',
+  'P5-ST-R060',
+  'P5-ST-R061',
+  'P5-ST-R062',
 ]
 const FALSE_POSITIVE_TEST_IDS = Array.from(
-  { length: 16 },
+  { length: 20 },
   (_, index) => `P5-ST-F${String(index + 1).padStart(3, '0')}`
 )
 const LIFECYCLE_TEST_IDS = [
@@ -1728,13 +1893,13 @@ export function runSelfTests({
     ...LIFECYCLE_TEST_IDS,
   ]
   if (
-    SELF_TEST_IDS.length !== 59 ||
-    FALSE_POSITIVE_TEST_IDS.length !== 16 ||
+    SELF_TEST_IDS.length !== 62 ||
+    FALSE_POSITIVE_TEST_IDS.length !== 20 ||
     BOUNDARY_TEST_IDS.length !== 11 ||
     LIFECYCLE_TEST_IDS.length !== 8 ||
-    new Set(declaredSelfTestIds).size !== 94
+    new Set(declaredSelfTestIds).size !== 101
   )
-    fail('SELF_TEST_COUNT_DRIFT', 'Self-test inventory must contain exactly 94 unique IDs')
+    fail('SELF_TEST_COUNT_DRIFT', 'Self-test inventory must contain exactly 101 unique IDs')
   const routingById = new Map(routingFixtures.cases.map(fixture => [fixture.id, fixture]))
   const executedRouting = new Set(routingEvidence?.nodeSuite?.caseIds ?? [])
   const syncById = new Map((syncEvidence?.records ?? []).map(record => [record.id, record]))
@@ -2149,6 +2314,29 @@ export function runSelfTests({
       )
   })
 
+  const boundaryFixture = createBoundaryFixtureRepo(temporaryRoot)
+  reject('P5-ST-R060', 'BASELINE_OBJECT_UNAVAILABLE_FOR_DIRTY_CANDIDATE', () => {
+    const root = boundaryFixture.clone({ label: 'dirty-missing', shallow: true })
+    writeFile(
+      root,
+      'scripts/governance/project-ui-routing-validate.mjs',
+      'dirty shallow candidate\n'
+    )
+    validateBoundary('terminal', { root, baseline: boundaryFixture.baseline })
+  })
+  reject('P5-ST-R061', 'PROTECTED_TRACKED_PATH_DRIFT', () => {
+    const root = boundaryFixture.clone({ label: 'protected-drift' })
+    writeFile(root, 'pnpm-lock.yaml', 'protected drift\n')
+    validateBoundary('terminal', { root, baseline: boundaryFixture.baseline })
+  })
+  reject('P5-ST-R062', 'P5_TERMINAL_INDEX_DRIFT', () => {
+    const root = boundaryFixture.clone({ label: 'staged-drift' })
+    writeFile(root, 'scripts/governance/project-ui-routing-validate.mjs', 'staged drift\n')
+    writeFile(root, 'scripts/governance/cold-start-validate.mjs', 'unstaged drift\n')
+    run('git', ['add', '--', 'scripts/governance/project-ui-routing-validate.mjs'], { cwd: root })
+    validateBoundary('terminal', { root, baseline: boundaryFixture.baseline })
+  })
+
   execute('P5-ST-F001', () => {
     if (normalizePath('.ai/manifests/skill-routing.json') !== '.ai/manifests/skill-routing.json')
       fail('SELF_TEST_FALSE_POSITIVE', 'Repository-relative path was rejected')
@@ -2202,6 +2390,49 @@ export function runSelfTests({
   execute('P5-ST-F016', () => {
     if (validateLifecycleDocuments(clone(terminalDocuments)) !== 'terminal')
       fail('SELF_TEST_FALSE_POSITIVE', 'Valid terminal P3/P4 state was rejected')
+  })
+  execute('P5-ST-F017', () => {
+    const root = boundaryFixture.clone({ label: 'clean-full' })
+    const result = validateBoundary('terminal', { root, baseline: boundaryFixture.baseline })
+    if (
+      result.boundaryMode !== 'committed-clean' ||
+      result.historicalComparison?.available !== true ||
+      result.actualCount !== 50
+    )
+      fail('SELF_TEST_FALSE_POSITIVE', 'Clean full-history terminal checkout was not validated')
+  })
+  execute('P5-ST-F018', () => {
+    const root = boundaryFixture.clone({ label: 'clean-shallow', shallow: true })
+    const result = validateBoundary('terminal', { root, baseline: boundaryFixture.baseline })
+    if (
+      result.boundaryMode !== 'committed-clean' ||
+      result.historicalComparison?.available !== false ||
+      result.historicalComparison?.shallow !== true
+    )
+      fail('SELF_TEST_FALSE_POSITIVE', 'Clean shallow terminal checkout was not accepted')
+  })
+  execute('P5-ST-F019', () => {
+    const root = boundaryFixture.clone({ label: 'clean-shallow-markers', shallow: true })
+    if (validateLifecycleDocuments(clone(terminalDocuments)) !== 'terminal')
+      fail('SELF_TEST_FALSE_POSITIVE', 'Clean shallow checkout skipped terminal markers')
+    const result = validateBoundary('terminal', { root, baseline: boundaryFixture.baseline })
+    if (result.phase !== 'p5-terminal')
+      fail('SELF_TEST_FALSE_POSITIVE', 'Clean shallow terminal checkout lost terminal phase')
+  })
+  execute('P5-ST-F020', () => {
+    const root = boundaryFixture.clone({ label: 'dirty-available' })
+    writeFile(
+      root,
+      'scripts/governance/project-ui-routing-validate.mjs',
+      'dirty full-history candidate\n'
+    )
+    const result = validateBoundary('terminal', { root, baseline: boundaryFixture.baseline })
+    if (
+      result.boundaryMode !== 'dirty-candidate' ||
+      result.historicalComparison?.available !== true ||
+      result.actualCount !== 50
+    )
+      fail('SELF_TEST_FALSE_POSITIVE', 'Dirty terminal candidate lost strict path validation')
   })
 
   const p5_4Fixture = [...P5_4_PATHS]
@@ -2354,13 +2585,13 @@ export function runSelfTests({
   )
     fail(
       'SELF_TEST_EXECUTION_DRIFT',
-      'Executed self-test order or membership differs from the exact 94-case contract'
+      'Executed self-test order or membership differs from the exact 101-case contract'
     )
   return {
     status: 'pass',
     cases: executed.length,
-    rejectionCases: 59,
-    falsePositiveCases: 16,
+    rejectionCases: 62,
+    falsePositiveCases: 20,
     boundaryCases: 11,
     lifecycleCases: 8,
     caseIds,
@@ -2374,14 +2605,20 @@ const addCheck = async (report, id, operation) => {
     return details
   } catch (error) {
     const code = error?.code ?? 'UNEXPECTED_VALIDATION_FAILURE'
+    const errorDetails = error instanceof ValidationError ? error.details : {}
     report.checks.push({
       id,
       status: 'fail',
-      details: { code, message: error instanceof Error ? error.message : String(error) },
+      details: {
+        code,
+        message: error instanceof Error ? error.message : String(error),
+        ...errorDetails,
+      },
     })
     report.diagnostics.push({
       code,
       message: error instanceof Error ? error.message : String(error),
+      ...errorDetails,
     })
     return null
   }
@@ -2401,10 +2638,11 @@ const runSuite = async (selfTest, temporaryRoot) => {
       routingPassed: 0,
       syncTotal: 47,
       syncPassed: 0,
-      selfTestTotal: selfTest ? 94 : 0,
+      selfTestTotal: selfTest ? 101 : 0,
       selfTestPassed: 0,
     },
     diagnostics: [],
+    informational: [],
     snapshots: {
       repository: null,
       realCodexSkills: null,
@@ -2459,8 +2697,12 @@ const runSuite = async (selfTest, temporaryRoot) => {
   await addCheck(report, 'RULE_INDEX_V2', validateRuleIndex)
   await addCheck(report, 'ADAPTER_AND_COMMAND_ACTIVATION', validateActivation)
   const lifecycle = await addCheck(report, 'LIFECYCLE', validateLifecycle)
-  if (lifecycle)
-    await addCheck(report, 'CHANGED_PATH_BOUNDARY', () => validateBoundary(lifecycle.phase))
+  if (lifecycle) {
+    const boundary = await addCheck(report, 'CHANGED_PATH_BOUNDARY', () =>
+      validateBoundary(lifecycle.phase)
+    )
+    if (boundary?.informational?.length) report.informational.push(...boundary.informational)
+  }
   if (selfTest) {
     const suite = await addCheck(report, 'SELF_TEST_INVENTORY', () =>
       runSelfTests({
@@ -2515,10 +2757,11 @@ const printReport = report => {
     process.stdout.write(
       `CHECK id=${check.id} status=${check.status}${check.details?.code ? ` code=${check.details.code}` : ''}\n`
     )
+  for (const item of report.informational ?? []) process.stdout.write(`INFO code=${item.code}\n`)
   const boundary = report.checks.find(check => check.id === 'CHANGED_PATH_BOUNDARY')?.details
   const lifecycle = report.checks.find(check => check.id === 'LIFECYCLE')?.details
   process.stdout.write(
-    `PROJECT_UI_ROUTING_${report.ok ? 'PASS' : 'FAIL'} phase=${boundary?.phase ?? lifecycle?.phase ?? 'unknown'}\n`
+    `PROJECT_UI_ROUTING_${report.ok ? 'PASS' : 'FAIL'} phase=${boundary?.phase ?? lifecycle?.phase ?? 'unknown'}${boundary?.boundaryMode ? ` boundary=${boundary.boundaryMode}` : ''}\n`
   )
 }
 export async function runValidation(argv = process.argv.slice(2)) {

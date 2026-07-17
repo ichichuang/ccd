@@ -62,6 +62,32 @@ const runNodeScript = (relPath, args = []) =>
   })
 const runGit = args => spawnSync('git', args, { cwd: ROOT, encoding: 'utf8', stdio: 'pipe' })
 const passed = result => result.status === 0 && !result.error && !result.signal
+const gitResultDetails = result => ({
+  status: Number.isInteger(result.status) ? result.status : null,
+  signal: result.signal ?? null,
+  errorCode: result.error?.code ?? null,
+})
+const gitRuntimeFailed = result => Boolean(result.error || result.signal)
+const missingBaselineObject = result => {
+  if (gitRuntimeFailed(result)) return false
+  if (result.status === 1) return true
+  if (result.status !== 128) return false
+  return /(?:not a valid object name|bad object|unknown revision|does not exist)/iu.test(
+    result.stderr ?? ''
+  )
+}
+const gitPathState = args => {
+  const result = runGit([...args, '-z'])
+  return {
+    result,
+    paths: passed(result)
+      ? result.stdout
+          .split('\0')
+          .filter(Boolean)
+          .sort((left, right) => left.localeCompare(right, 'en'))
+      : [],
+  }
+}
 const normalizeOrigin = value =>
   value
     .trim()
@@ -92,14 +118,88 @@ const assertIsolatedTarget = target => {
 const repositoryIdentityCheck = () => {
   const top = runGit(['rev-parse', '--show-toplevel'])
   const origin = runGit(['remote', 'get-url', 'origin'])
-  const baselineAncestor = runGit(['merge-base', '--is-ancestor', BASELINE, 'HEAD'])
-  const ok =
-    passed(top) &&
-    passed(origin) &&
-    passed(baselineAncestor) &&
-    path.resolve(top.stdout.trim()) === path.resolve(ROOT) &&
-    normalizeOrigin(origin.stdout) === REPOSITORY_AUTHORITY
-  return { id: 'REPOSITORY_IDENTITY', status: ok ? 'pass' : 'fail', details: {} }
+  const baselineObject = runGit(['cat-file', '-e', `${BASELINE}^{commit}`])
+  const shallow = runGit(['rev-parse', '--is-shallow-repository'])
+  const rootActual = passed(top) ? path.resolve(top.stdout.trim()) : null
+  const originActual = passed(origin) ? normalizeOrigin(origin.stdout) : null
+  const rootMatches = rootActual === path.resolve(ROOT)
+  const authorityMatches = originActual === REPOSITORY_AUTHORITY
+  const shallowOutput = passed(shallow) ? shallow.stdout.trim() : null
+  const shallowRepository = ['true', 'false'].includes(shallowOutput)
+    ? shallowOutput === 'true'
+    : null
+  const runtimeFailures = []
+  if (gitRuntimeFailed(top)) runtimeFailures.push('repositoryRoot')
+  if (gitRuntimeFailed(origin)) runtimeFailures.push('origin')
+  if (gitRuntimeFailed(baselineObject)) runtimeFailures.push('baselineObject')
+  if (gitRuntimeFailed(shallow) || shallow.status !== 0 || shallowRepository === null)
+    runtimeFailures.push('shallowRepository')
+
+  let baselineAvailable = null
+  let baselineAncestor = null
+  let ancestry = null
+  let cleanState = null
+  let localChanges = { tracked: [], staged: [], untracked: [] }
+  const baselineMissing = missingBaselineObject(baselineObject)
+  if (passed(baselineObject)) {
+    baselineAvailable = true
+    ancestry = runGit(['merge-base', '--is-ancestor', BASELINE, 'HEAD'])
+    if (gitRuntimeFailed(ancestry) || ![0, 1].includes(ancestry.status))
+      runtimeFailures.push('baselineAncestry')
+    else baselineAncestor = ancestry.status === 0
+  } else if (baselineMissing) {
+    baselineAvailable = false
+    const tracked = gitPathState(['diff', '--name-only'])
+    const staged = gitPathState(['diff', '--cached', '--name-only'])
+    const untracked = gitPathState(['ls-files', '--others', '--exclude-standard'])
+    localChanges = {
+      tracked: tracked.paths,
+      staged: staged.paths,
+      untracked: untracked.paths,
+    }
+    for (const [name, state] of Object.entries({ tracked, staged, untracked }))
+      if (!passed(state.result)) runtimeFailures.push(`${name}State`)
+    if (!runtimeFailures.some(name => name.endsWith('State')))
+      cleanState = Object.values(localChanges).every(paths => paths.length === 0)
+  } else if (!gitRuntimeFailed(baselineObject)) runtimeFailures.push('baselineObject')
+
+  let diagnosticCode = 'REPOSITORY_IDENTITY_VERIFIED'
+  if (runtimeFailures.length) diagnosticCode = 'GIT_COMMAND_RUNTIME_FAILURE'
+  else if (!rootMatches) diagnosticCode = 'REPOSITORY_ROOT_MISMATCH'
+  else if (!authorityMatches) diagnosticCode = 'REPOSITORY_AUTHORITY_MISMATCH'
+  else if (baselineAvailable && !baselineAncestor) diagnosticCode = 'BASELINE_NOT_ANCESTOR'
+  else if (!baselineAvailable && !cleanState)
+    diagnosticCode = 'BASELINE_OBJECT_UNAVAILABLE_FOR_DIRTY_CANDIDATE'
+  else if (!baselineAvailable)
+    diagnosticCode = 'BASELINE_OBJECT_UNAVAILABLE_IN_SHALLOW_CLEAN_CHECKOUT'
+
+  const ok = [
+    'REPOSITORY_IDENTITY_VERIFIED',
+    'BASELINE_OBJECT_UNAVAILABLE_IN_SHALLOW_CLEAN_CHECKOUT',
+  ].includes(diagnosticCode)
+  return {
+    id: 'REPOSITORY_IDENTITY',
+    status: ok ? 'pass' : 'fail',
+    details: {
+      diagnosticCode,
+      repositoryRoot: { expected: path.resolve(ROOT), actual: rootActual, matches: rootMatches },
+      origin: { expected: REPOSITORY_AUTHORITY, actual: originActual, matches: authorityMatches },
+      baseline: BASELINE,
+      baselineAvailable,
+      baselineAncestor,
+      shallowRepository,
+      cleanState,
+      localChanges,
+      runtimeFailures,
+      commands: {
+        repositoryRoot: gitResultDetails(top),
+        origin: gitResultDetails(origin),
+        baselineObject: gitResultDetails(baselineObject),
+        shallowRepository: gitResultDetails(shallow),
+        baselineAncestry: ancestry ? gitResultDetails(ancestry) : null,
+      },
+    },
+  }
 }
 
 const runPreflight = argv => {
@@ -108,8 +208,19 @@ const runPreflight = argv => {
   const targetRoot = args.targetRoot ?? path.join(projectRoot, '.claude', 'skills', 'project-ui')
   const explicitTarget = Boolean(args.targetRoot || args.projectRoot)
   if (explicitTarget) assertIsolatedTarget(targetRoot)
-  const checks = [repositoryIdentityCheck()]
+  const repositoryIdentity = repositoryIdentityCheck()
+  const checks = [repositoryIdentity]
   const warnings = []
+  if (
+    repositoryIdentity.status === 'pass' &&
+    repositoryIdentity.details.diagnosticCode ===
+      'BASELINE_OBJECT_UNAVAILABLE_IN_SHALLOW_CLEAN_CHECKOUT'
+  )
+    warnings.push({
+      code: 'BASELINE_OBJECT_UNAVAILABLE_IN_SHALLOW_CLEAN_CHECKOUT',
+      message:
+        'The historical baseline object is unavailable; clean current-state validation remains active.',
+    })
   const missing = REQUIRED_PATHS.filter(relPath => !fs.existsSync(path.join(ROOT, relPath)))
   checks.push({
     id: 'REQUIRED_PATHS',
