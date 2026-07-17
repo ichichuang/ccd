@@ -80,36 +80,109 @@ const P4_4_PATHS = new Set([
   'wiki/canonical/design/machine-ui-policy.md',
   'wiki/canonical/design/project-ui-skill.md',
 ])
-const TERMINAL_AUTHORIZED_PATHS = new Set([...AUTHORIZED_PATHS, ...P4_4_PATHS])
-const TERMINAL_LIFECYCLE_DOCUMENTS = [
+const P4_TERMINAL_AUTHORIZED_PATHS = new Set([...AUTHORIZED_PATHS, ...P4_4_PATHS])
+const P5_4_AUTHORIZED_PATHS = new Set([
+  '.ai/governance/routing/fixtures/routing-cases.json',
+  '.ai/governance/routing/fixtures/sync-cases.json',
+  '.ai/governance/routing/routing-scopes.schema.json',
+  '.ai/governance/routing/skill-routing.schema.json',
+  '.ai/manifests/routing-scopes.json',
+  '.ai/manifests/rule-index.json',
+  '.ai/manifests/skill-routing.json',
+  '.ai/manifests/skills-lock.json',
+  '.ai/protocol/AGENTS.core.md',
+  '.ai/protocol/AI.entry.md',
+  '.ai/protocol/adapter-manifest.json',
+  '.ai/protocol/adapters/README.md',
+  '.ai/protocol/adapters/claude.md',
+  '.ai/protocol/adapters/codex.md',
+  '.ai/skills/codex/task-orchestrator/scripts/skill_router.mjs',
+  '.ai/skills/codex/task-orchestrator/scripts/skill_router.py',
+  'AGENTS.md',
+  'CLAUDE.md',
+  'package.json',
+  'scripts/ai-doctor.mjs',
+  'scripts/ai-sync-claude.mjs',
+  'scripts/ai-sync-codex.mjs',
+  'scripts/ai-sync-skills.mjs',
+  'scripts/claude-preflight.mjs',
+  'scripts/codex-preflight.mjs',
+  'scripts/generate-ai-protocol-adapters.mjs',
+  'scripts/generate-rule-index.mjs',
+  'scripts/governance/adapters-validate.mjs',
+  'scripts/governance/cold-start-validate.mjs',
+  'scripts/governance/gate.mjs',
+  'scripts/governance/project-ui-routing-validate.mjs',
+  'scripts/skill-lock-utils.mjs',
+  'scripts/skill-sync-engine.mjs',
+  'scripts/validate-workspace.mjs',
+])
+const P5_5_AUTHORIZED_PATHS = new Set([
+  ...P4_4_PATHS,
+  '.ai/manifests/skills-lock.json',
+  'wiki/canonical/design/project-ui-routing.md',
+])
+const P5_TERMINAL_AUTHORIZED_PATHS = new Set([...P5_4_AUTHORIZED_PATHS, ...P5_5_AUTHORIZED_PATHS])
+const P5_CORE_ARTIFACT_PATHS = [
+  '.ai/governance/routing/fixtures/routing-cases.json',
+  '.ai/governance/routing/fixtures/sync-cases.json',
+  '.ai/governance/routing/routing-scopes.schema.json',
+  '.ai/governance/routing/skill-routing.schema.json',
+  '.ai/manifests/routing-scopes.json',
+  'scripts/ai-sync-claude.mjs',
+  'scripts/ai-sync-skills.mjs',
+  'scripts/claude-preflight.mjs',
+  'scripts/governance/project-ui-routing-validate.mjs',
+  'scripts/skill-sync-engine.mjs',
+]
+const P5_TERMINAL_DOCUMENT = 'wiki/canonical/design/project-ui-routing.md'
+const P5_LIFECYCLE_DOCUMENTS = [
   '.ai/skills/project-ui/SKILL.md',
   '.ai/skills/project-ui/references/platform-invariants.md',
   '.ai/skills/project-ui/references/validation.md',
-  '.ai/governance/ui/scripts/validate-ui-policy.mjs',
   'wiki/canonical/design/machine-ui-policy.md',
   'wiki/canonical/design/project-ui-skill.md',
 ]
-const TERMINAL_MARKER_EXPECTATIONS = new Map([
+const P3_P4_TERMINAL_MARKERS = [
+  'P3_COMPLETE',
+  'P4_STARTED',
+  'P4_COMPLETE',
+  'COLD_START_ATOMIC_REPLACEMENT_COMPLETE',
+  'AGENTS_TRACKED',
+  'CLAUDE_TRACKED',
+  'CLAUDE_ADAPTER_TRACKED',
+  'ADAPTER_MANIFEST_COLD_START_COMPLETE',
+  'ADAPTER_GENERATION_DETERMINISTIC',
+  'AI_SYNC_IDEMPOTENT',
+  'FRESH_CLONE_ENTRYPOINTS_PASS',
+]
+const P5_TERMINAL_MARKER_EXPECTATIONS = new Map([
+  ['P5_STARTED', 'yes'],
+  ['P5_COMPLETE', 'yes'],
+  ['PROJECT_UI_DISCOVERED', 'yes'],
+  ['PROJECT_UI_ROUTED', 'yes'],
+  ['PROJECT_UI_SYNCHRONIZED', 'yes'],
+  ['PROJECT_UI_ADAPTER_ACTIVATED', 'yes'],
+  ['PROJECT_UI_LOCKED', 'yes'],
+  ['PROJECT_UI_CODEX_SYNC_CONTRACT_COMPLETE', 'yes'],
+  ['PROJECT_UI_CLAUDE_SYNC_CONTRACT_COMPLETE', 'yes'],
+  ['SKILL_ROUTING_MANIFEST_CURRENT', 'yes'],
+  ['ROUTING_SCOPE_REGISTRY_COMPLETE', 'yes'],
+  ['SKILLS_LOCK_CURRENT', 'yes'],
+  ['RULE_INDEX_CURRENT', 'yes'],
+  ['NODE_PYTHON_ROUTER_PARITY', 'yes'],
+  ['GENERIC_UI_ROUTES_TO_PROJECT_UI', 'yes'],
+  ['MOTION_ROUTING_CONDITIONAL', 'yes'],
+  ['NON_UI_ROUTING_PRESERVED', 'yes'],
+  ['ADAPTER_PROJECT_UI_MAPPING_COMPLETE', 'yes'],
+  ['CODEX_ADAPTER_PROJECT_UI_ACTIVE', 'yes'],
+  ['CLAUDE_ADAPTER_PROJECT_UI_ACTIVE', 'yes'],
   ['SOURCE_SCANNER_IMPLEMENTED', 'no'],
   ['PAGE_CONTRACT_CREATED', 'no'],
-  ['P4_STARTED', 'yes'],
-  ['P5_STARTED', 'no'],
-  ['PROJECT_UI_DISCOVERED', 'no'],
-  ['PROJECT_UI_ROUTED', 'no'],
-  ['PROJECT_UI_SYNCHRONIZED', 'no'],
-  ['PROJECT_UI_ADAPTER_ACTIVATED', 'no'],
+  ['LEGACY_SKILLS_RETIRED', 'no'],
+  ['LEGACY_RULES_RETIRED', 'no'],
 ])
-const LIFECYCLE_MARKERS = [
-  'P4_STARTED',
-  'P5_STARTED',
-  'SOURCE_SCANNER_IMPLEMENTED',
-  'PAGE_CONTRACT_CREATED',
-  'PROJECT_UI_DISCOVERED',
-  'PROJECT_UI_ROUTED',
-  'PROJECT_UI_SYNCHRONIZED',
-  'PROJECT_UI_ADAPTER_ACTIVATED',
-  'P4_COMPLETE',
-]
+const LIFECYCLE_MARKERS = [...P3_P4_TERMINAL_MARKERS, ...P5_TERMINAL_MARKER_EXPECTATIONS.keys()]
 
 class ValidationFailure extends Error {
   constructor(code, message, details = {}) {
@@ -817,15 +890,6 @@ const implementationValidation = ({ root = ROOT } = {}) =>
     forbidP4_4: true,
   })
 
-const terminalStructuralValidation = ({ root = ROOT } = {}) =>
-  structuralValidation({
-    root,
-    mode: 'default',
-    allowedPaths: TERMINAL_AUTHORIZED_PATHS,
-    requireEmptyIndex: false,
-    forbidP4_4: false,
-  })
-
 const expectFailure = (records, id, expectedCode, operation) => {
   let actualCode = 'NO_ERROR'
   try {
@@ -1125,7 +1189,7 @@ const runSelfTestsInFixture = root => {
     run('git', ['add', '--', lifecyclePath], { root: scopeFixture })
     expectPass(records, 'terminal-authorizes-p4-4-scope', () => {
       changedPathState(scopeFixture, {
-        allowedPaths: TERMINAL_AUTHORIZED_PATHS,
+        allowedPaths: P4_TERMINAL_AUTHORIZED_PATHS,
         requireEmptyIndex: false,
       })
     })
@@ -1138,6 +1202,179 @@ const runSelfTestsInFixture = root => {
     })
   } finally {
     fs.rmSync(scopeFixture, { recursive: true, force: true })
+  }
+
+  const lifecycleDocuments = [
+    '.ai/skills/project-ui/SKILL.md',
+    '.ai/skills/project-ui/references/platform-invariants.md',
+    '.ai/skills/project-ui/references/validation.md',
+    'wiki/canonical/design/machine-ui-policy.md',
+    'wiki/canonical/design/project-ui-skill.md',
+  ]
+  const p4TerminalMarkers = [
+    'P3_COMPLETE=yes',
+    'P4_STARTED=yes',
+    'P4_COMPLETE=yes',
+    'COLD_START_ATOMIC_REPLACEMENT_COMPLETE=yes',
+    'AGENTS_TRACKED=yes',
+    'CLAUDE_TRACKED=yes',
+    'CLAUDE_ADAPTER_TRACKED=yes',
+    'ADAPTER_MANIFEST_COLD_START_COMPLETE=yes',
+    'ADAPTER_GENERATION_DETERMINISTIC=yes',
+    'AI_SYNC_IDEMPOTENT=yes',
+    'FRESH_CLONE_ENTRYPOINTS_PASS=yes',
+  ]
+  const preTerminalMarkers = [
+    'P5_STARTED=no',
+    'P5_COMPLETE=no',
+    'PROJECT_UI_DISCOVERED=no',
+    'PROJECT_UI_ROUTED=no',
+    'PROJECT_UI_SYNCHRONIZED=no',
+    'PROJECT_UI_ADAPTER_ACTIVATED=no',
+    'SOURCE_SCANNER_IMPLEMENTED=no',
+    'PAGE_CONTRACT_CREATED=no',
+  ]
+  const p5TerminalMarkers = [
+    'P5_STARTED=yes',
+    'P5_COMPLETE=yes',
+    'PROJECT_UI_DISCOVERED=yes',
+    'PROJECT_UI_ROUTED=yes',
+    'PROJECT_UI_SYNCHRONIZED=yes',
+    'PROJECT_UI_ADAPTER_ACTIVATED=yes',
+    'PROJECT_UI_LOCKED=yes',
+    'PROJECT_UI_CODEX_SYNC_CONTRACT_COMPLETE=yes',
+    'PROJECT_UI_CLAUDE_SYNC_CONTRACT_COMPLETE=yes',
+    'SKILL_ROUTING_MANIFEST_CURRENT=yes',
+    'ROUTING_SCOPE_REGISTRY_COMPLETE=yes',
+    'SKILLS_LOCK_CURRENT=yes',
+    'RULE_INDEX_CURRENT=yes',
+    'NODE_PYTHON_ROUTER_PARITY=yes',
+    'GENERIC_UI_ROUTES_TO_PROJECT_UI=yes',
+    'MOTION_ROUTING_CONDITIONAL=yes',
+    'NON_UI_ROUTING_PRESERVED=yes',
+    'ADAPTER_PROJECT_UI_MAPPING_COMPLETE=yes',
+    'CODEX_ADAPTER_PROJECT_UI_ACTIVE=yes',
+    'CLAUDE_ADAPTER_PROJECT_UI_ACTIVE=yes',
+    'SOURCE_SCANNER_IMPLEMENTED=no',
+    'PAGE_CONTRACT_CREATED=no',
+    'LEGACY_SKILLS_RETIRED=no',
+    'LEGACY_RULES_RETIRED=no',
+  ]
+  const p5CoreArtifacts = [
+    '.ai/governance/routing/fixtures/routing-cases.json',
+    '.ai/governance/routing/fixtures/sync-cases.json',
+    '.ai/governance/routing/routing-scopes.schema.json',
+    '.ai/governance/routing/skill-routing.schema.json',
+    '.ai/manifests/routing-scopes.json',
+    'scripts/ai-sync-claude.mjs',
+    'scripts/ai-sync-skills.mjs',
+    'scripts/claude-preflight.mjs',
+    'scripts/governance/project-ui-routing-validate.mjs',
+    'scripts/skill-sync-engine.mjs',
+  ]
+  const writeLifecycleFixture = phase => {
+    const fixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ccd-cold-lifecycle-self-test-'))
+    const markers = [
+      ...p4TerminalMarkers,
+      ...(phase === 'p5-terminal' ? p5TerminalMarkers : preTerminalMarkers),
+    ]
+    for (const relPath of lifecycleDocuments) {
+      const absolute = path.join(fixtureRoot, relPath)
+      fs.mkdirSync(path.dirname(absolute), { recursive: true })
+      fs.writeFileSync(absolute, `# Current lifecycle\n${markers.join('\n')}\n`, 'utf8')
+    }
+    for (const relPath of P4_4_PATHS) {
+      const absolute = path.join(fixtureRoot, relPath)
+      if (fs.existsSync(absolute)) continue
+      fs.mkdirSync(path.dirname(absolute), { recursive: true })
+      fs.writeFileSync(absolute, 'fixture\n', 'utf8')
+    }
+    const policy = `${JSON.stringify(
+      {
+        sourceScannerImplemented: false,
+        pageContractCreated: false,
+        p4Started: true,
+        p5Started: phase === 'p5-terminal',
+      },
+      null,
+      2
+    )}\n`
+    for (const relPath of [
+      '.ai/governance/policies/ui.json',
+      '.ai/governance/ui/fixtures/schema-valid/ui-policy.json',
+    ]) {
+      fs.writeFileSync(path.join(fixtureRoot, relPath), policy, 'utf8')
+    }
+    fs.writeFileSync(
+      path.join(fixtureRoot, '.ai/governance/coverage/project-ui-semantic-coverage.json'),
+      `${JSON.stringify(
+        {
+          skillLockDiscovered: phase === 'p5-terminal',
+          routed: phase === 'p5-terminal',
+          synchronized: phase === 'p5-terminal',
+          adapterActivated: phase === 'p5-terminal',
+        },
+        null,
+        2
+      )}\n`,
+      'utf8'
+    )
+    if (phase !== 'p4-baseline') {
+      for (const relPath of p5CoreArtifacts) {
+        const absolute = path.join(fixtureRoot, relPath)
+        fs.mkdirSync(path.dirname(absolute), { recursive: true })
+        fs.writeFileSync(absolute, 'fixture\n', 'utf8')
+      }
+    }
+    if (phase === 'p5-terminal') {
+      const terminalDocument = path.join(fixtureRoot, 'wiki/canonical/design/project-ui-routing.md')
+      fs.mkdirSync(path.dirname(terminalDocument), { recursive: true })
+      fs.writeFileSync(terminalDocument, '# Project UI routing\n', 'utf8')
+    }
+    return fixtureRoot
+  }
+
+  for (const [id, phase] of [
+    ['phase-p4-baseline', 'p4-baseline'],
+    ['phase-valid-p5-pre-terminal', 'p5-pre-terminal'],
+    ['phase-valid-p5-terminal', 'p5-terminal'],
+  ]) {
+    const lifecycleFixture = writeLifecycleFixture(phase)
+    try {
+      expectPass(records, id, () => {
+        const lifecycle = inspectPhaseAwareLifecycle(lifecycleFixture)
+        if (lifecycle.phase !== phase) fail('SELF_TEST_PHASE', `${id} inferred ${lifecycle.phase}`)
+      })
+    } finally {
+      fs.rmSync(lifecycleFixture, { recursive: true, force: true })
+    }
+  }
+
+  const partialTerminalFixture = writeLifecycleFixture('p5-pre-terminal')
+  try {
+    const partialDocument = path.join(partialTerminalFixture, lifecycleDocuments[0])
+    fs.appendFileSync(partialDocument, 'P5_COMPLETE=yes\n', 'utf8')
+    expectFailure(records, 'phase-partial-p5-terminal', 'P5_LIFECYCLE_PARTIAL', () =>
+      inspectPhaseAwareLifecycle(partialTerminalFixture)
+    )
+  } finally {
+    fs.rmSync(partialTerminalFixture, { recursive: true, force: true })
+  }
+
+  for (const [id, phase] of [
+    ['scope-unauthorized-p5-pre-terminal', 'p5-pre-terminal'],
+    ['scope-unauthorized-p5-terminal', 'p5-terminal'],
+  ]) {
+    const boundaryFixture = fs.mkdtempSync(path.join(os.tmpdir(), 'ccd-cold-boundary-self-test-'))
+    try {
+      run('git', ['init', '-q'], { root: boundaryFixture })
+      fs.writeFileSync(path.join(boundaryFixture, 'unauthorized.txt'), 'fixture\n', 'utf8')
+      expectFailure(records, id, 'UNAUTHORIZED_CHANGED_PATH', () =>
+        validatePhaseBoundary(boundaryFixture, phase)
+      )
+    } finally {
+      fs.rmSync(boundaryFixture, { recursive: true, force: true })
+    }
   }
 
   return {
@@ -1158,81 +1395,225 @@ const runSelfTests = ({ root = ROOT } = {}) => {
   }
 }
 
-const inspectTerminalLifecycle = root => {
-  const missingPaths = [...P4_4_PATHS].filter(relPath => !exists(root, relPath)).sort()
-  const markerMismatches = []
-  const canonical = 'wiki/canonical/design/ai-cold-start.md'
+const lifecycleMarkerValues = (content, marker) =>
+  [...stripHistoricalSections(content).matchAll(new RegExp(`\\b${marker}=(yes|no)\\b`, 'gu'))].map(
+    match => match[1]
+  )
 
-  const inspectMarkerDocument = relPath => {
-    if (!exists(root, relPath)) return
-    const content = readText(root, relPath)
-    for (const [marker, expected] of TERMINAL_MARKER_EXPECTATIONS) {
-      const actual = [...content.matchAll(new RegExp(`\\b${marker}=(yes|no)\\b`, 'gu'))].map(
-        match => match[1]
-      )
-      if (actual.length === 0 || actual.some(value => value !== expected)) {
-        markerMismatches.push({ relPath, marker, expected, actual })
-      }
-    }
-  }
-
-  inspectMarkerDocument(canonical)
-  for (const relPath of TERMINAL_LIFECYCLE_DOCUMENTS) inspectMarkerDocument(relPath)
-  if (exists(root, canonical)) {
-    const actual = [...readText(root, canonical).matchAll(/\bP4_COMPLETE=(yes|no)\b/gu)].map(
-      match => match[1]
-    )
-    if (actual.length === 0 || actual.some(value => value !== 'yes')) {
-      markerMismatches.push({
-        relPath: canonical,
-        marker: 'P4_COMPLETE',
-        expected: 'yes',
-        actual,
-      })
-    }
-  }
-
-  const inspectPolicyJson = relPath => {
-    if (!exists(root, relPath)) return
-    const policy = JSON.parse(readText(root, relPath))
-    const expected = {
-      sourceScannerImplemented: false,
-      pageContractCreated: false,
-      p4Started: true,
-      p5Started: false,
-    }
-    for (const [marker, value] of Object.entries(expected)) {
-      if (policy[marker] !== value) {
-        markerMismatches.push({ relPath, marker, expected: value, actual: policy[marker] })
-      }
-    }
-  }
-  inspectPolicyJson('.ai/governance/policies/ui.json')
-  inspectPolicyJson('.ai/governance/ui/fixtures/schema-valid/ui-policy.json')
-
-  if (exists(root, '.ai/governance/coverage/project-ui-semantic-coverage.json')) {
-    const coveragePath = '.ai/governance/coverage/project-ui-semantic-coverage.json'
-    const coverage = readText(root, coveragePath)
-    for (const marker of ['skillLockDiscovered', 'routed', 'synchronized', 'adapterActivated']) {
-      const actual = [
-        ...coverage.matchAll(new RegExp(`"${marker}"\\s*:\\s*(true|false)`, 'gu')),
-      ].map(match => match[1])
-      if (actual.length === 0 || actual.some(value => value !== 'false')) {
-        markerMismatches.push({
-          relPath: coveragePath,
+const validateP3P4TerminalState = documents => {
+  for (const document of documents) {
+    for (const marker of P3_P4_TERMINAL_MARKERS) {
+      const actual = lifecycleMarkerValues(document.content, marker)
+      if (actual.length === 0 || actual.some(value => value !== 'yes')) {
+        fail('P3_P4_TERMINAL_STATE_REQUIRED', `${document.relPath} must contain ${marker}=yes`, {
+          relPath: document.relPath,
           marker,
-          expected: 'false',
+          expected: 'yes',
           actual,
         })
       }
     }
   }
+}
 
-  return {
-    complete: missingPaths.length === 0 && markerMismatches.length === 0,
-    missingPaths,
-    markerMismatches,
+const validateAbsentFutureArtifacts = root => {
+  const pageContractPaths = [
+    '.ai/governance/policies/page-contract.json',
+    '.ai/governance/ui/page-contract.json',
+    '.ai/governance/ui/schemas/page-contract.schema.json',
+  ].filter(relPath => exists(root, relPath))
+  if (pageContractPaths.length > 0) {
+    fail('PAGE_CONTRACT_FALSE_POSITIVE', 'Page Contract artifacts must remain absent', {
+      paths: pageContractPaths,
+    })
   }
+  const scannerPaths = ['.ai', 'scripts']
+    .filter(relPath => exists(root, relPath))
+    .flatMap(relPath => listFiles(root, relPath))
+    .filter(relPath => /source[-_]?scanner/iu.test(relPath))
+    .sort()
+  if (scannerPaths.length > 0) {
+    fail('SOURCE_SCANNER_FALSE_POSITIVE', 'Source scanner artifacts must remain absent', {
+      paths: scannerPaths,
+    })
+  }
+}
+
+const validatePolicyLifecycleState = (root, terminal) => {
+  const markerMismatches = []
+  const expected = {
+    sourceScannerImplemented: false,
+    pageContractCreated: false,
+    p4Started: true,
+    p5Started: terminal,
+  }
+  for (const relPath of [
+    '.ai/governance/policies/ui.json',
+    '.ai/governance/ui/fixtures/schema-valid/ui-policy.json',
+  ]) {
+    if (!exists(root, relPath)) continue
+    const policy = JSON.parse(readText(root, relPath))
+    for (const [marker, value] of Object.entries(expected)) {
+      if (policy[marker] !== value)
+        markerMismatches.push({ relPath, marker, expected: value, actual: policy[marker] })
+    }
+  }
+  const coveragePath = '.ai/governance/coverage/project-ui-semantic-coverage.json'
+  if (exists(root, coveragePath)) {
+    const coverage = readText(root, coveragePath)
+    for (const marker of ['skillLockDiscovered', 'routed', 'synchronized', 'adapterActivated']) {
+      const actual = [
+        ...coverage.matchAll(new RegExp(`"${marker}"\\s*:\\s*(true|false)`, 'gu')),
+      ].map(match => match[1])
+      if (actual.length === 0 || actual.some(value => value !== String(terminal))) {
+        markerMismatches.push({
+          relPath: coveragePath,
+          marker,
+          expected: terminal,
+          actual,
+        })
+      }
+    }
+  }
+  if (markerMismatches.length > 0) {
+    fail('P5_LIFECYCLE_PARTIAL', 'Policy or coverage lifecycle state is partial or mixed', {
+      markerMismatches,
+    })
+  }
+}
+
+const validatePreTerminalMarkers = documents => {
+  for (const document of documents) {
+    for (const marker of P5_TERMINAL_MARKER_EXPECTATIONS.keys()) {
+      const actual = lifecycleMarkerValues(document.content, marker)
+      if (actual.some(value => value !== 'no')) {
+        fail('P5_LIFECYCLE_PARTIAL', `${document.relPath} has premature ${marker}=yes`, {
+          relPath: document.relPath,
+          marker,
+          actual,
+        })
+      }
+    }
+  }
+}
+
+const validateTerminalMarkers = documents => {
+  for (const document of documents) {
+    for (const [marker, expected] of P5_TERMINAL_MARKER_EXPECTATIONS) {
+      const actual = lifecycleMarkerValues(document.content, marker)
+      if (actual.length === 0 || actual.some(value => value !== expected)) {
+        fail('P5_LIFECYCLE_PARTIAL', `${document.relPath} must contain ${marker}=${expected}`, {
+          relPath: document.relPath,
+          marker,
+          expected,
+          actual,
+        })
+      }
+    }
+  }
+}
+
+const inspectPhaseAwareLifecycle = root => {
+  if (
+    P5_4_AUTHORIZED_PATHS.size !== 34 ||
+    P5_5_AUTHORIZED_PATHS.size !== 17 ||
+    P5_TERMINAL_AUTHORIZED_PATHS.size !== 50
+  ) {
+    fail('P5_PATH_CONTRACT_DRIFT', 'Frozen P5 changed-path counts drifted', {
+      p5_4: P5_4_AUTHORIZED_PATHS.size,
+      p5_5: P5_5_AUTHORIZED_PATHS.size,
+      terminal: P5_TERMINAL_AUTHORIZED_PATHS.size,
+    })
+  }
+  const missingP4Paths = [...P4_4_PATHS].filter(relPath => !exists(root, relPath)).sort()
+  if (missingP4Paths.length > 0)
+    fail('P4_BASELINE_INCOMPLETE', 'P4 terminal artifacts are incomplete', {
+      missingPaths: missingP4Paths,
+    })
+  const documents = P5_LIFECYCLE_DOCUMENTS.map(relPath => {
+    if (!exists(root, relPath))
+      fail('P4_BASELINE_INCOMPLETE', `Lifecycle document is missing: ${relPath}`)
+    return { relPath, content: readText(root, relPath) }
+  })
+  validateP3P4TerminalState(documents)
+  validateAbsentFutureArtifacts(root)
+
+  const presentP5Artifacts = P5_CORE_ARTIFACT_PATHS.filter(relPath => exists(root, relPath))
+  if (
+    presentP5Artifacts.length > 0 &&
+    presentP5Artifacts.length !== P5_CORE_ARTIFACT_PATHS.length
+  ) {
+    fail('P5_ARTIFACT_PARTIAL', 'P5 core artifacts are partial', {
+      present: presentP5Artifacts,
+      missing: P5_CORE_ARTIFACT_PATHS.filter(relPath => !presentP5Artifacts.includes(relPath)),
+    })
+  }
+  const hasTerminalMarker = documents.some(document =>
+    [...P5_TERMINAL_MARKER_EXPECTATIONS]
+      .filter(([, expected]) => expected === 'yes')
+      .some(([marker]) => lifecycleMarkerValues(document.content, marker).includes('yes'))
+  )
+  const terminalDocumentPresent = exists(root, P5_TERMINAL_DOCUMENT)
+  if (hasTerminalMarker || terminalDocumentPresent) {
+    if (presentP5Artifacts.length !== P5_CORE_ARTIFACT_PATHS.length || !terminalDocumentPresent) {
+      fail('P5_LIFECYCLE_PARTIAL', 'P5 terminal lifecycle and artifacts are partial', {
+        terminalDocumentPresent,
+        presentP5Artifacts,
+      })
+    }
+    validateTerminalMarkers(documents)
+    validatePolicyLifecycleState(root, true)
+    return {
+      complete: true,
+      phase: 'p5-terminal',
+      lifecycleSources: documents.map(document => document.relPath),
+      artifactCount: P5_TERMINAL_AUTHORIZED_PATHS.size,
+    }
+  }
+
+  validatePreTerminalMarkers(documents)
+  validatePolicyLifecycleState(root, false)
+  const phase = presentP5Artifacts.length === 0 ? 'p4-baseline' : 'p5-pre-terminal'
+  return {
+    complete: true,
+    phase,
+    lifecycleSources: documents.map(document => document.relPath),
+    artifactCount: phase === 'p4-baseline' ? P4_TERMINAL_AUTHORIZED_PATHS.size : 34,
+  }
+}
+
+const phaseBoundaryConfig = phase => {
+  if (phase === 'p4-baseline')
+    return {
+      allowedPaths: P4_TERMINAL_AUTHORIZED_PATHS,
+      requireEmptyIndex: false,
+      forbidP4_4: false,
+    }
+  if (phase === 'p5-pre-terminal')
+    return {
+      allowedPaths: P5_4_AUTHORIZED_PATHS,
+      requireEmptyIndex: true,
+      forbidP4_4: false,
+    }
+  if (phase === 'p5-terminal')
+    return {
+      allowedPaths: P5_TERMINAL_AUTHORIZED_PATHS,
+      requireEmptyIndex: true,
+      forbidP4_4: false,
+    }
+  fail('UNKNOWN_LIFECYCLE_PHASE', `Unknown lifecycle phase: ${phase}`)
+}
+
+const validatePhaseBoundary = (root, phase) => changedPathState(root, phaseBoundaryConfig(phase))
+
+const phaseAwareStructuralValidation = ({ root = ROOT } = {}) => {
+  const lifecycle = inspectPhaseAwareLifecycle(root)
+  const report = structuralValidation({
+    root,
+    mode: lifecycle.phase,
+    ...phaseBoundaryConfig(lifecycle.phase),
+  })
+  return { ...report, mode: 'default', lifecycle }
 }
 
 const validateMaterializedIndexCandidate = (candidate, { baselineRoot, tracked }) => {
@@ -1281,11 +1662,8 @@ const validateMaterializedIndexCandidate = (candidate, { baselineRoot, tracked }
   if (comparison.some(output => !output.matches))
     fail('POST_SYNC_OUTPUT_DRIFT', 'Outputs drifted after staged-candidate ai-sync')
 
-  const lifecycle = inspectTerminalLifecycle(candidate)
-  if (!lifecycle.complete) {
-    fail('TERMINAL_LIFECYCLE_INCOMPLETE', 'Staged candidate lifecycle is incomplete', lifecycle)
-  }
-  addCheck(checks, 'TERMINAL_LIFECYCLE')
+  const lifecycle = inspectPhaseAwareLifecycle(candidate)
+  addCheck(checks, 'PHASE_AWARE_LIFECYCLE', { phase: lifecycle.phase })
   return checks
 }
 
@@ -1300,7 +1678,7 @@ const stagedValidation = ({ root = ROOT } = {}) => {
     fail('UNRELATED_UNTRACKED_FILES', 'Staged validation rejects untracked files', { untracked })
 
   const staged = splitNull(git(['diff', '--cached', '--name-only', '-z'], { root }).stdout)
-  const unauthorized = staged.filter(relPath => !TERMINAL_AUTHORIZED_PATHS.has(relPath))
+  const unauthorized = staged.filter(relPath => !P4_TERMINAL_AUTHORIZED_PATHS.has(relPath))
   if (unauthorized.length > 0)
     fail('UNAUTHORIZED_STAGED_PATH', 'Index contains unauthorized paths', { unauthorized })
   for (const relPath of CORE_PATHS) {
@@ -1379,24 +1757,13 @@ export function runColdStartValidation(argv = process.argv.slice(2), { root = RO
   if (mode === 'self-test') report = runSelfTests({ root })
   else if (mode === 'staged') report = stagedValidation({ root })
   else if (mode === 'implementation') report = implementationValidation({ root })
-  else report = terminalStructuralValidation({ root })
+  else report = phaseAwareStructuralValidation({ root })
 
   if (mode === 'default') {
-    const lifecycle = inspectTerminalLifecycle(root)
-    const terminalReport = {
-      ...report,
-      mode: 'default',
-      ok: lifecycle.complete,
-      diagnostics: lifecycle.complete ? [] : ['TERMINAL_LIFECYCLE_INCOMPLETE'],
-      lifecycle,
-    }
-    if (jsonOutput) writeJsonReport(root, jsonOutput, terminalReport)
-    if (!lifecycle.complete) {
-      console.error('TERMINAL_LIFECYCLE_INCOMPLETE')
-      return { report: terminalReport, exitCode: 1 }
-    }
+    if (jsonOutput) writeJsonReport(root, jsonOutput, report)
+    console.log(`COLD_START_PHASE=${report.lifecycle.phase}`)
     console.log('COLD_START_TERMINAL_PASS')
-    return { report: terminalReport, exitCode: 0 }
+    return { report, exitCode: 0 }
   }
 
   if (jsonOutput) writeJsonReport(root, jsonOutput, report)

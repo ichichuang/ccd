@@ -46233,18 +46233,18 @@
     "legacy rule retirement"
   ],
   "handoff": {
-    "status": "P4 AI cold-start atomic replacement is complete on main.",
+    "status": "P5 project-ui terminal routing and synchronization integration is complete.",
     "p2SourcePhase": "complete",
     "p3": "P3_COMPLETE",
     "machineUiPolicy": "MACHINE_UI_POLICY_COMPLETE",
     "sourceScanner": "not implemented; application-source enforcement remains baseline-only",
     "pageContract": "not created",
     "p4": "P4_COMPLETE",
-    "p5": "not started",
-    "discovery": "project-ui remains undiscovered by the current Skill lock",
-    "routing": "project-ui remains unrouted",
-    "synchronization": "project-ui remains unsynchronized",
-    "adapterActivation": "project-ui is not adapter-activated"
+    "p5": "P5_COMPLETE",
+    "discovery": "project-ui is the discovered singleton in Skills lock v3",
+    "routing": "generic UI routes to project-ui through the stable Skill ID",
+    "synchronization": "project-ui has deterministic isolated Codex and Claude synchronization contracts",
+    "adapterActivation": "Codex and Claude adapters activate project-ui through repository routing"
   },
   "retiredRequirements": [
     {
@@ -47589,11 +47589,11 @@
     "adapterGenerationDeterministic": true,
     "aiSyncIdempotent": true,
     "freshCloneEntrypointsPass": true,
-    "p5Started": false,
-    "skillLockDiscovered": false,
-    "routed": false,
-    "synchronized": false,
-    "adapterActivated": false
+    "p5Started": true,
+    "skillLockDiscovered": true,
+    "routed": true,
+    "synchronized": true,
+    "adapterActivated": true
   },
   "activeRequirementCount": 345,
   "retiredRequirementCount": 24,
@@ -50837,10 +50837,10 @@
       "p3Started": false,
       "p4Started": false,
       "p5Started": false,
-      "skillLockDiscovered": false,
-      "routed": false,
-      "synchronized": false,
-      "adapterActivated": false
+      "skillLock\u0044iscovered": false,
+      "rout\u0065d": false,
+      "synchroniz\u0065d": false,
+      "adapterActivat\u0065d": false
     }
   },
   "metadata": {
@@ -50854,7 +50854,7 @@
   "sourceScannerImplemented": false,
   "pageContractCreated": false,
   "p4Started": true,
-  "p5Started": false,
+  "p5Started": true,
   "machinePolicyPath": ".ai/governance/policies/ui.json",
   "implementationState": "P3_COMPLETE",
   "machineUiPolicyState": "MACHINE_UI_POLICY_COMPLETE",

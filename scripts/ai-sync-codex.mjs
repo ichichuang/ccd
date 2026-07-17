@@ -1,40 +1,48 @@
-import fs from 'node:fs'
-import os from 'node:os'
-import path from 'node:path'
-import { generateSkillsLock, stringifySkillsLock } from './skill-lock-utils.mjs'
+#!/usr/bin/env node
 
-const cwd = process.cwd()
-const targetRoot = path.join(os.homedir(), '.codex', 'skills')
-const sourceRoots = ['.ai/skills/core', '.ai/skills/design', '.ai/skills/codex']
-const skillsLockPath = path.join(cwd, '.ai', 'manifests', 'skills-lock.json')
+import process from 'node:process'
+import {
+  SkillSyncError,
+  canonicalSyncJson,
+  parseSyncArgs,
+  renderSyncReport,
+  syncSkills,
+} from './skill-sync-engine.mjs'
 
-const syncSkill = (sourceRoot, skillName) => {
-  const sourceDir = path.join(cwd, sourceRoot, skillName)
-  const targetDir = path.join(targetRoot, skillName)
-  fs.rmSync(targetDir, { recursive: true, force: true })
-  fs.cpSync(sourceDir, targetDir, { recursive: true })
-  console.log(`[SYNC] ${targetDir} <= ${path.join(sourceRoot, skillName)}`)
-}
+const exitCode = report =>
+  report.status === 'drift'
+    ? 1
+    : report.status === 'rejected' || report.status === 'rolled-back'
+      ? 2
+      : 0
 
-console.log('Codex skill sync')
-console.log('================')
-fs.mkdirSync(targetRoot, { recursive: true })
-
-const nextSkillsLock = stringifySkillsLock(generateSkillsLock(cwd))
-const currentSkillsLock = fs.existsSync(skillsLockPath) ? fs.readFileSync(skillsLockPath, 'utf8') : null
-if (currentSkillsLock !== nextSkillsLock) {
-  fs.writeFileSync(skillsLockPath, nextSkillsLock)
-  console.log('[SYNC] .ai/manifests/skills-lock.json <= scanned .ai/skills/**')
-} else {
-  console.log('[OK] .ai/manifests/skills-lock.json')
-}
-
-for (const sourceRoot of sourceRoots) {
-  const absSourceRoot = path.join(cwd, sourceRoot)
-  if (!fs.existsSync(absSourceRoot)) continue
-
-  for (const entry of fs.readdirSync(absSourceRoot, { withFileTypes: true })) {
-    if (!entry.isDirectory()) continue
-    syncSkill(sourceRoot, entry.name)
+try {
+  const args = parseSyncArgs(process.argv.slice(2), { client: 'codex' })
+  const report = syncSkills({
+    repoRoot: process.cwd(),
+    clients: ['codex'],
+    overrides: args.overrides,
+    mode: args.mode,
+  })
+  process.stdout.write(renderSyncReport(report, args.json))
+  process.exitCode = exitCode(report)
+} catch (error) {
+  const code = error instanceof SkillSyncError ? error.code : 'UNEXPECTED_SYNC_FAILURE'
+  const report = {
+    reportVersion: 1,
+    mode: process.argv.includes('--check') ? 'check' : 'apply',
+    status: 'rejected',
+    transactionId: null,
+    clients: ['codex'],
+    managedSkills: [],
+    changes: [],
+    preserved: [],
+    rollbacks: [],
+    diagnostics: [
+      { severity: 'error', code, message: code, client: 'codex', skillId: null, target: null },
+    ],
   }
+  if (process.argv.includes('--json')) process.stdout.write(canonicalSyncJson(report))
+  else process.stderr.write(code + ': ' + report.diagnostics[0].message + '\n')
+  process.exitCode = 2
 }

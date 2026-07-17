@@ -1,0 +1,581 @@
+{
+  "version": 1,
+  "globSemantics": "ccd-routing-glob/v1",
+  "trackedTopologySource": "git ls-files -z",
+  "scopes": [
+    {
+      "id": "ai-governance",
+      "description": "AI governance and protocol sources",
+      "classification": "ai-governance",
+      "consumers": ["rule-index", "skill-routing"],
+      "effectiveGlobs": [".ai/**", "AGENTS.md", "CLAUDE.md"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "ai-rules",
+      "description": "Tracked AI rule lineage",
+      "classification": "rule-lineage",
+      "consumers": ["rule-index"],
+      "effectiveGlobs": [".ai/rules/**"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "app-adapters",
+      "description": "Application runtime adapters",
+      "classification": "adapter-subsystem",
+      "consumers": ["rule-index"],
+      "effectiveGlobs": ["apps/*/src/adapters/**"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "app-api",
+      "description": "Application API surfaces",
+      "classification": "non-ui-subsystem",
+      "consumers": ["rule-index"],
+      "effectiveGlobs": ["apps/*/src/api/**"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "app-constants",
+      "description": "Application bootstrap constants",
+      "classification": "bootstrap-subsystem",
+      "consumers": ["rule-index"],
+      "effectiveGlobs": ["apps/*/src/constants/**"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "app-entrypoints",
+      "description": "Application runtime entrypoints",
+      "classification": "runtime-entrypoint",
+      "consumers": ["rule-index"],
+      "effectiveGlobs": ["apps/*/index.html", "apps/*/src/App.vue", "apps/*/src/main.ts"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "app-hooks",
+      "description": "Application hooks and composables",
+      "classification": "composable-subsystem",
+      "consumers": ["rule-index"],
+      "effectiveGlobs": ["apps/*/src/hooks/**"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "app-infra",
+      "description": "Application infrastructure",
+      "classification": "non-ui-subsystem",
+      "consumers": ["rule-index"],
+      "effectiveGlobs": ["apps/*/src/infra/**"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "app-layouts",
+      "description": "Application layouts",
+      "classification": "ui-subsystem",
+      "consumers": ["rule-index", "skill-routing"],
+      "effectiveGlobs": ["apps/*/src/layouts/**"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "app-routers",
+      "description": "Application routers",
+      "classification": "routing-subsystem",
+      "consumers": ["rule-index", "skill-routing"],
+      "effectiveGlobs": ["apps/*/src/router/**"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "app-scss",
+      "description": "Application SCSS sources",
+      "classification": "style-source",
+      "consumers": ["rule-index"],
+      "effectiveGlobs": ["apps/*/src/**/*.scss"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "app-stores",
+      "description": "Application stores",
+      "classification": "state-subsystem",
+      "consumers": ["rule-index", "skill-routing"],
+      "effectiveGlobs": ["apps/*/src/stores/**"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "app-ts",
+      "description": "Application TypeScript sources",
+      "classification": "typescript-source",
+      "consumers": ["rule-index"],
+      "effectiveGlobs": ["apps/*/src/**/*.ts"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "app-tsx",
+      "description": "Application TSX sources",
+      "classification": "typescript-source",
+      "consumers": ["rule-index"],
+      "effectiveGlobs": ["apps/*/src/**/*.tsx"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "app-types",
+      "description": "Application type declarations",
+      "classification": "type-subsystem",
+      "consumers": ["rule-index"],
+      "effectiveGlobs": ["apps/*/src/types/**"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "app-utils",
+      "description": "Application utility sources",
+      "classification": "utility-subsystem",
+      "consumers": ["rule-index"],
+      "effectiveGlobs": ["apps/*/src/utils/**"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "app-views",
+      "description": "Application views",
+      "classification": "ui-subsystem",
+      "consumers": ["rule-index", "skill-routing"],
+      "effectiveGlobs": ["apps/*/src/views/**"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "app-vite-configs",
+      "description": "Application Vite configurations",
+      "classification": "build-configuration",
+      "consumers": ["rule-index", "skill-routing"],
+      "effectiveGlobs": ["apps/*/vite.config.ts", "apps/vite.shared.ts"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "app-vue",
+      "description": "Application Vue sources",
+      "classification": "ui-source",
+      "consumers": ["rule-index", "skill-routing"],
+      "effectiveGlobs": ["apps/*/src/**/*.vue"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "design-tokens",
+      "description": "Design token package",
+      "classification": "design-system-package",
+      "consumers": ["rule-index", "skill-routing"],
+      "effectiveGlobs": ["packages/design-tokens/**"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "desktop-governance-scripts",
+      "description": "Desktop governance scripts",
+      "classification": "governance-integration",
+      "consumers": ["rule-index", "skill-routing"],
+      "effectiveGlobs": ["scripts/drift-check.mjs", "scripts/sync-desktop-config.mjs"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "desktop-source",
+      "description": "Desktop application source",
+      "classification": "runtime-specific",
+      "consumers": ["rule-index", "skill-routing"],
+      "effectiveGlobs": ["apps/desktop/src/**/*.ts", "apps/desktop/src/**/*.vue"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "desktop-tauri",
+      "description": "Tauri runtime source",
+      "classification": "runtime-specific",
+      "consumers": ["rule-index", "skill-routing"],
+      "effectiveGlobs": ["apps/desktop/src-tauri/**"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "e2e",
+      "description": "End-to-end test surface",
+      "classification": "test-surface",
+      "consumers": ["rule-index", "skill-routing"],
+      "effectiveGlobs": ["e2e/**", "playwright.config.ts"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "github",
+      "description": "GitHub governance surface",
+      "classification": "remote-governance",
+      "consumers": ["skill-routing"],
+      "effectiveGlobs": [".github/**"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "package-ts",
+      "description": "Package TypeScript sources",
+      "classification": "shared-typescript-source",
+      "consumers": ["rule-index"],
+      "effectiveGlobs": ["packages/*/src/**/*.ts"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "package-tsx",
+      "description": "Package TSX sources",
+      "classification": "shared-typescript-source",
+      "consumers": ["rule-index"],
+      "effectiveGlobs": ["packages/*/src/**/*.tsx"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "package-vite-configs",
+      "description": "Package Vite configurations",
+      "classification": "build-configuration",
+      "consumers": ["skill-routing"],
+      "effectiveGlobs": ["packages/*/vite.config.ts"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "package-vue-sources",
+      "description": "Package Vue sources",
+      "classification": "shared-ui-source",
+      "consumers": ["rule-index", "skill-routing"],
+      "effectiveGlobs": ["packages/*/src/**/*.vue"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "repository-all-tracked",
+      "description": "Complete tracked repository",
+      "classification": "universal",
+      "consumers": ["rule-index"],
+      "effectiveGlobs": ["**"],
+      "trackedMatchPolicy": "exact-all-tracked",
+      "justification": "Universal rule coverage must equal the complete tracked topology."
+    },
+    {
+      "id": "root-scripts",
+      "description": "Repository scripts",
+      "classification": "repository-tooling",
+      "consumers": ["rule-index"],
+      "effectiveGlobs": ["scripts/**"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "unocss-config",
+      "description": "Root UnoCSS configuration",
+      "classification": "design-system-configuration",
+      "consumers": ["rule-index", "skill-routing"],
+      "effectiveGlobs": ["uno.config.ts"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "unocss-preset",
+      "description": "UnoCSS preset package",
+      "classification": "design-system-package",
+      "consumers": ["rule-index", "skill-routing"],
+      "effectiveGlobs": ["packages/unocss-preset/**"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "vue-app-platform",
+      "description": "Vue application platform package",
+      "classification": "shared-vue-package",
+      "consumers": ["rule-index"],
+      "effectiveGlobs": ["packages/vue-app-platform/**"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "vue-charts",
+      "description": "Vue charts package",
+      "classification": "shared-ui-package",
+      "consumers": ["rule-index", "skill-routing"],
+      "effectiveGlobs": ["packages/vue-charts/**"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "vue-hooks",
+      "description": "Vue hooks package",
+      "classification": "shared-vue-package",
+      "consumers": ["rule-index", "skill-routing"],
+      "effectiveGlobs": ["packages/vue-hooks/**"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "vue-primevue-adapter",
+      "description": "PrimeVue adapter package",
+      "classification": "shared-ui-package",
+      "consumers": ["rule-index", "skill-routing"],
+      "effectiveGlobs": ["packages/vue-primevue-adapter/**"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "vue-ui",
+      "description": "Shared Vue UI package",
+      "classification": "shared-ui-package",
+      "consumers": ["rule-index", "skill-routing"],
+      "effectiveGlobs": ["packages/vue-ui/**"],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    },
+    {
+      "id": "workspace-config",
+      "description": "Workspace configuration",
+      "classification": "workspace-configuration",
+      "consumers": ["rule-index"],
+      "effectiveGlobs": [
+        "mise.toml",
+        "package.json",
+        "pnpm-workspace.yaml",
+        "tsconfig*.json",
+        "turbo.json"
+      ],
+      "trackedMatchPolicy": "at-least-one-per-glob",
+      "justification": "Current tracked topology and accepted P5 routing or rule lineage require this scope."
+    }
+  ],
+  "ruleAssignments": [
+    {
+      "rulePath": ".ai/rules/architecture/03-auth-rbac.mdc",
+      "scopeIds": ["app-tsx", "app-vue", "package-tsx", "package-vue-sources"]
+    },
+    {
+      "rulePath": ".ai/rules/architecture/04-store-organization.mdc",
+      "scopeIds": ["app-stores", "app-ts", "app-tsx", "app-vue"]
+    },
+    {
+      "rulePath": ".ai/rules/architecture/05-runtime-bootstrap.mdc",
+      "scopeIds": [
+        "app-constants",
+        "app-entrypoints",
+        "app-stores",
+        "app-utils",
+        "app-vite-configs"
+      ]
+    },
+    {
+      "rulePath": ".ai/rules/components/00-primevue-ecosystem.mdc",
+      "scopeIds": ["app-vue", "package-vue-sources", "vue-primevue-adapter", "vue-ui"]
+    },
+    {
+      "rulePath": ".ai/rules/components/01-primevue-pt-styling.mdc",
+      "scopeIds": ["app-vue", "vue-primevue-adapter", "vue-ui"]
+    },
+    {
+      "rulePath": ".ai/rules/components/02-pro-components.mdc",
+      "scopeIds": ["app-views", "vue-ui"]
+    },
+    {
+      "rulePath": ".ai/rules/components/03-echarts-theming.mdc",
+      "scopeIds": ["app-views", "vue-charts"]
+    },
+    {
+      "rulePath": ".ai/rules/core/00-global-architect.mdc",
+      "scopeIds": ["repository-all-tracked"]
+    },
+    {
+      "rulePath": ".ai/rules/core/00-root-gatekeeper.mdc",
+      "scopeIds": ["repository-all-tracked"]
+    },
+    {
+      "rulePath": ".ai/rules/core/01-global-preflight.mdc",
+      "scopeIds": ["repository-all-tracked"]
+    },
+    {
+      "rulePath": ".ai/rules/core/02-core-engineering.mdc",
+      "scopeIds": [
+        "app-ts",
+        "app-tsx",
+        "app-vue",
+        "package-ts",
+        "package-tsx",
+        "package-vue-sources",
+        "root-scripts"
+      ]
+    },
+    {
+      "rulePath": ".ai/rules/core/02-ui-preflight.mdc",
+      "scopeIds": ["app-vue", "package-vue-sources"]
+    },
+    {
+      "rulePath": ".ai/rules/core/03-vue3-ts-architecture.mdc",
+      "scopeIds": [
+        "app-ts",
+        "app-tsx",
+        "app-vue",
+        "package-ts",
+        "package-tsx",
+        "package-vue-sources"
+      ]
+    },
+    {
+      "rulePath": ".ai/rules/core/04-type-safety-mutations.mdc",
+      "scopeIds": [
+        "app-ts",
+        "app-tsx",
+        "app-vue",
+        "package-ts",
+        "package-tsx",
+        "package-vue-sources"
+      ]
+    },
+    {
+      "rulePath": ".ai/rules/core/05-state-boundaries.mdc",
+      "scopeIds": ["app-ts", "app-tsx", "app-vue", "vue-app-platform", "vue-hooks"]
+    },
+    {
+      "rulePath": ".ai/rules/core/06-utils-hooks.mdc",
+      "scopeIds": ["app-hooks", "app-utils", "vue-hooks"]
+    },
+    {
+      "rulePath": ".ai/rules/core/07-vue-auto-imports.mdc",
+      "scopeIds": ["app-ts", "app-tsx", "app-vue"]
+    },
+    {
+      "rulePath": ".ai/rules/core/08-vue-template-strictness.mdc",
+      "scopeIds": ["app-tsx", "app-vue", "package-tsx", "package-vue-sources"]
+    },
+    {
+      "rulePath": ".ai/rules/core/09-ai-anti-failure-guard.mdc",
+      "scopeIds": ["app-ts", "app-vue", "package-ts", "package-vue-sources"]
+    },
+    {
+      "rulePath": ".ai/rules/core/10-ai-generation-workflow.mdc",
+      "scopeIds": ["ai-governance", "app-hooks", "app-routers", "app-views", "root-scripts"]
+    },
+    {
+      "rulePath": ".ai/rules/design-system/00-unocss-guardrails.mdc",
+      "scopeIds": [
+        "app-scss",
+        "app-ts",
+        "app-tsx",
+        "app-vue",
+        "design-tokens",
+        "package-ts",
+        "package-tsx",
+        "package-vue-sources",
+        "unocss-config",
+        "unocss-preset"
+      ]
+    },
+    {
+      "rulePath": ".ai/rules/design-system/01-design-tokens.mdc",
+      "scopeIds": [
+        "app-scss",
+        "app-ts",
+        "app-tsx",
+        "app-vue",
+        "design-tokens",
+        "package-vue-sources",
+        "unocss-preset"
+      ]
+    },
+    {
+      "rulePath": ".ai/rules/design-system/02-size-density-system.mdc",
+      "scopeIds": [
+        "app-scss",
+        "app-ts",
+        "app-tsx",
+        "app-vue",
+        "design-tokens",
+        "package-vue-sources"
+      ]
+    },
+    {
+      "rulePath": ".ai/rules/design-system/03-material-system.mdc",
+      "scopeIds": ["app-ts", "app-tsx", "app-vue", "design-tokens", "package-vue-sources"]
+    },
+    {
+      "rulePath": ".ai/rules/design-system/04-design-state-contract.mdc",
+      "scopeIds": ["app-views"]
+    },
+    {
+      "rulePath": ".ai/rules/design-system/05-semantic-color-usage-contract.mdc",
+      "scopeIds": [
+        "ai-rules",
+        "app-scss",
+        "app-ts",
+        "app-tsx",
+        "app-vue",
+        "design-tokens",
+        "package-vue-sources",
+        "unocss-preset"
+      ]
+    },
+    {
+      "rulePath": ".ai/rules/integrations/00-network-routing-guardrails.mdc",
+      "scopeIds": ["app-api", "app-hooks", "app-infra", "app-routers", "app-stores", "app-views"]
+    },
+    {
+      "rulePath": ".ai/rules/integrations/01-http-alova.mdc",
+      "scopeIds": ["app-api", "app-hooks", "app-views"]
+    },
+    {
+      "rulePath": ".ai/rules/integrations/02-router-rbac.mdc",
+      "scopeIds": ["app-routers", "app-views"]
+    },
+    {
+      "rulePath": ".ai/rules/integrations/03-layout-architecture.mdc",
+      "scopeIds": ["app-entrypoints", "app-layouts"]
+    },
+    {
+      "rulePath": ".ai/rules/integrations/04-safe-storage.mdc",
+      "scopeIds": ["app-ts", "app-tsx", "app-utils", "app-vue"]
+    },
+    {
+      "rulePath": ".ai/rules/integrations/05-date-time.mdc",
+      "scopeIds": ["app-ts", "app-tsx", "app-utils", "app-vue", "vue-hooks"]
+    },
+    {
+      "rulePath": ".ai/rules/integrations/06-adapters-infra.mdc",
+      "scopeIds": ["app-adapters", "app-infra", "app-ts", "app-types"]
+    },
+    {
+      "rulePath": ".ai/rules/integrations/07-interaction-patterns.mdc",
+      "scopeIds": ["app-ts", "app-tsx", "app-vue", "package-vue-sources", "vue-hooks", "vue-ui"]
+    },
+    {
+      "rulePath": ".ai/rules/integrations/08-cross-platform-tauri.mdc",
+      "scopeIds": ["desktop-source", "desktop-tauri"]
+    },
+    {
+      "rulePath": ".ai/rules/integrations/08-playwright-visual-regression.mdc",
+      "scopeIds": ["app-entrypoints", "app-ts", "app-tsx", "app-vue", "e2e"]
+    },
+    {
+      "rulePath": ".ai/rules/integrations/09-desktop-branch-governance.mdc",
+      "scopeIds": ["desktop-governance-scripts", "desktop-source", "desktop-tauri", "e2e"]
+    },
+    {
+      "rulePath": ".ai/rules/integrations/10-desktop-preflight.mdc",
+      "scopeIds": ["app-entrypoints", "desktop-source", "desktop-tauri", "workspace-config"]
+    }
+  ]
+}

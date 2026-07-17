@@ -6,7 +6,7 @@
   "sourceScannerImplemented": false,
   "pageContractCreated": false,
   "p4Started": true,
-  "p5Started": false,
+  "p5Started": true,
   "counts": {
     "ruleCount": 68,
     "clusterCount": 14,
@@ -2259,10 +2259,10 @@
   "fixturesPresent": true,
   "validatorPresent": true,
   "applicationSourceEnforcementState": "BASELINE_ONLY",
-  "projectUiDiscovered": false,
-  "projectUiRouted": false,
-  "projectUiSynchronized": false,
-  "projectUiAdapterActivated": false,
+  "projectUiDiscovered": true,
+  "projectUiRouted": true,
+  "projectUiSynchronized": true,
+  "projectUiAdapterActivated": true,
   "scopeRegistry": {
     "app-views": "apps/*/src/views/**",
     "app-layouts": "apps/*/src/layouts/**",

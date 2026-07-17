@@ -1,0 +1,277 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ccd.local/schemas/skill-routing.schema.json",
+  "title": "CCD deterministic Skill routing manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "routerVersion", "scopeRegistry", "fallback", "motionPolicy", "routes"],
+  "properties": {
+    "version": {
+      "const": 3
+    },
+    "routerVersion": {
+      "const": 1
+    },
+    "scopeRegistry": {
+      "const": ".ai/manifests/routing-scopes.json"
+    },
+    "fallback": {
+      "$ref": "#/$defs/fallback"
+    },
+    "motionPolicy": {
+      "$ref": "#/$defs/motionPolicy"
+    },
+    "routes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/route"
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "strArray": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "skillArray": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+      }
+    },
+    "fallback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "description",
+        "priority",
+        "compositionMode",
+        "exclusiveGroup",
+        "primarySkills",
+        "supplementalSkills",
+        "prechecks",
+        "tokenStrategy"
+      ],
+      "properties": {
+        "id": {
+          "const": "fallback"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "priority": {
+          "const": 0
+        },
+        "compositionMode": {
+          "const": "fallback"
+        },
+        "exclusiveGroup": {
+          "type": "null"
+        },
+        "primarySkills": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          }
+        },
+        "supplementalSkills": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          }
+        },
+        "prechecks": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "tokenStrategy": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "motionPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exclusiveGroup", "allowDualMotionFlag", "requiresIndependentEvidence"],
+      "properties": {
+        "exclusiveGroup": {
+          "const": "motion-engine"
+        },
+        "allowDualMotionFlag": {
+          "const": "allowDualMotion"
+        },
+        "requiresIndependentEvidence": {
+          "const": true
+        }
+      }
+    },
+    "matchPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "keywordMinimum",
+        "scopeMinimum",
+        "combine",
+        "explicitKeywordRequired",
+        "pathStatePolicy"
+      ],
+      "properties": {
+        "keywordMinimum": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "scopeMinimum": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "combine": {
+          "enum": ["any", "all"]
+        },
+        "explicitKeywordRequired": {
+          "type": "boolean"
+        },
+        "pathStatePolicy": {
+          "enum": ["any", "new-or-explicit-keyword"]
+        }
+      }
+    },
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "description",
+        "keywords",
+        "scopeIds",
+        "priority",
+        "compositionMode",
+        "exclusiveGroup",
+        "primarySkills",
+        "supplementalSkills",
+        "prechecks",
+        "tokenStrategy",
+        "matchPolicy",
+        "positiveFixtureIds",
+        "negativeFixtureIds"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "keywords": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "scopeIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          }
+        },
+        "priority": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "compositionMode": {
+          "enum": ["primary", "composable", "supplemental-only", "fallback"]
+        },
+        "exclusiveGroup": {
+          "type": ["string", "null"],
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "primarySkills": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          }
+        },
+        "supplementalSkills": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          }
+        },
+        "prechecks": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "tokenStrategy": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "matchPolicy": {
+          "$ref": "#/$defs/matchPolicy"
+        },
+        "positiveFixtureIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          }
+        },
+        "negativeFixtureIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          }
+        }
+      }
+    }
+  }
+}

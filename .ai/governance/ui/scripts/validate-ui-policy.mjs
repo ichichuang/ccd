@@ -98,13 +98,30 @@ const LIFECYCLE_MARKERS = [
   'ADAPTER_GENERATION_DETERMINISTIC=yes',
   'AI_SYNC_IDEMPOTENT=yes',
   'FRESH_CLONE_ENTRYPOINTS_PASS=yes',
+  'P5_STARTED=yes',
+  'P5_COMPLETE=yes',
+  'PROJECT_UI_DISCOVERED=yes',
+  'PROJECT_UI_ROUTED=yes',
+  'PROJECT_UI_SYNCHRONIZED=yes',
+  'PROJECT_UI_ADAPTER_ACTIVATED=yes',
+  'PROJECT_UI_LOCKED=yes',
+  'PROJECT_UI_CODEX_SYNC_CONTRACT_COMPLETE=yes',
+  'PROJECT_UI_CLAUDE_SYNC_CONTRACT_COMPLETE=yes',
+  'SKILL_ROUTING_MANIFEST_CURRENT=yes',
+  'ROUTING_SCOPE_REGISTRY_COMPLETE=yes',
+  'SKILLS_LOCK_CURRENT=yes',
+  'RULE_INDEX_CURRENT=yes',
+  'NODE_PYTHON_ROUTER_PARITY=yes',
+  'GENERIC_UI_ROUTES_TO_PROJECT_UI=yes',
+  'MOTION_ROUTING_CONDITIONAL=yes',
+  'NON_UI_ROUTING_PRESERVED=yes',
+  'ADAPTER_PROJECT_UI_MAPPING_COMPLETE=yes',
+  'CODEX_ADAPTER_PROJECT_UI_ACTIVE=yes',
+  'CLAUDE_ADAPTER_PROJECT_UI_ACTIVE=yes',
   'SOURCE_SCANNER_IMPLEMENTED=no',
   'PAGE_CONTRACT_CREATED=no',
-  'PROJECT_UI_DISCOVERED=no',
-  'PROJECT_UI_ROUTED=no',
-  'PROJECT_UI_SYNCHRONIZED=no',
-  'PROJECT_UI_ADAPTER_ACTIVATED=no',
-  'P5_STARTED=no',
+  'LEGACY_SKILLS_RETIRED=no',
+  'LEGACY_RULES_RETIRED=no',
 ]
 
 const LIFECYCLE_BLOCK_TEXT = LIFECYCLE_MARKERS.join('\n')
@@ -117,6 +134,14 @@ const STALE_CURRENT_P4_PATTERNS = [
   /\bcold-start not started\b/i,
   /\bP4 owns cold-start and has not started\b/i,
   /\bP4 cold-start remains future\b/i,
+  /\bP5_STARTED=no\b/,
+  /\bp5Started\s*[:=]\s*false\b/i,
+  /\bP5 has not started\b/i,
+  /\bP5 not started\b/i,
+  /\bproject-ui remains undiscovered\b/i,
+  /\bproject-ui remains unrouted\b/i,
+  /\bproject-ui remains unsynchronized\b/i,
+  /\bproject-ui remains not adapter-activated\b/i,
 ]
 
 const colors = {
@@ -523,10 +548,10 @@ function collectCorrectionErrors(context) {
     exceptionCount: 0,
     fixturesPresent: true,
     validatorPresent: true,
-    projectUiDiscovered: false,
-    projectUiRouted: false,
-    projectUiSynchronized: false,
-    projectUiAdapterActivated: false,
+    projectUiDiscovered: true,
+    projectUiRouted: true,
+    projectUiSynchronized: true,
+    projectUiAdapterActivated: true,
   }
   for (const [field, expected] of Object.entries(expectedPolicyArtifactState)) {
     if (policy?.[field] !== expected) add(`${field} must be ${expected}`)
@@ -542,7 +567,7 @@ function collectCorrectionErrors(context) {
     sourceScannerImplemented: false,
     pageContractCreated: false,
     p4Started: true,
-    p5Started: false,
+    p5Started: true,
   }
   for (const [field, expected] of Object.entries(expectedPolicyFlags)) {
     if (policy?.[field] !== expected) add(`${field} must be ${expected}`)
@@ -573,11 +598,11 @@ function collectCorrectionErrors(context) {
     adapterGenerationDeterministic: true,
     aiSyncIdempotent: true,
     freshCloneEntrypointsPass: true,
-    p5Started: false,
-    skillLockDiscovered: false,
-    routed: false,
-    synchronized: false,
-    adapterActivated: false,
+    p5Started: true,
+    skillLockDiscovered: true,
+    routed: true,
+    synchronized: true,
+    adapterActivated: true,
   }
   for (const [field, expected] of Object.entries(expectedCurrentState)) {
     if (canonicalState[field] !== expected) {
@@ -966,7 +991,7 @@ function collectCorrectionErrors(context) {
   for (const documentPath of LIFECYCLE_DOCUMENTS) {
     const text = fs.readFileSync(path.resolve(repoRoot, documentPath), 'utf8')
     if (!text.includes(LIFECYCLE_BLOCK_TEXT)) {
-      add(`${documentPath} lifecycle block must match the exact ordered P4.4 terminal block`)
+      add(`${documentPath} lifecycle block must match the exact ordered P5 terminal block`)
     }
     for (const marker of LIFECYCLE_MARKERS) {
       if (!text.includes(marker)) add(`${documentPath} lifecycle marker missing: ${marker}`)
@@ -1083,15 +1108,15 @@ function runMutationTests(context, schemaPath) {
     ok('mutation: p4Started=false rejected')
   }
 
-  // P5 started forbidden
+  // P5 terminal-state regression forbidden
   const p5Started = JSON.parse(JSON.stringify(policy))
-  p5Started.p5Started = true
+  p5Started.p5Started = false
   const v10 = new MiniValidator(schema)
   try {
     v10.validate(p5Started)
-    fail('mutation: p5Started should fail')
+    fail('mutation: p5Started=false should fail')
   } catch {
-    ok('mutation: p5Started rejected')
+    ok('mutation: p5Started=false rejected')
   }
 
   const expectCorrectionMutationRejected = (label, expectedFragment, mutate) => {
@@ -1249,12 +1274,19 @@ function runMutationTests(context, schemaPath) {
   expectCorrectionMutationRejected('false tracked output marker', 'agentsTracked', mutated => {
     mutated.coverage.canonicalState.agentsTracked = false
   })
-  expectCorrectionMutationRejected('false P5 start', 'p5Started', mutated => {
-    mutated.policy.p5Started = true
+  expectCorrectionMutationRejected('P5 terminal start regressed', 'p5Started', mutated => {
+    mutated.policy.p5Started = false
+    mutated.coverage.p5Started = false
+    mutated.coverage.canonicalState.p5Started = false
   })
-  expectCorrectionMutationRejected('false project-ui discovery', 'projectUiDiscovered', mutated => {
-    mutated.policy.projectUiDiscovered = true
-  })
+  expectCorrectionMutationRejected(
+    'project-ui discovery regressed',
+    'projectUiDiscovered',
+    mutated => {
+      mutated.policy.projectUiDiscovered = false
+      mutated.coverage.canonicalState.skillLockDiscovered = false
+    }
+  )
   expectCorrectionMutationRejected('declared count drift', 'declared count', mutated => {
     mutated.policy.counts.ruleCount -= 1
   })

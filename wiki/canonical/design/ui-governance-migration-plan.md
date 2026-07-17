@@ -38,6 +38,12 @@ P4 AI cold-start atomic replacement is complete. The canonical operating contrac
 
 Historical P1, P2, P3, pre-P4, and defect evidence below is retained as lineage. Statements about ignored or absent cold-start adapters in those sections describe the pre-P4 defect state, not the current repository state.
 
+## Current P5 terminal integration
+
+P5 terminal lifecycle integration is complete. `.ai/skills/project-ui` is the singleton canonical project Skill, recorded by Skills lock v3 and selected through the stable Skill routing manifest plus canonical routing-scope registry. Node is the primary router and Python is the parity fallback. Generic UI work routes to project-ui, non-UI work remains isolated, page and route composition requires explicit task evidence, GSAP and animate-lite remain conditional, and UnoCSS or Vite activate only for narrow matching evidence.
+
+Codex and Claude synchronization is transactional and validated with isolated targets. Their materialized project-ui copies are noncanonical; the ignored repository-local Claude projection remains a generated compatibility target rather than a source. Adapter mappings are active while the P4 cold-start sources and six tracked outputs remain preserved. The source scanner and Page Contract are absent, and all legacy Skills and rules remain retained. The canonical routing contract is [[project-ui-routing]].
+
 ## Executive decision
 
 - Verified facts: repository clean at `9fad207b1700615000517a0c5fee1af9661d00f8`; 135 unique assets inventoried; .gitignore reclassified as manifest-scope governance asset; skill-routing.json reclassified as canonical and REWRITE; AGENTS.md, CLAUDE.md, and `.ai/protocol/adapters/claude.md` reclassified as REWRITE because their ignored state breaks cold-start.

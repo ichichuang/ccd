@@ -1,11 +1,20 @@
 #!/usr/bin/env node
 
 import { spawnSync } from 'node:child_process'
+import fs from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
 import process from 'node:process'
+
+import { EXPECTED_OUTPUTS } from './generate-ai-protocol-adapters.mjs'
+import { generateSkillsLock, stringifySkillsLock } from './skill-lock-utils.mjs'
 
 const modes = new Set(['full', 'ci', 'fast'])
 
-const generatedAiArtifacts = ['AGENTS.md', 'CLAUDE.md', '.ai/manifests/skills-lock.json']
+const generatedAiArtifacts = [
+  ...EXPECTED_OUTPUTS.map(output => output.path),
+  '.ai/manifests/skills-lock.json',
+]
 
 function step(name, command, args, options = {}) {
   return { name, command, args, ...options }
@@ -54,29 +63,73 @@ function runStep({ name, command, args, allowFailure = false }) {
 }
 
 function assertGeneratedAiArtifactsSynced() {
-  console.log('\n[validate] generated AI artifact drift check')
-  const result = spawnSync('git', ['diff', '--quiet', '--', ...generatedAiArtifacts], {
-    cwd: process.cwd(),
-    encoding: 'utf8',
-    stdio: 'pipe',
-  })
+  console.log('\n[validate] generated AI artifact freshness check')
+  const adapterCheck = spawnSync(
+    process.execPath,
+    ['scripts/generate-ai-protocol-adapters.mjs', '--check'],
+    {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+      stdio: 'pipe',
+    }
+  )
+  const lockPath = path.join(process.cwd(), '.ai/manifests/skills-lock.json')
+  const expectedLock = stringifySkillsLock(generateSkillsLock(process.cwd()))
+  const actualLock = fs.readFileSync(lockPath, 'utf8')
 
-  if (result.status === 0) {
-    console.log('[validate:pass] generated AI artifact drift check')
+  if (adapterCheck.status === 0 && actualLock === expectedLock) {
+    console.log('[validate:pass] generated AI artifact freshness check')
     return
   }
 
-  console.error('[validate:fail] generated AI artifact drift check')
-  console.error(
-    `Generated AI artifacts changed or are stale. Run pnpm ai:sync && pnpm ai:sync:codex, review ${generatedAiArtifacts.join(', ')}, and rerun the gate.`
+  console.error('[validate:fail] generated AI artifact freshness check')
+  if (adapterCheck.status !== 0) {
+    console.error('Six generated adapter outputs are stale.')
+    if (adapterCheck.stderr.trim()) console.error(adapterCheck.stderr.trim())
+    if (adapterCheck.stdout.trim()) console.error(adapterCheck.stdout.trim())
+  }
+  if (actualLock !== expectedLock) console.error('.ai/manifests/skills-lock.json is stale.')
+  throw new Error(
+    `Generated AI artifacts are stale. Review ${generatedAiArtifacts.join(', ')} and rerun the gate.`
   )
-  const diff = spawnSync('git', ['diff', '--name-only', '--', ...generatedAiArtifacts], {
-    cwd: process.cwd(),
-    encoding: 'utf8',
-    stdio: 'pipe',
-  })
-  if (diff.stdout.trim()) console.error(diff.stdout.trim())
-  process.exit(1)
+}
+
+function createCiIsolation() {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccd-workspace-validation-'))
+  const temporaryRoot = path.resolve(os.tmpdir())
+  const absoluteRoot = path.resolve(root)
+  if (!absoluteRoot.startsWith(`${temporaryRoot}${path.sep}`)) {
+    fs.rmSync(root, { recursive: true, force: true })
+    throw new Error('CI_TEMP_ROOT_NOT_ISOLATED')
+  }
+  const skillsRoot = path.join(root, 'codex', 'skills')
+  let cleaned = false
+  const removeRoot = () => {
+    if (cleaned) return
+    cleaned = true
+    fs.rmSync(root, { recursive: true, force: true })
+  }
+  const exitHandler = () => removeRoot()
+  const signalHandlers = new Map()
+  for (const [signal, code] of [
+    ['SIGINT', 130],
+    ['SIGTERM', 143],
+    ['SIGHUP', 129],
+  ]) {
+    const handler = () => {
+      removeRoot()
+      process.exit(code)
+    }
+    signalHandlers.set(signal, handler)
+    process.once(signal, handler)
+  }
+  process.once('exit', exitHandler)
+  const cleanup = () => {
+    process.off('exit', exitHandler)
+    for (const [signal, handler] of signalHandlers) process.off(signal, handler)
+    removeRoot()
+  }
+  return { root, skillsRoot, cleanup }
 }
 
 function cargoLockedCheck() {
@@ -90,13 +143,13 @@ function cargoLockedCheck() {
 
 const fastSteps = [step('type-check', 'pnpm', ['type-check']), step('lint', 'pnpm', ['lint:check'])]
 
-const ciSteps = [
+const createCiSteps = codexSkillsRoot => [
   step('runtime summary', 'pnpm', ['runtime:summary']),
   step('AI cold-start validation', 'pnpm', ['ai:cold-start:validate']),
   step('AI adapter sync', 'pnpm', ['ai:sync']),
-  step('Codex skill sync', 'pnpm', ['ai:sync:codex']),
+  step('Codex skill sync', 'pnpm', ['ai:sync:codex', '--', '--target-root', codexSkillsRoot]),
   step('AI doctor', 'pnpm', ['ai:doctor']),
-  step('Codex preflight', 'pnpm', ['codex:preflight']),
+  step('Codex preflight', 'pnpm', ['codex:preflight', '--', '--target-root', codexSkillsRoot]),
   step('dependency catalog check', 'pnpm', ['deps:catalog:check']),
   step('supply-chain check', 'pnpm', ['supply:check']),
   step('GitHub workflow registry check', 'pnpm', ['governance:github-workflows']),
@@ -151,9 +204,12 @@ const fullSteps = [
   cargoLockedCheck(),
 ]
 
-function stepsForMode(mode) {
+function stepsForMode(mode, { codexSkillsRoot = null } = {}) {
   if (mode === 'fast') return fastSteps
-  if (mode === 'ci') return ciSteps
+  if (mode === 'ci') {
+    if (!codexSkillsRoot) throw new Error('CI_CODEX_TARGET_REQUIRED')
+    return createCiSteps(codexSkillsRoot)
+  }
   return fullSteps
 }
 
@@ -164,15 +220,41 @@ function main() {
     process.exit(1)
   }
 
-  console.log(`[validate] mode=${mode}`)
-  for (const currentStep of stepsForMode(mode)) {
-    runStep(currentStep)
-    if (mode === 'ci' && currentStep.name === 'Codex skill sync') {
-      assertGeneratedAiArtifactsSynced()
+  const isolation = mode === 'ci' ? createCiIsolation() : null
+  try {
+    console.log(`[validate] mode=${mode}`)
+    for (const currentStep of stepsForMode(mode, {
+      codexSkillsRoot: isolation?.skillsRoot,
+    })) {
+      runStep(currentStep)
+      if (mode === 'ci' && currentStep.name === 'Codex skill sync') {
+        assertGeneratedAiArtifactsSynced()
+      }
     }
-  }
 
-  console.log(`\n[validate:pass] ${mode} validation completed`)
+    console.log(`\n[validate:pass] ${mode} validation completed`)
+  } finally {
+    isolation?.cleanup()
+  }
 }
 
-main()
+function runSelfTests() {
+  const isolation = createCiIsolation()
+  try {
+    const steps = stepsForMode('ci', { codexSkillsRoot: isolation.skillsRoot })
+    for (const name of ['Codex skill sync', 'Codex preflight']) {
+      const currentStep = steps.find(candidate => candidate.name === name)
+      const targetIndex = currentStep?.args.indexOf('--target-root') ?? -1
+      if (targetIndex < 0 || currentStep.args[targetIndex + 1] !== isolation.skillsRoot)
+        throw new Error(`SELF_TEST_ISOLATED_TARGET:${name}`)
+    }
+    assertGeneratedAiArtifactsSynced()
+  } finally {
+    isolation.cleanup()
+  }
+  if (fs.existsSync(isolation.root)) throw new Error('SELF_TEST_TEMP_ROOT_RESIDUE')
+  console.log('VALIDATE_WORKSPACE_SELF_TEST_PASS')
+}
+
+if (process.argv[2] === '--self-test') runSelfTests()
+else main()

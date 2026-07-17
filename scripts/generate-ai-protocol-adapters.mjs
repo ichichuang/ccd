@@ -169,9 +169,31 @@ const REQUIRED_ROOT_FACTS = [
   'protocolVersions',
   'adapterMetadata',
   'coreMandate',
+  'projectUi',
   'codex',
   'claude',
 ]
+
+export const EXPECTED_PROJECT_UI = Object.freeze({
+  schemaVersion: 'ccd-project-ui-adapter/v1',
+  source: '.ai/skills/project-ui',
+  routingManifest: '.ai/manifests/skill-routing.json',
+  scopeRegistry: '.ai/manifests/routing-scopes.json',
+  nodeRouter: '.ai/skills/codex/task-orchestrator/scripts/skill_router.mjs',
+  pythonFallback: '.ai/skills/codex/task-orchestrator/scripts/skill_router.py',
+  validator: 'scripts/governance/project-ui-routing-validate.mjs',
+  syncCommands: {
+    codex: 'pnpm ai:sync:codex',
+    claude: 'pnpm ai:sync:claude',
+    combined: 'pnpm ai:sync:skills',
+  },
+  activation: {
+    genericUiPrimarySkill: 'project-ui',
+    nodePrimary: true,
+    pythonFallback: true,
+    legacyGenericDesignChain: false,
+  },
+})
 
 export class ColdStartContractError extends Error {
   constructor(code, message, details = {}) {
@@ -327,6 +349,9 @@ export function validateManifest(manifest, { root = process.cwd(), checkFileSyst
   for (const fact of REQUIRED_ROOT_FACTS) {
     if (!(fact in manifest))
       fail('MISSING_ROOT_FACT', `Required compatibility fact is missing: ${fact}`)
+  }
+  if (canonicalSerialize(manifest.projectUi) !== canonicalSerialize(EXPECTED_PROJECT_UI)) {
+    fail('PROJECT_UI_ACTIVATION_MISMATCH', 'projectUi adapter activation contract drifted')
   }
 
   const contract = manifest.coldStart
@@ -565,6 +590,20 @@ const bulletList = items => items.map(item => `- ${escapeMarkdownText(item)}`).j
 const numberedList = items =>
   items.map((item, index) => `${index + 1}. ${escapeMarkdownText(item)}`).join('\n')
 
+const renderRoutingActivation = manifest => {
+  const projectUi = manifest.projectUi
+  return `- Generic UI evidence routes to the stable primary Skill ID ${projectUi.activation.genericUiPrimarySkill}.
+- New page or route composition routes to project-ui + task-orchestrator + vue when explicit creation evidence is present.
+- Non-UI Vue work can route to vue without activating project-ui.
+- Browser validation activates only from explicit browser, screenshot, navigation, Playwright, or runtime evidence.
+- Motion Skills activate only from their own explicit engine evidence; there is no legacy generic design chain.
+- Node is primary: node ${projectUi.nodeRouter} "<task>" --json.
+- Python is fallback: python3 ${projectUi.pythonFallback} "<task>" --json.
+- Validate routing with node ${projectUi.validator}.
+- Synchronize Codex with ${projectUi.syncCommands.codex}, Claude with ${projectUi.syncCommands.claude}, or both with ${projectUi.syncCommands.combined}.
+- Repository .ai/skills/\\*\\* sources are canonical; synchronized Codex and Claude copies are noncanonical runtime materializations.`
+}
+
 const renderSharedEntry = manifest => `# AI Entry (Unified)
 
 Canonical AI protocol is:
@@ -593,6 +632,10 @@ Core mandate:
 
 ${bulletList(manifest.coreMandate)}
 
+Deterministic Skill routing:
+
+${renderRoutingActivation(manifest)}
+
 Generated from:
 
 - .ai/protocol/adapter-manifest.json
@@ -608,8 +651,9 @@ ${Object.entries(manifest.adapterGuides)
 
 Canonical policy:
 
-- Edit .ai/protocol/adapter-manifest.json and .ai/** sources only.
+- Edit .ai/protocol/adapter-manifest.json and .ai/\\*\\* sources only.
 - Run pnpm ai:sync to materialize generated adapter files.
+${renderRoutingActivation(manifest)}
 `
 
 const renderCodexAdapter = manifest => {
@@ -631,6 +675,10 @@ ${bulletList(codex.skillMapping)}
 ## Auto-Trigger Hints
 
 ${bulletList(codex.triggerHints)}
+
+## Deterministic Routing and Synchronization
+
+${renderRoutingActivation(manifest)}
 
 ## Health Commands
 
@@ -665,6 +713,10 @@ ${numberedList(manifest.loadOrder)}
 - Projection rules: ${metadata.projectionRules.join(', ')}.
 - Canonical repository policy remains owned by ${manifest.canonicalProtocol}.
 
+## Deterministic Routing and Synchronization
+
+${renderRoutingActivation(manifest)}
+
 ## Health Commands
 
 ${bulletList(claude.healthCommands)}
@@ -675,7 +727,7 @@ Generated from:
 `
 }
 
-const renderRootClaude = () => `# Claude AI Entry
+const renderRootClaude = manifest => `# Claude AI Entry
 
 Read the tracked repository AI entrypoints:
 
@@ -684,6 +736,10 @@ Read the tracked repository AI entrypoints:
 - [.ai/protocol/adapters/claude.md](./.ai/protocol/adapters/claude.md)
 
 Do not duplicate AI protocol content here. This compatibility entry is generated from .ai/protocol/adapter-manifest.json by scripts/generate-ai-protocol-adapters.mjs.
+
+Deterministic Skill routing:
+
+${renderRoutingActivation(manifest)}
 `
 
 export function renderOutputs(manifest, { root = process.cwd(), checkFileSystem = true } = {}) {
@@ -711,7 +767,7 @@ export function renderOutputs(manifest, { root = process.cwd(), checkFileSystem 
         content = outputs.get('AI_ENTRY')
         break
       case 'root-claude':
-        content = renderRootClaude()
+        content = renderRootClaude(manifest)
         break
       default:
         fail('UNKNOWN_CONTENT_CONTRACT', `Unknown content contract: ${declaration.contentContract}`)

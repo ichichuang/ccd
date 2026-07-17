@@ -1,24 +1,24 @@
 ---
 name: project-ui
-description: Canonical CCD project-level UI governance source for manual loading now and future routed use later.
+description: Canonical CCD project-level UI governance source for routed and direct UI work.
 version: 1.0.0
 ---
 
 # CCD Project UI
 
-project-ui is the canonical CCD project-level UI governance source. It can be read directly by a new session to classify UI work, select references, preserve boundaries, reuse foundations, and validate output.
+project-ui is the canonical CCD project-level UI governance source. Repository routing selects its stable Skill ID for generic UI work, and a session may also read it directly to classify UI work, select references, preserve boundaries, reuse foundations, and validate output.
 
 ## Identity and Purpose
 
-project-ui is the canonical CCD project-level UI governance source for planning, implementation, refactoring, review, and validation. A manually loaded Codex or Claude session can use it without current Skill discovery because it defines classification, references, preflight, precedence, foundations, output, and validation.
+project-ui is the canonical CCD project-level UI governance source for planning, implementation, refactoring, review, and validation. Codex and Claude consume noncanonical synchronized materializations of this repository source; routing and direct loading both preserve the same classification, references, preflight, precedence, foundations, output, and validation contract.
 
 ## Transitional Status
 
-The initial project-ui source was introduced on main by commit `624948ea9058507f8fae91975dabc715d984703a` with subject `feat(governance): 建立唯一项目级 UI Skill`. P3 Machine UI Policy implementation is complete at `.ai/governance/policies/ui.json` and is validated by `node .ai/governance/ui/scripts/validate-ui-policy.mjs`. Application-source enforcement remains baseline-only because the source scanner is not implemented. project-ui remains undiscovered by the current Skill lock, unrouted, and unsynchronized; legacy design Skills and legacy UI rules remain unchanged.
+The initial project-ui source was introduced on main by commit `624948ea9058507f8fae91975dabc715d984703a` with subject `feat(governance): 建立唯一项目级 UI Skill`. P3 Machine UI Policy and P4 cold-start contracts remain complete. P5 now discovers project-ui as the singleton canonical project Skill, locks its twelve-file source inventory, routes generic UI tasks to its stable Skill ID, synchronizes isolated Codex and Claude materializations transactionally, and activates both adapters. Application-source enforcement remains baseline-only because the source scanner is not implemented. Legacy design Skills and legacy UI rules remain available through conditional routing.
 
 ## Future Activation Intent
 
-Future phases may route UI tasks to this Skill after P5 owners create routing and synchronization support. Until then, manual loading is the supported use and must not imply adapter activation or project-ui cold-start loading.
+The Node router is primary and the Python router is the parity fallback. Generic UI evidence selects project-ui; explicit page or route composition may add task-orchestrator and Vue; non-UI work remains isolated; motion, UnoCSS, and Vite activate only from their own narrow evidence. Adapter activation does not make project-ui a global always-loaded Skill.
 
 ## Scope
 
@@ -66,7 +66,7 @@ GSAP is eligible only for timeline-heavy, scroll-linked, or complex choreography
 
 ## Future Integration Boundaries
 
-Future phases own source-scanning enforcement and routing. Current project-ui provides human-readable canonical governance plus deterministic policy and semantic-quality validation; it does not provide source-scanning enforcement, project-ui cold-start activation, or sync. P4 AI cold-start validation owns repository entrypoint availability, not project-ui automatic loading.
+Current project-ui provides human-readable canonical governance, deterministic policy and semantic-quality validation, routed activation, and transactional synchronization contracts. It does not provide source-scanning enforcement, Page Contracts, route scaffolding, or automatic global loading. P4 AI cold-start validation still owns repository entrypoint availability; P5 extends that contract with conditional project-ui discovery and adapter activation.
 
 ## P3 Machine UI Policy Boundary
 
@@ -94,13 +94,30 @@ ADAPTER_MANIFEST_COLD_START_COMPLETE=yes
 ADAPTER_GENERATION_DETERMINISTIC=yes
 AI_SYNC_IDEMPOTENT=yes
 FRESH_CLONE_ENTRYPOINTS_PASS=yes
+P5_STARTED=yes
+P5_COMPLETE=yes
+PROJECT_UI_DISCOVERED=yes
+PROJECT_UI_ROUTED=yes
+PROJECT_UI_SYNCHRONIZED=yes
+PROJECT_UI_ADAPTER_ACTIVATED=yes
+PROJECT_UI_LOCKED=yes
+PROJECT_UI_CODEX_SYNC_CONTRACT_COMPLETE=yes
+PROJECT_UI_CLAUDE_SYNC_CONTRACT_COMPLETE=yes
+SKILL_ROUTING_MANIFEST_CURRENT=yes
+ROUTING_SCOPE_REGISTRY_COMPLETE=yes
+SKILLS_LOCK_CURRENT=yes
+RULE_INDEX_CURRENT=yes
+NODE_PYTHON_ROUTER_PARITY=yes
+GENERIC_UI_ROUTES_TO_PROJECT_UI=yes
+MOTION_ROUTING_CONDITIONAL=yes
+NON_UI_ROUTING_PRESERVED=yes
+ADAPTER_PROJECT_UI_MAPPING_COMPLETE=yes
+CODEX_ADAPTER_PROJECT_UI_ACTIVE=yes
+CLAUDE_ADAPTER_PROJECT_UI_ACTIVE=yes
 SOURCE_SCANNER_IMPLEMENTED=no
 PAGE_CONTRACT_CREATED=no
-PROJECT_UI_DISCOVERED=no
-PROJECT_UI_ROUTED=no
-PROJECT_UI_SYNCHRONIZED=no
-PROJECT_UI_ADAPTER_ACTIVATED=no
-P5_STARTED=no
+LEGACY_SKILLS_RETIRED=no
+LEGACY_RULES_RETIRED=no
 ```
 
 ## Page Contract Boundary
@@ -113,8 +130,8 @@ P4 AI cold-start atomic replacement is complete for repository entrypoints: `AGE
 
 ## P5 Routing and Synchronization Boundary
 
-P5 owns Skill discovery, routing, lock updates, adapter synchronization, Codex sync, and Claude sync. P5 has not started and this correction must not change those surfaces.
+P5 is complete for Skill discovery, routing, lock updates, adapter synchronization, Codex sync, and Claude sync. `.ai/skills/project-ui` remains the canonical source; synchronized client copies are noncanonical materializations and real client targets are never validation targets.
 
 ## Internal Reference Authority
 
-The ten files under `references/` are internal authority for project-ui. They are not separate Skills, must not contain Skill frontmatter, and must be loaded through this entrypoint or a future approved router.
+The ten files under `references/` are internal authority for project-ui. They are not separate Skills, must not contain Skill frontmatter, and must be loaded through this entrypoint or the approved router.

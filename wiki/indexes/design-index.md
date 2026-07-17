@@ -36,6 +36,7 @@ CCD design guidance for AI-generated UI work.
 | [[animation-governance]]         | 动画治理           |     `draft` |       0.82 |
 | [[ui-governance-migration-plan]] | UI 治理迁移计划    | `published` |       0.95 |
 | [[project-ui-skill]]             | 项目 UI 技能       | `published` |       0.95 |
+| [[project-ui-routing]]           | 项目 UI 路由       | `published` |       0.95 |
 | [[machine-ui-policy]]            | 机器 UI 策略       | `published` |       0.95 |
 
 ## Related pages

@@ -29,7 +29,7 @@ wiki_owner: LLM-maintained CCD architecture wiki
 
 AI cold-start is the repository entrypoint contract for agents that read CCD before any local synchronization command runs. It is static design documentation, not a lifecycle ledger. Current lifecycle state is owned by `.ai/governance/coverage/project-ui-semantic-coverage.json` and the five project-ui lifecycle documents.
 
-Current boundary summary: `P4_STARTED=yes`, `P4_COMPLETE=yes`, `SOURCE_SCANNER_IMPLEMENTED=no`, `PAGE_CONTRACT_CREATED=no`, `P5_STARTED=no`, `PROJECT_UI_DISCOVERED=no`, `PROJECT_UI_ROUTED=no`, `PROJECT_UI_SYNCHRONIZED=no`, and `PROJECT_UI_ADAPTER_ACTIVATED=no`. This page intentionally does not duplicate the complete terminal lifecycle block.
+Current boundary summary: `P4_STARTED=yes`, `P4_COMPLETE=yes`, `P5_STARTED=yes`, `P5_COMPLETE=yes`, `PROJECT_UI_DISCOVERED=yes`, `PROJECT_UI_ROUTED=yes`, `PROJECT_UI_SYNCHRONIZED=yes`, `PROJECT_UI_ADAPTER_ACTIVATED=yes`, `SOURCE_SCANNER_IMPLEMENTED=no`, and `PAGE_CONTRACT_CREATED=no`. This page intentionally does not duplicate the complete terminal lifecycle block.
 
 ## Authority hierarchy
 
@@ -77,10 +77,14 @@ The narrow ignore-policy result is that repository cold-start entrypoints are tr
 
 Dedicated validator modes cover working-candidate validation, staged-candidate validation, committed archive validation, generator check mode, consumer ordering, committed ignore policy, candidate archive simulation, and ai:sync idempotency. `codex-preflight` selects terminal cold-start validation first and falls back to implementation mode only for the accepted terminal-lifecycle-incomplete diagnostic during the transition.
 
+## P5 Extension
+
+P5 activation extends the P4 cold-start contract without changing its sources, six generated outputs, or fresh-clone guarantees. The terminal routing layer discovers the canonical `.ai/skills/project-ui` source, selects it by stable routing contracts, synchronizes noncanonical Codex and Claude materializations transactionally, and activates the corresponding adapter mappings. Isolated sync and preflight targets protect real client state.
+
 ## Isolated HOME
 
 Cold-start validation includes isolated-HOME execution so entrypoint availability does not depend on unrelated real-home state. Local runtime preservation remains part of the boundary: ignored `.ai/runtime/**`, `.claude/**`, `.cursor/**`, and editor/runtime state are not cold-start sources.
 
 ## Non-goals
 
-P4 does not implement the source scanner, create Page Contract artifacts, start P5, discover project-ui, route project-ui, synchronize project-ui, or adapter-activate project-ui. Those states remain negative until their owning phases explicitly change them.
+Historically, P4 did not start P5 or discover, route, synchronize, or adapter-activate project-ui; the terminal P5 extension now owns those completed states. The combined P4/P5 contract still does not implement the source scanner, create Page Contract artifacts, globally always-load project-ui, scaffold routes, or retire legacy Skills and rules.

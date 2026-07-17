@@ -1,146 +1,2784 @@
 {
-  "version": 2,
+  "version": 3,
+  "generatedBy": "scripts/skill-lock-utils.mjs",
+  "hashPolicy": {
+    "algorithm": "sha256",
+    "pathEncoding": "utf8",
+    "pathSeparator": "/",
+    "entryFraming": "path+NUL+bytes+NUL",
+    "textDetection": "listed-extension-or-no-NUL-byte",
+    "textNormalization": "utf8-crlf-to-lf-preserve-final-newline",
+    "binaryNormalization": "identity",
+    "excludedDirectories": [
+      "__pycache__"
+    ],
+    "excludedSuffixes": [
+      ".pyc"
+    ],
+    "symlinkPolicy": "reject"
+  },
+  "roots": [
+    {
+      "id": "codex",
+      "path": ".ai/skills/codex",
+      "layer": "codex",
+      "discovery": "immediate-child-directories",
+      "syncTargets": [
+        "codex"
+      ],
+      "syncImplementations": [
+        "codex-user-skills-v1"
+      ]
+    },
+    {
+      "id": "core",
+      "path": ".ai/skills/core",
+      "layer": "core",
+      "discovery": "immediate-child-directories",
+      "syncTargets": [
+        "codex"
+      ],
+      "syncImplementations": [
+        "codex-user-skills-v1"
+      ]
+    },
+    {
+      "id": "design",
+      "path": ".ai/skills/design",
+      "layer": "design",
+      "discovery": "immediate-child-directories",
+      "syncTargets": [
+        "codex"
+      ],
+      "syncImplementations": [
+        "codex-user-skills-v1"
+      ]
+    }
+  ],
+  "projectUi": {
+    "id": "project-ui",
+    "path": ".ai/skills/project-ui",
+    "layer": "project",
+    "required": true,
+    "singleton": true,
+    "syncTargets": [
+      "claude",
+      "codex"
+    ],
+    "syncImplementations": {
+      "claude": "project-ui-claude-project-v1",
+      "codex": "project-ui-codex-user-v1"
+    }
+  },
   "skills": {
     "architecture-browser-master": {
       "source": "repo:.ai/skills/codex/architecture-browser-master",
       "sourceType": "local",
+      "sourceFormat": "directory",
       "layer": "codex",
+      "kind": "skill",
       "syncTargets": [
         "codex"
       ],
+      "syncImplementations": {
+        "codex": "codex-user-skills-v1"
+      },
+      "includedFiles": [
+        {
+          "path": "SKILL.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4406,
+          "sha256": "aa1b80462ebf5f315c8ca5e9dfea0a567b10310f9b6f1a274e272cf98d22320a"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "mode": "100644",
+          "kind": "text",
+          "size": 257,
+          "sha256": "ae1d55498b67aef893c1f4450d8a844d8c1fd36608e3f097cbf073968f3c0625"
+        },
+        {
+          "path": "references/cli-playbook.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 936,
+          "sha256": "b7ee87fadb29a029afa97776b314dc96170717508339ccecbb87d5908ba2d7e0"
+        },
+        {
+          "path": "references/debug-checklist.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 708,
+          "sha256": "4a1714bdaac4654617acdd9f295d9137db51bb10b3460985191e8059e38cef63"
+        },
+        {
+          "path": "references/recorder-workflow.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1839,
+          "sha256": "6f44cf7418e16d0af37c03cd3e13e3c17648f3148b12011543a4677d6e598a43"
+        },
+        {
+          "path": "scripts/browser_automator.py",
+          "mode": "100644",
+          "kind": "text",
+          "size": 25913,
+          "sha256": "9cff33a1cb71c9bf085397212836e73e89f61f7d85f95d14cfcc029963dc2913"
+        }
+      ],
+      "excludedFiles": [],
       "computedHash": "d06a80c7a816a55c295dad4a1ddb265300527320b83e5adbd7d35add52b0653c"
     },
     "ccd-animate-lite": {
       "source": "repo:.ai/skills/design/ccd-animate-lite",
       "sourceType": "local",
+      "sourceFormat": "directory",
       "layer": "design",
+      "kind": "skill",
       "syncTargets": [
         "codex"
       ],
+      "syncImplementations": {
+        "codex": "codex-user-skills-v1"
+      },
+      "includedFiles": [
+        {
+          "path": "SKILL.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1391,
+          "sha256": "51e857115758fceaddd7153eb04fa700f866088947d75f93f8261eec83d1f397"
+        }
+      ],
+      "excludedFiles": [],
       "computedHash": "f846695eeec6f5ab74963929c289128e78c1138f0a4b1b49e3000eb3c59bab6d"
     },
     "ccd-gsap-motion": {
       "source": "repo:.ai/skills/design/ccd-gsap-motion",
       "sourceType": "local",
+      "sourceFormat": "directory",
       "layer": "design",
+      "kind": "skill",
       "syncTargets": [
         "codex"
       ],
+      "syncImplementations": {
+        "codex": "codex-user-skills-v1"
+      },
+      "includedFiles": [
+        {
+          "path": "SKILL.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2022,
+          "sha256": "a0b4f16c430e0e47f570ab289c73d3bc00c74734cf71b1e9a0e4f2a7508858e8"
+        }
+      ],
+      "excludedFiles": [],
       "computedHash": "b164beb21e2cc156e3d91239bbf0adaf6b3d67b78f20f97097c19ca8b2bb2a3c"
     },
     "ccd-material-system": {
       "source": "repo:.ai/skills/design/ccd-material-system",
       "sourceType": "local",
+      "sourceFormat": "directory",
       "layer": "design",
+      "kind": "skill",
       "syncTargets": [
         "codex"
       ],
+      "syncImplementations": {
+        "codex": "codex-user-skills-v1"
+      },
+      "includedFiles": [
+        {
+          "path": "SKILL.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4112,
+          "sha256": "ebdcaae44fcb93ff99b936e9085cbb193749f755506818e136575735d625dc50"
+        }
+      ],
+      "excludedFiles": [],
       "computedHash": "ebabeccb168cc5a9b91d36e6f771211ff261e3abe681012cbe0dccab601ca4e5"
     },
     "ccd-motion-system": {
       "source": "repo:.ai/skills/design/ccd-motion-system",
       "sourceType": "local",
+      "sourceFormat": "directory",
       "layer": "design",
+      "kind": "skill",
       "syncTargets": [
         "codex"
       ],
+      "syncImplementations": {
+        "codex": "codex-user-skills-v1"
+      },
+      "includedFiles": [
+        {
+          "path": "SKILL.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3539,
+          "sha256": "1e404e981f3b888955b11d6bd8dc64fa88c7c6732e67e0b0ecdd884addea8adf"
+        }
+      ],
+      "excludedFiles": [],
       "computedHash": "383b7138a94f7728f445eadf6a8735cf0ce03cf000dcd73a05d2d92235e7521b"
     },
     "ccd-page-archetypes": {
       "source": "repo:.ai/skills/design/ccd-page-archetypes",
       "sourceType": "local",
+      "sourceFormat": "directory",
       "layer": "design",
+      "kind": "skill",
       "syncTargets": [
         "codex"
       ],
+      "syncImplementations": {
+        "codex": "codex-user-skills-v1"
+      },
+      "includedFiles": [
+        {
+          "path": "SKILL.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4054,
+          "sha256": "4c09372e0fb017248e01330b8cd44464e5abd0effb8c8313ba89a0a64f66c6c2"
+        }
+      ],
+      "excludedFiles": [],
       "computedHash": "47df82c6c72b257b07afef08d02edc296b1a89be6a4e2473c0cea3e3eb9d7a2c"
     },
     "ccd-product-language": {
       "source": "repo:.ai/skills/design/ccd-product-language",
       "sourceType": "local",
+      "sourceFormat": "directory",
       "layer": "design",
+      "kind": "skill",
       "syncTargets": [
         "codex"
       ],
+      "syncImplementations": {
+        "codex": "codex-user-skills-v1"
+      },
+      "includedFiles": [
+        {
+          "path": "SKILL.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 5238,
+          "sha256": "903f4c8292c2b0ad6e0ebc695f3799effe654c6461a2ec0f327e8d9a8acec6fd"
+        }
+      ],
+      "excludedFiles": [],
       "computedHash": "74a319c2d8d7fb007903740bb02582be903ebde0e634404eac4086bf05cfd7c3"
     },
     "ccd-ui-review-gate": {
       "source": "repo:.ai/skills/design/ccd-ui-review-gate",
       "sourceType": "local",
+      "sourceFormat": "directory",
       "layer": "design",
+      "kind": "skill",
       "syncTargets": [
         "codex"
       ],
+      "syncImplementations": {
+        "codex": "codex-user-skills-v1"
+      },
+      "includedFiles": [
+        {
+          "path": "SKILL.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2983,
+          "sha256": "63fbc8ae4bc22708200079a47ce81306509d8f66a7625679811a2f79bb7b9e5b"
+        }
+      ],
+      "excludedFiles": [],
       "computedHash": "168ed64264416aa78f5f6e21f3725e9e48bd6811c3a07603a579b4ac9b2ebe37"
     },
     "desktop-tauri-guard": {
       "source": "repo:.ai/skills/codex/desktop-tauri-guard",
       "sourceType": "local",
+      "sourceFormat": "directory",
       "layer": "codex",
+      "kind": "skill",
       "syncTargets": [
         "codex"
       ],
+      "syncImplementations": {
+        "codex": "codex-user-skills-v1"
+      },
+      "includedFiles": [
+        {
+          "path": "SKILL.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1645,
+          "sha256": "574c757337fcf7e2dc26bc8125630de06df812a0c9f80096edbc6381eb74ef2a"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "mode": "100644",
+          "kind": "text",
+          "size": 279,
+          "sha256": "5fedd1704aeafdc86600f47f6507b5d220f5026c8c3a9da795bca913a32cc37b"
+        }
+      ],
+      "excludedFiles": [],
       "computedHash": "5a6474af81494d9eb2c7f3bd8b5c8ec975f3c4daf6b1ff716493d9ae96e50ba0"
     },
     "github-ops": {
       "source": "repo:.ai/skills/codex/github-ops",
       "sourceType": "local",
+      "sourceFormat": "directory",
       "layer": "codex",
+      "kind": "skill",
       "syncTargets": [
         "codex"
       ],
+      "syncImplementations": {
+        "codex": "codex-user-skills-v1"
+      },
+      "includedFiles": [
+        {
+          "path": "SKILL.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3097,
+          "sha256": "c3c038a1f8789186d9731469d0f175f2a69e54769f679f9097f7d5ef81872c98"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "mode": "100644",
+          "kind": "text",
+          "size": 267,
+          "sha256": "fc8eea6e051b51b532f7f6048601128150f91c48eea6275e0788a6e9d6dc6986"
+        },
+        {
+          "path": "scripts/github_context.py",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1504,
+          "sha256": "911799a64a925db202daa16934d416760f2f6aefa55c8f045680420b1635ba3f"
+        }
+      ],
+      "excludedFiles": [],
       "computedHash": "643fe0ed8a40e64fef4cbf7ff5ea7b9b9a54d62dd52b8b042274ada263aefc4c"
     },
-    "skill-routing": {
-      "source": "repo:.ai/manifests/skill-routing.json",
+    "project-ui": {
+      "source": "repo:.ai/skills/project-ui",
       "sourceType": "local",
-      "kind": "manifest",
-      "computedHash": "d851511a686f2149c8688f83137f46c07ac8ab3de32559957f1b3a9638015145"
+      "sourceFormat": "directory",
+      "layer": "project",
+      "kind": "skill",
+      "syncTargets": [
+        "claude",
+        "codex"
+      ],
+      "syncImplementations": {
+        "claude": "project-ui-claude-project-v1",
+        "codex": "project-ui-codex-user-v1"
+      },
+      "includedFiles": [
+        {
+          "path": "SKILL.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 9718,
+          "sha256": "ee22396186e925350f4d129b29104bb02ff1b3c0364bc2ceb6edc00738d7aaa1"
+        },
+        {
+          "path": "references/accessibility.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4527,
+          "sha256": "3eef70985e29137e5f42fd82921dd32c84af852eb835ba74ad51aef4100af969"
+        },
+        {
+          "path": "references/component-priority.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 5065,
+          "sha256": "858d56835ef2fe7f401eb704e5285b8f8dc4696b459895f9b43c30128c1641e2"
+        },
+        {
+          "path": "references/interaction-motion.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4076,
+          "sha256": "4cb2cc74a258cf94669f949b22c381c9f03483cee86d3801317f59114e050fbc"
+        },
+        {
+          "path": "references/layout-scroll.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4139,
+          "sha256": "b04be50a40e7b87f7ac4458690509d41914357777f90e97d67011ea9d5903974"
+        },
+        {
+          "path": "references/page-archetypes.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 8298,
+          "sha256": "c7de43bf36496a08e2e35e5e110c7390759c94cbd3be6c4d1c20c9ee95035c73"
+        },
+        {
+          "path": "references/platform-invariants.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4729,
+          "sha256": "21797ffe5f6e75bbd0d152d2e948ed174c8dbb93bd377271d508f1356661be89"
+        },
+        {
+          "path": "references/product-language.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3218,
+          "sha256": "49d3a32dddb3675ac2adcf8ea348d993be05a56da675b9359b22d2bdf9f0e625"
+        },
+        {
+          "path": "references/product-ui-profile.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3872,
+          "sha256": "5f2d0c1836a1fa289e89c2c7270e2240c644c23deea15da9f575424305b1661f"
+        },
+        {
+          "path": "references/tokens-unocss.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4375,
+          "sha256": "d35ed18fcb343767b9062f2db6499161142e514c96047f8e933157224be04f40"
+        },
+        {
+          "path": "references/validation.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 7551,
+          "sha256": "ce9b9281427f01ed2f1689a04fdba8853ab0d2429b66a98114fc79b00b6c72f6"
+        },
+        {
+          "path": "scripts/validate-semantic-quality.mjs",
+          "mode": "100644",
+          "kind": "text",
+          "size": 103956,
+          "sha256": "e626c5ac3f4d9b7b616c4aad41f9107fc4377517391e673a19b9c9f443aa961b"
+        }
+      ],
+      "excludedFiles": [],
+      "computedHash": "4a15d1e041a3be2cec071dc1812593cf0c822f4ace1a74f685a3e03e48ac0237"
     },
     "task-orchestrator": {
       "source": "repo:.ai/skills/codex/task-orchestrator",
       "sourceType": "local",
+      "sourceFormat": "directory",
       "layer": "codex",
+      "kind": "skill",
       "syncTargets": [
         "codex"
       ],
-      "computedHash": "c4b4a3f73fd42a6fda71942406b8975bb162027e5442e6a82d65103fb21b7529"
+      "syncImplementations": {
+        "codex": "codex-user-skills-v1"
+      },
+      "includedFiles": [
+        {
+          "path": "SKILL.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3706,
+          "sha256": "c23fc4f55f25c8636b0585669712b406892fad17792eaf12dacc32ab1382733c"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "mode": "100644",
+          "kind": "text",
+          "size": 239,
+          "sha256": "9851cf92b9f6d0f459899e7a927b04b2ba247028812b78e110a7e06b87f95b8f"
+        },
+        {
+          "path": "references/routing-matrix.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 368,
+          "sha256": "ec0242ba79655b5d40f472b8da30023e18d29f6aabea91f85a77e2f047208385"
+        },
+        {
+          "path": "references/validation-ladder.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 273,
+          "sha256": "a2a7315832035a527e35a161042297882f108703bbaeda1df8c52c3fdb7a36b5"
+        },
+        {
+          "path": "scripts/skill_router.mjs",
+          "mode": "100644",
+          "kind": "text",
+          "size": 34058,
+          "sha256": "213148e407d16b49ff90de0347c939fd3e5db4abb5bc23ae32434a228e99ad7d"
+        },
+        {
+          "path": "scripts/skill_router.py",
+          "mode": "100644",
+          "kind": "text",
+          "size": 33600,
+          "sha256": "804fbf6925a5299b17b6cc2600830c8014a4b6c997feb0796ca1216c4c0d5ac6"
+        },
+        {
+          "path": "scripts/task_router.py",
+          "mode": "100644",
+          "kind": "text",
+          "size": 6346,
+          "sha256": "0b44d46e54f9bdcdadc806c1047b2ec4f155cec87c5b0ebef2057c9dc1f7a3aa"
+        }
+      ],
+      "excludedFiles": [],
+      "computedHash": "9236839fc1b20db689e1e085d41ec99cad1f643971076e2c67c605bcfda7c545"
     },
     "unocss": {
       "source": "repo:.ai/skills/core/unocss",
       "sourceType": "local",
+      "sourceFormat": "directory",
       "layer": "core",
+      "kind": "skill",
       "syncTargets": [
         "codex"
       ],
+      "syncImplementations": {
+        "codex": "codex-user-skills-v1"
+      },
+      "includedFiles": [
+        {
+          "path": "GENERATION.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 136,
+          "sha256": "02e6be86dc235e6d2279e49ab8259dd6343a9b2e72cd0398ce40ff1418fd563e"
+        },
+        {
+          "path": "SKILL.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 5599,
+          "sha256": "9f4286b521c805c19af2af3e51c36ad058c7ff494195b7a654fd1ee82e8909cf"
+        },
+        {
+          "path": "references/core-config.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2993,
+          "sha256": "bc64726f8bde9d5b693745ec1a405c22e991f7789af2bee8f89548d3d34a0302"
+        },
+        {
+          "path": "references/core-extracting.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2171,
+          "sha256": "99629c65a4456e075ce0b28263f5cd2b37201542f806f4bf32638c1f642ddd34"
+        },
+        {
+          "path": "references/core-layers.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1679,
+          "sha256": "e413362167a1ffb1775f1ce8e4852c7d264babd8a86aec1e896a76cbff4d9398"
+        },
+        {
+          "path": "references/core-rules.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4102,
+          "sha256": "ad52b576cf588d9d31963c8843da216b2f5d8ade415c4d5a4afd02a281d645fa"
+        },
+        {
+          "path": "references/core-safelist.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1976,
+          "sha256": "fa1b42a36d47c85fa3c24bc7ebd3e466ea716e4beb66d1c2306f7ed4874c68c1"
+        },
+        {
+          "path": "references/core-shortcuts.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1923,
+          "sha256": "f2ba898093f660e8723392a838e0defcaa7bc6b595ea7dad0e174e515e4d6d3f"
+        },
+        {
+          "path": "references/core-theme.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3430,
+          "sha256": "8f7fe7cc02d9d2453b2461d327b15b675bbe5a72c3aaf56d0039dbef887f5d7a"
+        },
+        {
+          "path": "references/core-variants.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3297,
+          "sha256": "6f7d74f59538ec2f9b172a0ca1c70200e77b4bf326a5dee387a5b1435bb6c27c"
+        },
+        {
+          "path": "references/integrations-nuxt.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3465,
+          "sha256": "9ec0901af9f2ca3ac0887d1c65bb89fdcd21cc2761ffcf085df7f5d84e6362b1"
+        },
+        {
+          "path": "references/integrations-vite.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4168,
+          "sha256": "6ba5dce1fba539f07bd18c16aea6ccd60cf43e828627c95660b0037b435a92d8"
+        },
+        {
+          "path": "references/preset-attributify.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2551,
+          "sha256": "d780c0042c650d3c21478b9f2288b7840ae378107929a7009d827684cd38284d"
+        },
+        {
+          "path": "references/preset-icons.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3778,
+          "sha256": "c91358c3f3e671ad032e6ddd985ec83c43ff15ea351363ae7767d8a516451139"
+        },
+        {
+          "path": "references/preset-mini.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2772,
+          "sha256": "3ed24580d8e9e04b456d2981a2c554b772006eb4edda19c708cfb6cdba38b1a7"
+        },
+        {
+          "path": "references/preset-rem-to-px.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1623,
+          "sha256": "718cecd0c205c0ad1fd5fc9b2bfa7f871862aa46ac503ecd7689fca32ba55016"
+        },
+        {
+          "path": "references/preset-tagify.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1997,
+          "sha256": "a83bb80dbd94497b162e3efd464ab46aa61dcfd9005a1c7eea9939d10c5852f8"
+        },
+        {
+          "path": "references/preset-typography.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1756,
+          "sha256": "f78add3b5f7e3a292297634e06c462664af0b84fe76668165ee5185c13ba300a"
+        },
+        {
+          "path": "references/preset-web-fonts.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1584,
+          "sha256": "664ced011f6ad93ba4cf48f2c657caab4fdcf41e1d8303435334d2f3df8c4c02"
+        },
+        {
+          "path": "references/preset-wind3.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3477,
+          "sha256": "e3e7ea43e461bdef4a2f0b842163fdf9ee4be973a731a28d6635419aad1d59b5"
+        },
+        {
+          "path": "references/preset-wind4.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 5363,
+          "sha256": "81efd1f0cd3b1866a3a8daf43185e8175776f83dbac8607e8545856687c8ae01"
+        },
+        {
+          "path": "references/transformer-attributify-jsx.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2459,
+          "sha256": "8963d055176ba3feea2a55f0fc01a78de03f59b97e16319cff6e9bee00c830e1"
+        },
+        {
+          "path": "references/transformer-compile-class.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2247,
+          "sha256": "391172a51eed06d71826732d8ab8c097d35751611e41b86feb131f0978c74688"
+        },
+        {
+          "path": "references/transformer-directives.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2389,
+          "sha256": "3a919f354613cc9fbb23547502e4a9f8fa93d4d3967a561554d3a1b288836070"
+        },
+        {
+          "path": "references/transformer-variant-group.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1796,
+          "sha256": "5a6ad34ecbb6d01f415597de1e4850170acdb8a1ab8c499b5a981fc321d75fc2"
+        }
+      ],
+      "excludedFiles": [],
       "computedHash": "66c9ee74a59e2d2767379332bf701210d05e54fc2577f1f5cbc7b328c28ff51b"
     },
     "vite": {
       "source": "repo:.ai/skills/core/vite",
       "sourceType": "local",
+      "sourceFormat": "directory",
       "layer": "core",
+      "kind": "skill",
       "syncTargets": [
         "codex"
       ],
+      "syncImplementations": {
+        "codex": "codex-user-skills-v1"
+      },
+      "includedFiles": [
+        {
+          "path": "GENERATION.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 134,
+          "sha256": "69dfd9d99eafc33f4580b902ad794166f4adcc76f80917f129613d6bbb60b93e"
+        },
+        {
+          "path": "SKILL.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3196,
+          "sha256": "b60f0685c787234750d65ef69bb13897360a6b5c338be70512282ace2bc327ab"
+        },
+        {
+          "path": "references/build-and-ssr.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3398,
+          "sha256": "69c262c9bbc78676c66018f33b82d66c85d94bbf5178b2d6968494aa7bed8fe2"
+        },
+        {
+          "path": "references/core-config.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2854,
+          "sha256": "feb45372ef8c0914616844b34b5328c5099f0fc3636e41ac7188218bc6ca04ce"
+        },
+        {
+          "path": "references/core-features.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3895,
+          "sha256": "98769199de6b77fefd4c1a789ee7c55c233acd7dccb1f2ca37909315193ca74c"
+        },
+        {
+          "path": "references/core-plugin-api.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3854,
+          "sha256": "d9de99fef5a102fcdd2d536ee98e49247282a6dc692043f2878b29a7cbc734ee"
+        },
+        {
+          "path": "references/environment-api.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2394,
+          "sha256": "80a2f198d34f3b64f5b80ce86e1cc13369470b96e607c028213b8393d251f2ef"
+        },
+        {
+          "path": "references/rolldown-migration.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2867,
+          "sha256": "40e24b4d2b7803f3cde443b93194a4cb9dcccdcba630b281902105f14c718b8d"
+        }
+      ],
+      "excludedFiles": [],
       "computedHash": "d1f166382979a51d7ed682046c55aef3c3a47fe834c60d3e29ba4ab93a968d1f"
     },
     "vue": {
       "source": "repo:.ai/skills/core/vue",
       "sourceType": "local",
+      "sourceFormat": "directory",
       "layer": "core",
+      "kind": "skill",
       "syncTargets": [
         "codex"
       ],
+      "syncImplementations": {
+        "codex": "codex-user-skills-v1"
+      },
+      "includedFiles": [
+        {
+          "path": "GENERATION.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 133,
+          "sha256": "e600ea01783f3066f990707ff96a88aaa53327902bfff3f876cfcda800f8bb7d"
+        },
+        {
+          "path": "SKILL.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4020,
+          "sha256": "c0b2d6831c7192fcf02d5a711fd097b340f183eae4b42c8b1bb39df7356eb7d7"
+        },
+        {
+          "path": "references/advanced-patterns.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 6322,
+          "sha256": "e8d859b43b2c80cb31fbcb7dada46524de48a250fc688ad20ad1be1014b81d5d"
+        },
+        {
+          "path": "references/core-new-apis.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 5311,
+          "sha256": "8478b010877b99c344984d5e55a31adfdc9de74e068d80fd41918b5a1958e73d"
+        },
+        {
+          "path": "references/script-setup-macros.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3935,
+          "sha256": "9f683e5636dc1a41d373269b34143d3046063060c43d723d793f296b0180343a"
+        }
+      ],
+      "excludedFiles": [],
       "computedHash": "9097a44b2612d3c9e85ffe4bebbf0ec1d833aa3eaeb40bf87151749cf3fa61c1"
     },
     "vueuse-functions": {
       "source": "repo:.ai/skills/core/vueuse-functions",
       "sourceType": "local",
+      "sourceFormat": "directory",
       "layer": "core",
+      "kind": "skill",
       "syncTargets": [
         "codex"
       ],
+      "syncImplementations": {
+        "codex": "codex-user-skills-v1"
+      },
+      "includedFiles": [
+        {
+          "path": "LICENSE.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1092,
+          "sha256": "44d916aa917ef8232a46995f444a3997956468ced8bef4354a60671bc5d4c2f4"
+        },
+        {
+          "path": "SKILL.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 67643,
+          "sha256": "24ab5caf7336557f165440685298ff8f2e3c698bda17155ed621b01e8f403a99"
+        },
+        {
+          "path": "SYNC.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 150,
+          "sha256": "a1d585b6478d9413fbf4594545b4bb12c9083843add1278dfa4662da39aad0a6"
+        },
+        {
+          "path": "references/computedAsync.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 5322,
+          "sha256": "c7a7582879b978c91b1e267eddd58ad00b6f2b8f2b191dca99fc9e72700c0c1f"
+        },
+        {
+          "path": "references/computedEager.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2022,
+          "sha256": "f1929ed894c1efe50b78133cf1e73d853725984fdebdd26322ea1e0d0b7e1c2c"
+        },
+        {
+          "path": "references/computedInject.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3237,
+          "sha256": "e02387c8ff1ff231a49458fa035eab005c91da3acfa41dc214c24ad0a3ec536b"
+        },
+        {
+          "path": "references/computedWithControl.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2207,
+          "sha256": "dc78aae87c2185e58ffec3a136c20ef45b2e0f4ec1433d5cd38740a2b71187ba"
+        },
+        {
+          "path": "references/createEventHook.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1893,
+          "sha256": "06d67bce37ad4531d1dccac18977aedd55d4c41a778042544bd80a74e1649f6c"
+        },
+        {
+          "path": "references/createGenericProjection.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 653,
+          "sha256": "02f84a5647197b8223acb6caeaab49ee8fabe7b52bfc4f522bfa26b564cb69d4"
+        },
+        {
+          "path": "references/createGlobalState.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1766,
+          "sha256": "8b6aa9ce0cd97db489b02c390a6147b9999873bdd8a4c30fea6aa0eeb8ce62cd"
+        },
+        {
+          "path": "references/createInjectionState.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 5109,
+          "sha256": "741191028152ce63581b0d624ee3343c9b2ae42849129eb9b7391b50ae255ad6"
+        },
+        {
+          "path": "references/createProjection.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 721,
+          "sha256": "3ba99a02fcd9b9e5f47352e64454b96f5e8ec84a1cfde1d66b677bc5934d7cf1"
+        },
+        {
+          "path": "references/createRef.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1178,
+          "sha256": "24bc8d0fba4c95865d98c8c333357da6e297712978c4ba5ee87c7426d2109949"
+        },
+        {
+          "path": "references/createReusableTemplate.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 9261,
+          "sha256": "eef1a36b7434f897b0e17ef2e1bc6e610b434f934760d788944ec3a9c4c15ab8"
+        },
+        {
+          "path": "references/createSharedComposable.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1132,
+          "sha256": "a419ec0c19c192ce98cffeaf3a99a54dce07023e82d1c56207fb21adeeaf21bb"
+        },
+        {
+          "path": "references/createTemplatePromise.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 8086,
+          "sha256": "68847f53320c7f5344b98dfddff2183bc66719886d03571dd74eb74ae19f9a5b"
+        },
+        {
+          "path": "references/createUnrefFn.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1301,
+          "sha256": "1119a0b7b0fc2047353b7c8bb83b5a6aba8917fd914bc012bf3eada3db6e8233"
+        },
+        {
+          "path": "references/extendRef.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1579,
+          "sha256": "54969789cfc8d0c2839d00d52f70b7dfaaba9f53fedac686608c1acd71df20f1"
+        },
+        {
+          "path": "references/from.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2475,
+          "sha256": "795b185247dffafc2e6720726747e8e1ae163a89d889007261dff119b96ec035"
+        },
+        {
+          "path": "references/get.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 388,
+          "sha256": "d9181348ba9d61bb251f7d45388bc36aadb7d209f021aca96c6990f02612f2cf"
+        },
+        {
+          "path": "references/injectLocal.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 744,
+          "sha256": "2f53fd230f19348669423a4456406ae4d37c97babc30a962d2e965a1d4465266"
+        },
+        {
+          "path": "references/isDefined.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 625,
+          "sha256": "53faf7c53d779118ae3566bf6f647071673fa3dd07bbe0326263f29fa7b84240"
+        },
+        {
+          "path": "references/logicAnd.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 639,
+          "sha256": "13e17ae3001c265fbc5ce57f3d11a656cc54f98c8be5ce4355caa703b26d47d4"
+        },
+        {
+          "path": "references/logicNot.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 566,
+          "sha256": "e71f449ae2a30a7bad8eae1cd6daa265ada83bf1937546d7215de6a6e14db87a"
+        },
+        {
+          "path": "references/logicOr.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 626,
+          "sha256": "7fa5eec0a7083ad863d02fe7df59bf8bbf777fae31ed86178abcc93519b5579e"
+        },
+        {
+          "path": "references/makeDestructurable.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 721,
+          "sha256": "81567a4d4fb810c7689246585bdc32c22087f088465a992dd3e6a7a82c7a15bd"
+        },
+        {
+          "path": "references/onClickOutside.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4803,
+          "sha256": "445875b1a8de96207f895776a19a7d3fd85ae8ea4379d78a7a0c37dcd9e7f74b"
+        },
+        {
+          "path": "references/onElementRemoval.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1652,
+          "sha256": "c121c571eb9df7770ab8e9d1b7f0beecd28bb6252467e749973ea9663fad407f"
+        },
+        {
+          "path": "references/onKeyStroke.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4606,
+          "sha256": "c2839ea62d81342a1d2ff093130913c5e89a125e5c7e62a5bce0cf8901f6284d"
+        },
+        {
+          "path": "references/onLongPress.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 5301,
+          "sha256": "91c3d2f000d8a1ba08c78442b667e408072f5a949941a5a05db9dfc17fc15e29"
+        },
+        {
+          "path": "references/onStartTyping.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1241,
+          "sha256": "720230c1197a301c411263ccacedff30cd64df2aa24456050430d975a53ce9a6"
+        },
+        {
+          "path": "references/provideLocal.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 856,
+          "sha256": "1833d23a133e0cfa0d5b5c44af8501423a34690a4f1023c1ddff1290c7cb7b9e"
+        },
+        {
+          "path": "references/reactify.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3099,
+          "sha256": "ed3436b3cf3d19a95d9952a3f842daa947412856e490e0c90b6b649b3134dfe2"
+        },
+        {
+          "path": "references/reactifyObject.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1180,
+          "sha256": "fdbe20a1bb1354ce823ebb36230232d8fe4917fb02cf9445c6aeb2a3d6d6c92c"
+        },
+        {
+          "path": "references/reactiveComputed.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 608,
+          "sha256": "c3ba31799764f7169a563e4ab67ae755f860614d56c11aea81639b742108fdcd"
+        },
+        {
+          "path": "references/reactiveOmit.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1589,
+          "sha256": "b338284277042f555c583655d1c0b6e38d4a35f5506a2cbbb8337e132a17e7a5"
+        },
+        {
+          "path": "references/reactivePick.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2025,
+          "sha256": "29dc6823a7ba06fd62f5f6794bfb2f09cfb0eb0c0ad6debcb7e9efb2c15e59bc"
+        },
+        {
+          "path": "references/refAutoReset.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1191,
+          "sha256": "3ea863969ddff909a448e871b3d9d2739961844e23c971518af63862d91ef5a4"
+        },
+        {
+          "path": "references/refDebounced.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1705,
+          "sha256": "568ac85619177feea9e4bc5e71fc5b83f8570a859bf1100857a88181b4c3f4d8"
+        },
+        {
+          "path": "references/refDefault.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 534,
+          "sha256": "7fabb067612e602c27c785189834e8a74c900ca0582318ecb5eb5148874c9826"
+        },
+        {
+          "path": "references/refManualReset.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 926,
+          "sha256": "da7ffb872cf4c15cfc924fe788a7e0850679c650f0cc5e7f658f90ead7695620"
+        },
+        {
+          "path": "references/refThrottled.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2828,
+          "sha256": "a970a73fc4abba609add4ed932ee15a169cc8926dc5850261b92761048230997"
+        },
+        {
+          "path": "references/refWithControl.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3439,
+          "sha256": "c4b1d89998ab94ecddaa52888aa8a8d74866a71b6b841c562e327b5960aac0d9"
+        },
+        {
+          "path": "references/set.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 382,
+          "sha256": "e7ce91b710588f736e5721a9572a9ac9488e286fdc6c39061c1be93208b21016"
+        },
+        {
+          "path": "references/syncRef.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3974,
+          "sha256": "23d89cbc7ef09e1bc61d0463e0bd298c038afb5ac760583b92269ece55e13e16"
+        },
+        {
+          "path": "references/syncRefs.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2449,
+          "sha256": "f86f07cc90c679839eafe4fa451f5a10840a95764196cbf537d916eee744f91c"
+        },
+        {
+          "path": "references/templateRef.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1657,
+          "sha256": "a01df713abcda0515b7d6c8d8491a77d7d1aa919cf96468f128f512b79249920"
+        },
+        {
+          "path": "references/toObserver.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 930,
+          "sha256": "92f1edb900a3efa39a19695e0ec9b32215675e17bfbd7768c4ca59585202c2d1"
+        },
+        {
+          "path": "references/toReactive.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 733,
+          "sha256": "f186361876d4a6bf4efd7ab8c4c5ca0a18aa4331974908affe88c641dea35378"
+        },
+        {
+          "path": "references/toRef.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2238,
+          "sha256": "627b43a5194809afb80db3eed4c1107f70b066dc701cb8f05c9191c683f96600"
+        },
+        {
+          "path": "references/toRefs.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1620,
+          "sha256": "cad13bc615d28b3b2f251d0e928289eeb3362450e1eb6d9e83e2e639a3f67d6a"
+        },
+        {
+          "path": "references/tryOnBeforeMount.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 618,
+          "sha256": "ca25d015ae8f93a8358b59a99fed6e08ef9db369af389f346a8b723454d8f79a"
+        },
+        {
+          "path": "references/tryOnBeforeUnmount.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 515,
+          "sha256": "c8a058e86350fa36661a4ba6af0bfecfed56f4f1eb69fad2aaeba4b48f83d12a"
+        },
+        {
+          "path": "references/tryOnMounted.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 590,
+          "sha256": "6c243ff95e2df7e14fe3e8605f5d6c69bac5b9a3fa0e464d6a0a4f313a075dab"
+        },
+        {
+          "path": "references/tryOnScopeDispose.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 483,
+          "sha256": "1e4051ae62114c933709e1d3bd1532a8c94a566428ad28e4cd00702907a3901a"
+        },
+        {
+          "path": "references/tryOnUnmounted.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 487,
+          "sha256": "d13367ffb0c7bf35772230493ee1f5b7a6685d08e6537699843514380bb2eaf2"
+        },
+        {
+          "path": "references/unrefElement.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1372,
+          "sha256": "28e1c867995536280299bb46cb59a3ec9076d5221e3cb01e8c584ee93546e5fd"
+        },
+        {
+          "path": "references/until.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3814,
+          "sha256": "bb2a66e39614cdedc40199a4600acef8077eb077d2c4644379e07179e6faa11b"
+        },
+        {
+          "path": "references/useAbs.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 397,
+          "sha256": "fcbb7ee0aec8999403418fa18dc5f3f461b4825a9b9f3e34015614523b27a309"
+        },
+        {
+          "path": "references/useActiveElement.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2001,
+          "sha256": "8aef2bbfc47e26ad70bfae35860b9100b0bc8fb6385aeb2130610c25d5993e37"
+        },
+        {
+          "path": "references/useAnimate.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4182,
+          "sha256": "056a56a579954d094b75f3799eb282c667725c7cf3aed5a6b9b99c69696bffee"
+        },
+        {
+          "path": "references/useArrayDifference.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2380,
+          "sha256": "763af60516c17ec865ffb34d5e154b428073089314b488bfca6351558d13e6f8"
+        },
+        {
+          "path": "references/useArrayEvery.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1276,
+          "sha256": "eb3a07170017341c39c5d098716c16b287c98227c95f5c481926b32378707ace"
+        },
+        {
+          "path": "references/useArrayFilter.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1736,
+          "sha256": "41ea1f43242bd3ce6486dd20dcedab75e0096aff2899c651647c858a4f049239"
+        },
+        {
+          "path": "references/useArrayFind.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1087,
+          "sha256": "01c980c4348d5fab7259d85ad9b4b76d613e8942575cad876ab84611461cd489"
+        },
+        {
+          "path": "references/useArrayFindIndex.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1279,
+          "sha256": "dd2bde66bee8534282bddc40a73e041c98acd13dce831b29b32c831389040bad"
+        },
+        {
+          "path": "references/useArrayFindLast.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1166,
+          "sha256": "f12ba3e124dd90c700c7672d4a7e78cceb0c9654d07f4aab9722e2118dcd15ca"
+        },
+        {
+          "path": "references/useArrayIncludes.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1491,
+          "sha256": "e1ab96c76c45821d7c3e5167e81b5cf557e82d77525953b1f7a6badaa27051f0"
+        },
+        {
+          "path": "references/useArrayJoin.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1845,
+          "sha256": "ddda1cb8f607fbd03fb03c7b56a148b0031ce00eeeefe00a456c4de8ad48c301"
+        },
+        {
+          "path": "references/useArrayMap.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1337,
+          "sha256": "f118ddb61befc2d17a8ec76cacc705a6bbccd62cee0458d3aa75cea5259707dc"
+        },
+        {
+          "path": "references/useArrayReduce.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1926,
+          "sha256": "e0cf08f652aa35cd7ac251dbade39d0d7462ca6c37f4b35406471663fac5acf9"
+        },
+        {
+          "path": "references/useArraySome.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1255,
+          "sha256": "1bef27ece0d9c8e2a90a71263c45679d8f99e11016099578dc73e710afa19299"
+        },
+        {
+          "path": "references/useArrayUnique.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1576,
+          "sha256": "646886ef5b90e928e90821f5475fa6a5bc33b492be57c70260e5168604b8c952"
+        },
+        {
+          "path": "references/useAsyncQueue.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2693,
+          "sha256": "e2c4b48d0908dc33c5f8976dfb84029d47b111bf315d82ea87574b06a2a01999"
+        },
+        {
+          "path": "references/useAsyncState.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 5051,
+          "sha256": "20eb16ccff079efb7f16033bf2a00dd240d316b552e6393ecab0b801d691d7d9"
+        },
+        {
+          "path": "references/useAsyncValidator.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1798,
+          "sha256": "b275f186a5f029ae297278078ff309908b40f30ada328522128af43d934ef809"
+        },
+        {
+          "path": "references/useAuth.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3925,
+          "sha256": "030dc6d6d9af6668d021e1bdd1cd277746d3dbb489e3382bf539805d578acb28"
+        },
+        {
+          "path": "references/useAverage.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 597,
+          "sha256": "2cbc7932b24504f5050b3c53f4c1dfc9b282aa39922eb43a3ed664c509c427a8"
+        },
+        {
+          "path": "references/useAxios.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 8211,
+          "sha256": "19f171de90885f4abcc4646b4194d4c01e4811cf429dc864d2b12df8f7411627"
+        },
+        {
+          "path": "references/useBase64.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3648,
+          "sha256": "efbeef0b3ebe719d32fb708237995c40b4ef54c8c167067f6e847c83a8cd62cd"
+        },
+        {
+          "path": "references/useBattery.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2906,
+          "sha256": "f4e91d9e576fd1eab1edad003841771ab5a95aff437de4983b5d5e4002df4cf9"
+        },
+        {
+          "path": "references/useBluetooth.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 5772,
+          "sha256": "552c21f611ac71a1861aff58de6eb77982201194da51960891b9989874a87171"
+        },
+        {
+          "path": "references/useBreakpoints.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 5763,
+          "sha256": "4e1c33c5bb16aad9f2136781529b6c02412ae995b68eb2cd1a2e0f1158bfa4b3"
+        },
+        {
+          "path": "references/useBroadcastChannel.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1698,
+          "sha256": "92bc7a2c7bb6b77d0946e688840da589fcf3dea28c7bc1ef18d4fe13d7a4bbe4"
+        },
+        {
+          "path": "references/useBrowserLocation.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1144,
+          "sha256": "1d5886a350f6f2276ad1dbe2e7fb5d4e05d4d7c7d3422abf1c678d8d60abb6db"
+        },
+        {
+          "path": "references/useCached.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 960,
+          "sha256": "3aac050bcb93f6beed3672a0a461fa6fe0bcde17057a5c2b64074c29f03f1ac1"
+        },
+        {
+          "path": "references/useCeil.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 396,
+          "sha256": "6daeaa72fc73e8c828b483c610e6c1298b5e49dc6c2ebfd0351b16718cc958e8"
+        },
+        {
+          "path": "references/useChangeCase.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1932,
+          "sha256": "327a6074f95e04a944703b9bba97fb41b2bd0a22e77d3d0e94806ded4e3da608"
+        },
+        {
+          "path": "references/useClamp.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1697,
+          "sha256": "7724ab3a1501da1912220465a0b785aad1e64c2301f7ca31c3da768c4d68b9e7"
+        },
+        {
+          "path": "references/useClipboard.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4431,
+          "sha256": "7ca37a9d6981545112a5994283db325eaad9d3b850f403ffddd88a916858945a"
+        },
+        {
+          "path": "references/useClipboardItems.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2658,
+          "sha256": "0608140c0ca3fe3486e3807bc01bd4519cf4c3c60a35c38a2768963d411ae142"
+        },
+        {
+          "path": "references/useCloned.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1743,
+          "sha256": "bdedf048ac4c95e3d7b4c3055707e8bcdfdd06d839e6db14ffc1d4ca081927e8"
+        },
+        {
+          "path": "references/useColorMode.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4284,
+          "sha256": "f34f68ecd9ab3ac7930b898cf651a2408c251fd7e43c95618d32f9b289eaab61"
+        },
+        {
+          "path": "references/useConfirmDialog.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3763,
+          "sha256": "42dbaee58aadd8d14bbd231730d1eb9ced20f257b59efa48aed8a757a5206fa6"
+        },
+        {
+          "path": "references/useCookies.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4985,
+          "sha256": "e2e7fd7b48f6b1b3f7feda5e7961e12a4e2b7165663449bd482bea862ddfdf48"
+        },
+        {
+          "path": "references/useCountdown.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2193,
+          "sha256": "c72975b157f2817910785e9b61c05267ae8bf483fb56d5ec43d6d8f50758f0bb"
+        },
+        {
+          "path": "references/useCounter.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1655,
+          "sha256": "3340d0121b086c07fb2532ac89c1f5233031324175a9fce0753206f49772c4ca"
+        },
+        {
+          "path": "references/useCssSupports.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 793,
+          "sha256": "5fc1d3090560f00617a1dca52e0c3bf18361a4fcdebce06b6c634ad87e8186e5"
+        },
+        {
+          "path": "references/useCssVar.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1001,
+          "sha256": "ab931ff64823ef3d5a75e48359ae234cae85cc1c7061017075eb551b689cf701"
+        },
+        {
+          "path": "references/useCurrentElement.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1556,
+          "sha256": "3c30a6c002a613a7c90e4cd484ab04f8e622e3f9af5b68f07fd5774f206ebed5"
+        },
+        {
+          "path": "references/useCycleList.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1431,
+          "sha256": "53e2f8f11bd4c71744b95becf604b0d9d81a6e090561fa2279a80f2c5c4a872a"
+        },
+        {
+          "path": "references/useDark.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3248,
+          "sha256": "73b36342d5920c08013014253efd95a2377b201b6dee7114669c6ae053b53966"
+        },
+        {
+          "path": "references/useDateFormat.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 5810,
+          "sha256": "17ab5fdeeeaa7228df4307f628422c36ae8b173833a33c57e708fbb70dec4d4b"
+        },
+        {
+          "path": "references/useDebounceFn.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2783,
+          "sha256": "86049478e26eee026fbc888ec6f9b7e8ac285893d3be6db0fea8ca30bba8495b"
+        },
+        {
+          "path": "references/useDebouncedRefHistory.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 961,
+          "sha256": "a4518f66d79d7b0480e4fd251f7eec2bb14c8989a29dba3c9c44b6a6b06fa060"
+        },
+        {
+          "path": "references/useDeviceMotion.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3426,
+          "sha256": "942ec180aa4655feb17a67cc4655fad3a4212b3b1e3123aec6e08480ce8fb7ef"
+        },
+        {
+          "path": "references/useDeviceOrientation.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2272,
+          "sha256": "1473687fb55c7203bf817c63530411569a09a484e742daa753caf6e1106ea686"
+        },
+        {
+          "path": "references/useDevicePixelRatio.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1321,
+          "sha256": "aeaa7ec1e8a5090ace038ba6a717a12f989180cc8a69a3547391f04f61797446"
+        },
+        {
+          "path": "references/useDevicesList.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1962,
+          "sha256": "047847995c8ebc94e3167ee460ea4c35802e572126c3d399921add94558e1960"
+        },
+        {
+          "path": "references/useDisplayMedia.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1447,
+          "sha256": "70eeec6640da019f25200497a819aed42aa094d3e57b74c0b594426a1d4563e9"
+        },
+        {
+          "path": "references/useDocumentVisibility.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 945,
+          "sha256": "805f253038a0c222a0ef889423de1c175f57017159e6134256cbff23f70af355"
+        },
+        {
+          "path": "references/useDraggable.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 7583,
+          "sha256": "651dc4f200a10edc22417c254b2ccc9ea0dc84e298e70802b962127740cdf628"
+        },
+        {
+          "path": "references/useDrauu.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1317,
+          "sha256": "87c93cc36b759f318f203ea06bc195b849f0b8f7feec63bbeecd74279c26bba3"
+        },
+        {
+          "path": "references/useDropZone.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2249,
+          "sha256": "c035e610709b7aa7aba88094ea9324a8076d579d181dab8df9b596250a2b3dca"
+        },
+        {
+          "path": "references/useElementBounding.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2731,
+          "sha256": "20e7529cec40931bb7641bc106597dfe4722c6ee51d9362bdb6e9f3f4a415808"
+        },
+        {
+          "path": "references/useElementByPoint.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1166,
+          "sha256": "fb539ec66ec0bd508085eca8ad83af0fcba0af75399b812e464135c2c9917967"
+        },
+        {
+          "path": "references/useElementHover.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1564,
+          "sha256": "1e02663273dd2502a304ff2f0baa7f81917595c5fcf075ba322a8dfb1b79f765"
+        },
+        {
+          "path": "references/useElementSize.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1587,
+          "sha256": "c8ac38585adc32fa03cb7e9485f24d377812fffd65961f0e98a89d948c236391"
+        },
+        {
+          "path": "references/useElementVisibility.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2900,
+          "sha256": "4b5c75eb3a9f8a86104da7adf61973d3e998690e8186500a67d558d4c3d1cba8"
+        },
+        {
+          "path": "references/useEventBus.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2329,
+          "sha256": "d4adcbe300919224653ba7eb09518db9bc11afe8d6696163a780a8021d4e2a65"
+        },
+        {
+          "path": "references/useEventListener.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 6653,
+          "sha256": "9fd29481c5d422ceb38a6ab7fd2b9464eeff0642a8d659f3f8f11c326c3b8bc8"
+        },
+        {
+          "path": "references/useEventSource.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4629,
+          "sha256": "c0b09364b18ebd9f4f9ae1bb1b2aa4890532dc2f9b806823fe366b0051e004e1"
+        },
+        {
+          "path": "references/useExtractedObservable.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 5213,
+          "sha256": "0e88cd760432876a5bafe538fb8619f5ab72b3f25ae2a02358ca8abc44b8e0ce"
+        },
+        {
+          "path": "references/useEyeDropper.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1456,
+          "sha256": "8af7e96f5040111fb38ed3a4a601d05668b8dd569c3bef94ec4db18fbb0a371c"
+        },
+        {
+          "path": "references/useFavicon.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1492,
+          "sha256": "3af6cf817f4279ee34b1710cf16d084d45a3f6ff5ace75f470d8333f371df319"
+        },
+        {
+          "path": "references/useFetch.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 14786,
+          "sha256": "fa41190081f337f8f22b24d1e2d80cd18a60fa60b9e34908aa7946f15374d5d1"
+        },
+        {
+          "path": "references/useFileDialog.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1991,
+          "sha256": "d3c8df3a40f5b57c9d491df51e4964ee27eb259a76ff4f8b1e2c1f926a0dc27e"
+        },
+        {
+          "path": "references/useFileSystemAccess.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4720,
+          "sha256": "15b1747cc9dc37c980753bff2fbe24d3f923bb6443dd235aa4e76316d43393db"
+        },
+        {
+          "path": "references/useFirestore.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4282,
+          "sha256": "3ba2dc09615d690d509e3bd7d488f6a5369362bb52ffa1c1a2604c1a88838ba5"
+        },
+        {
+          "path": "references/useFloor.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 405,
+          "sha256": "307580988a50673bde1225cfc42644b72f89723d1a55f775c2ae9417db354cdb"
+        },
+        {
+          "path": "references/useFocus.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2627,
+          "sha256": "f0841097eaf241d4ab422076a9a54246aeac7e6d54be1f9e2229dbba0438c913"
+        },
+        {
+          "path": "references/useFocusTrap.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 5256,
+          "sha256": "3ae0bf6353db643cd7a2a1132937baa89f75a109d5737513e681bdae639b8b8d"
+        },
+        {
+          "path": "references/useFocusWithin.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1476,
+          "sha256": "fb0620097dc3ced67537cd31102fa7ecd3f49c525ad41582452988a29aac2094"
+        },
+        {
+          "path": "references/useFps.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 384,
+          "sha256": "7e241da721cdca170671d8f868057980a776e7e62d1e4087064e51ba88b5ebbf"
+        },
+        {
+          "path": "references/useFullscreen.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1843,
+          "sha256": "738858c46f242d3bcf88c336a49650f0d4c67ca0563d84a2f43f81989a8e4bc9"
+        },
+        {
+          "path": "references/useFuse.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1463,
+          "sha256": "9961cb82ac4e0bd1f7ecbb5b2fba2dcbc9b69f59083a1519983b4daa81179cdd"
+        },
+        {
+          "path": "references/useGamepad.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4654,
+          "sha256": "ae1731f7e65b5b44da207eb769ccbbe8d358ccd51f799d3d164c4f05f4aab213"
+        },
+        {
+          "path": "references/useGeolocation.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2590,
+          "sha256": "48aec230c4feb239002ddd69290f10079d17b0358456095879dbfd32d111fa9c"
+        },
+        {
+          "path": "references/useIDBKeyval.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1822,
+          "sha256": "4ce85199bcc20d0fb54658541e83ac0aff5ad3f4372dae0fd1ad72a4e736ab07"
+        },
+        {
+          "path": "references/useIdle.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1724,
+          "sha256": "e266c0d9bcb7550c80d5979ad8e2628fce3c9da886a9f878e169d078ce837e4e"
+        },
+        {
+          "path": "references/useImage.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2399,
+          "sha256": "81a37f6371e9d75e86a0e5d8382f48c4c447f1de100bbcd4014fe662be1bf49b"
+        },
+        {
+          "path": "references/useInfiniteScroll.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3795,
+          "sha256": "d2d4db73bec6c1676aefeb9be26d8fb90e4925ef2a1d200382e63a1be3bc22ea"
+        },
+        {
+          "path": "references/useIntersectionObserver.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2622,
+          "sha256": "159dcc936325b1b482c5060521fbc753b6903a10bc376db5231a270d2e52379e"
+        },
+        {
+          "path": "references/useInterval.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2478,
+          "sha256": "f9dfc8fa6a8d46d1c5665d058cb4a582a0dab5a540e5690d21b10503b580ab07"
+        },
+        {
+          "path": "references/useIntervalFn.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 868,
+          "sha256": "0179f39813fea86fb48eb07c63c8dd365fbb776ca6acd864ab4ecd8194c27df8"
+        },
+        {
+          "path": "references/useIpcRenderer.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 5878,
+          "sha256": "3f9f618e3209198e7db964ce770100a2c9993e762d0b4bffa62bad9c6ddd6036"
+        },
+        {
+          "path": "references/useIpcRendererInvoke.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1845,
+          "sha256": "ee68b8684f9580889cec4ac9790a840e2479f3e9c849210132af7145baf29a04"
+        },
+        {
+          "path": "references/useIpcRendererOn.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1840,
+          "sha256": "ff3b6638e822d259c8f1b11778163d2ecd830e9c71a68d30c08bdd0f4dd2668c"
+        },
+        {
+          "path": "references/useJwt.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1229,
+          "sha256": "75a14f09cfe8139e7f220e5a1afd93aec28bbbf3c113cf2a32ee66fa20a87854"
+        },
+        {
+          "path": "references/useKeyModifier.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2364,
+          "sha256": "c98958edd3ff7cbb7ea4e8607eb0f38aa5dff48d6555eca371ace1d77e517fb0"
+        },
+        {
+          "path": "references/useLastChanged.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1444,
+          "sha256": "ef6e0a7992ff6e286afd560e4c27d1fc2d185eec2c9f2b926a81f5285738452a"
+        },
+        {
+          "path": "references/useLocalStorage.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1095,
+          "sha256": "ef1230852901d732d2709806d5750eab9703781047ab2cd069bd71e583398651"
+        },
+        {
+          "path": "references/useMagicKeys.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 6077,
+          "sha256": "698fa3b90e728df101233af463e9f9ca4d28fd8beb80a7cfa71be9412f09cec1"
+        },
+        {
+          "path": "references/useManualRefHistory.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 5250,
+          "sha256": "d494c6a0c0fa4389e3c062e88725f7488d444a263906781ff0816bf0afbb0d75"
+        },
+        {
+          "path": "references/useMath.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 826,
+          "sha256": "98de6b44566c8ebb7e203d1a04285d7e7a23641fd92646e2608238ad789aa0c1"
+        },
+        {
+          "path": "references/useMax.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 540,
+          "sha256": "84b8cdc79f6ab1e48226f336685bcdc5a8bf2eb8c0e5bbaabde26244e8679179"
+        },
+        {
+          "path": "references/useMediaControls.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 5188,
+          "sha256": "f144a1906e9b643e0c1989b61f2144be8e0e272279b2d35c24f5c9c364d2e1b3"
+        },
+        {
+          "path": "references/useMediaQuery.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1531,
+          "sha256": "2bf9088cea4492d10f9f9a5980491c692fb08ef54826d7073b7f13f15c1a6fc2"
+        },
+        {
+          "path": "references/useMemoize.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4338,
+          "sha256": "a8b64b40df7f22c9b3608a17a81ec259a72272c48555581ca3f144eed9b12933"
+        },
+        {
+          "path": "references/useMemory.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1470,
+          "sha256": "bcdc424527dbf0be94b71f0d371f25aaace0c5ecb67157325ed28e759dd79b82"
+        },
+        {
+          "path": "references/useMin.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 540,
+          "sha256": "8538ae9835be28f1a772166d40390f1847fe3e93d74d4a8caaa7fd53d98ad322"
+        },
+        {
+          "path": "references/useMounted.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 486,
+          "sha256": "46e8e03b2e57f7fd1a1712767335faad58252376f70b01725d6c7761e2240ee1"
+        },
+        {
+          "path": "references/useMouse.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2441,
+          "sha256": "764845b57f36d800b595ca4e791bf4a6d4e4bc5cdc84605ae4fff7a8868c1a30"
+        },
+        {
+          "path": "references/useMouseInElement.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3149,
+          "sha256": "c93a47fe5bc35981d76cfee29c91d47904a031162a5dccb597fc9e3abe34ad66"
+        },
+        {
+          "path": "references/useMousePressed.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2600,
+          "sha256": "4f114665507a8ab4e93100e78de37958f5f1c50beadbfc57aef5c72baa427040"
+        },
+        {
+          "path": "references/useMutationObserver.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1368,
+          "sha256": "cc46369af9d17625a32ce1c6cc2ff29e82345946275a3d08b2afed4e3d15f715"
+        },
+        {
+          "path": "references/useNProgress.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1720,
+          "sha256": "4608b848dfbf9fa2110292c15cb48ec0ca6a2801caad9f7ac6d6d593008d8644"
+        },
+        {
+          "path": "references/useNavigatorLanguage.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1524,
+          "sha256": "0e250f75c91243bb7281b507e37d8e78d13424b7d5c47d2f365399165812cae5"
+        },
+        {
+          "path": "references/useNetwork.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2737,
+          "sha256": "a05aa46040d985aa7edc88ab18b3c5aec2eb3eec3fd2fcd7365033364b07fdea"
+        },
+        {
+          "path": "references/useNow.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1493,
+          "sha256": "f2f2ece43f5db656396679109480c096270be3cf29f77db81bcb7aa25e341f3b"
+        },
+        {
+          "path": "references/useObjectUrl.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1272,
+          "sha256": "ba97eb643efbe944fce6b0478043f0c4b20d6bda72a10117b00fcd83cc47dd9c"
+        },
+        {
+          "path": "references/useObservable.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2362,
+          "sha256": "13e46f518aaed69f4abb4956664aa417d641e92cc1322e55be7a23e87d7750f1"
+        },
+        {
+          "path": "references/useOffsetPagination.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3859,
+          "sha256": "d3a43c15ccf205a4dcc2510a30fb2282e6a8fe0c552f7bc9c3ea609724b15736"
+        },
+        {
+          "path": "references/useOnline.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 555,
+          "sha256": "476480ebf715c5d2e3bf953659274ca6edf213e26b3f8c4ca9c23aab408ac2d9"
+        },
+        {
+          "path": "references/usePageLeave.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 725,
+          "sha256": "91ef13fa5ada83cbf03218c520c6733e3bc0118d2952cd1170c4b90a8ae9e57c"
+        },
+        {
+          "path": "references/useParallax.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1301,
+          "sha256": "f2a244fa6dc35c379f764ca3e8ad4e30bb8105302a6cee0edf670a584e3ca1f9"
+        },
+        {
+          "path": "references/useParentElement.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 988,
+          "sha256": "5cbbe966ccd8fe11f9a12828d9fb39900527e8b7b15b0bdc72efa544e220d261"
+        },
+        {
+          "path": "references/usePerformanceObserver.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 874,
+          "sha256": "71bc8d2b7b83f5d2d1a9e9b49e58ae4c00393d2206656dc39b5fa6ebad8a23b2"
+        },
+        {
+          "path": "references/usePermission.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1797,
+          "sha256": "ed82c082c81c1a635196b3061dad3f455e93bc99504ddb72b62212ae19625983"
+        },
+        {
+          "path": "references/usePointer.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1729,
+          "sha256": "a2c1270735ab3af3f4e03521b2556482dde18901567653efa3088d188788af19"
+        },
+        {
+          "path": "references/usePointerLock.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1083,
+          "sha256": "5f16e048f8c80bfd10a0c7f5e266a5c19a6c6fc3980f5b9256b53e0b0b37c112"
+        },
+        {
+          "path": "references/usePointerSwipe.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1675,
+          "sha256": "d095a5cb245db77e991d247e99079a3c248f3f1860a57b6239abc59d34a69bbd"
+        },
+        {
+          "path": "references/usePrecision.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 856,
+          "sha256": "42950fa2948be469df8ac0487d0e12bbdf7a2b0bf8f50eaf515401b5c7ee041d"
+        },
+        {
+          "path": "references/usePreferredColorScheme.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 851,
+          "sha256": "82e13c6d19b5c043067471b4443f8f9ee82472c888fa990a54739957a55008af"
+        },
+        {
+          "path": "references/usePreferredContrast.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 815,
+          "sha256": "fff1e89a9eb4d72e50f0dda09e7a10e80d065384695bb8e71a59b81070fb40a7"
+        },
+        {
+          "path": "references/usePreferredDark.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 597,
+          "sha256": "10e5a34f4cabf1e631083f0d851885796651f3a3e5da9516acb2b5422abd4734"
+        },
+        {
+          "path": "references/usePreferredLanguages.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 971,
+          "sha256": "2ce43e75c22666f3869f4bc1ae78b4df51dbb033245b475cfcc0941069afd3d5"
+        },
+        {
+          "path": "references/usePreferredReducedMotion.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 860,
+          "sha256": "970a0f0835a114985e36e76268350d0c3f6a519d10900a8234df5a0149919654"
+        },
+        {
+          "path": "references/usePreferredReducedTransparency.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 956,
+          "sha256": "28ae028740fd9866ff3162da6e3d67c075bd60fd742363c0bb9aa2028895a405"
+        },
+        {
+          "path": "references/usePrevious.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 710,
+          "sha256": "8afd31cf0f52e0001799acc3b1b1ff4c5082a2d9b5d7c335e9ea1f140201da6c"
+        },
+        {
+          "path": "references/useProjection.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 798,
+          "sha256": "42edaa3880c1f4898aa130aa5acebe657260f8da4f35a55853565e3ac9dd660e"
+        },
+        {
+          "path": "references/useQRCode.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 966,
+          "sha256": "6e7654fbab4a29dd446fe42e55ede1759614fd2a4a8a83ff4df2515e3dae25c5"
+        },
+        {
+          "path": "references/useRTDB.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2126,
+          "sha256": "6b5e44be114902a810f3f26cad633e45f580c7613866a4d00612b9f979ed407c"
+        },
+        {
+          "path": "references/useRafFn.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1514,
+          "sha256": "bfa7994e4bdca0a9428e36195ba3ff362561986c2649c03b925bd6df4a5bcaee"
+        },
+        {
+          "path": "references/useRefHistory.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 8012,
+          "sha256": "6e8da5e37124e0becc91073904d22b37fa53167e793a40f4038b9a718215620c"
+        },
+        {
+          "path": "references/useResizeObserver.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2631,
+          "sha256": "5fee764b1a89b89bfd7119e122c77b4942f8bf308f4dcdc2e855c6c93a4b66e5"
+        },
+        {
+          "path": "references/useRound.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 406,
+          "sha256": "9b45afafd4f6f3bd0cd1fbd5faa513eb8d6fbe20941112bd8ca5629253526b45"
+        },
+        {
+          "path": "references/useRouteHash.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 504,
+          "sha256": "222209062469da764eacc18a37748b280e95e066ef831139f637985421943ca5"
+        },
+        {
+          "path": "references/useRouteParams.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 815,
+          "sha256": "07048ab3b062f48a80a42a7d24665d9cebfcc83c850a99bce4ef0d235ead1f13"
+        },
+        {
+          "path": "references/useRouteQuery.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1816,
+          "sha256": "bb635c197defb150e196bcf49697c9cf5ff044d95ccc400a63513f1c51d6be5c"
+        },
+        {
+          "path": "references/useSSRWidth.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 887,
+          "sha256": "cfc602d15fa70737ae2e2a6dd849569e756843a4989f2f3029a972ee7e6b09d9"
+        },
+        {
+          "path": "references/useScreenOrientation.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2506,
+          "sha256": "e15a7c581bceef69721c256e0890198763f03e1e0e4790f65f3cf95d37ae2999"
+        },
+        {
+          "path": "references/useScreenSafeArea.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1315,
+          "sha256": "5b5c5554c1fd60e0fddc2a8c19f789b6ac6dfcebe8651ca560de7815f4009135"
+        },
+        {
+          "path": "references/useScriptTag.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2586,
+          "sha256": "35ff2bd5f902cf74266d74eb29ad0fcdffcd35f5b9b59d959360b6543fbdee3c"
+        },
+        {
+          "path": "references/useScroll.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 5383,
+          "sha256": "323a4574ae796147cde954e55224682a66ebf759e0ce66d8de0608df389e617d"
+        },
+        {
+          "path": "references/useScrollLock.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1159,
+          "sha256": "211bdaceb5516fce9ca56e2a78230707ee86363cc07e998f5521a3df609fed69"
+        },
+        {
+          "path": "references/useSessionStorage.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1111,
+          "sha256": "67c071b594a5c47af48381dbfc773b87017b47290acc4da627c3d28a25556a80"
+        },
+        {
+          "path": "references/useShare.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1472,
+          "sha256": "0d7fa31ef4225db337abf316b03807f3864ec4809b259a08d209a2058bc37deb"
+        },
+        {
+          "path": "references/useSortable.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 6394,
+          "sha256": "dee9dcf431bfb5e2dc24e96dd6ce4c7a9c429ec49cc138e243f64946f883e9d7"
+        },
+        {
+          "path": "references/useSorted.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1787,
+          "sha256": "8acc939a69bbf5ac05efe652823d9831b3195643cfeaeb11e2f10ab689972543"
+        },
+        {
+          "path": "references/useSpeechRecognition.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2210,
+          "sha256": "c69ad554f72832cf8caa0a67aa409d06e969cc1680902427b2026504dd519071"
+        },
+        {
+          "path": "references/useSpeechSynthesis.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2430,
+          "sha256": "10d2774d0c9a0f9d5bad771475874832036efd2fcb5c0b4810f735ac318d4a88"
+        },
+        {
+          "path": "references/useStepper.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3221,
+          "sha256": "b7ab63c5ac6a6896eafca52d36b0e25f51390e5fa23d5e4a2f545c655c5bd14b"
+        },
+        {
+          "path": "references/useStorage.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 8090,
+          "sha256": "d3452c038554ab41d8a7f7cfff1ef9a1cbc3bb59c84fd4459680b69fb3e56898"
+        },
+        {
+          "path": "references/useStorageAsync.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3432,
+          "sha256": "d11164b951d202668c1ab3af67558bb7fee766791141c6414e58430e6fd41a7b"
+        },
+        {
+          "path": "references/useStyleTag.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2215,
+          "sha256": "86f237aab11eddb05c54e64fa553a2f1d9baaff3e00f94f1140d6cd72bc23f4c"
+        },
+        {
+          "path": "references/useSubject.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2009,
+          "sha256": "b0c5b7fdc948c02ac3eaf034af6f3147ceb1e7074f6141da48ef522aefb1d07b"
+        },
+        {
+          "path": "references/useSubscription.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 652,
+          "sha256": "4312da92ba655f7bbcc919823cc5af7f636f96bcece0ddbe524b18cbc633c446"
+        },
+        {
+          "path": "references/useSum.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 555,
+          "sha256": "54afdfc15e175894b50a6bc365bcd06955b781c583f3c013e4cf6b3074e3836e"
+        },
+        {
+          "path": "references/useSupported.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 460,
+          "sha256": "d3608607a2a820ad1a5568d9d7bf76753646ce04764dd86d1479a04c4dd48a99"
+        },
+        {
+          "path": "references/useSwipe.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1509,
+          "sha256": "d315fab6f2a29b9345cf195f80b6134616ce3d12519ada5ce7cc3c1749a811e3"
+        },
+        {
+          "path": "references/useTemplateRefsList.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 674,
+          "sha256": "bc8e0cf63e4a2dd059e2b3230a5350f718a86f2d8bbfb14f2f0d31e967ba8b59"
+        },
+        {
+          "path": "references/useTextDirection.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1409,
+          "sha256": "c8e0b1f6eaaf4d7088f1a8b6feea800eae3d39e5b1a171b3031a83b09056160d"
+        },
+        {
+          "path": "references/useTextSelection.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 984,
+          "sha256": "5c3dfaf5823cbc4bd5c0fd4e8bb4bdfb04247b9a6796b9646159473f973cf10d"
+        },
+        {
+          "path": "references/useTextareaAutosize.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2259,
+          "sha256": "b069e56896cc7e1c2ae3766ecd9fad860a8db67cd9fe2a31b9a956e79dcbd497"
+        },
+        {
+          "path": "references/useThrottleFn.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1912,
+          "sha256": "9499efbdfee654191ef4248f5985a224183655c2d0cf21f15b066b91b1bd24e3"
+        },
+        {
+          "path": "references/useThrottledRefHistory.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1225,
+          "sha256": "a689c7f41e08d4ea1ceae8be0b68482ce8a600e59ae873d244ca3ae8f4fba82e"
+        },
+        {
+          "path": "references/useTimeAgo.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3472,
+          "sha256": "8cc6b8d563a7e26427937288472a7954426d78be1e5303f3f9f965622eca370a"
+        },
+        {
+          "path": "references/useTimeAgoIntl.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3149,
+          "sha256": "982c88e2f3ba2c2e4fe5fd7982ce1dac01fabd5cb143771cea9fd6a0c5ff3d21"
+        },
+        {
+          "path": "references/useTimeout.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2370,
+          "sha256": "9b04fa47b49ea32dfda99b04cf561cfe508b97d7ccac43aafc2a1dbefe5a4a16"
+        },
+        {
+          "path": "references/useTimeoutFn.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 908,
+          "sha256": "079265c82668954520e89f207982c62e7d48d02a870c176f71b26d1210866801"
+        },
+        {
+          "path": "references/useTimeoutPoll.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 879,
+          "sha256": "c853025fd0a637f60aa6b55f0470a040fc516ca53c96984a474f3b505f059c16"
+        },
+        {
+          "path": "references/useTimestamp.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1795,
+          "sha256": "f5c2fab33c5bd471a0ab15d39343e8d492abe6c61cc8c751b27f8b76ea506c2c"
+        },
+        {
+          "path": "references/useTitle.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2661,
+          "sha256": "9302984c4c2a19b528d4680aaf0d81b4dd48993895cde77a18a5f4f1a615345f"
+        },
+        {
+          "path": "references/useToNumber.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1006,
+          "sha256": "95edd572e452935e8dfa9231a098176a071b043cfd0daa33e56b27f713585028"
+        },
+        {
+          "path": "references/useToString.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 503,
+          "sha256": "193b44d3b7b07ac70e4cada2fc658de79e9bf341e0271309e510f6369655e1d2"
+        },
+        {
+          "path": "references/useToggle.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2229,
+          "sha256": "1195319f3a7f87140f594aa0e10b9afddfca1804d15cb2de8abe13564789ff81"
+        },
+        {
+          "path": "references/useTransition.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 8269,
+          "sha256": "d89986a30b1c82b4be936f0bf069fd77f6f43af5f5178f86d442b80489a6e922"
+        },
+        {
+          "path": "references/useTrunc.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 472,
+          "sha256": "8c0dca4b9b06836d86dd62f6c6b3137bc983b2554a405d75600e0c8d4385a14a"
+        },
+        {
+          "path": "references/useUrlSearchParams.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2881,
+          "sha256": "a0801ae0b8e0f45c7527dea01aaa84a896d954024246f90ed2072f6c81295ef8"
+        },
+        {
+          "path": "references/useUserMedia.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2222,
+          "sha256": "308ac03a45581f65827ac0eeda2f69f9bd0959150248a3c9deb44a62df048220"
+        },
+        {
+          "path": "references/useVModel.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4097,
+          "sha256": "7c5bd66a870b02e1ee6fe51c1a03bb134fb991628558a6a8b678a0c51eb7cad0"
+        },
+        {
+          "path": "references/useVModels.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1337,
+          "sha256": "ea8e150ed4f8653a36eac387ffb3e044894751f664162c9b441e799365a14cba"
+        },
+        {
+          "path": "references/useVibrate.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2312,
+          "sha256": "aaf114bf75edb81f5be2d1e5ac1519c6d289eb38d19822711a656091aeca2118"
+        },
+        {
+          "path": "references/useVirtualList.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 5215,
+          "sha256": "8ea3fc8487b3ea2ec92192ea655bda8eba25c338f9b0dd22a3a40b816d846ac5"
+        },
+        {
+          "path": "references/useWakeLock.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1708,
+          "sha256": "b1603cd0a65ab98137daf82a448657608a768860fd277dae8ead4abd10da91bb"
+        },
+        {
+          "path": "references/useWebNotification.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 4286,
+          "sha256": "16df7984fdddf33c8350fd83e027c372b9717c8453292ecc6ed3b2768fecea95"
+        },
+        {
+          "path": "references/useWebSocket.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 7735,
+          "sha256": "57d2a19d1ae569c33de1647d9f097977a37f66036725751cfadb5a756156da3d"
+        },
+        {
+          "path": "references/useWebWorker.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2465,
+          "sha256": "f6760a8a4876d93a1a82a18f6e55e06d4f34ed014e03b08a8d7917499a8b2aba"
+        },
+        {
+          "path": "references/useWebWorkerFn.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2476,
+          "sha256": "23ef1a75dd65375cc3b7715609329a8af10905066a7f6ed5f50e34cf3475497c"
+        },
+        {
+          "path": "references/useWindowFocus.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 734,
+          "sha256": "b0a0ea89f60719215bd897dd5541e05a96fb917a75bf5e605de7821f53f49de9"
+        },
+        {
+          "path": "references/useWindowScroll.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 777,
+          "sha256": "b8ed0d31928f2f42003f88920fc410ef21730cf1672c8fa62edc9655d09e70b1"
+        },
+        {
+          "path": "references/useWindowSize.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1458,
+          "sha256": "ef74a0bdd72ed54083c53b9c2508d832afd1d1cc7cb22a1090e3bfbaffe4c81b"
+        },
+        {
+          "path": "references/useZoomFactor.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1270,
+          "sha256": "529e8ae0a75be753877b55b5d3c9b7896f796aed90a73bf562206f29053dfa72"
+        },
+        {
+          "path": "references/useZoomLevel.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1243,
+          "sha256": "325ca1f6c2de491b70028910a60e823777a8224d738b423a04dbc386bea0d82f"
+        },
+        {
+          "path": "references/watchArray.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1153,
+          "sha256": "3aee0f8e2b883352acf46c60594dba12beac2a24d5df001e868689d5aba87d0c"
+        },
+        {
+          "path": "references/watchAtMost.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1299,
+          "sha256": "d57b5d0e6f52e1e4efdfd30801c904c3a6832b7ae72b2b59df5decd8b1e1f89f"
+        },
+        {
+          "path": "references/watchDebounced.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2619,
+          "sha256": "58b7b05d07f5f9044456dbc3c396f692cf21c727555946566f953064bbbfa918"
+        },
+        {
+          "path": "references/watchDeep.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1171,
+          "sha256": "73e2fca2b686704d5385955dd29d2e5b382fb28171844dae464544a66531c64a"
+        },
+        {
+          "path": "references/watchExtractedObservable.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 5401,
+          "sha256": "31547b4e114de3b6f7f5f97ceee856083d89421e9bb68dba41bb6267d936e481"
+        },
+        {
+          "path": "references/watchIgnorable.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 3116,
+          "sha256": "7c74266d6b2fb7a55e06e6dfc1e899e0d69569dc45e68007c7655dd0b44a49be"
+        },
+        {
+          "path": "references/watchImmediate.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1024,
+          "sha256": "d093bd1ba49f6d26ba22efbeeefb402acc1d9e45081fa39b2db5482b56e9467d"
+        },
+        {
+          "path": "references/watchOnce.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1017,
+          "sha256": "83801ee041dc7a6de486f3afdb91f1e4de1f55aed5f19895ce4c6d0c3d056d50"
+        },
+        {
+          "path": "references/watchPausable.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2387,
+          "sha256": "d1de7b8387dda5932ed7e666ed89bb9d288498a4e5eaa0e3643f0a6f96f46092"
+        },
+        {
+          "path": "references/watchThrottled.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2777,
+          "sha256": "f16478b3059c73b0aa25f2e31855cff11465a4490381ea74e0a1d2396c276272"
+        },
+        {
+          "path": "references/watchTriggerable.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 2465,
+          "sha256": "252e775b0fb7cb55d0c8f333e1a45ff31fe658eb096afd328bb1a6b98beb9aef"
+        },
+        {
+          "path": "references/watchWithFilter.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1430,
+          "sha256": "117a655df35d71c87b740e057c5dcd1e488d6a729ea2f0f9cfc715bb8c54f062"
+        },
+        {
+          "path": "references/whenever.md",
+          "mode": "100644",
+          "kind": "text",
+          "size": 1814,
+          "sha256": "5254ccc0a99148017533ebca5ce4d5bb96eb677c4370bcec06c59ca3ebc9cf09"
+        }
+      ],
+      "excludedFiles": [],
       "computedHash": "8c2a30a428edadc224304d9654f906bcf27047ad48f68a72a3b9b4a6378846cc"
+    }
+  },
+  "manifests": {
+    "routing-scopes": {
+      "source": "repo:.ai/manifests/routing-scopes.json",
+      "sourceType": "local",
+      "sourceFormat": "file",
+      "kind": "manifest",
+      "includedFiles": [
+        {
+          "path": "routing-scopes.json",
+          "mode": "100644",
+          "kind": "text",
+          "size": 22146,
+          "sha256": "c6418abcedd2c20d84a7cafe897777e169073e3c64e7130fea44d8ab574e9d73"
+        }
+      ],
+      "computedHash": "c6418abcedd2c20d84a7cafe897777e169073e3c64e7130fea44d8ab574e9d73"
+    },
+    "skill-routing": {
+      "source": "repo:.ai/manifests/skill-routing.json",
+      "sourceType": "local",
+      "sourceFormat": "file",
+      "kind": "manifest",
+      "includedFiles": [
+        {
+          "path": "skill-routing.json",
+          "mode": "100644",
+          "kind": "text",
+          "size": 16040,
+          "sha256": "60ae3c28d446af9a59f17321b1106a66d591b6b491b4d803f30284107d016e0b"
+        }
+      ],
+      "computedHash": "60ae3c28d446af9a59f17321b1106a66d591b6b491b4d803f30284107d016e0b"
     }
   }
 }

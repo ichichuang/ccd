@@ -88,16 +88,16 @@
       "const": "BASELINE_ONLY"
     },
     "projectUiDiscovered": {
-      "const": false
+      "const": true
     },
     "projectUiRouted": {
-      "const": false
+      "const": true
     },
     "projectUiSynchronized": {
-      "const": false
+      "const": true
     },
     "projectUiAdapterActivated": {
-      "const": false
+      "const": true
     },
     "sourceScannerImplemented": {
       "const": false
@@ -109,7 +109,7 @@
       "const": true
     },
     "p5Started": {
-      "const": false
+      "const": true
     },
     "counts": {
       "type": "object",

@@ -30,7 +30,7 @@ wiki_owner: LLM-maintained CCD architecture wiki
 
 # Machine UI Policy
 
-The CCD Machine UI Policy is the canonical machine-readable UI governance artifact for the CCD monorepo. P3 implementation is complete: the policy records 68 rules, schemas, the Product UI Profile, an empty exception registry, fixtures, and a deterministic validator. Application-source enforcement remains baseline-only because the source scanner is not implemented.
+The CCD Machine UI Policy is the canonical machine-readable UI governance artifact for the CCD monorepo. P3 implementation is complete: the policy records 68 rules, schemas, the Product UI Profile, an empty exception registry, fixtures, and a deterministic validator. P5 project-ui routing and synchronization are terminal. Application-source enforcement remains baseline-only because the source scanner is not implemented.
 
 ## Policy Location
 
@@ -99,7 +99,8 @@ Current profile: `CCD Architectural Glass` at `.ai/governance/ui/profiles/ccd-ar
 - Source scanner: not implemented.
 - Page Contract Schema: not created.
 - P4 AI cold-start atomic replacement: complete.
-- P5 routing/synchronization: not started.
+- P5 project-ui discovery, routing, synchronization, and adapter activation: complete.
+- Legacy Skills and rules: retained.
 
 ```text
 P3_COMPLETE=yes
@@ -121,11 +122,28 @@ ADAPTER_MANIFEST_COLD_START_COMPLETE=yes
 ADAPTER_GENERATION_DETERMINISTIC=yes
 AI_SYNC_IDEMPOTENT=yes
 FRESH_CLONE_ENTRYPOINTS_PASS=yes
+P5_STARTED=yes
+P5_COMPLETE=yes
+PROJECT_UI_DISCOVERED=yes
+PROJECT_UI_ROUTED=yes
+PROJECT_UI_SYNCHRONIZED=yes
+PROJECT_UI_ADAPTER_ACTIVATED=yes
+PROJECT_UI_LOCKED=yes
+PROJECT_UI_CODEX_SYNC_CONTRACT_COMPLETE=yes
+PROJECT_UI_CLAUDE_SYNC_CONTRACT_COMPLETE=yes
+SKILL_ROUTING_MANIFEST_CURRENT=yes
+ROUTING_SCOPE_REGISTRY_COMPLETE=yes
+SKILLS_LOCK_CURRENT=yes
+RULE_INDEX_CURRENT=yes
+NODE_PYTHON_ROUTER_PARITY=yes
+GENERIC_UI_ROUTES_TO_PROJECT_UI=yes
+MOTION_ROUTING_CONDITIONAL=yes
+NON_UI_ROUTING_PRESERVED=yes
+ADAPTER_PROJECT_UI_MAPPING_COMPLETE=yes
+CODEX_ADAPTER_PROJECT_UI_ACTIVE=yes
+CLAUDE_ADAPTER_PROJECT_UI_ACTIVE=yes
 SOURCE_SCANNER_IMPLEMENTED=no
 PAGE_CONTRACT_CREATED=no
-PROJECT_UI_DISCOVERED=no
-PROJECT_UI_ROUTED=no
-PROJECT_UI_SYNCHRONIZED=no
-PROJECT_UI_ADAPTER_ACTIVATED=no
-P5_STARTED=no
+LEGACY_SKILLS_RETIRED=no
+LEGACY_RULES_RETIRED=no
 ```

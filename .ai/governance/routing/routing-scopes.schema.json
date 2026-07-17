@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ccd.local/schemas/routing-scopes.schema.json",
+  "title": "CCD routing scope registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "globSemantics", "trackedTopologySource", "scopes", "ruleAssignments"],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "globSemantics": {
+      "const": "ccd-routing-glob/v1"
+    },
+    "trackedTopologySource": {
+      "const": "git ls-files -z"
+    },
+    "scopes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/scope"
+      }
+    },
+    "ruleAssignments": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/ruleAssignment"
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "scalarArray": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "description",
+        "classification",
+        "consumers",
+        "effectiveGlobs",
+        "trackedMatchPolicy",
+        "justification"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "classification": {
+          "enum": [
+            "universal",
+            "ui-source",
+            "style-source",
+            "typescript-source",
+            "ui-subsystem",
+            "routing-subsystem",
+            "composable-subsystem",
+            "state-subsystem",
+            "non-ui-subsystem",
+            "adapter-subsystem",
+            "type-subsystem",
+            "utility-subsystem",
+            "bootstrap-subsystem",
+            "build-configuration",
+            "runtime-entrypoint",
+            "runtime-specific",
+            "governance-integration",
+            "shared-ui-source",
+            "shared-typescript-source",
+            "shared-ui-package",
+            "design-system-package",
+            "shared-vue-package",
+            "repository-tooling",
+            "remote-governance",
+            "test-surface",
+            "ai-governance",
+            "rule-lineage",
+            "workspace-configuration",
+            "design-system-configuration",
+            "future-reserved"
+          ]
+        },
+        "consumers": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": ["rule-index", "skill-routing"]
+          }
+        },
+        "effectiveGlobs": {
+          "$ref": "#/$defs/scalarArray"
+        },
+        "trackedMatchPolicy": {
+          "enum": ["exact-all-tracked", "at-least-one-per-glob", "reserved-empty"]
+        },
+        "justification": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "ruleAssignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rulePath", "scopeIds"],
+      "properties": {
+        "rulePath": {
+          "type": "string",
+          "pattern": "^\\.ai/rules/.+\\.mdc$"
+        },
+        "scopeIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        }
+      }
+    }
+  }
+}

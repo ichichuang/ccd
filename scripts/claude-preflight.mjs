@@ -6,7 +6,11 @@ import path from 'node:path'
 import process from 'node:process'
 import { spawnSync } from 'node:child_process'
 
-import { generateSkillsLock, stringifySkillsLock } from './skill-lock-utils.mjs'
+import {
+  PROJECT_UI_HASH_INVENTORY,
+  generateSkillsLock,
+  stringifySkillsLock,
+} from './skill-lock-utils.mjs'
 import { syncSkills } from './skill-sync-engine.mjs'
 
 const ROOT = process.cwd()
@@ -15,20 +19,19 @@ const REPOSITORY_AUTHORITY = 'ichichuang/ccd'
 const REQUIRED_PATHS = [
   '.ai/governance/routing/fixtures/routing-cases.json',
   '.ai/governance/routing/fixtures/sync-cases.json',
-  '.ai/governance/routing/routing-scopes.schema.json',
-  '.ai/governance/routing/skill-routing.schema.json',
   '.ai/manifests/routing-scopes.json',
-  '.ai/manifests/rule-index.json',
   '.ai/manifests/skill-routing.json',
   '.ai/manifests/skills-lock.json',
   '.ai/protocol/adapter-manifest.json',
-  '.ai/protocol/adapters/codex.md',
-  'scripts/ai-sync-codex.mjs',
+  '.ai/protocol/adapters/claude.md',
+  '.ai/skills/project-ui/SKILL.md',
+  'CLAUDE.md',
+  'scripts/ai-sync-claude.mjs',
   'scripts/governance/project-ui-routing-validate.mjs',
 ]
 
 const parseArgs = argv => {
-  const parsed = { targetRoot: null, home: null, json: false }
+  const parsed = { targetRoot: null, projectRoot: null, json: false }
   const seen = new Set()
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index]
@@ -39,15 +42,16 @@ const parseArgs = argv => {
       parsed.json = true
       continue
     }
-    if (!['--target-root', '--home'].includes(argument) || seen.has(argument))
+    if (!['--target-root', '--project-root'].includes(argument) || seen.has(argument))
       throw new Error('CLI_ARGUMENT_ERROR')
     const value = argv[index + 1]
     if (!value || value.startsWith('--')) throw new Error('CLI_ARGUMENT_ERROR')
     seen.add(argument)
     index += 1
-    parsed[argument === '--target-root' ? 'targetRoot' : 'home'] = path.resolve(value)
+    parsed[argument.slice(2).replace(/-([a-z])/gu, (_, character) => character.toUpperCase())] =
+      path.resolve(value)
   }
-  if (parsed.targetRoot && parsed.home) throw new Error('CLI_ARGUMENT_ERROR')
+  if (parsed.targetRoot && parsed.projectRoot) throw new Error('CLI_ARGUMENT_ERROR')
   return parsed
 }
 const runNodeScript = (relPath, args = []) =>
@@ -100,8 +104,9 @@ const repositoryIdentityCheck = () => {
 
 const runPreflight = argv => {
   const args = parseArgs(argv)
-  const targetRoot = args.targetRoot ?? path.join(args.home ?? os.homedir(), '.codex', 'skills')
-  const explicitTarget = Boolean(args.targetRoot || args.home)
+  const projectRoot = args.projectRoot ?? ROOT
+  const targetRoot = args.targetRoot ?? path.join(projectRoot, '.claude', 'skills', 'project-ui')
+  const explicitTarget = Boolean(args.targetRoot || args.projectRoot)
   if (explicitTarget) assertIsolatedTarget(targetRoot)
   const checks = [repositoryIdentityCheck()]
   const warnings = []
@@ -111,19 +116,18 @@ const runPreflight = argv => {
     status: missing.length ? 'fail' : 'pass',
     details: { missing },
   })
-  checks.push(
-    commandCheck(
-      'SIX_ADAPTER_OUTPUTS',
-      runNodeScript('scripts/generate-ai-protocol-adapters.mjs', ['--check'])
-    )
+  const lock = generateSkillsLock(ROOT)
+  const complete = sameInventory(
+    lock.skills['project-ui']?.includedFiles.map(file => file.path) ?? []
   )
+  checks.push({ id: 'PROJECT_UI_COMPLETENESS', status: complete ? 'pass' : 'fail', details: {} })
   const lockCurrent =
     fs.readFileSync(path.join(ROOT, '.ai/manifests/skills-lock.json'), 'utf8') ===
-    stringifySkillsLock(generateSkillsLock(ROOT))
+    stringifySkillsLock(lock)
   checks.push({ id: 'SKILLS_LOCK_V3', status: lockCurrent ? 'pass' : 'fail', details: {} })
   const validator = runNodeScript('scripts/governance/project-ui-routing-validate.mjs')
   checks.push({
-    id: 'ROUTING_SCHEMAS_AND_FIXTURES',
+    id: 'ROUTING_CONTRACT',
     status:
       hasCheck(validator, 'STRICT_SCHEMAS_AND_CORPORA') && hasCheck(validator, 'ROUTER_SUITES')
         ? 'pass'
@@ -131,32 +135,45 @@ const runPreflight = argv => {
     details: {},
   })
   checks.push(
-    commandCheck('RULE_INDEX_V2', runNodeScript('scripts/generate-rule-index.mjs', ['--check']))
+    commandCheck(
+      'CLAUDE_ADAPTER',
+      runNodeScript('scripts/generate-ai-protocol-adapters.mjs', ['--check'])
+    )
   )
   checks.push(commandCheck('DEDICATED_VALIDATOR', validator))
   const sync = syncSkills({
     repoRoot: ROOT,
-    clients: ['codex'],
-    overrides: { codexTargetRoot: targetRoot },
+    clients: ['claude'],
+    overrides: { claudeTargetRoot: targetRoot },
     mode: 'check',
   })
   if (sync.status === 'current')
-    checks.push({ id: 'CODEX_SYNC_CHECK', status: 'pass', details: { status: sync.status } })
+    checks.push({ id: 'CLAUDE_SYNC_CHECK', status: 'pass', details: { status: sync.status } })
   else if (!explicitTarget && sync.status === 'drift') {
-    checks.push({ id: 'CODEX_SYNC_CHECK', status: 'pass', details: { status: 'warning' } })
+    checks.push({ id: 'CLAUDE_SYNC_CHECK', status: 'pass', details: { status: 'warning' } })
     warnings.push({
-      code: 'CODEX_TARGET_ABSENT_OR_STALE',
-      message: 'The real Codex target is absent or stale; repository checks remain valid.',
-    })
-    warnings.push({
-      code: 'OPTIONAL_CODEX_HOME_SKILLS_MISSING',
-      message: '[WARN] optional Codex home skills are not installed',
+      code: 'CLAUDE_TARGET_ABSENT_OR_STALE',
+      message:
+        'The repository-local Claude target is absent or stale; repository checks remain valid.',
     })
   } else
     checks.push({
-      id: 'CODEX_SYNC_CHECK',
+      id: 'CLAUDE_SYNC_CHECK',
       status: 'fail',
       details: { status: sync.status, diagnostics: sync.diagnostics.map(item => item.code) },
+    })
+  const personalShadow = path.join(os.homedir(), '.claude', 'skills', 'project-ui')
+  const shadowed =
+    path.resolve(personalShadow) !== path.resolve(targetRoot) && fs.existsSync(personalShadow)
+  checks.push({
+    id: 'PERSONAL_SHADOW_OBSERVATION',
+    status: 'pass',
+    details: { status: shadowed ? 'observed-noncanonical' : 'absent' },
+  })
+  if (shadowed)
+    warnings.push({
+      code: 'PERSONAL_CLAUDE_SHADOWS_PROJECT',
+      message: 'A personal noncanonical project-ui copy may shadow the project target.',
     })
   const coldStartScript = 'scripts/governance/cold-start-validate.mjs'
   const runLegacyImplementationColdStart = () =>
@@ -172,7 +189,7 @@ const runPreflight = argv => {
   })
   const ok = checks.every(check => check.status === 'pass')
   const report = {
-    schemaVersion: 'ccd-codex-preflight/v1',
+    schemaVersion: 'ccd-claude-preflight/v1',
     ok,
     targetMode: explicitTarget ? 'override' : 'default-read-only',
     checks,
@@ -183,10 +200,11 @@ const runPreflight = argv => {
     for (const check of checks)
       process.stdout.write(`${check.status === 'pass' ? '[OK]' : '[FAIL]'} ${check.id}\n`)
     for (const warning of warnings) process.stdout.write(`[WARN] ${warning.code}\n`)
-    process.stdout.write(ok ? 'CODEX_PREFLIGHT_PASS\n' : 'CODEX_PREFLIGHT_FAIL\n')
+    process.stdout.write(ok ? 'CLAUDE_PREFLIGHT_PASS\n' : 'CLAUDE_PREFLIGHT_FAIL\n')
   }
   return ok ? 0 : 1
 }
+const sameInventory = actual => JSON.stringify(actual) === JSON.stringify(PROJECT_UI_HASH_INVENTORY)
 
 try {
   process.exitCode = runPreflight(process.argv.slice(2))

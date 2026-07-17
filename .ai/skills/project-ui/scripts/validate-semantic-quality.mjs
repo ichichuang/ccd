@@ -124,11 +124,11 @@ const EXPECTED_CANONICAL_STATE = {
   adapterGenerationDeterministic: true,
   aiSyncIdempotent: true,
   freshCloneEntrypointsPass: true,
-  p5Started: false,
-  skillLockDiscovered: false,
-  routed: false,
-  synchronized: false,
-  adapterActivated: false,
+  p5Started: true,
+  skillLockDiscovered: true,
+  routed: true,
+  synchronized: true,
+  adapterActivated: true,
 }
 
 const LIFECYCLE_DOCUMENTS = [
@@ -159,16 +159,59 @@ const TERMINAL_LIFECYCLE_FIELDS = [
   'ADAPTER_GENERATION_DETERMINISTIC=yes',
   'AI_SYNC_IDEMPOTENT=yes',
   'FRESH_CLONE_ENTRYPOINTS_PASS=yes',
+  'P5_STARTED=yes',
+  'P5_COMPLETE=yes',
+  'PROJECT_UI_DISCOVERED=yes',
+  'PROJECT_UI_ROUTED=yes',
+  'PROJECT_UI_SYNCHRONIZED=yes',
+  'PROJECT_UI_ADAPTER_ACTIVATED=yes',
+  'PROJECT_UI_LOCKED=yes',
+  'PROJECT_UI_CODEX_SYNC_CONTRACT_COMPLETE=yes',
+  'PROJECT_UI_CLAUDE_SYNC_CONTRACT_COMPLETE=yes',
+  'SKILL_ROUTING_MANIFEST_CURRENT=yes',
+  'ROUTING_SCOPE_REGISTRY_COMPLETE=yes',
+  'SKILLS_LOCK_CURRENT=yes',
+  'RULE_INDEX_CURRENT=yes',
+  'NODE_PYTHON_ROUTER_PARITY=yes',
+  'GENERIC_UI_ROUTES_TO_PROJECT_UI=yes',
+  'MOTION_ROUTING_CONDITIONAL=yes',
+  'NON_UI_ROUTING_PRESERVED=yes',
+  'ADAPTER_PROJECT_UI_MAPPING_COMPLETE=yes',
+  'CODEX_ADAPTER_PROJECT_UI_ACTIVE=yes',
+  'CLAUDE_ADAPTER_PROJECT_UI_ACTIVE=yes',
   'SOURCE_SCANNER_IMPLEMENTED=no',
   'PAGE_CONTRACT_CREATED=no',
-  'PROJECT_UI_DISCOVERED=no',
-  'PROJECT_UI_ROUTED=no',
-  'PROJECT_UI_SYNCHRONIZED=no',
-  'PROJECT_UI_ADAPTER_ACTIVATED=no',
-  'P5_STARTED=no',
+  'LEGACY_SKILLS_RETIRED=no',
+  'LEGACY_RULES_RETIRED=no',
 ]
 
 const TERMINAL_LIFECYCLE_BLOCK = TERMINAL_LIFECYCLE_FIELDS.join('\n')
+
+const P5_CANONICAL_PATHS = [
+  '.ai/skills/project-ui',
+  '.ai/manifests/skill-routing.json',
+  '.ai/manifests/routing-scopes.json',
+  '.ai/manifests/skills-lock.json',
+  '.ai/manifests/rule-index.json',
+]
+
+const EXPECTED_LEGACY_SKILL_IDS = [
+  'architecture-browser-master',
+  'ccd-animate-lite',
+  'ccd-gsap-motion',
+  'ccd-material-system',
+  'ccd-motion-system',
+  'ccd-page-archetypes',
+  'ccd-product-language',
+  'ccd-ui-review-gate',
+  'desktop-tauri-guard',
+  'github-ops',
+  'task-orchestrator',
+  'unocss',
+  'vite',
+  'vue',
+  'vueuse-functions',
+]
 
 const EXPECTED_P3_HANDOFF_SOURCE_BASELINES = {
   sourceBaselineCommit: '624948ea9058507f8fae91975dabc715d984703a',
@@ -391,6 +434,17 @@ const STALE_LIFECYCLE_PATTERNS = [
     regex: /\bp4 owns cold-start and has not started\b/,
   },
   { label: 'p4-cold-start-future', regex: /\bp4 cold-start remains future\b/ },
+  { label: 'p5-started-no', regex: /\bp5_?started=no\b/ },
+  { label: 'p5-started-false', regex: /\bp5started\s*[:=]\s*false\b/ },
+  { label: 'p5-has-not-started', regex: /\bp5 has not started\b/ },
+  { label: 'p5-not-started', regex: /\bp5 not started\b/ },
+  { label: 'project-ui-undiscovered', regex: /\bproject-ui remains undiscovered\b/ },
+  { label: 'project-ui-unrouted', regex: /\bproject-ui remains unrouted\b/ },
+  { label: 'project-ui-unsynchronized', regex: /\bproject-ui remains unsynchronized\b/ },
+  {
+    label: 'project-ui-not-adapter-activated',
+    regex: /\bproject-ui remains not adapter-activated\b/,
+  },
 ]
 
 const EPHEMERAL_PATH_PATTERNS = [
@@ -1248,10 +1302,20 @@ function validateP3Handoff(coverageData) {
     canonicalState.coldStartAtomicReplacementComplete !== true
   )
     fail('p4-terminal-state', 'P4 cold-start terminal state must remain complete.')
-  if (canonicalState.p5Started !== false)
-    fail('p3-handoff-p5-started', 'P5 must remain not started.')
+  if (
+    coverageData?.p5Started !== true ||
+    canonicalState.p5Started !== true ||
+    canonicalState.skillLockDiscovered !== true ||
+    canonicalState.routed !== true ||
+    canonicalState.synchronized !== true ||
+    canonicalState.adapterActivated !== true
+  )
+    fail(
+      'p5-terminal-state',
+      'P5 terminal integration must remain discovered, routed, synchronized, and adapter-activated.'
+    )
 
-  const falseStatusFields = ['sourceScannerImplemented', 'pageContractCreated', 'p5Started']
+  const falseStatusFields = ['sourceScannerImplemented', 'pageContractCreated']
   for (const field of falseStatusFields) {
     if (coverageData?.[field] !== false)
       fail('p3-status-field', `Coverage P3 status field ${field} must be false.`, {
@@ -1265,15 +1329,7 @@ function validateP3Handoff(coverageData) {
       'Coverage machinePolicyPath must point to the canonical Machine UI Policy.',
       { actual: coverageData?.machinePolicyPath }
     )
-  for (const field of [
-    'sourceScannerImplemented',
-    'pageContractCreated',
-    'p5Started',
-    'skillLockDiscovered',
-    'routed',
-    'synchronized',
-    'adapterActivated',
-  ]) {
+  for (const field of ['sourceScannerImplemented', 'pageContractCreated']) {
     if (canonicalState[field] !== false)
       fail('p3-handoff-lifecycle-state', 'P3 handoff changed a protected lifecycle state.', {
         field,
@@ -1291,9 +1347,14 @@ function validateP3Handoff(coverageData) {
     'adapterGenerationDeterministic',
     'aiSyncIdempotent',
     'freshCloneEntrypointsPass',
+    'p5Started',
+    'skillLockDiscovered',
+    'routed',
+    'synchronized',
+    'adapterActivated',
   ]) {
     if (canonicalState[field] !== true)
-      fail('p4-terminal-state', 'P4 terminal lifecycle marker is not preserved.', {
+      fail('p5-terminal-state', 'P4/P5 terminal lifecycle marker is not preserved.', {
         field,
         actual: canonicalState[field],
       })
@@ -1677,13 +1738,15 @@ function assertExpectedCanonicalState(coverageData, wiki) {
       'The project-ui semantic-quality correction is complete and tracked on main.',
       p2State,
     ],
-    ['skill-lock', 'project-ui remains undiscovered by the current Skill lock', p2State],
-    ['not-adapter-activated', 'not adapter-activated', p2State],
+    ['skill-lock', 'The current Skill lock discovers project-ui', p2State],
+    ['routing', 'routing selects it for generic UI work', p2State],
+    ['synchronization', 'isolated synchronization covers Codex and Claude', p2State],
+    ['adapter-activation', 'both adapters are active', p2State],
     ['machine-ui-policy', 'Machine UI Policy exists at', p2State],
     ['page-contract-schema', 'Page Contract Schema does not exist.', p2State],
     ['p3-complete', 'P3 Machine UI Policy implementation is complete.', p2State],
     ['p4-complete', 'P4 AI cold-start atomic replacement is complete.', p2State],
-    ['p5-not-started', 'P5 has not started.', p2State],
+    ['p5-complete', 'P5 terminal lifecycle integration is complete.', p2State],
     ['semantic-commit', EXPECTED_SEMANTIC_CORRECTION_COMMIT, handoff],
     [
       'p2-source-complete',
@@ -1707,7 +1770,7 @@ function assertExpectedCanonicalState(coverageData, wiki) {
     if (!text.includes(TERMINAL_LIFECYCLE_BLOCK)) {
       localFailures.push({
         code: 'terminal-lifecycle-block-mismatch',
-        message: 'Lifecycle document does not contain the exact ordered P4.4 terminal block.',
+        message: 'Lifecycle document does not contain the exact ordered P5 terminal block.',
         file,
       })
     }
@@ -1774,6 +1837,14 @@ function runSelfTest() {
     'Current state: cold-start not started.',
     'Current state: P4 owns cold-start and has not started.',
     'Current state: P4 cold-start remains future.',
+    'Current state: P5 has not started.',
+    'Current state: P5 not started.',
+    'Current state: P5_STARTED=no.',
+    'Current state: p5Started=false.',
+    'Current state: project-ui remains undiscovered.',
+    'Current state: project-ui remains unrouted.',
+    'Current state: project-ui remains unsynchronized.',
+    'Current state: project-ui remains not adapter-activated.',
   ]
 
   const negativeResults = negativeTexts.map((text, index) => {
@@ -1823,6 +1894,24 @@ function runSelfTest() {
       findings: scanJsonLifecycleAssertions({
         history: {
           historicalNote: 'Historical note: before P4.4, p4Started=false.',
+        },
+      }),
+    },
+    {
+      id: 5,
+      text: 'Historical note: before P5 terminal integration, P5 has not started.',
+      findings: scanMarkdownLifecycleAssertions(
+        'self-test.md',
+        '## Historical Notes\n\nHistorical note: before P5 terminal integration, P5 has not started.\n'
+      ),
+    },
+    {
+      id: 6,
+      text: 'Historical note: before P5 terminal integration, project-ui remains unrouted.',
+      findings: scanJsonLifecycleAssertions({
+        history: {
+          historicalNote:
+            'Historical note: before P5 terminal integration, project-ui remains unrouted.',
         },
       }),
     },
@@ -2025,10 +2114,11 @@ function runSelfTest() {
       },
     },
     {
-      id: 'p5-started',
-      expectedCode: 'p3-handoff-p5-started',
+      id: 'p5-terminal-regressed',
+      expectedCode: 'p5-terminal-state',
       mutate: fixture => {
-        fixture.canonicalState.p5Started = true
+        fixture.p5Started = false
+        fixture.canonicalState.p5Started = false
       },
     },
     {
@@ -2207,6 +2297,60 @@ if (references.length !== 10)
   })
 if (!exists('.ai/skills/project-ui/scripts/validate-semantic-quality.mjs'))
   addBaselineFailure('support-script-missing', 'Semantic-quality support script is missing.')
+
+for (const canonicalPath of P5_CANONICAL_PATHS) {
+  if (!exists(canonicalPath))
+    addFailure('p5-canonical-path-missing', 'A required P5 canonical path is missing.', {
+      path: canonicalPath,
+    })
+}
+
+if (exists('.ai/manifests/skills-lock.json')) {
+  const skillsLock = JSON.parse(read('.ai/manifests/skills-lock.json'))
+  const skillIds = Object.keys(skillsLock.skills ?? {})
+  const expectedSkillIds = [...EXPECTED_LEGACY_SKILL_IDS, 'project-ui'].sort()
+  if (skillsLock.version !== 3)
+    addFailure('p5-skills-lock-version', 'P5 requires Skills lock version 3.', {
+      actual: skillsLock.version,
+    })
+  if (JSON.stringify(skillIds.sort()) !== JSON.stringify(expectedSkillIds))
+    addFailure(
+      'p5-legacy-skill-retention',
+      'The terminal Skills lock must retain all legacy Skills.',
+      {
+        expected: expectedSkillIds,
+        actual: skillIds,
+      }
+    )
+  if ((skillsLock.skills?.['project-ui']?.includedFiles ?? []).length !== 12)
+    addFailure(
+      'p5-project-ui-lock-inventory',
+      'project-ui must retain exactly twelve locked files.'
+    )
+  for (const legacySkillId of EXPECTED_LEGACY_SKILL_IDS) {
+    const source = skillsLock.skills?.[legacySkillId]?.source
+    if (typeof source !== 'string' || !source.startsWith('repo:') || !exists(source.slice(5)))
+      addFailure('p5-legacy-skill-retention', 'A locked legacy Skill source is missing.', {
+        skillId: legacySkillId,
+        source,
+      })
+  }
+  for (const [manifestId, expectedSource] of [
+    ['routing-scopes', 'repo:.ai/manifests/routing-scopes.json'],
+    ['skill-routing', 'repo:.ai/manifests/skill-routing.json'],
+  ]) {
+    if (skillsLock.manifests?.[manifestId]?.source !== expectedSource)
+      addFailure(
+        'p5-canonical-path-mismatch',
+        'A locked routing manifest source is not canonical.',
+        {
+          manifestId,
+          expected: expectedSource,
+          actual: skillsLock.manifests?.[manifestId]?.source,
+        }
+      )
+  }
+}
 
 if (coverage) {
   const permanentPathFindings = scanPermanentProjectUiArtifacts()

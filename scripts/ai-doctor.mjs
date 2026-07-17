@@ -22,6 +22,10 @@ const canonicalMustExist = [
   '.ai/protocol/adapters/README.md',
   '.ai/protocol/adapters/codex.md',
   '.ai/protocol/adapters/claude.md',
+  '.ai/governance/routing/fixtures/routing-cases.json',
+  '.ai/governance/routing/fixtures/sync-cases.json',
+  '.ai/governance/routing/routing-scopes.schema.json',
+  '.ai/governance/routing/skill-routing.schema.json',
   '.ai/rules/core/00-global-architect.mdc',
   '.ai/rules/core/00-root-gatekeeper.mdc',
   '.ai/rules/core/01-global-preflight.mdc',
@@ -44,8 +48,14 @@ const canonicalMustExist = [
   'scripts/codex-preflight.mjs',
   'scripts/ai-clean.mjs',
   'scripts/ai-sync-codex.mjs',
+  'scripts/ai-sync-claude.mjs',
+  'scripts/ai-sync-skills.mjs',
+  'scripts/claude-preflight.mjs',
+  'scripts/skill-sync-engine.mjs',
+  'scripts/governance/project-ui-routing-validate.mjs',
   '.ai/runtime/repair_list.template.md',
   '.ai/manifests/skill-routing.json',
+  '.ai/manifests/routing-scopes.json',
   '.ai/manifests/skills-lock.json',
   '.ai/manifests/rule-index.json',
 ]
@@ -111,6 +121,21 @@ const prepareInternalPackages = () => {
 
 const readBuffer = rel => fs.readFileSync(path.join(cwd, rel))
 const readText = rel => fs.readFileSync(path.join(cwd, rel), 'utf8')
+
+const runContractCheck = (label, relPath, args = []) => {
+  const result = spawnSync(process.execPath, [path.join(cwd, relPath), ...args], {
+    cwd,
+    encoding: 'utf8',
+    stdio: 'pipe',
+  })
+  if (result.stdout) process.stdout.write(result.stdout)
+  if (result.stderr) process.stderr.write(result.stderr)
+  if (result.status !== 0 || result.error || result.signal) {
+    fail(`${label} failed: ${relPath} ${args.join(' ')}`.trim())
+    return
+  }
+  ok(`${label}: ${relPath}${args.length > 0 ? ` ${args.join(' ')}` : ''}`)
+}
 
 const validateDerivedLedger = () => {
   const absLedger = path.join(cwd, derivedLedgerPath)
@@ -384,6 +409,10 @@ try {
     `unable to validate skill routing manifest: ${error instanceof Error ? error.message : String(error)}`
   )
 }
+
+runContractCheck('routing contract', 'scripts/governance/project-ui-routing-validate.mjs')
+runContractCheck('rule-index v2', 'scripts/generate-rule-index.mjs', ['--check'])
+runContractCheck('adapter activation', 'scripts/governance/adapters-validate.mjs')
 
 try {
   const guard = path.join(cwd, 'scripts', 'ai-architecture-guard.mjs')

@@ -26,19 +26,19 @@ wiki_owner: LLM-maintained CCD architecture wiki
 
 # Project UI Skill
 
-`project-ui` is the canonical CCD project-level UI governance source. It can be loaded manually by a new session to classify UI work, select references, preserve boundaries, reuse foundations, and validate output.
+`project-ui` is the singleton canonical CCD project-level UI governance source at `.ai/skills/project-ui`. Routing discovers it by stable Skill ID, and isolated synchronization materializes noncanonical Codex and Claude copies.
 
 ## Identity and Purpose
 
 `project-ui` defines classification, references, preflight, precedence, foundations, output, and validation for UI work across CCD product surfaces.
 
-## Transitional Status
+## Terminal Status
 
-P3 Machine UI Policy implementation is complete at `.ai/governance/policies/ui.json` with 68 canonical rules across 14 semantic-obligation clusters. The policy validator is `node .ai/governance/ui/scripts/validate-ui-policy.mjs`. Application-source enforcement remains baseline-only because the source scanner is not implemented, and `project-ui` remains undiscovered by the current Skill lock, unrouted, and unsynchronized.
+P3 Machine UI Policy implementation remains complete at `.ai/governance/policies/ui.json` with 68 canonical rules across 14 semantic-obligation clusters. P4 cold-start remains complete. P5 terminal integration discovers and locks project-ui, routes generic UI work to it, synchronizes it through Codex and Claude contracts, and activates both client adapters. Application-source enforcement remains baseline-only because the source scanner is not implemented.
 
 ## P2 And P3 State
 
-The project-ui semantic-quality correction is complete and tracked on main. Machine UI Policy exists at `.ai/governance/policies/ui.json`, and P3 Machine UI Policy implementation is complete. Page Contract Schema does not exist. P4 AI cold-start atomic replacement is complete. P5 has not started. project-ui remains undiscovered by the current Skill lock, unrouted, unsynchronized, and not adapter-activated.
+The project-ui semantic-quality correction is complete and tracked on main. Machine UI Policy exists at `.ai/governance/policies/ui.json`, and P3 Machine UI Policy implementation is complete. Page Contract Schema does not exist. P4 AI cold-start atomic replacement is complete. P5 terminal lifecycle integration is complete. The current Skill lock discovers project-ui, routing selects it for generic UI work, isolated synchronization covers Codex and Claude, and both adapters are active.
 
 ## Handoff
 
@@ -97,8 +97,10 @@ Do not claim source-scanning enforcement; the scanner is not yet implemented.
 
 - **Machine UI Policy**: P3 implementation complete; application-source enforcement baseline-only because the scanner is not implemented.
 - **Page Contract Schema**: does not exist.
-- **P4 Cold-Start**: complete for repository AI entrypoints; project-ui remains undiscovered and not adapter-activated.
-- **P5 Routing and Synchronization**: not started.
+- **P4 Cold-Start**: complete for repository AI entrypoints and preserved by P5.
+- **P5 Routing and Synchronization**: terminal; see [[project-ui-routing]].
+- **Materialized Copies**: Codex and Claude copies are noncanonical projections of `.ai/skills/project-ui`.
+- **Legacy Governance**: legacy Skills and rules remain retained.
 
 ## Lifecycle State
 
@@ -122,11 +124,28 @@ ADAPTER_MANIFEST_COLD_START_COMPLETE=yes
 ADAPTER_GENERATION_DETERMINISTIC=yes
 AI_SYNC_IDEMPOTENT=yes
 FRESH_CLONE_ENTRYPOINTS_PASS=yes
+P5_STARTED=yes
+P5_COMPLETE=yes
+PROJECT_UI_DISCOVERED=yes
+PROJECT_UI_ROUTED=yes
+PROJECT_UI_SYNCHRONIZED=yes
+PROJECT_UI_ADAPTER_ACTIVATED=yes
+PROJECT_UI_LOCKED=yes
+PROJECT_UI_CODEX_SYNC_CONTRACT_COMPLETE=yes
+PROJECT_UI_CLAUDE_SYNC_CONTRACT_COMPLETE=yes
+SKILL_ROUTING_MANIFEST_CURRENT=yes
+ROUTING_SCOPE_REGISTRY_COMPLETE=yes
+SKILLS_LOCK_CURRENT=yes
+RULE_INDEX_CURRENT=yes
+NODE_PYTHON_ROUTER_PARITY=yes
+GENERIC_UI_ROUTES_TO_PROJECT_UI=yes
+MOTION_ROUTING_CONDITIONAL=yes
+NON_UI_ROUTING_PRESERVED=yes
+ADAPTER_PROJECT_UI_MAPPING_COMPLETE=yes
+CODEX_ADAPTER_PROJECT_UI_ACTIVE=yes
+CLAUDE_ADAPTER_PROJECT_UI_ACTIVE=yes
 SOURCE_SCANNER_IMPLEMENTED=no
 PAGE_CONTRACT_CREATED=no
-PROJECT_UI_DISCOVERED=no
-PROJECT_UI_ROUTED=no
-PROJECT_UI_SYNCHRONIZED=no
-PROJECT_UI_ADAPTER_ACTIVATED=no
-P5_STARTED=no
+LEGACY_SKILLS_RETIRED=no
+LEGACY_RULES_RETIRED=no
 ```

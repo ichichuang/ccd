@@ -66,13 +66,15 @@ Adapter note:
 
 - `AGENTS.md` is the generated shared entrypoint for Codex and AGENTS-aware tools.
 - `CLAUDE.md` is the generated Claude AI pointer to `AGENTS.md`.
-- `~/.codex/skills/**` is a local materialization of `.ai/skills/core/**` and `.ai/skills/codex/**`.
+- Codex and Claude Skill copies are noncanonical runtime materializations of repository `.ai/skills/**` sources.
 
 Automatic trigger heuristics:
 
-- Run `.ai/skills/codex/task-orchestrator/scripts/skill_router.py` first for ambiguous or multi-surface tasks so only the minimum skill set is loaded.
+- Run the Node router at `.ai/skills/codex/task-orchestrator/scripts/skill_router.mjs` first; use the Python router only as a fallback.
 - For Vue SFCs, composables, UnoCSS, Vite, or toolchain edits, load the matching `.ai/skills/core/*` skill for the touched surface.
-- For UI flows, screenshots, layout regressions, interaction bugs, or browser verification, route to `.ai/skills/codex/architecture-browser-master` first.
+- Route generic UI work with explicit UI evidence to `project-ui`; non-UI Vue work may route to `vue` without activating `project-ui`.
+- For new page or route composition with explicit creation evidence, route to `project-ui` + `task-orchestrator` + `vue`.
+- Activate `.ai/skills/codex/architecture-browser-master` only for explicit browser, screenshot, navigation, Playwright, or runtime-validation evidence.
 - For Playwright CRX recordings, codegen exports, traces, or recorded-flow replay, route to `.ai/skills/codex/architecture-browser-master` and prefer local flow import or replay over manual browser rediscovery.
 - For ambiguous, multi-step, or cross-module tasks, route to `.ai/skills/codex/task-orchestrator` before editing.
 - For GitHub, PR, issue, review comment, Actions, workflow, CI, release, branch protection, or `.github/**` tasks, route to `.ai/skills/codex/github-ops`.
@@ -107,10 +109,9 @@ Validation commands:
 2. Load rules and extract hard constraints.
 3. Select skills and state why each is required.
 4. Execute applicable preflight checklists (`core/01-global-preflight.mdc`, plus `core/02-ui-preflight.mdc` for visual surfaces).
-5. For new routes/pages, scaffold first with `pnpm ai:scaffold:view-route`, then edit the generated files.
-6. Implement with boundary/type discipline.
-7. Validate with targeted checks.
-8. Report changed files, rules/skills used, validation results, and residual risks.
+5. Implement with boundary/type discipline.
+6. Validate with targeted checks.
+7. Report changed files, rules/skills used, validation results, and residual risks.
 
 ## 5) Validation Baseline
 
@@ -132,7 +133,7 @@ Run when relevant:
 - `pnpm test:run`
 - `pnpm sync:desktop-config` + `pnpm check:drift` for desktop bridge/capability changes
 
-For UI-critical changes, prefer Playwright CLI plus `.ai/skills/codex/architecture-browser-master`.
+When browser validation is explicitly required, prefer Playwright CLI plus `.ai/skills/codex/architecture-browser-master`.
 
 ## 6) Stack Defaults
 
@@ -149,26 +150,24 @@ For UI-critical changes, prefer Playwright CLI plus `.ai/skills/codex/architectu
 - Require unit tests plus Playwright E2E coverage for risky user flows.
 - Use Conventional Commits and keep diffs reviewable.
 
-## UI Design Skill Auto-Activation
+## Deterministic Skill Routing
 
-When a user request touches UI, UX, visual design, page layout, dashboard, settings, login, form, table, dialog, drawer, navigation, responsive behavior, dark mode, animation, motion, material, glass, Apple-like design, Google-like design, or general beautification, automatically load the CCD design skill chain before implementation:
-
-```text
-.ai/skills/design/ccd-product-language/SKILL.md
-.ai/skills/design/ccd-page-archetypes/SKILL.md
-.ai/skills/design/ccd-material-system/SKILL.md
-.ai/skills/design/ccd-motion-system/SKILL.md
-.ai/skills/design/ccd-ui-review-gate/SKILL.md
-```
-
-These skills are subordinate to `.ai/rules/**`, PrimeVue rules, UnoCSS guardrails, UIDesignState, architecture boundaries, and governance gates. They are mandatory design guidance for AI-generated UI quality.
-
-Before writing page-level UI code, resolve the pre-design pass:
+Resolve repository Skills from task and path evidence before implementation:
 
 ```text
-Page job, primary user, primary action, information priority, UIDesignState, visual thesis, signature detail, layout archetype, density plan, typography plan, material plan, motion plan, state plan, accessibility plan, validation plan.
+pnpm ai:route:skills -- "<task>" --json
 ```
 
-Do not start UI work by adding decoration. Structure and task clarity come first.
+The Node router is primary. Use `pnpm ai:route:skills:python -- "<task>" --json` only as the fallback. Load the stable Skill IDs returned by the normalized result; do not infer client-specific paths or branch-specific lanes.
 
-If the user asks for Apple-like, Google-like, premium, liquid-glass, or beautiful UI, translate that request into CCD `Architectural Glass`: quiet, structured, premium, architectural, governed, deterministic, token-driven, accessible, and restrained.
+Routing policy:
+
+- Generic UI evidence selects `project-ui` as the primary route.
+- New page or route composition requires explicit creation evidence and selects `project-ui` + `task-orchestrator` + `vue`.
+- Browser validation requires explicit browser, screenshot, navigation, Playwright, or runtime evidence.
+- Motion Skills activate only from explicit motion evidence; GSAP and animate-lite require their own narrow evidence.
+- UnoCSS and Vite Skills activate only from their isolated configuration or implementation evidence.
+- Non-UI requests remain isolated from the UI route chain.
+- Existing design Skills and rules remain available through conditional routing; no legacy retirement is implied.
+
+Validate routing with `pnpm ai:routing:validate`. Synchronize repository-owned Skills to an isolated Codex target with `pnpm ai:sync:codex`, an isolated Claude project with `pnpm ai:sync:claude`, or both with `pnpm ai:sync:skills`. Synchronized copies are noncanonical materializations; `.ai/**` remains the repository authority.

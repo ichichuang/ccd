@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 import { spawnSync } from 'node:child_process'
+import fs from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
 import process from 'node:process'
+
+const isolatedPreflightRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ccd-governance-gate-'))
 
 const checks = [
   {
@@ -12,6 +17,54 @@ const checks = [
   {
     name: 'governance assets',
     command: ['bash', 'scripts/exec.sh', 'pnpm', 'governance:validate'],
+  },
+  {
+    name: 'P5 routing contract',
+    command: ['node', 'scripts/governance/project-ui-routing-validate.mjs'],
+  },
+  {
+    name: 'adapter routing activation',
+    command: ['node', 'scripts/governance/adapters-validate.mjs'],
+  },
+  {
+    name: 'rule-index v2 freshness',
+    command: ['node', 'scripts/generate-rule-index.mjs', '--check'],
+  },
+  {
+    name: 'seed isolated Codex target',
+    command: [
+      'node',
+      'scripts/ai-sync-codex.mjs',
+      '--target-root',
+      path.join(isolatedPreflightRoot, 'codex', 'skills'),
+    ],
+  },
+  {
+    name: 'isolated Codex preflight',
+    command: [
+      'node',
+      'scripts/codex-preflight.mjs',
+      '--target-root',
+      path.join(isolatedPreflightRoot, 'codex', 'skills'),
+    ],
+  },
+  {
+    name: 'seed isolated Claude target',
+    command: [
+      'node',
+      'scripts/ai-sync-claude.mjs',
+      '--project-root',
+      path.join(isolatedPreflightRoot, 'claude-project'),
+    ],
+  },
+  {
+    name: 'isolated Claude preflight',
+    command: [
+      'node',
+      'scripts/claude-preflight.mjs',
+      '--project-root',
+      path.join(isolatedPreflightRoot, 'claude-project'),
+    ],
   },
   {
     name: 'AI architecture guard',
@@ -52,6 +105,7 @@ const checks = [
   {
     name: 'governance report generation',
     command: ['bash', 'scripts/exec.sh', 'pnpm', 'arch:report'],
+    restorePaths: ['.ai/generated/governance-report.json', 'wiki/generated/governance-report.md'],
   },
   {
     name: 'dependency graph generation',
@@ -82,11 +136,15 @@ const generatedFormatGlobs = [
 ]
 
 function normalizeGeneratedArtifacts() {
-  spawnSync('pnpm', ['exec', 'prettier', '--write', '--no-error-on-unmatched-pattern', ...generatedFormatGlobs], {
-    cwd: process.cwd(),
-    encoding: 'utf8',
-    stdio: 'pipe',
-  })
+  spawnSync(
+    'pnpm',
+    ['exec', 'prettier', '--write', '--no-error-on-unmatched-pattern', ...generatedFormatGlobs],
+    {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+      stdio: 'pipe',
+    }
+  )
   spawnSync('pnpm', ['generated:normalize'], {
     cwd: process.cwd(),
     encoding: 'utf8',
@@ -96,11 +154,24 @@ function normalizeGeneratedArtifacts() {
 
 function runCheck(check) {
   console.log(`\n[gate] ${check.name}`)
-  const result = spawnSync(check.command[0], check.command.slice(1), {
-    cwd: process.cwd(),
-    encoding: 'utf8',
-    stdio: 'inherit',
-  })
+  const snapshots = (check.restorePaths ?? []).map(relPath => ({
+    relPath,
+    content: fs.readFileSync(relPath),
+    mode: fs.statSync(relPath).mode,
+  }))
+  let result
+  try {
+    result = spawnSync(check.command[0], check.command.slice(1), {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+      stdio: 'inherit',
+    })
+  } finally {
+    for (const snapshot of snapshots) {
+      fs.writeFileSync(snapshot.relPath, snapshot.content, { mode: snapshot.mode })
+      fs.chmodSync(snapshot.relPath, snapshot.mode)
+    }
+  }
 
   if (result.status === 0) return true
   console.error(`\n[gate:fail] ${check.name}`)
@@ -157,5 +228,6 @@ if (ok) {
   }
 }
 
+fs.rmSync(isolatedPreflightRoot, { recursive: true, force: true })
 if (!ok) process.exit(1)
 console.log('\n[gate:pass] unified governance gate passed')
