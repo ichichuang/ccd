@@ -169,6 +169,16 @@ const P6_FINAL_LOCAL_COMMIT_PATH_SET_SHA256 =
   'd521709a4ecbb0d40ce510ea22f756a23452e5d1ae4765f01396cbca863006d1'
 const P6_FINAL_HISTORICAL_PATH_SET_SHA256 =
   '86f7220972b2eb76434ef9afa7e95e3406fb049da03a8f0c9dc6458a7e38377f'
+const P6_PRIMARY_COMMIT = 'dfbb4c951f35de1bccfae2a7923c0329f4a49b81'
+const P6_CORRECTION_COMMIT_SUBJECT = 'fix(governance): 修正 P6 远端终态身份与浅克隆验收'
+const P6_CORRECTION_PATHS = Object.freeze([
+  'scripts/governance/cold-start-validate.mjs',
+  'scripts/governance/project-ui-routing-validate.mjs',
+])
+const P6_CORRECTION_PATH_SET_SHA256 =
+  '653ea74eea3ed65e72a197e3b30c4ae37341432fa0cdc6d6d9efb436825bd83b'
+const P6_REPOSITORY = 'ichichuang/ccd'
+const P6_MAIN_REF = 'refs/heads/main'
 const P6_DELIVERY_ADDITIONAL_PATHS = Object.freeze([
   '.ai/governance/coverage/project-ui-semantic-coverage.json',
   '.ai/governance/policies/ui.json',
@@ -566,6 +576,219 @@ const p6FinalHistoricalBoundaryPaths = p6Paths => {
     })
   return paths
 }
+const normalizeGitHubRepositoryIdentity = originUrl => {
+  const reject = () =>
+    fail('P6_DELIVERY_REPOSITORY_IDENTITY', 'P6 delivery origin URL is not an approved GitHub URL')
+  if (typeof originUrl !== 'string' || originUrl.length === 0 || originUrl !== originUrl.trim())
+    return reject()
+
+  let owner
+  let repository
+  const scpStyle = /^git@github\.com:([^/]+)\/([^/]+)$/u.exec(originUrl)
+  if (scpStyle) {
+    owner = scpStyle[1]
+    repository = scpStyle[2]
+  } else {
+    let parsed
+    try {
+      parsed = new URL(originUrl)
+    } catch {
+      return reject()
+    }
+    const approvedHttps =
+      parsed.protocol === 'https:' &&
+      parsed.hostname === 'github.com' &&
+      parsed.username === '' &&
+      parsed.password === '' &&
+      parsed.port === ''
+    const approvedSsh =
+      parsed.protocol === 'ssh:' &&
+      parsed.hostname === 'github.com' &&
+      parsed.username === 'git' &&
+      parsed.password === '' &&
+      parsed.port === ''
+    if ((!approvedHttps && !approvedSsh) || parsed.search !== '' || parsed.hash !== '')
+      return reject()
+    const segments = parsed.pathname.slice(1).split('/')
+    if (segments.length !== 2 || segments.some(segment => segment.length === 0)) return reject()
+    owner = segments[0]
+    repository = segments[1]
+  }
+
+  if (repository.endsWith('.git')) repository = repository.slice(0, -4)
+  const safeComponent = /^[A-Za-z0-9._-]+$/u
+  if (!safeComponent.test(owner) || !safeComponent.test(repository)) return reject()
+  return `${owner}/${repository}`.toLowerCase()
+}
+const assertP6RepositoryIdentity = state => {
+  if (normalizeGitHubRepositoryIdentity(state.originUrl) !== P6_REPOSITORY)
+    fail('P6_DELIVERY_REPOSITORY_IDENTITY', 'P6 delivery repository identity drifted')
+  if (
+    state.github?.actions === true &&
+    (typeof state.github.repository !== 'string' ||
+      state.github.repository.toLowerCase() !== P6_REPOSITORY)
+  )
+    fail('P6_DELIVERY_REPOSITORY_IDENTITY', 'GitHub repository context drifted')
+}
+const assertP6CorrectionPaths = (paths, code = 'P6_CORRECTION_PATH_SET_DRIFT') => {
+  const normalized = sortedUnique(paths)
+  const pathSetSha256 = sha256(Buffer.from(`${normalized.join('\n')}\n`, 'utf8'))
+  if (
+    normalized.length !== 2 ||
+    pathSetSha256 !== P6_CORRECTION_PATH_SET_SHA256 ||
+    !same(normalized, P6_CORRECTION_PATHS)
+  )
+    fail(code, 'P6.7 correction must contain exactly the two validator paths', {
+      paths: normalized,
+      pathSetSha256,
+    })
+  return normalized
+}
+const p6PushCommitPaths = commit => {
+  if (!commit || typeof commit !== 'object' || Array.isArray(commit))
+    fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push commit entry is malformed')
+  const groups = ['added', 'modified', 'removed'].map(key => {
+    if (!Array.isArray(commit[key]) || commit[key].some(item => typeof item !== 'string'))
+      fail('P6_CORRECTION_EVENT_INVALID', `GitHub push commit ${key} paths are malformed`)
+    return commit[key]
+  })
+  const flattened = groups.flat()
+  if (new Set(flattened).size !== flattened.length)
+    fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push commit paths contain duplicates')
+  if (groups[2].length > 0)
+    fail('P6_DELIVERY_DELETION', 'P6.7 correction push forbids deleted paths', {
+      deleted: groups[2],
+    })
+  return assertP6CorrectionPaths(flattened)
+}
+const validateP6CorrectionPushEvent = state => {
+  const context = state.github
+  if (
+    !context ||
+    context.actions !== true ||
+    context.eventName !== 'push' ||
+    context.ref !== P6_MAIN_REF ||
+    context.sha !== state.head ||
+    context.eventError ||
+    !context.event ||
+    typeof context.event !== 'object' ||
+    Array.isArray(context.event)
+  )
+    fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push context is missing or malformed')
+
+  const event = context.event
+  if (
+    typeof event.repository?.full_name !== 'string' ||
+    event.repository.full_name.toLowerCase() !== P6_REPOSITORY ||
+    event.ref !== P6_MAIN_REF ||
+    event.before !== P6_PRIMARY_COMMIT ||
+    event.after !== state.head ||
+    event.created !== false ||
+    event.deleted !== false ||
+    event.size !== 1 ||
+    event.distinct_size !== 1
+  )
+    fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push event authority drifted')
+  if (event.forced !== false)
+    fail('P6_CORRECTION_FORCED_PUSH', 'P6.7 correction must be a non-forced push')
+  if (!Array.isArray(event.commits) || event.commits.length !== 1)
+    fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push event must contain one correction commit')
+
+  const [commit] = event.commits
+  if (commit.id !== state.head || commit.distinct !== true)
+    fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push commit identity drifted')
+  p6PushCommitPaths(commit)
+  if (!event.head_commit || event.head_commit.id !== state.head)
+    fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push head commit identity drifted')
+  p6PushCommitPaths(event.head_commit)
+  return { event: 'push', ref: P6_MAIN_REF, forced: false, pathCount: 2 }
+}
+const validateP6RemoteCorrectionSnapshot = (p6Paths, state) => {
+  assertP6RepositoryIdentity(state)
+  const staged = sortedUnique(state.staged ?? [])
+  const unstaged = sortedUnique(state.unstaged ?? [])
+  const untracked = sortedUnique(state.untracked ?? [])
+  const deleted = sortedUnique(state.deleted ?? [])
+  const localPaths = sortedUnique([...staged, ...unstaged, ...untracked])
+  const dirty = localPaths.length > 0
+  if (deleted.length)
+    fail('P6_DELIVERY_DELETION', 'P6.7 correction forbids deleted paths', { deleted })
+
+  if (dirty) {
+    if (
+      state.branch !== 'main' ||
+      state.shallow !== false ||
+      state.head !== P6_PRIMARY_COMMIT ||
+      state.originMain !== P6_PRIMARY_COMMIT ||
+      state.ahead !== 0 ||
+      state.behind !== 0
+    )
+      fail('P6_CORRECTION_DIRTY_BASE_DRIFT', 'Dirty P6.7 correction must remain on remote P6')
+    assertP6CorrectionPaths(localPaths)
+    if (!staged.length)
+      return {
+        mode: 'unstaged-remote-correction-workspace',
+        pathCount: 2,
+        pathSetSha256: P6_CORRECTION_PATH_SET_SHA256,
+      }
+    if (!same(staged, P6_CORRECTION_PATHS) || unstaged.length || untracked.length)
+      fail('P6_CORRECTION_INDEX_DRIFT', 'P6.7 index must contain both validators only', {
+        staged,
+        unstaged,
+        untracked,
+      })
+    return {
+      mode: 'fully-staged-remote-correction-candidate',
+      pathCount: 2,
+      pathSetSha256: P6_CORRECTION_PATH_SET_SHA256,
+    }
+  }
+
+  const onMain =
+    state.branch === 'main' ||
+    (state.github?.actions === true && state.github.ref === P6_MAIN_REF)
+  if (!onMain) fail('P6_CORRECTION_COMMIT_TOPOLOGY', 'P6.7 terminal state must be on main')
+  const headParents = state.headParents ?? (state.headParent ? [state.headParent] : [])
+
+  if (state.head === P6_PRIMARY_COMMIT) {
+    if (
+      state.shallow !== false ||
+      state.originMain !== P6_PRIMARY_COMMIT ||
+      state.ahead !== 0 ||
+      state.behind !== 0 ||
+      !same(headParents, [P6_BASELINE_COMMIT])
+    )
+      fail('P6_CORRECTION_COMMIT_TOPOLOGY', 'P6 primary remote terminal topology drifted')
+    const committedPaths = sortedUnique(state.committedPaths ?? [])
+    if (!same(committedPaths, p6FinalLocalCommitPaths(p6Paths)))
+      fail('P6_DELIVERY_COMMIT_PATH_DRIFT', 'P6 primary commit path authority drifted')
+    return { mode: 'clean-pushed-primary-terminal', pathCount: 221 }
+  }
+
+  if (!same(headParents, [P6_PRIMARY_COMMIT]) || state.headSubject !== P6_CORRECTION_COMMIT_SUBJECT)
+    fail('P6_CORRECTION_COMMIT_TOPOLOGY', 'P6.7 correction parent or subject drifted')
+
+  if (
+    state.shallow === false &&
+    state.originMain === P6_PRIMARY_COMMIT &&
+    state.ahead === 1 &&
+    state.behind === 0
+  ) {
+    assertP6CorrectionPaths(state.committedPaths ?? [], 'P6_CORRECTION_COMMIT_PATH_DRIFT')
+    return { mode: 'clean-local-remote-correction-commit', pathCount: 2 }
+  }
+
+  if (state.originMain !== state.head || state.ahead !== 0 || state.behind !== 0)
+    fail('P6_CORRECTION_COMMIT_TOPOLOGY', 'P6.7 pushed correction topology drifted')
+  if (state.shallow === true) {
+    validateP6CorrectionPushEvent(state)
+    return { mode: 'clean-pushed-remote-correction-shallow-event', pathCount: 2 }
+  }
+  assertP6CorrectionPaths(state.committedPaths ?? [], 'P6_CORRECTION_COMMIT_PATH_DRIFT')
+  if (state.github?.actions === true && state.github.eventName === 'push')
+    validateP6CorrectionPushEvent(state)
+  return { mode: 'clean-pushed-remote-correction-full-history', pathCount: 2 }
+}
 const validateP6DeliverySnapshot = (p6Paths, state, { finalLocalCommit = false } = {}) => {
   const expectedPaths = finalLocalCommit
     ? p6FinalLocalCommitPaths(p6Paths)
@@ -581,8 +804,9 @@ const validateP6DeliverySnapshot = (p6Paths, state, { finalLocalCommit = false }
   const localPaths = sortedUnique([...staged, ...unstaged, ...untracked])
   const dirty = localPaths.length > 0
 
-  if (state.branch !== 'main' || state.originUrl !== 'git@github.com:ichichuang/ccd.git')
-    fail('P6_DELIVERY_REPOSITORY_IDENTITY', 'P6 delivery repository identity drifted')
+  if (state.branch !== 'main')
+    fail('P6_DELIVERY_REPOSITORY_IDENTITY', 'P6 delivery branch identity drifted')
+  assertP6RepositoryIdentity(state)
   if (state.shallow !== false)
     fail('P6_DELIVERY_SHALLOW_REPOSITORY', 'P6 delivery requires a non-shallow repository')
   if (state.originMain !== P6_BASELINE_COMMIT)
@@ -652,6 +876,32 @@ const validateP6DeliverySnapshot = (p6Paths, state, { finalLocalCommit = false }
 }
 const validateP6FinalLocalCommitSnapshot = (p6Paths, state) =>
   validateP6DeliverySnapshot(p6Paths, state, { finalLocalCommit: true })
+const validateP6TerminalRepositorySnapshot = (p6Paths, state) =>
+  state.head === P6_BASELINE_COMMIT || state.originMain === P6_BASELINE_COMMIT
+    ? validateP6FinalLocalCommitSnapshot(p6Paths, state)
+    : validateP6RemoteCorrectionSnapshot(p6Paths, state)
+const inspectP6GitHubContext = () => {
+  const eventPath = process.env.GITHUB_EVENT_PATH?.trim() ?? ''
+  let event = null
+  let eventError = null
+  if (eventPath) {
+    try {
+      event = JSON.parse(fs.readFileSync(eventPath, 'utf8'))
+    } catch (error) {
+      eventError = error instanceof SyntaxError ? 'invalid-json' : 'unreadable-event'
+    }
+  }
+  return {
+    actions: process.env.GITHUB_ACTIONS === 'true',
+    repository: process.env.GITHUB_REPOSITORY ?? '',
+    ref: process.env.GITHUB_REF ?? '',
+    sha: process.env.GITHUB_SHA ?? '',
+    eventName: process.env.GITHUB_EVENT_NAME ?? '',
+    eventPath,
+    event,
+    eventError,
+  }
+}
 const inspectP6DeliveryRepositoryState = ({
   root = ROOT,
   localState = repositoryChangeState({ root }),
@@ -661,6 +911,10 @@ const inspectP6DeliveryRepositoryState = ({
     ...gitPaths(['diff', '--cached', '--name-only', '--diff-filter=D'], { cwd: root }),
   ])
   const head = run('git', ['rev-parse', 'HEAD'], { cwd: root }).stdout.trim()
+  const headParents = run('git', ['cat-file', '-p', 'HEAD'], { cwd: root })
+    .stdout.split('\n')
+    .filter(line => line.startsWith('parent '))
+    .map(line => line.slice('parent '.length))
   const [behind, ahead] = run(
     'git',
     ['rev-list', '--left-right', '--count', 'origin/main...HEAD'],
@@ -678,16 +932,19 @@ const inspectP6DeliveryRepositoryState = ({
       run('git', ['rev-parse', '--is-shallow-repository'], { cwd: root }).stdout.trim() === 'true',
     originMain: run('git', ['rev-parse', 'origin/main'], { cwd: root }).stdout.trim(),
     head,
-    headParent: localState.dirty
-      ? null
-      : run('git', ['rev-parse', 'HEAD^'], { cwd: root }).stdout.trim(),
+    headParent: headParents.length === 1 ? headParents[0] : null,
+    headParents,
+    headSubject: run('git', ['log', '-1', '--format=%s', 'HEAD'], { cwd: root }).stdout.trim(),
     ahead,
     behind,
+    github: inspectP6GitHubContext(),
     staged: localState.staged,
     unstaged: localState.unstaged,
     untracked: localState.untracked,
     deleted,
-    committedPaths: localState.dirty
+    committedPaths:
+      localState.dirty ||
+      run('git', ['rev-parse', '--is-shallow-repository'], { cwd: root }).stdout.trim() === 'true'
       ? []
       : gitPaths(['diff-tree', '--no-commit-id', '--name-only', '-r', 'HEAD^', 'HEAD'], {
           cwd: root,
@@ -2514,11 +2771,13 @@ const validateIndexContract = ({
   unstaged,
   untracked,
   finalLocalCommit = false,
+  p6Delivery = null,
 }) => {
   if (!staged.length) return
   if (phase === 'p6-pre-terminal')
     fail('P6_INDEX_NOT_EMPTY', 'P6 candidate paths must remain unstaged', { staged })
   if (phase === 'p6-terminal') {
+    if (p6Delivery?.mode === 'fully-staged-remote-correction-candidate') return
     const expectedLocalCount = finalLocalCommit ? 221 : 220
     if (
       localChanged.length === expectedLocalCount &&
@@ -2583,7 +2842,7 @@ const validateBoundary = (
   const phase = inferBoundaryPhase(lifecyclePhase, changed)
   const p6Delivery =
     phase === 'p6-terminal'
-      ? validateP6FinalLocalCommitSnapshot(
+      ? validateP6TerminalRepositorySnapshot(
           p6Paths,
           inspectP6DeliveryRepositoryState({ root, localState })
         )
@@ -2632,6 +2891,7 @@ const validateBoundary = (
     unstaged: localState.unstaged,
     untracked: localState.untracked,
     finalLocalCommit: phase === 'p6-terminal',
+    p6Delivery,
   })
   const informational = comparison.available
     ? []
@@ -2926,6 +3186,29 @@ const P6_FINAL_LOCAL_COMMIT_TEST_IDS = [
   'p6-final-wrong-parent',
   'p6-final-two-local-commits',
 ]
+const P6_REMOTE_CORRECTION_TEST_IDS = [
+  'p6-correction-pushed-primary-full-history',
+  'p6-correction-https-origin-normalized',
+  'p6-correction-ssh-url-origin-normalized',
+  'p6-correction-exact-unstaged-candidate',
+  'p6-correction-exact-fully-staged-candidate',
+  'p6-correction-exact-local-commit',
+  'p6-correction-exact-pushed-full-history',
+  'p6-correction-exact-pushed-shallow-event',
+  'p6-correction-wrong-repository',
+  'p6-correction-unsafe-http-origin',
+  'p6-correction-credentialed-origin',
+  'p6-correction-incomplete-staging',
+  'p6-correction-unexpected-path',
+  'p6-correction-wrong-parent',
+  'p6-correction-subject-drift',
+  'p6-correction-forced-push',
+  'p6-correction-malformed-event',
+  'p6-correction-wrong-event-repository',
+  'p6-correction-wrong-event-ref',
+  'p6-correction-shallow-event-missing',
+  'p6-correction-push-deletion',
+]
 export function runSelfTests({
   routingFixtures = readJson(FILES.routingFixtures),
   syncFixtures = readJson(FILES.syncFixtures),
@@ -2949,6 +3232,7 @@ export function runSelfTests({
     ...P6_TERMINAL_TEST_IDS,
     ...P6_DELIVERY_TEST_IDS,
     ...P6_FINAL_LOCAL_COMMIT_TEST_IDS,
+    ...P6_REMOTE_CORRECTION_TEST_IDS,
     BOUNDARY_TEST_IDS.at(-1),
     ...LIFECYCLE_TEST_IDS,
   ]
@@ -2960,10 +3244,11 @@ export function runSelfTests({
     P6_TERMINAL_TEST_IDS.length !== 25 ||
     P6_DELIVERY_TEST_IDS.length !== 10 ||
     P6_FINAL_LOCAL_COMMIT_TEST_IDS.length !== 13 ||
+    P6_REMOTE_CORRECTION_TEST_IDS.length !== 21 ||
     LIFECYCLE_TEST_IDS.length !== 8 ||
-    new Set(declaredSelfTestIds).size !== 155
+    new Set(declaredSelfTestIds).size !== 176
   )
-    fail('SELF_TEST_COUNT_DRIFT', 'Self-test inventory must contain exactly 155 unique IDs')
+    fail('SELF_TEST_COUNT_DRIFT', 'Self-test inventory must contain exactly 176 unique IDs')
   const routingById = new Map(routingFixtures.cases.map(fixture => [fixture.id, fixture]))
   const executedRouting = new Set(routingEvidence?.nodeSuite?.caseIds ?? [])
   const syncById = new Map((syncEvidence?.records ?? []).map(record => [record.id, record]))
@@ -4050,6 +4335,209 @@ export function runSelfTests({
       ahead: 2,
     })
   )
+
+  const primaryRemoteAuthority = {
+    ...finalLocalCommitAuthority,
+    head: P6_PRIMARY_COMMIT,
+    headParent: P6_BASELINE_COMMIT,
+    headParents: [P6_BASELINE_COMMIT],
+    headSubject: 'feat(governance): 完成 P6 UI 源码扫描与严格基线棘轮',
+    originMain: P6_PRIMARY_COMMIT,
+    ahead: 0,
+    behind: 0,
+    committedPaths: finalCommittedPaths,
+  }
+  const correctionHead = '5555555555555555555555555555555555555555'
+  const correctionLocalAuthority = {
+    ...primaryRemoteAuthority,
+    head: P6_PRIMARY_COMMIT,
+    headParent: P6_BASELINE_COMMIT,
+    headParents: [P6_BASELINE_COMMIT],
+    committedPaths: [],
+  }
+  const correctionCommittedAuthority = {
+    ...correctionLocalAuthority,
+    head: correctionHead,
+    headParent: P6_PRIMARY_COMMIT,
+    headParents: [P6_PRIMARY_COMMIT],
+    headSubject: P6_CORRECTION_COMMIT_SUBJECT,
+    originMain: P6_PRIMARY_COMMIT,
+    ahead: 1,
+    committedPaths: P6_CORRECTION_PATHS,
+  }
+  const pushCommit = {
+    id: correctionHead,
+    distinct: true,
+    added: [],
+    modified: [...P6_CORRECTION_PATHS],
+    removed: [],
+  }
+  const pushEvent = {
+    repository: { full_name: P6_REPOSITORY },
+    ref: P6_MAIN_REF,
+    before: P6_PRIMARY_COMMIT,
+    after: correctionHead,
+    created: false,
+    deleted: false,
+    forced: false,
+    size: 1,
+    distinct_size: 1,
+    commits: [clone(pushCommit)],
+    head_commit: clone(pushCommit),
+  }
+  const correctionGitHub = {
+    actions: true,
+    repository: P6_REPOSITORY,
+    ref: P6_MAIN_REF,
+    sha: correctionHead,
+    eventName: 'push',
+    eventPath: '/tmp/github-event.json',
+    event: pushEvent,
+    eventError: null,
+  }
+  const correctionRemoteAuthority = {
+    ...correctionCommittedAuthority,
+    originMain: correctionHead,
+    ahead: 0,
+    behind: 0,
+  }
+  const correctionShallowAuthority = {
+    ...correctionRemoteAuthority,
+    branch: '',
+    shallow: true,
+    committedPaths: [],
+    github: correctionGitHub,
+  }
+
+  execute('p6-correction-pushed-primary-full-history', () =>
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, primaryRemoteAuthority)
+  )
+  execute('p6-correction-https-origin-normalized', () =>
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...primaryRemoteAuthority,
+      originUrl: 'https://github.com/ichichuang/ccd.git',
+    })
+  )
+  execute('p6-correction-ssh-url-origin-normalized', () =>
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...primaryRemoteAuthority,
+      originUrl: 'ssh://git@github.com/ichichuang/ccd.git',
+    })
+  )
+  execute('p6-correction-exact-unstaged-candidate', () =>
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...correctionLocalAuthority,
+      unstaged: [...P6_CORRECTION_PATHS],
+    })
+  )
+  execute('p6-correction-exact-fully-staged-candidate', () =>
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...correctionLocalAuthority,
+      staged: [...P6_CORRECTION_PATHS],
+    })
+  )
+  execute('p6-correction-exact-local-commit', () =>
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, correctionCommittedAuthority)
+  )
+  execute('p6-correction-exact-pushed-full-history', () =>
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, correctionRemoteAuthority)
+  )
+  execute('p6-correction-exact-pushed-shallow-event', () =>
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, correctionShallowAuthority)
+  )
+  reject('p6-correction-wrong-repository', 'P6_DELIVERY_REPOSITORY_IDENTITY', () =>
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...correctionLocalAuthority,
+      originUrl: 'git@github.com:someone/else.git',
+      unstaged: [...P6_CORRECTION_PATHS],
+    })
+  )
+  for (const [id, originUrl] of [
+    ['p6-correction-unsafe-http-origin', 'http://github.com/ichichuang/ccd.git'],
+    ['p6-correction-credentialed-origin', 'https://token@github.com/ichichuang/ccd.git'],
+  ])
+    reject(id, 'P6_DELIVERY_REPOSITORY_IDENTITY', () =>
+      validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+        ...correctionLocalAuthority,
+        originUrl,
+        unstaged: [...P6_CORRECTION_PATHS],
+      })
+    )
+  reject('p6-correction-incomplete-staging', 'P6_CORRECTION_INDEX_DRIFT', () =>
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...correctionLocalAuthority,
+      staged: P6_CORRECTION_PATHS.slice(0, 1),
+      unstaged: P6_CORRECTION_PATHS.slice(1),
+    })
+  )
+  reject('p6-correction-unexpected-path', 'P6_CORRECTION_PATH_SET_DRIFT', () =>
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...correctionLocalAuthority,
+      unstaged: [...P6_CORRECTION_PATHS, 'unexpected-p6-correction.txt'],
+    })
+  )
+  reject('p6-correction-wrong-parent', 'P6_CORRECTION_COMMIT_TOPOLOGY', () =>
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...correctionRemoteAuthority,
+      headParent: P6_BASELINE_COMMIT,
+      headParents: [P6_BASELINE_COMMIT],
+    })
+  )
+  reject('p6-correction-subject-drift', 'P6_CORRECTION_COMMIT_TOPOLOGY', () =>
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...correctionRemoteAuthority,
+      headSubject: 'fix(governance): wrong subject',
+    })
+  )
+  reject('p6-correction-forced-push', 'P6_CORRECTION_FORCED_PUSH', () => {
+    const github = clone(correctionGitHub)
+    github.event.forced = true
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...correctionShallowAuthority,
+      github,
+    })
+  })
+  reject('p6-correction-malformed-event', 'P6_CORRECTION_EVENT_INVALID', () => {
+    const github = clone(correctionGitHub)
+    github.event.commits = {}
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...correctionShallowAuthority,
+      github,
+    })
+  })
+  reject('p6-correction-wrong-event-repository', 'P6_CORRECTION_EVENT_INVALID', () => {
+    const github = clone(correctionGitHub)
+    github.event.repository.full_name = 'someone/else'
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...correctionShallowAuthority,
+      github,
+    })
+  })
+  reject('p6-correction-wrong-event-ref', 'P6_CORRECTION_EVENT_INVALID', () => {
+    const github = clone(correctionGitHub)
+    github.ref = 'refs/heads/not-main'
+    github.event.ref = 'refs/heads/not-main'
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...correctionShallowAuthority,
+      branch: 'main',
+      github,
+    })
+  })
+  reject('p6-correction-shallow-event-missing', 'P6_CORRECTION_EVENT_INVALID', () =>
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...correctionShallowAuthority,
+      github: { ...correctionGitHub, event: null },
+    })
+  )
+  reject('p6-correction-push-deletion', 'P6_DELIVERY_DELETION', () => {
+    const github = clone(correctionGitHub)
+    github.event.commits[0].modified = P6_CORRECTION_PATHS.slice(0, 1)
+    github.event.commits[0].removed = P6_CORRECTION_PATHS.slice(1)
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...correctionShallowAuthority,
+      github,
+    })
+  })
   reject('lifecycle-mixed-terminal', 'P5_LIFECYCLE_MIXED', () => {
     const documents = clone(terminalDocuments)
     documents[0].markers.set('P5_COMPLETE', 'no')
@@ -4103,6 +4591,7 @@ export function runSelfTests({
     ...P6_TERMINAL_TEST_IDS,
     ...P6_DELIVERY_TEST_IDS,
     ...P6_FINAL_LOCAL_COMMIT_TEST_IDS,
+    ...P6_REMOTE_CORRECTION_TEST_IDS,
     BOUNDARY_TEST_IDS.at(-1),
     ...LIFECYCLE_TEST_IDS,
   ]
@@ -4114,7 +4603,7 @@ export function runSelfTests({
   )
     fail(
       'SELF_TEST_EXECUTION_DRIFT',
-      'Executed self-test order or membership differs from the exact 155-case contract'
+      'Executed self-test order or membership differs from the exact 176-case contract'
     )
   return {
     status: 'pass',
@@ -4126,6 +4615,7 @@ export function runSelfTests({
     p6TerminalCases: 25,
     p6DeliveryCases: 10,
     p6FinalLocalCommitCases: 13,
+    p6RemoteCorrectionCases: 21,
     lifecycleCases: 8,
     caseIds,
   }
@@ -4171,7 +4661,7 @@ const runSuite = async (selfTest, temporaryRoot) => {
       routingPassed: 0,
       syncTotal: 47,
       syncPassed: 0,
-      selfTestTotal: selfTest ? 142 : 0,
+      selfTestTotal: selfTest ? 176 : 0,
       selfTestPassed: 0,
     },
     diagnostics: [],
