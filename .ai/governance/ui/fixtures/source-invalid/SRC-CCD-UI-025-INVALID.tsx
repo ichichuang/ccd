@@ -1,0 +1,1 @@
+const sidebarWidth = 320

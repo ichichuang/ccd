@@ -19,6 +19,10 @@ const checks = [
     command: ['bash', 'scripts/exec.sh', 'pnpm', 'governance:validate'],
   },
   {
+    name: 'P6 UI source enforcement',
+    command: ['pnpm', 'ui:source:validate'],
+  },
+  {
     name: 'P5 routing contract',
     command: ['node', 'scripts/governance/project-ui-routing-validate.mjs'],
   },

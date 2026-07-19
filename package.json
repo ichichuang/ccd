@@ -34,6 +34,8 @@
     "project:print": "node scripts/project-config.mjs print",
     "project:validate": "node scripts/project-config.mjs validate",
     "ui:policy:validate": "node .ai/governance/ui/scripts/validate-ui-policy.mjs",
+    "ui:source:scan": "node .ai/governance/ui/scripts/scan-ui-source.mjs",
+    "ui:source:validate": "node scripts/governance/ui-source-enforcement-validate.mjs",
     "project:sync": "node scripts/project-config.mjs sync",
     "project:doctor": "node scripts/project-config.mjs doctor",
     "dev": "pnpm dev:web-demo",

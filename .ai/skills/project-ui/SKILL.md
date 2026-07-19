@@ -14,11 +14,11 @@ project-ui is the canonical CCD project-level UI governance source for planning,
 
 ## Transitional Status
 
-The initial project-ui source was introduced on main by commit `624948ea9058507f8fae91975dabc715d984703a` with subject `feat(governance): 建立唯一项目级 UI Skill`. P3 Machine UI Policy and P4 cold-start contracts remain complete. P5 now discovers project-ui as the singleton canonical project Skill, locks its twelve-file source inventory, routes generic UI tasks to its stable Skill ID, synchronizes isolated Codex and Claude materializations transactionally, and activates both adapters. Application-source enforcement remains baseline-only because the source scanner is not implemented. Legacy design Skills and legacy UI rules remain available through conditional routing.
+The initial project-ui source was introduced on main by commit `624948ea9058507f8fae91975dabc715d984703a` with subject `feat(governance): 建立唯一项目级 UI Skill`. P3 Machine UI Policy and P4 cold-start contracts remain complete. P5 discovers project-ui as the singleton canonical project Skill, locks its twelve-file source inventory, routes generic UI tasks to its stable Skill ID, synchronizes isolated Codex and Claude materializations transactionally, and activates both adapters. P6 source scanning is implemented, the deterministic canonical P5 debt baseline is adopted, and the strict new-fingerprint and count-increase ratchet is active. Legacy design Skills and legacy UI rules remain available through conditional routing.
 
 ## Future Activation Intent
 
-The Node router is primary and the Python router is the parity fallback. Generic UI evidence selects project-ui; explicit page or route composition may add task-orchestrator and Vue; non-UI work remains isolated; motion, UnoCSS, and Vite activate only from their own narrow evidence. Adapter activation does not make project-ui a global always-loaded Skill.
+The previously planned source-enforcement integration is now active. The Node router remains primary and the Python router remains the parity fallback. Generic UI evidence selects project-ui; explicit page or route composition may add task-orchestrator and Vue; non-UI work remains isolated; motion, UnoCSS, and Vite activate only from their own narrow evidence. Adapter activation does not make project-ui a global always-loaded Skill. Source enforcement consumes the canonical baseline without changing routing or adapter ownership.
 
 ## Scope
 
@@ -58,7 +58,7 @@ Every UI report must include task classification, references loaded, foundation 
 
 ## Required Validation Sequence
 
-Validate in order: architecture boundary, loaded-reference check, token audit, component ownership, layout and scroll ownership, responsive behavior, state matrix, keyboard and focus, reduced motion, light and dark parity, visual regression when applicable, runtime behavior preservation, final diff review, and protected-path review. Run `node .ai/skills/project-ui/scripts/validate-semantic-quality.mjs` and `node .ai/governance/ui/scripts/validate-ui-policy.mjs` where applicable. Do not claim machine source-scanning enforcement where the scanner does not exist.
+Validate in order: architecture boundary, loaded-reference check, token audit, component ownership, layout and scroll ownership, responsive behavior, state matrix, keyboard and focus, reduced motion, light and dark parity, visual regression when applicable, runtime behavior preservation, final diff review, and protected-path review. Run `node .ai/skills/project-ui/scripts/validate-semantic-quality.mjs`, `node .ai/governance/ui/scripts/validate-ui-policy.mjs`, and `pnpm ui:source:validate` where applicable. The 393 baseline findings are accepted historical debt, not proof of source compliance.
 
 ## Conditional Motion Loading
 
@@ -66,11 +66,11 @@ GSAP is eligible only for timeline-heavy, scroll-linked, or complex choreography
 
 ## Future Integration Boundaries
 
-Current project-ui provides human-readable canonical governance, deterministic policy and semantic-quality validation, routed activation, and transactional synchronization contracts. It does not provide source-scanning enforcement, Page Contracts, route scaffolding, or automatic global loading. P4 AI cold-start validation still owns repository entrypoint availability; P5 extends that contract with conditional project-ui discovery and adapter activation.
+Current project-ui provides human-readable canonical governance, deterministic policy and semantic-quality validation, routed activation, transactional synchronization contracts, and an active strict source-enforcement ratchet against the canonical P5 debt baseline. It does not provide Page Contracts, route scaffolding, or automatic global loading. P4 AI cold-start validation still owns repository entrypoint availability; P5 extends that contract with conditional project-ui discovery and adapter activation.
 
 ## P3 Machine UI Policy Boundary
 
-P3 Machine UI Policy is complete at `.ai/governance/policies/ui.json` with 68 canonical rules across 14 semantic-obligation clusters. Its schemas, Product UI Profile, empty exception registry, fixtures, and deterministic validator are present. The source scanner is not implemented, so application-source enforcement remains baseline-only.
+P3 Machine UI Policy is complete at `.ai/governance/policies/ui.json` with 68 canonical rules across 14 semantic-obligation clusters. Its schemas, Product UI Profile, empty exception registry, fixtures, and deterministic validator are present. P6 implements source scanning for 24 source-enforceable rules with 22 assisted rules, while eight schema rules and 14 human-review-only rules retain their separate enforcement owners.
 
 ## Lifecycle State
 
@@ -114,10 +114,11 @@ NON_UI_ROUTING_PRESERVED=yes
 ADAPTER_PROJECT_UI_MAPPING_COMPLETE=yes
 CODEX_ADAPTER_PROJECT_UI_ACTIVE=yes
 CLAUDE_ADAPTER_PROJECT_UI_ACTIVE=yes
-SOURCE_SCANNER_IMPLEMENTED=no
+SOURCE_SCANNER_IMPLEMENTED=yes
 PAGE_CONTRACT_CREATED=no
 LEGACY_SKILLS_RETIRED=no
 LEGACY_RULES_RETIRED=no
+SOURCE_ENFORCEMENT_ACTIVE=yes
 ```
 
 ## Page Contract Boundary

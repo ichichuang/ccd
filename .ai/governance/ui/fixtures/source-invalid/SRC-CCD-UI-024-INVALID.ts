@@ -1,0 +1,1 @@
+const viewport = window.innerWidth

@@ -386,8 +386,8 @@
           "path": "SKILL.md",
           "mode": "100644",
           "kind": "text",
-          "size": 9718,
-          "sha256": "ee22396186e925350f4d129b29104bb02ff1b3c0364bc2ceb6edc00738d7aaa1"
+          "size": 10159,
+          "sha256": "9e07388985ed7568071654c4fc96848835402ea18619d57152de303fb1cdcb24"
         },
         {
           "path": "references/accessibility.md",
@@ -428,8 +428,8 @@
           "path": "references/platform-invariants.md",
           "mode": "100644",
           "kind": "text",
-          "size": 4729,
-          "sha256": "21797ffe5f6e75bbd0d152d2e948ed174c8dbb93bd377271d508f1356661be89"
+          "size": 4835,
+          "sha256": "bdbc42d575e4de8e5fb7a823014c71b838d34ef75606c4ca8e6731a4126897ae"
         },
         {
           "path": "references/product-language.md",
@@ -456,19 +456,19 @@
           "path": "references/validation.md",
           "mode": "100644",
           "kind": "text",
-          "size": 7551,
-          "sha256": "ce9b9281427f01ed2f1689a04fdba8853ab0d2429b66a98114fc79b00b6c72f6"
+          "size": 8485,
+          "sha256": "ba1313c5310e2989732dab86c972207024ba8583f6c83ca0b4f129dc226ca04f"
         },
         {
           "path": "scripts/validate-semantic-quality.mjs",
           "mode": "100644",
           "kind": "text",
-          "size": 103956,
-          "sha256": "e626c5ac3f4d9b7b616c4aad41f9107fc4377517391e673a19b9c9f443aa961b"
+          "size": 106292,
+          "sha256": "59e8301482a02fabe3bf7329b442b65214e568753f13574d763946d97a4cd109"
         }
       ],
       "excludedFiles": [],
-      "computedHash": "4a15d1e041a3be2cec071dc1812593cf0c822f4ace1a74f685a3e03e48ac0237"
+      "computedHash": "bb7078c0129a1d478fce7e9d84ef6cdb57e2c45f5a040a5cd7c30221949c2117"
     },
     "task-orchestrator": {
       "source": "repo:.ai/skills/codex/task-orchestrator",

@@ -52,7 +52,7 @@ Reuse current foundations before new code: packages/design-tokens, packages/vue-
 
 ## Human and Future Machine Enforcement Boundary
 
-P3 Machine UI Policy implementation is complete at `.ai/governance/policies/ui.json`, with deterministic policy and semantic-quality validation. The source scanner is not implemented, so application-source enforcement remains baseline-only. This reference must not imply active machine source-scanning enforcement.
+P3 Machine UI Policy implementation is complete at `.ai/governance/policies/ui.json`, with deterministic policy and semantic-quality validation. P6 source scanning is implemented against the deterministic canonical P5 debt baseline, and strict new-fingerprint and count-increase enforcement is active. Schema-owned and human-review-only obligations remain outside source-scanner authority.
 
 ## Lifecycle State
 
@@ -96,8 +96,9 @@ NON_UI_ROUTING_PRESERVED=yes
 ADAPTER_PROJECT_UI_MAPPING_COMPLETE=yes
 CODEX_ADAPTER_PROJECT_UI_ACTIVE=yes
 CLAUDE_ADAPTER_PROJECT_UI_ACTIVE=yes
-SOURCE_SCANNER_IMPLEMENTED=no
+SOURCE_SCANNER_IMPLEMENTED=yes
 PAGE_CONTRACT_CREATED=no
 LEGACY_SKILLS_RETIRED=no
 LEGACY_RULES_RETIRED=no
+SOURCE_ENFORCEMENT_ACTIVE=yes
 ```

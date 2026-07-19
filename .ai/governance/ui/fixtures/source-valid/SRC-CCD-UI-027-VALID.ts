@@ -1,0 +1,1 @@
+defineProps<{ isMobile: boolean }>()

@@ -103,7 +103,7 @@ const EXPECTED_CANONICAL_STATE = {
   p2SourcePhase: 'complete',
   implementationState: 'P3_COMPLETE',
   machineUiPolicyState: 'MACHINE_UI_POLICY_COMPLETE',
-  applicationSourceEnforcementState: 'BASELINE_ONLY',
+  applicationSourceEnforcementState: 'ACTIVE_RATCHET',
   machineUiPolicyPresent: true,
   policySchemasPresent: true,
   productUiProfilePresent: true,
@@ -111,8 +111,13 @@ const EXPECTED_CANONICAL_STATE = {
   exceptionCount: 0,
   fixturesPresent: true,
   validatorPresent: true,
-  sourceScannerImplemented: false,
+  sourceScannerImplemented: true,
+  sourceEnforcementActive: true,
+  canonicalSourceBaselinePresent: true,
+  strictSourceRatchetActive: true,
   pageContractCreated: false,
+  legacySkillsRetired: false,
+  legacyRulesRetired: false,
   p3Started: true,
   p4Started: true,
   p4Complete: true,
@@ -179,10 +184,11 @@ const TERMINAL_LIFECYCLE_FIELDS = [
   'ADAPTER_PROJECT_UI_MAPPING_COMPLETE=yes',
   'CODEX_ADAPTER_PROJECT_UI_ACTIVE=yes',
   'CLAUDE_ADAPTER_PROJECT_UI_ACTIVE=yes',
-  'SOURCE_SCANNER_IMPLEMENTED=no',
+  'SOURCE_SCANNER_IMPLEMENTED=yes',
   'PAGE_CONTRACT_CREATED=no',
   'LEGACY_SKILLS_RETIRED=no',
   'LEGACY_RULES_RETIRED=no',
+  'SOURCE_ENFORCEMENT_ACTIVE=yes',
 ]
 
 const TERMINAL_LIFECYCLE_BLOCK = TERMINAL_LIFECYCLE_FIELDS.join('\n')
@@ -1280,12 +1286,12 @@ function validateP3Handoff(coverageData) {
       { actual: canonicalState.exceptionCount }
     )
   if (
-    coverageData?.applicationSourceEnforcementState !== 'BASELINE_ONLY' ||
-    canonicalState.applicationSourceEnforcementState !== 'BASELINE_ONLY'
+    coverageData?.applicationSourceEnforcementState !== 'ACTIVE_RATCHET' ||
+    canonicalState.applicationSourceEnforcementState !== 'ACTIVE_RATCHET'
   )
     fail(
       'p3-handoff-source-enforcement-state',
-      'Application-source enforcement must remain baseline-only until a scanner exists.'
+      'Application-source enforcement must use the active canonical-baseline ratchet.'
     )
   if (
     canonicalState.pageContractCreated !== false ||
@@ -1315,7 +1321,7 @@ function validateP3Handoff(coverageData) {
       'P5 terminal integration must remain discovered, routed, synchronized, and adapter-activated.'
     )
 
-  const falseStatusFields = ['sourceScannerImplemented', 'pageContractCreated']
+  const falseStatusFields = ['pageContractCreated', 'legacySkillsRetired', 'legacyRulesRetired']
   for (const field of falseStatusFields) {
     if (coverageData?.[field] !== false)
       fail('p3-status-field', `Coverage P3 status field ${field} must be false.`, {
@@ -1329,12 +1335,58 @@ function validateP3Handoff(coverageData) {
       'Coverage machinePolicyPath must point to the canonical Machine UI Policy.',
       { actual: coverageData?.machinePolicyPath }
     )
-  for (const field of ['sourceScannerImplemented', 'pageContractCreated']) {
+  if (coverageData?.sourceScannerImplemented !== true)
+    fail('p3-status-field', 'Coverage must record the implemented source scanner.', {
+      actual: coverageData?.sourceScannerImplemented,
+    })
+  if (canonicalState.sourceScannerImplemented !== true)
+    fail('p3-handoff-lifecycle-state', 'Canonical state must record the implemented scanner.', {
+      actual: canonicalState.sourceScannerImplemented,
+    })
+  for (const field of ['pageContractCreated', 'legacySkillsRetired', 'legacyRulesRetired'])
     if (canonicalState[field] !== false)
-      fail('p3-handoff-lifecycle-state', 'P3 handoff changed a protected lifecycle state.', {
+      fail('p3-handoff-lifecycle-state', 'A protected terminal lifecycle state drifted.', {
         field,
         actual: canonicalState[field],
       })
+
+  const expectedSourceEnforcement = {
+    phase: 'P6_TERMINAL',
+    scannerImplementationPresent: true,
+    canonicalBaselinePresent: true,
+    strictNewFingerprintAndCountIncreaseRatchetActive: true,
+    ruleCounts: {
+      sourceEnforceable: 24,
+      assisted: 22,
+      schema: 8,
+      humanReviewOnly: 14,
+    },
+    scopeCount: 20,
+    governedP5FileCount: 554,
+    acceptedHistoricalFindingCount: 393,
+    acceptedHistoricalFindingsDerivedFromCanonicalBaseline: true,
+    realExceptionCount: 0,
+    pageContractCreated: false,
+    legacySkillsRetained: true,
+    legacyRulesRetained: true,
+  }
+  if (JSON.stringify(coverageData?.sourceEnforcement) !== JSON.stringify(expectedSourceEnforcement))
+    fail('p6-source-enforcement-state', 'Coverage source-enforcement summary is not terminal.', {
+      actual: coverageData?.sourceEnforcement,
+    })
+  const sourceBaselinePath = '.ai/governance/ui/source-baseline.json'
+  if (!exists(sourceBaselinePath))
+    fail('p6-source-baseline-missing', 'The canonical source baseline is missing.')
+  else {
+    const baseline = JSON.parse(read(sourceBaselinePath))
+    if (
+      baseline.schemaVersion !== 'ccd-ui-source-baseline/v1' ||
+      baseline.repository !== 'ichichuang/ccd' ||
+      baseline.baselineCommit !== 'f8acb7fbbfef0c681affb74e08336ec8bc72bca0' ||
+      baseline.declaredFileCount !== 554 ||
+      baseline.declaredFindingCount !== 393
+    )
+      fail('p6-source-baseline-state', 'The canonical source baseline identity or counts drifted.')
   }
   for (const field of [
     'p4Started',
@@ -1747,6 +1799,11 @@ function assertExpectedCanonicalState(coverageData, wiki) {
     ['p3-complete', 'P3 Machine UI Policy implementation is complete.', p2State],
     ['p4-complete', 'P4 AI cold-start atomic replacement is complete.', p2State],
     ['p5-complete', 'P5 terminal lifecycle integration is complete.', p2State],
+    [
+      'p6-source-enforcement',
+      'P6 terminal source enforcement adopts 393 historical findings across 554 governed P5 files as debt authority',
+      p2State,
+    ],
     ['semantic-commit', EXPECTED_SEMANTIC_CORRECTION_COMMIT, handoff],
     [
       'p2-source-complete',

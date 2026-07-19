@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://ccd.wzdxcc.cloudns.org/governance/ui/ui-policy.schema.json",
   "title": "CCD Machine UI Policy",
-  "description": "Closed P3-complete Machine UI Policy metadata. Application-source enforcement remains baseline-only until a source scanner is implemented.",
+  "description": "Closed P3-complete Machine UI Policy metadata with the P6 canonical source-debt baseline and active strict ratchet lifecycle.",
   "type": "object",
   "required": [
     "schemaVersion",
@@ -25,6 +25,8 @@
     "projectUiAdapterActivated",
     "sourceScannerImplemented",
     "pageContractCreated",
+    "legacySkillsRetired",
+    "legacyRulesRetired",
     "p4Started",
     "p5Started",
     "counts",
@@ -52,7 +54,7 @@
       "minLength": 1
     },
     "status": {
-      "const": "P3_COMPLETE / MACHINE_UI_POLICY_COMPLETE / SOURCE_ENFORCEMENT_BASELINE"
+      "const": "P3_COMPLETE / MACHINE_UI_POLICY_COMPLETE / SOURCE_ENFORCEMENT_ACTIVE_RATCHET"
     },
     "p3BaselineCommit": {
       "const": "86f6f71045a8778a0540d11fed15ca4c0eae6fa3"
@@ -85,7 +87,7 @@
       "const": true
     },
     "applicationSourceEnforcementState": {
-      "const": "BASELINE_ONLY"
+      "const": "ACTIVE_RATCHET"
     },
     "projectUiDiscovered": {
       "const": true
@@ -100,9 +102,15 @@
       "const": true
     },
     "sourceScannerImplemented": {
-      "const": false
+      "const": true
     },
     "pageContractCreated": {
+      "const": false
+    },
+    "legacySkillsRetired": {
+      "const": false
+    },
+    "legacyRulesRetired": {
       "const": false
     },
     "p4Started": {

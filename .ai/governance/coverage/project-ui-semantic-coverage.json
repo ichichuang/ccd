@@ -45465,7 +45465,7 @@
         "P3 Machine Policy Boundary",
         "Page Contract Validation Boundary",
         "P5 Routing Validation Boundary",
-        "Later UI Gate Orchestration"
+        "Current Governance Gate Orchestration"
       ]
     }
   ],
@@ -47568,7 +47568,7 @@
     "p2SourcePhase": "complete",
     "implementationState": "P3_COMPLETE",
     "machineUiPolicyState": "MACHINE_UI_POLICY_COMPLETE",
-    "applicationSourceEnforcementState": "BASELINE_ONLY",
+    "applicationSourceEnforcementState": "ACTIVE_RATCHET",
     "machineUiPolicyPresent": true,
     "policySchemasPresent": true,
     "productUiProfilePresent": true,
@@ -47576,8 +47576,13 @@
     "exceptionCount": 0,
     "fixturesPresent": true,
     "validatorPresent": true,
-    "sourceScannerImplemented": false,
+    "sourceScannerImplemented": true,
+    "sourceEnforcementActive": true,
+    "canonicalSourceBaselinePresent": true,
+    "strictSourceRatchetActive": true,
     "pageContractCreated": false,
+    "legacySkillsRetired": false,
+    "legacyRulesRetired": false,
     "p3Started": true,
     "p4Started": true,
     "p4Complete": true,
@@ -50851,13 +50856,35 @@
       "applicationSourceEnforcementState": "BASELINE_ONLY"
     }
   },
-  "sourceScannerImplemented": false,
+  "sourceEnforcement": {
+    "phase": "P6_TERMINAL",
+    "scannerImplementationPresent": true,
+    "canonicalBaselinePresent": true,
+    "strictNewFingerprintAndCountIncreaseRatchetActive": true,
+    "ruleCounts": {
+      "sourceEnforceable": 24,
+      "assisted": 22,
+      "schema": 8,
+      "humanReviewOnly": 14
+    },
+    "scopeCount": 20,
+    "governedP5FileCount": 554,
+    "acceptedHistoricalFindingCount": 393,
+    "acceptedHistoricalFindingsDerivedFromCanonicalBaseline": true,
+    "realExceptionCount": 0,
+    "pageContractCreated": false,
+    "legacySkillsRetained": true,
+    "legacyRulesRetained": true
+  },
+  "sourceScannerImplemented": true,
   "pageContractCreated": false,
+  "legacySkillsRetired": false,
+  "legacyRulesRetired": false,
   "p4Started": true,
   "p5Started": true,
   "machinePolicyPath": ".ai/governance/policies/ui.json",
   "implementationState": "P3_COMPLETE",
   "machineUiPolicyState": "MACHINE_UI_POLICY_COMPLETE",
-  "applicationSourceEnforcementState": "BASELINE_ONLY",
+  "applicationSourceEnforcementState": "ACTIVE_RATCHET",
   "machineUiPolicyPresent": true
 }

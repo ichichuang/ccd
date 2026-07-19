@@ -34,6 +34,24 @@ const EXPECTED_PLANNED_ARTIFACT_PATHS = [
   'wiki/canonical/design/machine-ui-policy.md',
 ]
 
+const P6_SOURCE_ARTIFACT_PATHS = [
+  '.ai/governance/ui/source-enforcement.json',
+  '.ai/governance/ui/source-coverage.json',
+  '.ai/governance/ui/schemas/ui-source-enforcement.schema.json',
+  '.ai/governance/ui/schemas/ui-source-coverage.schema.json',
+  '.ai/governance/ui/schemas/ui-source-baseline.schema.json',
+  '.ai/governance/ui/schemas/ui-source-fixtures.schema.json',
+  '.ai/governance/ui/fixtures/source-cases.json',
+  '.ai/governance/ui/scripts/scan-ui-source.mjs',
+  'scripts/governance/ui-source-enforcement-validate.mjs',
+]
+
+function sourceEnforcementPhase() {
+  if (fs.existsSync(path.resolve(repoRoot, '.ai/governance/ui/source-baseline.json'))) return 'P6.5_TERMINAL'
+  if (P6_SOURCE_ARTIFACT_PATHS.some(relativePath => fs.existsSync(path.resolve(repoRoot, relativePath)))) return 'P6.4_PRETERMINAL'
+  return 'P5_TERMINAL'
+}
+
 const EXPECTED_HISTORICAL_REQUIREMENT_IDS = [
   'P2-REQ-0007',
   'P2-REQ-0016',
@@ -123,8 +141,6 @@ const LIFECYCLE_MARKERS = [
   'LEGACY_SKILLS_RETIRED=no',
   'LEGACY_RULES_RETIRED=no',
 ]
-
-const LIFECYCLE_BLOCK_TEXT = LIFECYCLE_MARKERS.join('\n')
 
 const STALE_CURRENT_P4_PATTERNS = [
   /\bP4_STARTED=no\b/,
@@ -511,6 +527,8 @@ function collectCorrectionErrors(context) {
   const findings = []
   const add = message => findings.push(message)
   const { policy, coverage, exceptions, ruleCases } = context
+  const sourcePhase = sourceEnforcementPhase()
+  const sourceTerminal = sourcePhase === 'P6.5_TERMINAL'
   const handoff = coverage?.p3Handoff ?? {}
   const canonicalState = coverage?.canonicalState ?? {}
   const rules = Array.isArray(policy?.rules) ? policy.rules : []
@@ -556,15 +574,16 @@ function collectCorrectionErrors(context) {
   for (const [field, expected] of Object.entries(expectedPolicyArtifactState)) {
     if (policy?.[field] !== expected) add(`${field} must be ${expected}`)
   }
-  if (policy?.applicationSourceEnforcementState !== 'BASELINE_ONLY') {
-    add('applicationSourceEnforcementState must be BASELINE_ONLY')
+  const expectedApplicationSourceEnforcementState = sourceTerminal ? 'ACTIVE_RATCHET' : 'BASELINE_ONLY'
+  if (policy?.applicationSourceEnforcementState !== expectedApplicationSourceEnforcementState) {
+    add(`applicationSourceEnforcementState must be ${expectedApplicationSourceEnforcementState}`)
   }
   if (policy?.p3BaselineCommit !== '86f6f71045a8778a0540d11fed15ca4c0eae6fa3') {
     add('p3BaselineCommit must identify the P3 implementation commit')
   }
 
   const expectedPolicyFlags = {
-    sourceScannerImplemented: false,
+    sourceScannerImplemented: sourceTerminal,
     pageContractCreated: false,
     p4Started: true,
     p5Started: true,
@@ -578,14 +597,14 @@ function collectCorrectionErrors(context) {
     implementationState: 'P3_COMPLETE',
     machineUiPolicyState: 'MACHINE_UI_POLICY_COMPLETE',
     machineUiPolicyPresent: true,
-    applicationSourceEnforcementState: 'BASELINE_ONLY',
+    applicationSourceEnforcementState: expectedApplicationSourceEnforcementState,
     policySchemasPresent: true,
     productUiProfilePresent: true,
     exceptionRegistryPresent: true,
     exceptionCount: 0,
     fixturesPresent: true,
     validatorPresent: true,
-    sourceScannerImplemented: false,
+    sourceScannerImplemented: sourceTerminal,
     pageContractCreated: false,
     p3Started: true,
     p4Started: true,
@@ -975,8 +994,25 @@ function collectCorrectionErrors(context) {
   const uiScripts = fs
     .globSync('.ai/governance/ui/scripts/*', { cwd: repoRoot })
     .filter(relativePath => fs.statSync(path.resolve(repoRoot, relativePath)).isFile())
-  if (!sameOrderedValues(uiScripts, ['.ai/governance/ui/scripts/validate-ui-policy.mjs'])) {
-    add('sourceScannerImplemented must remain false and no source scanner script may exist')
+  const expectedUiScripts = sourcePhase === 'P5_TERMINAL'
+    ? ['.ai/governance/ui/scripts/validate-ui-policy.mjs']
+    : ['.ai/governance/ui/scripts/scan-ui-source.mjs', '.ai/governance/ui/scripts/validate-ui-policy.mjs']
+  if (!sameOrderedValues(uiScripts, expectedUiScripts)) {
+    add(`${sourcePhase} UI script set is not exact`)
+  }
+  for (const artifactPath of P6_SOURCE_ARTIFACT_PATHS) {
+    const exists = fs.existsSync(path.resolve(repoRoot, artifactPath))
+    if (sourcePhase === 'P5_TERMINAL' && exists) add(`P5 state forbids source scanner artifact ${artifactPath}`)
+    if (sourcePhase !== 'P5_TERMINAL' && !exists) add(`${sourcePhase} requires source scanner artifact ${artifactPath}`)
+  }
+  if (sourcePhase !== 'P5_TERMINAL') {
+    const manifest = readJson('.ai/governance/ui/source-enforcement.json')
+    for (const modulePath of manifest?.sourceModules ?? []) {
+      if (!fs.existsSync(path.resolve(repoRoot, modulePath))) add(`${sourcePhase} scanner module missing: ${modulePath}`)
+    }
+    for (const fixtureDirectory of ['.ai/governance/ui/fixtures/source-valid', '.ai/governance/ui/fixtures/source-invalid']) {
+      if (!fs.existsSync(path.resolve(repoRoot, fixtureDirectory))) add(`${sourcePhase} fixture directory missing: ${fixtureDirectory}`)
+    }
   }
   for (const pageContractPath of [
     '.ai/governance/policies/page-contract.json',
@@ -988,14 +1024,19 @@ function collectCorrectionErrors(context) {
     }
   }
 
+  const expectedLifecycleMarkers = sourceTerminal
+    ? LIFECYCLE_MARKERS.map(marker => marker === 'SOURCE_SCANNER_IMPLEMENTED=no' ? 'SOURCE_SCANNER_IMPLEMENTED=yes' : marker)
+    : LIFECYCLE_MARKERS
+  const expectedLifecycleBlockText = expectedLifecycleMarkers.join('\n')
   for (const documentPath of LIFECYCLE_DOCUMENTS) {
     const text = fs.readFileSync(path.resolve(repoRoot, documentPath), 'utf8')
-    if (!text.includes(LIFECYCLE_BLOCK_TEXT)) {
-      add(`${documentPath} lifecycle block must match the exact ordered P5 terminal block`)
+    if (!text.includes(expectedLifecycleBlockText)) {
+      add(`${documentPath} lifecycle block must match the exact ordered ${sourcePhase} block`)
     }
-    for (const marker of LIFECYCLE_MARKERS) {
+    for (const marker of expectedLifecycleMarkers) {
       if (!text.includes(marker)) add(`${documentPath} lifecycle marker missing: ${marker}`)
     }
+    if (sourceTerminal && !text.includes('SOURCE_ENFORCEMENT_ACTIVE=yes')) add(`${documentPath} terminal lifecycle marker missing: SOURCE_ENFORCEMENT_ACTIVE=yes`)
     for (const pattern of STALE_CURRENT_P4_PATTERNS) {
       if (pattern.test(text)) add(`${documentPath} contains stale current P4 lifecycle prose`)
     }
@@ -1086,15 +1127,15 @@ function runMutationTests(context, schemaPath) {
     ok('mutation: bad source requirement id rejected')
   }
 
-  // Source scanner delivery forbidden
+  // Source scanner lifecycle state is phase-closed.
   const scannerDelivered = JSON.parse(JSON.stringify(policy))
-  scannerDelivered.sourceScannerImplemented = true
+  scannerDelivered.sourceScannerImplemented = !policy.sourceScannerImplemented
   const v8 = new MiniValidator(schema)
   try {
     v8.validate(scannerDelivered)
-    fail('mutation: source scanner delivered should fail')
+    fail('mutation: source scanner lifecycle drift should fail')
   } catch {
-    ok('mutation: source scanner delivered rejected')
+    ok('mutation: source scanner lifecycle drift rejected')
   }
 
   // P4 current-state regression forbidden
@@ -1254,10 +1295,10 @@ function runMutationTests(context, schemaPath) {
     mutated.policy.lifecycles.completionRuleIds = []
   })
   expectCorrectionMutationRejected(
-    'false source-scanning compliance',
+    'source-scanning lifecycle drift',
     'sourceScannerImplemented',
     mutated => {
-      mutated.policy.sourceScannerImplemented = true
+      mutated.policy.sourceScannerImplemented = !mutated.policy.sourceScannerImplemented
     }
   )
   expectCorrectionMutationRejected('false Page Contract start', 'pageContractCreated', mutated => {

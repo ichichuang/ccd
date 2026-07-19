@@ -1,0 +1,1 @@
+new ToastService().add(message)

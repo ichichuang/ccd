@@ -1,0 +1,1 @@
+const chart = useEcharts(container)

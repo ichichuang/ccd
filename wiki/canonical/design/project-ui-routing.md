@@ -24,7 +24,7 @@ source_paths:
   - .ai/manifests/routing-scopes.json
   - .ai/manifests/skills-lock.json
   - scripts/governance/project-ui-routing-validate.mjs
-last_reviewed: '2026-07-17'
+last_reviewed: '2026-07-19'
 wiki_owner: LLM-maintained CCD architecture wiki
 ---
 
@@ -50,11 +50,14 @@ The generated adapter graph maps project-ui to both Codex and Claude. Adapter ac
 
 ## Validation Phases
 
-The routing validator recognizes a pre-terminal phase while lifecycle documents still carry the accepted P5 transition state, and a terminal phase only when the exact ordered terminal markers are present. Terminal validation preserves all P3 Machine UI Policy counts and all P4 cold-start assertions while requiring current routing parity, lock state, synchronization fixtures, and adapter mappings.
+The routing validator preserves the P4 baseline, P5 pre-terminal, P5 terminal, and P6 pre-terminal phases, and adds the exact `p6-terminal` phase. P6 terminal requires the canonical source baseline, active terminal markers, zero real exceptions, Page Contract absence, retained legacy governance, and the exact 250-path historical phase boundary while preserving all prior routing, lock, synchronization, adapter, P3, and P4 contracts.
+
+The P6.6 final local atomic-commit contract is separate from that frozen phase history: it contains 221 changed paths and a 251-path historical comparison boundary. Its only addition beyond the validated 220-path candidate and 250-path P6 terminal boundary is `scripts/lint-staged-safe.mjs`. The wrapper runs the existing lint-staged command through an isolated temporary Git index so intentional negative Fixtures and byte-authoritative governance JSON never reach generic fixers; the real pre-commit hook remains active, with no hook bypass or generic lint weakening.
 
 ## Command Surface
 
 - `pnpm ui:policy:validate`
+- `pnpm ui:source:validate`
 - `node .ai/skills/project-ui/scripts/validate-semantic-quality.mjs`
 - `pnpm ai:cold-start:validate`
 - `pnpm ai:routing:validate`
@@ -65,6 +68,6 @@ The routing validator recognizes a pre-terminal phase while lifecycle documents 
 - `pnpm ai:sync:skills:check -- --codex-target-root <temporary-root>/combined/codex/skills --claude-project-root <temporary-root>/combined/claude-project`
 - `pnpm governance:gate`
 
-## Explicit Absences
+## Explicit Boundaries
 
-P5 does not implement application-source scanning, create a Page Contract, scaffold routes, globally always-load project-ui, or retire legacy Skills and rules. These absences are part of the terminal contract rather than unfinished claims about implemented behavior.
+P6 implements application-source scanning and activates the strict canonical-baseline ratchet. It does not create a Page Contract, repair product debt, create real exceptions, scaffold routes, globally always-load project-ui, or retire legacy Skills and rules. The 393 accepted findings remain historical debt rather than compliance evidence.

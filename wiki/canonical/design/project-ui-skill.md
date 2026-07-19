@@ -20,7 +20,7 @@ source_paths:
   - .ai/skills/project-ui/SKILL.md
   - .ai/skills/project-ui/references/**
   - .ai/governance/policies/ui.json
-last_reviewed: '2026-07-15'
+last_reviewed: '2026-07-19'
 wiki_owner: LLM-maintained CCD architecture wiki
 ---
 
@@ -34,11 +34,11 @@ wiki_owner: LLM-maintained CCD architecture wiki
 
 ## Terminal Status
 
-P3 Machine UI Policy implementation remains complete at `.ai/governance/policies/ui.json` with 68 canonical rules across 14 semantic-obligation clusters. P4 cold-start remains complete. P5 terminal integration discovers and locks project-ui, routes generic UI work to it, synchronizes it through Codex and Claude contracts, and activates both client adapters. Application-source enforcement remains baseline-only because the source scanner is not implemented.
+P3 Machine UI Policy implementation remains complete at `.ai/governance/policies/ui.json` with 68 canonical rules across 14 semantic-obligation clusters. P4 cold-start remains complete. P5 terminal integration discovers and locks project-ui, routes generic UI work to it, synchronizes it through Codex and Claude contracts, and activates both client adapters. P6 source scanning is implemented against the canonical P5 debt baseline, with strict new-fingerprint and count-increase enforcement active.
 
 ## P2 And P3 State
 
-The project-ui semantic-quality correction is complete and tracked on main. Machine UI Policy exists at `.ai/governance/policies/ui.json`, and P3 Machine UI Policy implementation is complete. Page Contract Schema does not exist. P4 AI cold-start atomic replacement is complete. P5 terminal lifecycle integration is complete. The current Skill lock discovers project-ui, routing selects it for generic UI work, isolated synchronization covers Codex and Claude, and both adapters are active.
+The project-ui semantic-quality correction is complete and tracked on main. Machine UI Policy exists at `.ai/governance/policies/ui.json`, and P3 Machine UI Policy implementation is complete. Page Contract Schema does not exist. P4 AI cold-start atomic replacement is complete. P5 terminal lifecycle integration is complete. The current Skill lock discovers project-ui, routing selects it for generic UI work, isolated synchronization covers Codex and Claude, and both adapters are active. P6 terminal source enforcement adopts 393 historical findings across 554 governed P5 files as debt authority; those findings are not proof of compliance.
 
 ## Handoff
 
@@ -91,11 +91,11 @@ Run the P3 Machine UI Policy validator:
 node .ai/governance/ui/scripts/validate-ui-policy.mjs
 ```
 
-Do not claim source-scanning enforcement; the scanner is not yet implemented.
+Run `pnpm ui:source:validate` for the active source ratchet; semantic-quality validation alone does not prove source compliance.
 
 ## Boundaries
 
-- **Machine UI Policy**: P3 implementation complete; application-source enforcement baseline-only because the scanner is not implemented.
+- **Machine UI Policy**: P3 implementation complete; P6 application-source enforcement is an active strict ratchet over the canonical P5 debt baseline.
 - **Page Contract Schema**: does not exist.
 - **P4 Cold-Start**: complete for repository AI entrypoints and preserved by P5.
 - **P5 Routing and Synchronization**: terminal; see [[project-ui-routing]].
@@ -144,8 +144,9 @@ NON_UI_ROUTING_PRESERVED=yes
 ADAPTER_PROJECT_UI_MAPPING_COMPLETE=yes
 CODEX_ADAPTER_PROJECT_UI_ACTIVE=yes
 CLAUDE_ADAPTER_PROJECT_UI_ACTIVE=yes
-SOURCE_SCANNER_IMPLEMENTED=no
+SOURCE_SCANNER_IMPLEMENTED=yes
 PAGE_CONTRACT_CREATED=no
 LEGACY_SKILLS_RETIRED=no
 LEGACY_RULES_RETIRED=no
+SOURCE_ENFORCEMENT_ACTIVE=yes
 ```

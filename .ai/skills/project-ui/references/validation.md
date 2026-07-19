@@ -1,10 +1,10 @@
 # UI Validation
 
-UI validation governs the current human-executable review sequence, completed P3 machine-policy checks, preserved P4 cold-start contract, and terminal P5 routing and synchronization contract. Application-source scanning and Page Contract validation remain absent.
+UI validation governs the current human-executable review sequence, completed P3 machine-policy checks, preserved P4 cold-start contract, terminal P5 routing and synchronization contract, and active P6 strict source-enforcement ratchet. Page Contract validation remains absent.
 
 ## Validation Scope
 
-This procedure validates project-ui governance, completed P3 machine-policy artifacts, terminal routing, isolated synchronization, adapter activation, and human UI work. `.ai/skills/project-ui` is the canonical repository source; Codex and Claude copies are noncanonical materializations and must be checked only through isolated targets.
+This procedure validates project-ui governance, completed P3 machine-policy artifacts, terminal routing, isolated synchronization, adapter activation, the canonical P5 source-debt baseline, the strict source ratchet, and human UI work. `.ai/skills/project-ui` is the canonical repository source; Codex and Claude copies are noncanonical materializations and must be checked only through isolated targets.
 
 ## Architecture Preflight
 
@@ -64,7 +64,7 @@ Current P2 validation is human-executable and deterministic. It may include sema
 
 ## P3 Machine Policy Boundary
 
-P3 Machine UI Policy implementation is complete at `.ai/governance/policies/ui.json` and is validated by `node .ai/governance/ui/scripts/validate-ui-policy.mjs`. The source scanner is not implemented, so application-source enforcement remains baseline-only. Do not claim source-scanning enforcement from policy or semantic-quality validation.
+P3 Machine UI Policy implementation is complete at `.ai/governance/policies/ui.json` and is validated by `node .ai/governance/ui/scripts/validate-ui-policy.mjs`. P6 source enforcement is independently validated by `pnpm ui:source:validate` against `.ai/governance/ui/source-baseline.json`; policy or semantic-quality validation alone does not prove ratchet compliance.
 
 ## P4 Cold-Start Validation Boundary
 
@@ -75,6 +75,10 @@ P4 AI cold-start validation is owned by `scripts/governance/cold-start-validate.
 Run policy and semantic checks with `pnpm ui:policy:validate` and `node .ai/skills/project-ui/scripts/validate-semantic-quality.mjs`. Validate phase selection and routing with `pnpm ai:cold-start:validate`, `pnpm ai:routing:validate`, and the routing validator self-test. Validate the rule index and generated adapters with `pnpm ai:rule-index:check` and `pnpm ai:protocol-adapters:check`.
 
 Synchronization acceptance must use temporary isolated targets. Run `pnpm ai:sync:codex:check -- --target-root <temporary-root>/codex/skills`, `pnpm ai:sync:claude:check -- --project-root <temporary-root>/claude-project`, and the combined `pnpm ai:sync:skills:check` form with both isolated roots. The canonical source and Skills lock must remain current, repeated combined synchronization must be byte-identical, and real client targets must remain untouched.
+
+## P6 Terminal Source Validation
+
+Run `pnpm ui:source:validate`, the scanner and standalone validator self-tests, and `node .ai/governance/ui/scripts/scan-ui-source.mjs --ref f8acb7fbbfef0c681affb74e08336ec8bc72bca0 --check-baseline --format json`. The canonical baseline contains 393 accepted historical findings across 554 governed P5 files. Those findings are debt inventory, not proof of compliance; new fingerprints, count increases, moved debt, stale entries, removed files, and unapproved count decreases are rejected.
 
 ## Lifecycle State
 
@@ -118,10 +122,11 @@ NON_UI_ROUTING_PRESERVED=yes
 ADAPTER_PROJECT_UI_MAPPING_COMPLETE=yes
 CODEX_ADAPTER_PROJECT_UI_ACTIVE=yes
 CLAUDE_ADAPTER_PROJECT_UI_ACTIVE=yes
-SOURCE_SCANNER_IMPLEMENTED=no
+SOURCE_SCANNER_IMPLEMENTED=yes
 PAGE_CONTRACT_CREATED=no
 LEGACY_SKILLS_RETIRED=no
 LEGACY_RULES_RETIRED=no
+SOURCE_ENFORCEMENT_ACTIVE=yes
 ```
 
 ## Page Contract Validation Boundary
@@ -132,6 +137,6 @@ Page Contract validation belongs to a later page-contract phase. Current archety
 
 P5 routing validation is active. Node is the primary router, Python is the fallback parity implementation, generic UI routes to project-ui, non-UI work remains isolated, and motion Skills activate only from explicit engine evidence.
 
-## Later UI Gate Orchestration
+## Current Governance Gate Orchestration
 
-A later UI gate may orchestrate these checks after the owning phase creates it. Do not create it in a UI-governance correction.
+`scripts/governance/gate.mjs` invokes `pnpm ui:source:validate` exactly once. The standalone validator owns both preterminal and terminal scanner-state validation. No other Gate, AI Doctor, preflight, cold-start, or routing scanner invocation is permitted. Isolated Codex and Claude targets are the acceptance boundary; real client materializations are noncanonical and remain untouched.

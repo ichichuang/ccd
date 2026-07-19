@@ -1,0 +1,2520 @@
+{
+  "schemaVersion": "ccd-ui-source-coverage/v1",
+  "repository": "ichichuang/ccd",
+  "counts": {
+    "sourceEnforceable": 24,
+    "assisted": 22,
+    "schemaEnforced": 8,
+    "humanReviewOnly": 14,
+    "sourceCapable": 46,
+    "permanentDispositions": 54,
+    "humanDispositions": 14,
+    "total": 68
+  },
+  "pageContractDeferrals": [
+    "P2C-REQ-0006",
+    "P2C-REQ-0028",
+    "P2C-REQ-0065",
+    "P2C-REQ-0067"
+  ],
+  "bindings": [
+    {
+      "ruleId": "CCD-UI-001",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable-with-human-remainder",
+      "finalEnforcement": "source-scanner-assisted-human-review",
+      "detectorId": "PrimeVueComponentPriorityScanner",
+      "module": "detectors/component-ownership.mjs",
+      "evidence": "raw PrimeVue component reference with a closed project-wrapper equivalence",
+      "languages": [
+        "vue",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_VIEWS",
+        "SHARED_PRIME",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [
+        "OC-PRIME-ADAPTER",
+        "OC-PRO-COMPONENT"
+      ],
+      "fixtureIds": [
+        "CCD-UI-001-pass",
+        "CCD-UI-001-fail",
+        "SRC-CCD-UI-001-VALID",
+        "SRC-CCD-UI-001-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "bounded",
+      "humanRemainder": "judge semantic equivalence and wrapper suitability when the closed map cannot prove it",
+      "pageContract": null,
+      "messageId": "UI-SRC-001",
+      "fingerprintKind": "component-reference"
+    },
+    {
+      "ruleId": "CCD-UI-002",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "PrimeVueComponentPriorityScanner",
+      "module": "detectors/component-ownership.mjs",
+      "evidence": "native element outside the structural allowlist",
+      "languages": [
+        "vue",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_VIEWS",
+        "SHARED_PRIME",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [
+        "OC-PRO-COMPONENT"
+      ],
+      "fixtureIds": [
+        "CCD-UI-002-pass",
+        "CCD-UI-002-fail",
+        "SRC-CCD-UI-002-VALID",
+        "SRC-CCD-UI-002-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-002",
+      "fingerprintKind": "native-element"
+    },
+    {
+      "ruleId": "CCD-UI-003",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable-with-human-remainder",
+      "finalEnforcement": "source-scanner-assisted-human-review",
+      "detectorId": "PrimeVueComponentPriorityScanner",
+      "module": "detectors/component-ownership.mjs",
+      "evidence": "native element with a closed PrimeVue equivalence",
+      "languages": [
+        "vue",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_VIEWS",
+        "SHARED_PRIME",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [
+        "OC-PRIME-ADAPTER",
+        "OC-PRO-COMPONENT"
+      ],
+      "fixtureIds": [
+        "CCD-UI-003-pass",
+        "CCD-UI-003-fail",
+        "SRC-CCD-UI-003-VALID",
+        "SRC-CCD-UI-003-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "bounded",
+      "humanRemainder": "decide whether an unmapped element has a suitable PrimeVue equivalent",
+      "pageContract": null,
+      "messageId": "UI-SRC-003",
+      "fingerprintKind": "component-reference"
+    },
+    {
+      "ruleId": "CCD-UI-004",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "NativeControlScanner",
+      "module": "detectors/component-ownership.mjs",
+      "evidence": "forbidden native control element",
+      "languages": [
+        "vue",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_VIEWS",
+        "SHARED_PRIME",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [
+        "OC-PRO-COMPONENT",
+        "OC-PROFORM-NATIVE"
+      ],
+      "fixtureIds": [
+        "CCD-UI-004-pass",
+        "CCD-UI-004-fail",
+        "SRC-CCD-UI-004-VALID",
+        "SRC-CCD-UI-004-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-004",
+      "fingerprintKind": "native-element"
+    },
+    {
+      "ruleId": "CCD-UI-005",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "EchartsOwnershipScanner",
+      "module": "detectors/component-ownership.mjs",
+      "evidence": "direct ECharts runtime reference outside chart ownership",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_ADAPTERS",
+        "APP_VIEWS",
+        "SHARED_CHARTS"
+      ],
+      "ownerContextIds": [
+        "OC-CHART-RUNTIME"
+      ],
+      "fixtureIds": [
+        "CCD-UI-005-pass",
+        "CCD-UI-005-fail",
+        "SRC-CCD-UI-005-VALID",
+        "SRC-CCD-UI-005-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-005",
+      "fingerprintKind": "runtime-api-reference"
+    },
+    {
+      "ruleId": "CCD-UI-006",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "FeedbackAbstractionScanner",
+      "module": "detectors/component-ownership.mjs",
+      "evidence": "raw alert, confirmation or toast acquisition",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_ADAPTERS",
+        "APP_LAYOUTS",
+        "APP_PLUGINS",
+        "APP_ROOTS",
+        "APP_VIEWS",
+        "SHARED_PRIME",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [
+        "OC-FEEDBACK-DIALOG"
+      ],
+      "fixtureIds": [
+        "CCD-UI-006-pass",
+        "CCD-UI-006-fail",
+        "SRC-CCD-UI-006-VALID",
+        "SRC-CCD-UI-006-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-006",
+      "fingerprintKind": "feedback-call"
+    },
+    {
+      "ruleId": "CCD-UI-007",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "FeedbackAbstractionScanner",
+      "module": "detectors/component-ownership.mjs",
+      "evidence": "direct feedback service construction or call",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_ADAPTERS",
+        "APP_LAYOUTS",
+        "APP_PLUGINS",
+        "APP_ROOTS",
+        "APP_VIEWS",
+        "SHARED_PRIME",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [
+        "OC-FEEDBACK-DIALOG"
+      ],
+      "fixtureIds": [
+        "CCD-UI-007-pass",
+        "CCD-UI-007-fail",
+        "SRC-CCD-UI-007-VALID",
+        "SRC-CCD-UI-007-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-007",
+      "fingerprintKind": "feedback-call"
+    },
+    {
+      "ruleId": "CCD-UI-008",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "FeedbackAbstractionScanner",
+      "module": "detectors/component-ownership.mjs",
+      "evidence": "raw Dialog component outside approved wrapper ownership",
+      "languages": [
+        "vue",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_ADAPTERS",
+        "APP_LAYOUTS",
+        "APP_PLUGINS",
+        "APP_ROOTS",
+        "APP_VIEWS",
+        "SHARED_PRIME",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [
+        "OC-PRIME-ADAPTER",
+        "OC-PRO-COMPONENT",
+        "OC-FEEDBACK-DIALOG"
+      ],
+      "fixtureIds": [
+        "CCD-UI-008-pass",
+        "CCD-UI-008-fail",
+        "SRC-CCD-UI-008-VALID",
+        "SRC-CCD-UI-008-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-008",
+      "fingerprintKind": "component-reference"
+    },
+    {
+      "ruleId": "CCD-UI-009",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable-with-human-remainder",
+      "finalEnforcement": "source-scanner-assisted-human-review",
+      "detectorId": "PassThroughConflictScanner",
+      "module": "detectors/primevue-customization.mjs",
+      "evidence": "PrimeVue visual customization outside pass-through ownership",
+      "languages": [
+        "vue",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_VIEWS",
+        "SHARED_PRIME",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [
+        "OC-PRIME-ADAPTER",
+        "OC-PRO-COMPONENT",
+        "OC-PT-PRESET"
+      ],
+      "fixtureIds": [
+        "CCD-UI-009-pass",
+        "CCD-UI-009-fail",
+        "SRC-CCD-UI-009-VALID",
+        "SRC-CCD-UI-009-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "bounded",
+      "humanRemainder": "classify dynamic customization and whether the change is visual",
+      "pageContract": null,
+      "messageId": "UI-SRC-009",
+      "fingerprintKind": "pt-structure"
+    },
+    {
+      "ruleId": "CCD-UI-010",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "DeepSelectorExceptionScanner",
+      "module": "detectors/primevue-customization.mjs",
+      "evidence": "deep selector targeting a PrimeVue .p-* selector",
+      "languages": [
+        "vue",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_VIEWS",
+        "SHARED_PRIME",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [
+        "OC-PRIME-ADAPTER",
+        "OC-PRO-COMPONENT"
+      ],
+      "fixtureIds": [
+        "CCD-UI-010-pass",
+        "CCD-UI-010-fail",
+        "SRC-CCD-UI-010-VALID",
+        "SRC-CCD-UI-010-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-010",
+      "fingerprintKind": "deep-selector"
+    },
+    {
+      "ruleId": "CCD-UI-011",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable-with-human-remainder",
+      "finalEnforcement": "source-scanner-assisted-human-review",
+      "detectorId": "PassThroughConflictScanner",
+      "module": "detectors/primevue-customization.mjs",
+      "evidence": "local pass-through key or class conflicting with global preset",
+      "languages": [
+        "vue",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_VIEWS",
+        "SHARED_PRIME",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [
+        "OC-PRIME-ADAPTER",
+        "OC-PRO-COMPONENT",
+        "OC-PT-PRESET"
+      ],
+      "fixtureIds": [
+        "CCD-UI-011-pass",
+        "CCD-UI-011-fail",
+        "SRC-CCD-UI-011-VALID",
+        "SRC-CCD-UI-011-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "bounded",
+      "humanRemainder": "review computed pass-through objects and semantic conflicts not provable from literals",
+      "pageContract": null,
+      "messageId": "UI-SRC-011",
+      "fingerprintKind": "pt-structure"
+    },
+    {
+      "ruleId": "CCD-UI-012",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "TokenLiteralScanner",
+      "module": "detectors/token-literals.mjs",
+      "evidence": "source-authored rem or em literal",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_BOOTSTRAP_THEME",
+        "APP_CONSTANTS",
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_THEME_UTILS",
+        "APP_VIEWS",
+        "SHARED_PRIME",
+        "SHARED_TOKENS",
+        "SHARED_UI",
+        "SHARED_UNOCSS"
+      ],
+      "ownerContextIds": [
+        "OC-TOKEN-AUTHORITY"
+      ],
+      "fixtureIds": [
+        "CCD-UI-012-pass",
+        "CCD-UI-012-fail",
+        "SRC-CCD-UI-012-VALID",
+        "SRC-CCD-UI-012-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-012",
+      "fingerprintKind": "token-literal"
+    },
+    {
+      "ruleId": "CCD-UI-013",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "schema-enforced",
+      "finalEnforcement": "schema-validated",
+      "detectorId": "TokenLiteralScanner",
+      "module": ".ai/governance/ui/scripts/validate-ui-policy.mjs",
+      "evidence": null,
+      "languages": [
+        "json"
+      ],
+      "scopeIds": [
+        "APP_BOOTSTRAP_THEME",
+        "APP_CONSTANTS",
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_THEME_UTILS",
+        "APP_VIEWS",
+        "SHARED_PRIME",
+        "SHARED_TOKENS",
+        "SHARED_UI",
+        "SHARED_UNOCSS"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-013-pass",
+        "CCD-UI-013-fail"
+      ],
+      "exceptionEligible": false,
+      "confidence": "not-applicable",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": null,
+      "fingerprintKind": null
+    },
+    {
+      "ruleId": "CCD-UI-014",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "TokenLiteralScanner",
+      "module": "detectors/token-literals.mjs",
+      "evidence": "consumed shortcut absent from the declared semantic registry",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_BOOTSTRAP_THEME",
+        "APP_CONSTANTS",
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_THEME_UTILS",
+        "APP_VIEWS",
+        "SHARED_PRIME",
+        "SHARED_TOKENS",
+        "SHARED_UI",
+        "SHARED_UNOCSS"
+      ],
+      "ownerContextIds": [
+        "OC-TOKEN-AUTHORITY"
+      ],
+      "fixtureIds": [
+        "CCD-UI-014-pass",
+        "CCD-UI-014-fail",
+        "SRC-CCD-UI-014-VALID",
+        "SRC-CCD-UI-014-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-014",
+      "fingerprintKind": "shortcut-reference"
+    },
+    {
+      "ruleId": "CCD-UI-015",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "TokenLiteralScanner",
+      "module": "detectors/token-literals.mjs",
+      "evidence": "raw color or rem/em literal outside token ownership",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_BOOTSTRAP_THEME",
+        "APP_CONSTANTS",
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_THEME_UTILS",
+        "APP_VIEWS",
+        "SHARED_PRIME",
+        "SHARED_TOKENS",
+        "SHARED_UI",
+        "SHARED_UNOCSS"
+      ],
+      "ownerContextIds": [
+        "OC-TOKEN-AUTHORITY"
+      ],
+      "fixtureIds": [
+        "CCD-UI-015-pass",
+        "CCD-UI-015-fail",
+        "SRC-CCD-UI-015-VALID",
+        "SRC-CCD-UI-015-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-015",
+      "fingerprintKind": "token-literal"
+    },
+    {
+      "ruleId": "CCD-UI-016",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable-with-human-remainder",
+      "finalEnforcement": "source-scanner-assisted-human-review",
+      "detectorId": "TokenLiteralScanner",
+      "module": "detectors/token-literals.mjs",
+      "evidence": "hardcoded visual dimension without token ownership",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_BOOTSTRAP_THEME",
+        "APP_CONSTANTS",
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_THEME_UTILS",
+        "APP_VIEWS",
+        "SHARED_PRIME",
+        "SHARED_TOKENS",
+        "SHARED_UI",
+        "SHARED_UNOCSS"
+      ],
+      "ownerContextIds": [
+        "OC-TOKEN-AUTHORITY",
+        "OC-SIZE-ENGINE"
+      ],
+      "fixtureIds": [
+        "CCD-UI-016-pass",
+        "CCD-UI-016-fail",
+        "SRC-CCD-UI-016-VALID",
+        "SRC-CCD-UI-016-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "bounded",
+      "humanRemainder": "decide legitimate structural fallback and indirect variable equivalence",
+      "pageContract": null,
+      "messageId": "UI-SRC-016",
+      "fingerprintKind": "dimension-declaration"
+    },
+    {
+      "ruleId": "CCD-UI-017",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "schema-enforced",
+      "finalEnforcement": "schema-validated",
+      "detectorId": "ThemePresetValidator",
+      "module": ".ai/governance/ui/scripts/validate-ui-policy.mjs",
+      "evidence": null,
+      "languages": [
+        "json"
+      ],
+      "scopeIds": [
+        "APP_CONSTANTS",
+        "APP_THEME_UTILS",
+        "SHARED_PRIME",
+        "SHARED_TOKENS"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-017-pass",
+        "CCD-UI-017-fail"
+      ],
+      "exceptionEligible": false,
+      "confidence": "not-applicable",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": null,
+      "fingerprintKind": null
+    },
+    {
+      "ruleId": "CCD-UI-018",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "schema-enforced",
+      "finalEnforcement": "schema-validated",
+      "detectorId": "ThemePresetValidator",
+      "module": ".ai/governance/ui/scripts/validate-ui-policy.mjs",
+      "evidence": null,
+      "languages": [
+        "json"
+      ],
+      "scopeIds": [
+        "APP_CONSTANTS",
+        "APP_THEME_UTILS",
+        "SHARED_PRIME",
+        "SHARED_TOKENS"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-018-pass",
+        "CCD-UI-018-fail"
+      ],
+      "exceptionEligible": false,
+      "confidence": "not-applicable",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": null,
+      "fingerprintKind": null
+    },
+    {
+      "ruleId": "CCD-UI-019",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "schema-enforced",
+      "finalEnforcement": "schema-validated",
+      "detectorId": "ThemePresetValidator",
+      "module": ".ai/governance/ui/scripts/validate-ui-policy.mjs",
+      "evidence": null,
+      "languages": [
+        "json"
+      ],
+      "scopeIds": [
+        "APP_CONSTANTS",
+        "APP_THEME_UTILS",
+        "SHARED_PRIME",
+        "SHARED_TOKENS"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-019-pass",
+        "CCD-UI-019-fail"
+      ],
+      "exceptionEligible": false,
+      "confidence": "not-applicable",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": null,
+      "fingerprintKind": null
+    },
+    {
+      "ruleId": "CCD-UI-020",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "schema-enforced",
+      "finalEnforcement": "schema-validated",
+      "detectorId": "ThemePresetValidator",
+      "module": ".ai/governance/ui/scripts/validate-ui-policy.mjs",
+      "evidence": null,
+      "languages": [
+        "json"
+      ],
+      "scopeIds": [
+        "APP_CONSTANTS",
+        "APP_THEME_UTILS",
+        "SHARED_PRIME",
+        "SHARED_TOKENS"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-020-pass",
+        "CCD-UI-020-fail"
+      ],
+      "exceptionEligible": false,
+      "confidence": "not-applicable",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": null,
+      "fingerprintKind": null
+    },
+    {
+      "ruleId": "CCD-UI-021",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "schema-enforced",
+      "finalEnforcement": "schema-validated",
+      "detectorId": "ThemePresetValidator",
+      "module": ".ai/governance/ui/scripts/validate-ui-policy.mjs",
+      "evidence": null,
+      "languages": [
+        "json"
+      ],
+      "scopeIds": [
+        "APP_CONSTANTS",
+        "APP_THEME_UTILS",
+        "SHARED_PRIME",
+        "SHARED_TOKENS"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-021-pass",
+        "CCD-UI-021-fail"
+      ],
+      "exceptionEligible": false,
+      "confidence": "not-applicable",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": null,
+      "fingerprintKind": null
+    },
+    {
+      "ruleId": "CCD-UI-022",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "schema-enforced",
+      "finalEnforcement": "schema-validated",
+      "detectorId": "ThemePresetValidator",
+      "module": ".ai/governance/ui/scripts/validate-ui-policy.mjs",
+      "evidence": null,
+      "languages": [
+        "json"
+      ],
+      "scopeIds": [
+        "APP_CONSTANTS",
+        "APP_THEME_UTILS",
+        "SHARED_PRIME",
+        "SHARED_TOKENS"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-022-pass",
+        "CCD-UI-022-fail"
+      ],
+      "exceptionEligible": false,
+      "confidence": "not-applicable",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": null,
+      "fingerprintKind": null
+    },
+    {
+      "ruleId": "CCD-UI-023",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable-with-human-remainder",
+      "finalEnforcement": "source-scanner-assisted-human-review",
+      "detectorId": "ResponsiveOwnershipScanner",
+      "module": "detectors/responsive-ownership.mjs",
+      "evidence": "breakpoint dimension logic bypassing LAYOUT_SCALE_RATIOS",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_CONSTANTS",
+        "APP_HOOKS",
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STORES",
+        "APP_THEME_UTILS",
+        "APP_VIEWS",
+        "SHARED_HOOKS",
+        "SHARED_PLATFORM",
+        "SHARED_TOKENS"
+      ],
+      "ownerContextIds": [
+        "OC-SIZE-ENGINE"
+      ],
+      "fixtureIds": [
+        "CCD-UI-023-pass",
+        "CCD-UI-023-fail",
+        "SRC-CCD-UI-023-VALID",
+        "SRC-CCD-UI-023-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "bounded",
+      "humanRemainder": "verify behavioral scaling semantics and breakpoint intent across indirection",
+      "pageContract": null,
+      "messageId": "UI-SRC-023",
+      "fingerprintKind": "responsive-owner-reference"
+    },
+    {
+      "ruleId": "CCD-UI-024",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "ResponsiveOwnershipScanner",
+      "module": "detectors/responsive-ownership.mjs",
+      "evidence": "raw viewport or device API outside device ownership",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_CONSTANTS",
+        "APP_HOOKS",
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STORES",
+        "APP_THEME_UTILS",
+        "APP_VIEWS",
+        "SHARED_HOOKS",
+        "SHARED_PLATFORM",
+        "SHARED_TOKENS"
+      ],
+      "ownerContextIds": [
+        "OC-DEVICE-RUNTIME"
+      ],
+      "fixtureIds": [
+        "CCD-UI-024-pass",
+        "CCD-UI-024-fail",
+        "SRC-CCD-UI-024-VALID",
+        "SRC-CCD-UI-024-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-024",
+      "fingerprintKind": "runtime-api-reference"
+    },
+    {
+      "ruleId": "CCD-UI-025",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "ResponsiveOwnershipScanner",
+      "module": "detectors/responsive-ownership.mjs",
+      "evidence": "owned layout CSS variable or numeric dimension outside size ownership",
+      "languages": [
+        "vue",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_CONSTANTS",
+        "APP_HOOKS",
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STORES",
+        "APP_THEME_UTILS",
+        "APP_VIEWS",
+        "SHARED_HOOKS",
+        "SHARED_PLATFORM",
+        "SHARED_TOKENS"
+      ],
+      "ownerContextIds": [
+        "OC-SIZE-ENGINE"
+      ],
+      "fixtureIds": [
+        "CCD-UI-025-pass",
+        "CCD-UI-025-fail",
+        "SRC-CCD-UI-025-VALID",
+        "SRC-CCD-UI-025-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-025",
+      "fingerprintKind": "css-variable-write"
+    },
+    {
+      "ruleId": "CCD-UI-026",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "ResponsiveOwnershipScanner",
+      "module": "detectors/responsive-ownership.mjs",
+      "evidence": "responsive visibility utility on registered shell structure",
+      "languages": [
+        "vue",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_CONSTANTS",
+        "APP_HOOKS",
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STORES",
+        "APP_THEME_UTILS",
+        "APP_VIEWS",
+        "SHARED_HOOKS",
+        "SHARED_PLATFORM",
+        "SHARED_TOKENS"
+      ],
+      "ownerContextIds": [
+        "OC-LAYOUT-RUNTIME"
+      ],
+      "fixtureIds": [
+        "CCD-UI-026-pass",
+        "CCD-UI-026-fail",
+        "SRC-CCD-UI-026-VALID",
+        "SRC-CCD-UI-026-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-026",
+      "fingerprintKind": "shell-visibility"
+    },
+    {
+      "ruleId": "CCD-UI-027",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "ResponsiveOwnershipScanner",
+      "module": "detectors/responsive-ownership.mjs",
+      "evidence": "child component inferring device behavior",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_CONSTANTS",
+        "APP_HOOKS",
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STORES",
+        "APP_THEME_UTILS",
+        "APP_VIEWS",
+        "SHARED_HOOKS",
+        "SHARED_PLATFORM",
+        "SHARED_TOKENS"
+      ],
+      "ownerContextIds": [
+        "OC-DEVICE-RUNTIME",
+        "OC-LAYOUT-RUNTIME"
+      ],
+      "fixtureIds": [
+        "CCD-UI-027-pass",
+        "CCD-UI-027-fail",
+        "SRC-CCD-UI-027-VALID",
+        "SRC-CCD-UI-027-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-027",
+      "fingerprintKind": "runtime-api-reference"
+    },
+    {
+      "ruleId": "CCD-UI-028",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable-with-human-remainder",
+      "finalEnforcement": "source-scanner-assisted-human-review",
+      "detectorId": "LayoutScrollScanner",
+      "module": "detectors/layout-scroll.mjs",
+      "evidence": "primary scroll candidate without CScrollbar ownership",
+      "languages": [
+        "vue",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_PLATFORM",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [
+        "OC-SCROLLBAR"
+      ],
+      "fixtureIds": [
+        "CCD-UI-028-pass",
+        "CCD-UI-028-fail",
+        "SRC-CCD-UI-028-VALID",
+        "SRC-CCD-UI-028-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "bounded",
+      "humanRemainder": "identify primary scroll ownership versus bounded component scrolling",
+      "pageContract": null,
+      "messageId": "UI-SRC-028",
+      "fingerprintKind": "scroll-structure"
+    },
+    {
+      "ruleId": "CCD-UI-029",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable-with-human-remainder",
+      "finalEnforcement": "source-scanner-assisted-human-review",
+      "detectorId": "LayoutScrollScanner",
+      "module": "detectors/layout-scroll.mjs",
+      "evidence": "nontransparent normalized view root",
+      "languages": [
+        "vue",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_PLATFORM",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-029-pass",
+        "CCD-UI-029-fail",
+        "SRC-CCD-UI-029-VALID",
+        "SRC-CCD-UI-029-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "bounded",
+      "humanRemainder": "resolve fragments, wrapper indirection and inherited visual surfaces",
+      "pageContract": null,
+      "messageId": "UI-SRC-029",
+      "fingerprintKind": "view-root-structure"
+    },
+    {
+      "ruleId": "CCD-UI-030",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable-with-human-remainder",
+      "finalEnforcement": "source-scanner-assisted-human-review",
+      "detectorId": "LayoutScrollScanner",
+      "module": "detectors/layout-scroll.mjs",
+      "evidence": "material or surface token on normalized view root",
+      "languages": [
+        "vue",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_PLATFORM",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-030-pass",
+        "CCD-UI-030-fail",
+        "SRC-CCD-UI-030-VALID",
+        "SRC-CCD-UI-030-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "bounded",
+      "humanRemainder": "decide whether selector indirection styles the root wrapper",
+      "pageContract": null,
+      "messageId": "UI-SRC-030",
+      "fingerprintKind": "view-root-structure"
+    },
+    {
+      "ruleId": "CCD-UI-031",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable-with-human-remainder",
+      "finalEnforcement": "source-scanner-assisted-human-review",
+      "detectorId": "LayoutScrollScanner",
+      "module": "detectors/layout-scroll.mjs",
+      "evidence": "col-fill on normalized view root",
+      "languages": [
+        "vue",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_PLATFORM",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-031-pass",
+        "CCD-UI-031-fail",
+        "SRC-CCD-UI-031-VALID",
+        "SRC-CCD-UI-031-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "bounded",
+      "humanRemainder": "determine whether the parent layout owns flowing-page scroll",
+      "pageContract": null,
+      "messageId": "UI-SRC-031",
+      "fingerprintKind": "view-root-structure"
+    },
+    {
+      "ruleId": "CCD-UI-032",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable-with-human-remainder",
+      "finalEnforcement": "source-scanner-assisted-human-review",
+      "detectorId": "LayoutScrollScanner",
+      "module": "detectors/layout-scroll.mjs",
+      "evidence": "col-fill root without bounded scroll ownership",
+      "languages": [
+        "vue",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_PLATFORM",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [
+        "OC-SCROLLBAR"
+      ],
+      "fixtureIds": [
+        "CCD-UI-032-pass",
+        "CCD-UI-032-fail",
+        "SRC-CCD-UI-032-VALID",
+        "SRC-CCD-UI-032-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "bounded",
+      "humanRemainder": "confirm intentional view-level scroll takeover",
+      "pageContract": null,
+      "messageId": "UI-SRC-032",
+      "fingerprintKind": "scroll-structure"
+    },
+    {
+      "ruleId": "CCD-UI-033",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "LayoutScrollScanner",
+      "module": "detectors/layout-scroll.mjs",
+      "evidence": "media visibility toggle targeting registered shell selector",
+      "languages": [
+        "vue",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_PLATFORM",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [
+        "OC-LAYOUT-RUNTIME"
+      ],
+      "fixtureIds": [
+        "CCD-UI-033-pass",
+        "CCD-UI-033-fail",
+        "SRC-CCD-UI-033-VALID",
+        "SRC-CCD-UI-033-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-033",
+      "fingerprintKind": "media-visibility"
+    },
+    {
+      "ruleId": "CCD-UI-034",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "LayoutScrollScanner",
+      "module": "detectors/layout-scroll.mjs",
+      "evidence": "raw safe-area env use outside layout ownership",
+      "languages": [
+        "vue",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_PLATFORM",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [
+        "OC-LAYOUT-RUNTIME"
+      ],
+      "fixtureIds": [
+        "CCD-UI-034-pass",
+        "CCD-UI-034-fail",
+        "SRC-CCD-UI-034-VALID",
+        "SRC-CCD-UI-034-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-034",
+      "fingerprintKind": "safe-area-declaration"
+    },
+    {
+      "ruleId": "CCD-UI-035",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable-with-human-remainder",
+      "finalEnforcement": "source-scanner-assisted-human-review",
+      "detectorId": "MaterialZIndexScanner",
+      "module": "detectors/material-zindex.mjs",
+      "evidence": "authored material combination bypassing semantic material tokens",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_TOKENS",
+        "SHARED_UI",
+        "SHARED_UNOCSS"
+      ],
+      "ownerContextIds": [
+        "OC-TOKEN-AUTHORITY"
+      ],
+      "fixtureIds": [
+        "CCD-UI-035-pass",
+        "CCD-UI-035-fail",
+        "SRC-CCD-UI-035-VALID",
+        "SRC-CCD-UI-035-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "bounded",
+      "humanRemainder": "decide whether the authored surface semantically constitutes material",
+      "pageContract": null,
+      "messageId": "UI-SRC-035",
+      "fingerprintKind": "material-declaration"
+    },
+    {
+      "ruleId": "CCD-UI-036",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable-with-human-remainder",
+      "finalEnforcement": "source-scanner-assisted-human-review",
+      "detectorId": "MaterialZIndexScanner",
+      "module": "detectors/material-zindex.mjs",
+      "evidence": "glass descendant on semantic table or scroll ownership",
+      "languages": [
+        "vue",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_TOKENS",
+        "SHARED_UI",
+        "SHARED_UNOCSS"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-036-pass",
+        "CCD-UI-036-fail",
+        "SRC-CCD-UI-036-VALID",
+        "SRC-CCD-UI-036-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "bounded",
+      "humanRemainder": "review runtime ancestry and semantic scroll ownership",
+      "pageContract": null,
+      "messageId": "UI-SRC-036",
+      "fingerprintKind": "material-ancestry"
+    },
+    {
+      "ruleId": "CCD-UI-037",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "MaterialZIndexScanner",
+      "module": "detectors/material-zindex.mjs",
+      "evidence": "raw z-index outside semantic registry",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_TOKENS",
+        "SHARED_UI",
+        "SHARED_UNOCSS"
+      ],
+      "ownerContextIds": [
+        "OC-TOKEN-AUTHORITY"
+      ],
+      "fixtureIds": [
+        "CCD-UI-037-pass",
+        "CCD-UI-037-fail",
+        "SRC-CCD-UI-037-VALID",
+        "SRC-CCD-UI-037-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-037",
+      "fingerprintKind": "stacking-declaration"
+    },
+    {
+      "ruleId": "CCD-UI-038",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable-with-human-remainder",
+      "finalEnforcement": "source-scanner-assisted-human-review",
+      "detectorId": "MaterialZIndexScanner",
+      "module": "detectors/material-zindex.mjs",
+      "evidence": "authored stacking context requiring restructuring",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_TOKENS",
+        "SHARED_UI",
+        "SHARED_UNOCSS"
+      ],
+      "ownerContextIds": [
+        "OC-TOKEN-AUTHORITY"
+      ],
+      "fixtureIds": [
+        "CCD-UI-038-pass",
+        "CCD-UI-038-fail",
+        "SRC-CCD-UI-038-VALID",
+        "SRC-CCD-UI-038-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "bounded",
+      "humanRemainder": "determine required DOM stacking-context restructuring",
+      "pageContract": null,
+      "messageId": "UI-SRC-038",
+      "fingerprintKind": "stacking-declaration"
+    },
+    {
+      "ruleId": "CCD-UI-039",
+      "originalDisposition": "human-review-only",
+      "scannerCategory": "human-review-only",
+      "finalEnforcement": "human-review-only",
+      "detectorId": "MaterialZIndexScanner",
+      "module": null,
+      "evidence": null,
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_TOKENS",
+        "SHARED_UI",
+        "SHARED_UNOCSS"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-039-pass",
+        "CCD-UI-039-fail"
+      ],
+      "exceptionEligible": false,
+      "confidence": "not-applicable",
+      "humanRemainder": "entire light-mode optical-separation rule",
+      "pageContract": null,
+      "messageId": null,
+      "fingerprintKind": null
+    },
+    {
+      "ruleId": "CCD-UI-040",
+      "originalDisposition": "human-review-only",
+      "scannerCategory": "human-review-only",
+      "finalEnforcement": "human-review-only",
+      "detectorId": "MaterialZIndexScanner",
+      "module": null,
+      "evidence": null,
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_TOKENS",
+        "SHARED_UI",
+        "SHARED_UNOCSS"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-040-pass",
+        "CCD-UI-040-fail"
+      ],
+      "exceptionEligible": false,
+      "confidence": "not-applicable",
+      "humanRemainder": "entire dark-mode elevation judgment",
+      "pageContract": null,
+      "messageId": null,
+      "fingerprintKind": null
+    },
+    {
+      "ruleId": "CCD-UI-041",
+      "originalDisposition": "human-review-only",
+      "scannerCategory": "human-review-only",
+      "finalEnforcement": "human-review-only",
+      "detectorId": "MaterialZIndexScanner",
+      "module": null,
+      "evidence": null,
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_TOKENS",
+        "SHARED_UI",
+        "SHARED_UNOCSS"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-041-pass",
+        "CCD-UI-041-fail"
+      ],
+      "exceptionEligible": false,
+      "confidence": "not-applicable",
+      "humanRemainder": "entire border-restraint judgment",
+      "pageContract": null,
+      "messageId": null,
+      "fingerprintKind": null
+    },
+    {
+      "ruleId": "CCD-UI-042",
+      "originalDisposition": "human-review-only",
+      "scannerCategory": "human-review-only",
+      "finalEnforcement": "human-review-only",
+      "detectorId": "MaterialZIndexScanner",
+      "module": null,
+      "evidence": null,
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_TOKENS",
+        "SHARED_UI",
+        "SHARED_UNOCSS"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-042-pass",
+        "CCD-UI-042-fail"
+      ],
+      "exceptionEligible": false,
+      "confidence": "not-applicable",
+      "humanRemainder": "entire elevation-versus-decoration shadow judgment",
+      "pageContract": null,
+      "messageId": null,
+      "fingerprintKind": null
+    },
+    {
+      "ruleId": "CCD-UI-043",
+      "originalDisposition": "human-review-only",
+      "scannerCategory": "human-review-only",
+      "finalEnforcement": "human-review-only",
+      "detectorId": "ProductLanguageReviewer",
+      "module": null,
+      "evidence": null,
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_TOKENS",
+        "SHARED_UI",
+        "SHARED_UNOCSS"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-043-pass",
+        "CCD-UI-043-fail"
+      ],
+      "exceptionEligible": false,
+      "confidence": "not-applicable",
+      "humanRemainder": "entire replaceable visual-expression judgment",
+      "pageContract": null,
+      "messageId": null,
+      "fingerprintKind": null
+    },
+    {
+      "ruleId": "CCD-UI-044",
+      "originalDisposition": "human-review-only",
+      "scannerCategory": "human-review-only",
+      "finalEnforcement": "human-review-only",
+      "detectorId": "ProductLanguageReviewer",
+      "module": null,
+      "evidence": null,
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_TOKENS",
+        "SHARED_UI",
+        "SHARED_UNOCSS"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-044-pass",
+        "CCD-UI-044-fail"
+      ],
+      "exceptionEligible": false,
+      "confidence": "not-applicable",
+      "humanRemainder": "entire invariant-preserving profile-replacement judgment",
+      "pageContract": null,
+      "messageId": null,
+      "fingerprintKind": null
+    },
+    {
+      "ruleId": "CCD-UI-045",
+      "originalDisposition": "human-review-only",
+      "scannerCategory": "human-review-only",
+      "finalEnforcement": "human-review-only",
+      "detectorId": "ProductLanguageReviewer",
+      "module": null,
+      "evidence": null,
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_TOKENS",
+        "SHARED_UI",
+        "SHARED_UNOCSS"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-045-pass",
+        "CCD-UI-045-fail"
+      ],
+      "exceptionEligible": false,
+      "confidence": "not-applicable",
+      "humanRemainder": "entire generic-dashboard-decoration judgment",
+      "pageContract": null,
+      "messageId": null,
+      "fingerprintKind": null
+    },
+    {
+      "ruleId": "CCD-UI-046",
+      "originalDisposition": "human-review-only",
+      "scannerCategory": "human-review-only",
+      "finalEnforcement": "human-review-only",
+      "detectorId": "ProductLanguageReviewer",
+      "module": null,
+      "evidence": null,
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_TOKENS",
+        "SHARED_UI",
+        "SHARED_UNOCSS"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-046-pass",
+        "CCD-UI-046-fail"
+      ],
+      "exceptionEligible": false,
+      "confidence": "not-applicable",
+      "humanRemainder": "entire product-language-before-material judgment",
+      "pageContract": null,
+      "messageId": null,
+      "fingerprintKind": null
+    },
+    {
+      "ruleId": "CCD-UI-047",
+      "originalDisposition": "human-review-only",
+      "scannerCategory": "human-review-only",
+      "finalEnforcement": "human-review-only",
+      "detectorId": "ProductLanguageReviewer",
+      "module": null,
+      "evidence": null,
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_TOKENS",
+        "SHARED_UI",
+        "SHARED_UNOCSS"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-047-pass",
+        "CCD-UI-047-fail"
+      ],
+      "exceptionEligible": false,
+      "confidence": "not-applicable",
+      "humanRemainder": "entire calm-precision and inspectability judgment",
+      "pageContract": null,
+      "messageId": null,
+      "fingerprintKind": null
+    },
+    {
+      "ruleId": "CCD-UI-048",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "AccessibilityReviewer",
+      "module": "detectors/accessibility.mjs",
+      "evidence": "pointer-only interaction without keyboard equivalence",
+      "languages": [
+        "vue",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_VIEWS",
+        "SHARED_PRIME",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-048-pass",
+        "CCD-UI-048-fail",
+        "SRC-CCD-UI-048-VALID",
+        "SRC-CCD-UI-048-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-048",
+      "fingerprintKind": "pointer-focus-equivalence"
+    },
+    {
+      "ruleId": "CCD-UI-049",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "AccessibilityReviewer",
+      "module": "detectors/accessibility.mjs",
+      "evidence": "hover-only tooltip trigger",
+      "languages": [
+        "vue",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_VIEWS",
+        "SHARED_PRIME",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-049-pass",
+        "CCD-UI-049-fail",
+        "SRC-CCD-UI-049-VALID",
+        "SRC-CCD-UI-049-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-049",
+      "fingerprintKind": "tooltip-trigger"
+    },
+    {
+      "ruleId": "CCD-UI-050",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable-with-human-remainder",
+      "finalEnforcement": "source-scanner-assisted-human-review",
+      "detectorId": "AccessibilityReviewer",
+      "module": "detectors/accessibility.mjs",
+      "evidence": "decorative boundary used without semantic state",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_VIEWS",
+        "SHARED_PRIME",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-050-pass",
+        "CCD-UI-050-fail",
+        "SRC-CCD-UI-050-VALID",
+        "SRC-CCD-UI-050-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "bounded",
+      "humanRemainder": "decide whether grouping or boundary clarity requires a border",
+      "pageContract": null,
+      "messageId": "UI-SRC-050",
+      "fingerprintKind": "state-boundary-style"
+    },
+    {
+      "ruleId": "CCD-UI-051",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable-with-human-remainder",
+      "finalEnforcement": "source-scanner-assisted-human-review",
+      "detectorId": "AccessibilityReviewer",
+      "module": "detectors/accessibility.mjs",
+      "evidence": "theme-keyed remount structure",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_HOOKS",
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_VIEWS",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-051-pass",
+        "CCD-UI-051-fail",
+        "SRC-CCD-UI-051-VALID",
+        "SRC-CCD-UI-051-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "bounded",
+      "humanRemainder": "verify state preservation through dynamic components and indirect keys",
+      "pageContract": null,
+      "messageId": "UI-SRC-051",
+      "fingerprintKind": "theme-remount-structure"
+    },
+    {
+      "ruleId": "CCD-UI-052",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable-with-human-remainder",
+      "finalEnforcement": "source-scanner-assisted-human-review",
+      "detectorId": "MotionLifecycleScanner",
+      "module": "detectors/motion-lifecycle.mjs",
+      "evidence": "layout motion using nonsemantic ease-in-out",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_HOOKS",
+        "APP_LAYOUTS",
+        "APP_PLUGINS",
+        "APP_ROOTS",
+        "APP_ROUTER",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_HOOKS",
+        "SHARED_PLATFORM",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [
+        "OC-TOKEN-AUTHORITY",
+        "OC-MOTION-RUNTIME"
+      ],
+      "fixtureIds": [
+        "CCD-UI-052-pass",
+        "CCD-UI-052-fail",
+        "SRC-CCD-UI-052-VALID",
+        "SRC-CCD-UI-052-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "bounded",
+      "humanRemainder": "classify whether the animated property affects layout",
+      "pageContract": null,
+      "messageId": "UI-SRC-052",
+      "fingerprintKind": "motion-declaration"
+    },
+    {
+      "ruleId": "CCD-UI-053",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable-with-human-remainder",
+      "finalEnforcement": "source-scanner-assisted-human-review",
+      "detectorId": "MotionLifecycleScanner",
+      "module": "detectors/motion-lifecycle.mjs",
+      "evidence": "motion using nonsemantic timing",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_HOOKS",
+        "APP_LAYOUTS",
+        "APP_PLUGINS",
+        "APP_ROOTS",
+        "APP_ROUTER",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_HOOKS",
+        "SHARED_PLATFORM",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [
+        "OC-TOKEN-AUTHORITY",
+        "OC-MOTION-RUNTIME"
+      ],
+      "fixtureIds": [
+        "CCD-UI-053-pass",
+        "CCD-UI-053-fail",
+        "SRC-CCD-UI-053-VALID",
+        "SRC-CCD-UI-053-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "bounded",
+      "humanRemainder": "classify transition intent when source structure is ambiguous",
+      "pageContract": null,
+      "messageId": "UI-SRC-053",
+      "fingerprintKind": "motion-declaration"
+    },
+    {
+      "ruleId": "CCD-UI-054",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable-with-human-remainder",
+      "finalEnforcement": "source-scanner-assisted-human-review",
+      "detectorId": "MotionLifecycleScanner",
+      "module": "detectors/motion-lifecycle.mjs",
+      "evidence": "GSAP reference without bounded choreography",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_HOOKS",
+        "APP_LAYOUTS",
+        "APP_PLUGINS",
+        "APP_ROOTS",
+        "APP_ROUTER",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_HOOKS",
+        "SHARED_PLATFORM",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [
+        "OC-MOTION-RUNTIME"
+      ],
+      "fixtureIds": [
+        "CCD-UI-054-pass",
+        "CCD-UI-054-fail",
+        "SRC-CCD-UI-054-VALID",
+        "SRC-CCD-UI-054-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "bounded",
+      "humanRemainder": "judge whether complexity requires GSAP",
+      "pageContract": null,
+      "messageId": "UI-SRC-054",
+      "fingerprintKind": "gsap-reference"
+    },
+    {
+      "ruleId": "CCD-UI-055",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "MotionLifecycleScanner",
+      "module": "detectors/motion-lifecycle.mjs",
+      "evidence": "animation of a layout-affecting property",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_HOOKS",
+        "APP_LAYOUTS",
+        "APP_PLUGINS",
+        "APP_ROOTS",
+        "APP_ROUTER",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_HOOKS",
+        "SHARED_PLATFORM",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [
+        "OC-MOTION-RUNTIME"
+      ],
+      "fixtureIds": [
+        "CCD-UI-055-pass",
+        "CCD-UI-055-fail",
+        "SRC-CCD-UI-055-VALID",
+        "SRC-CCD-UI-055-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-055",
+      "fingerprintKind": "motion-property"
+    },
+    {
+      "ruleId": "CCD-UI-056",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable-with-human-remainder",
+      "finalEnforcement": "source-scanner-assisted-human-review",
+      "detectorId": "MotionLifecycleScanner",
+      "module": "detectors/motion-lifecycle.mjs",
+      "evidence": "decorative GSAP page motion",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_HOOKS",
+        "APP_LAYOUTS",
+        "APP_PLUGINS",
+        "APP_ROOTS",
+        "APP_ROUTER",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_HOOKS",
+        "SHARED_PLATFORM",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [
+        "OC-MOTION-RUNTIME"
+      ],
+      "fixtureIds": [
+        "CCD-UI-056-pass",
+        "CCD-UI-056-fail",
+        "SRC-CCD-UI-056-VALID",
+        "SRC-CCD-UI-056-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "bounded",
+      "humanRemainder": "judge whether motion is necessary communication",
+      "pageContract": null,
+      "messageId": "UI-SRC-056",
+      "fingerprintKind": "gsap-reference"
+    },
+    {
+      "ruleId": "CCD-UI-057",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "MotionLifecycleScanner",
+      "module": "detectors/motion-lifecycle.mjs",
+      "evidence": "unbounded will-change or GPU hint",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_HOOKS",
+        "APP_LAYOUTS",
+        "APP_PLUGINS",
+        "APP_ROOTS",
+        "APP_ROUTER",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_HOOKS",
+        "SHARED_PLATFORM",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [
+        "OC-MOTION-RUNTIME"
+      ],
+      "fixtureIds": [
+        "CCD-UI-057-pass",
+        "CCD-UI-057-fail",
+        "SRC-CCD-UI-057-VALID",
+        "SRC-CCD-UI-057-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-057",
+      "fingerprintKind": "motion-performance-token"
+    },
+    {
+      "ruleId": "CCD-UI-058",
+      "originalDisposition": "human-review-only",
+      "scannerCategory": "human-review-only",
+      "finalEnforcement": "human-review-only",
+      "detectorId": "MotionLifecycleScanner",
+      "module": null,
+      "evidence": null,
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_HOOKS",
+        "APP_LAYOUTS",
+        "APP_PLUGINS",
+        "APP_ROOTS",
+        "APP_ROUTER",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_HOOKS",
+        "SHARED_PLATFORM",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-058-pass",
+        "CCD-UI-058-fail"
+      ],
+      "exceptionEligible": false,
+      "confidence": "not-applicable",
+      "humanRemainder": "entire continuity-versus-entertainment judgment",
+      "pageContract": null,
+      "messageId": null,
+      "fingerprintKind": null
+    },
+    {
+      "ruleId": "CCD-UI-059",
+      "originalDisposition": "human-review-only",
+      "scannerCategory": "human-review-only",
+      "finalEnforcement": "human-review-only",
+      "detectorId": "ProductLanguageReviewer",
+      "module": null,
+      "evidence": null,
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_TOKENS",
+        "SHARED_UI",
+        "SHARED_UNOCSS"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-059-pass",
+        "CCD-UI-059-fail"
+      ],
+      "exceptionEligible": false,
+      "confidence": "not-applicable",
+      "humanRemainder": "entire region-ownership and product-language judgment",
+      "pageContract": null,
+      "messageId": null,
+      "fingerprintKind": null
+    },
+    {
+      "ruleId": "CCD-UI-060",
+      "originalDisposition": "human-review-only",
+      "scannerCategory": "human-review-only",
+      "finalEnforcement": "human-review-only",
+      "detectorId": "ProductLanguageReviewer",
+      "module": null,
+      "evidence": null,
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_TOKENS",
+        "SHARED_UI",
+        "SHARED_UNOCSS"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-060-pass",
+        "CCD-UI-060-fail"
+      ],
+      "exceptionEligible": false,
+      "confidence": "not-applicable",
+      "humanRemainder": "entire decorative-restraint judgment",
+      "pageContract": null,
+      "messageId": null,
+      "fingerprintKind": null
+    },
+    {
+      "ruleId": "CCD-UI-061",
+      "originalDisposition": "human-review-only",
+      "scannerCategory": "human-review-only",
+      "finalEnforcement": "human-review-only",
+      "detectorId": "ProductLanguageReviewer",
+      "module": null,
+      "evidence": null,
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_TOKENS",
+        "SHARED_UI",
+        "SHARED_UNOCSS"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-061-pass",
+        "CCD-UI-061-fail"
+      ],
+      "exceptionEligible": false,
+      "confidence": "not-applicable",
+      "humanRemainder": "entire architecture-obscuring decoration judgment",
+      "pageContract": null,
+      "messageId": null,
+      "fingerprintKind": null
+    },
+    {
+      "ruleId": "CCD-UI-062",
+      "originalDisposition": "human-review-only",
+      "scannerCategory": "human-review-only",
+      "finalEnforcement": "human-review-only",
+      "detectorId": "ProductLanguageReviewer",
+      "module": null,
+      "evidence": null,
+      "languages": [
+        "vue",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_STYLES",
+        "APP_VIEWS",
+        "SHARED_TOKENS",
+        "SHARED_UI",
+        "SHARED_UNOCSS"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-062-pass",
+        "CCD-UI-062-fail"
+      ],
+      "exceptionEligible": false,
+      "confidence": "not-applicable",
+      "humanRemainder": "entire structure and icon-affordance judgment",
+      "pageContract": null,
+      "messageId": null,
+      "fingerprintKind": null
+    },
+    {
+      "ruleId": "CCD-UI-063",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "DeepSelectorExceptionScanner",
+      "module": "detectors/primevue-customization.mjs",
+      "evidence": "native-control owner claim outside exact ProForm renderer",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx"
+      ],
+      "scopeIds": [
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [
+        "OC-PROFORM-NATIVE"
+      ],
+      "fixtureIds": [
+        "CCD-UI-063-pass",
+        "CCD-UI-063-fail",
+        "SRC-CCD-UI-063-VALID",
+        "SRC-CCD-UI-063-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-063",
+      "fingerprintKind": "owner-context-claim"
+    },
+    {
+      "ruleId": "CCD-UI-064",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "DeepSelectorExceptionScanner",
+      "module": "detectors/primevue-customization.mjs",
+      "evidence": "deep selector without one exact valid exception",
+      "languages": [
+        "vue",
+        "css",
+        "scss"
+      ],
+      "scopeIds": [
+        "APP_LAYOUTS",
+        "APP_ROOTS",
+        "APP_VIEWS",
+        "SHARED_UI"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-064-pass",
+        "CCD-UI-064-fail",
+        "SRC-CCD-UI-064-VALID",
+        "SRC-CCD-UI-064-INVALID"
+      ],
+      "exceptionEligible": true,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-064",
+      "fingerprintKind": "deep-selector"
+    },
+    {
+      "ruleId": "CCD-UI-065",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "schema-enforced",
+      "finalEnforcement": "schema-validated",
+      "detectorId": "DeepSelectorExceptionScanner",
+      "module": ".ai/governance/ui/scripts/validate-ui-policy.mjs",
+      "evidence": null,
+      "languages": [
+        "json"
+      ],
+      "scopeIds": [
+        "APP_CONSTANTS",
+        "APP_THEME_UTILS",
+        "SHARED_PRIME",
+        "SHARED_TOKENS"
+      ],
+      "ownerContextIds": [],
+      "fixtureIds": [
+        "CCD-UI-065-pass",
+        "CCD-UI-065-fail"
+      ],
+      "exceptionEligible": false,
+      "confidence": "not-applicable",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": null,
+      "fingerprintKind": null
+    },
+    {
+      "ruleId": "CCD-UI-066",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable",
+      "finalEnforcement": "source-scanner-enforced",
+      "detectorId": "DeepSelectorExceptionScanner",
+      "module": "detectors/primevue-customization.mjs",
+      "evidence": "warning semantic identifier outside PrimeVue adapter ownership",
+      "languages": [
+        "ts",
+        "tsx"
+      ],
+      "scopeIds": [
+        "SHARED_PRIME"
+      ],
+      "ownerContextIds": [
+        "OC-PRIME-ADAPTER"
+      ],
+      "fixtureIds": [
+        "CCD-UI-066-pass",
+        "CCD-UI-066-fail",
+        "SRC-CCD-UI-066-VALID",
+        "SRC-CCD-UI-066-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "high",
+      "humanRemainder": null,
+      "pageContract": null,
+      "messageId": "UI-SRC-066",
+      "fingerprintKind": "semantic-alias-reference"
+    },
+    {
+      "ruleId": "CCD-UI-067",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable-with-human-remainder",
+      "finalEnforcement": "source-scanner-assisted-human-review",
+      "detectorId": "MotionLifecycleScanner",
+      "module": "detectors/motion-lifecycle.mjs",
+      "evidence": "layout renderer initializing runtime instead of consuming finalized state",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_HOOKS",
+        "APP_LAYOUTS",
+        "APP_STORES",
+        "SHARED_HOOKS",
+        "SHARED_PLATFORM"
+      ],
+      "ownerContextIds": [
+        "OC-DEVICE-RUNTIME",
+        "OC-LAYOUT-RUNTIME"
+      ],
+      "fixtureIds": [
+        "CCD-UI-067-pass",
+        "CCD-UI-067-fail",
+        "SRC-CCD-UI-067-VALID",
+        "SRC-CCD-UI-067-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "bounded",
+      "humanRemainder": "trace indirect calls to distinguish consumption from runtime ownership",
+      "pageContract": null,
+      "messageId": "UI-SRC-067",
+      "fingerprintKind": "runtime-initialization"
+    },
+    {
+      "ruleId": "CCD-UI-068",
+      "originalDisposition": "permanent-rule",
+      "scannerCategory": "source-enforceable-with-human-remainder",
+      "finalEnforcement": "source-scanner-assisted-human-review",
+      "detectorId": "MotionLifecycleScanner",
+      "module": "detectors/motion-lifecycle.mjs",
+      "evidence": "duplicate initialization or unpaired listener lifecycle",
+      "languages": [
+        "vue",
+        "ts",
+        "tsx"
+      ],
+      "scopeIds": [
+        "APP_HOOKS",
+        "APP_LAYOUTS",
+        "APP_STORES",
+        "SHARED_HOOKS",
+        "SHARED_PLATFORM"
+      ],
+      "ownerContextIds": [
+        "OC-DEVICE-RUNTIME"
+      ],
+      "fixtureIds": [
+        "CCD-UI-068-pass",
+        "CCD-UI-068-fail",
+        "SRC-CCD-UI-068-VALID",
+        "SRC-CCD-UI-068-INVALID"
+      ],
+      "exceptionEligible": false,
+      "confidence": "bounded",
+      "humanRemainder": "verify cross-module idempotence and lifecycle ownership",
+      "pageContract": null,
+      "messageId": "UI-SRC-068",
+      "fingerprintKind": "listener-lifecycle"
+    }
+  ]
+}

@@ -113,6 +113,125 @@ const P5_5_PATHS = Object.freeze(
 )
 const P5_TERMINAL_PATHS = Object.freeze([...new Set([...P5_4_PATHS, ...P5_5_PATHS])].sort())
 const P5_5_ONLY_PATHS = Object.freeze(P5_5_PATHS.filter(relPath => !P5_4_PATHS.includes(relPath)))
+const P6_4_FIXED_PATHS = Object.freeze([
+  '.ai/governance/ui/source-enforcement.json',
+  '.ai/governance/ui/source-coverage.json',
+  '.ai/governance/ui/schemas/ui-source-enforcement.schema.json',
+  '.ai/governance/ui/schemas/ui-source-coverage.schema.json',
+  '.ai/governance/ui/schemas/ui-source-baseline.schema.json',
+  '.ai/governance/ui/schemas/ui-source-fixtures.schema.json',
+  '.ai/governance/ui/fixtures/source-cases.json',
+  '.ai/governance/ui/scripts/scan-ui-source.mjs',
+  'scripts/governance/ui-source-enforcement-validate.mjs',
+  'wiki/canonical/design/ui-source-enforcement.md',
+  'package.json',
+  '.ai/governance/ui/scripts/validate-ui-policy.mjs',
+  'scripts/governance/gate.mjs',
+  'wiki/indexes/design-index.md',
+  'scripts/governance/cold-start-validate.mjs',
+  'scripts/governance/project-ui-routing-validate.mjs',
+])
+const P6_SCANNER_MODULE_PATHS = Object.freeze([
+  '.ai/governance/ui/source-scanner/authority.mjs',
+  '.ai/governance/ui/source-scanner/baseline.mjs',
+  '.ai/governance/ui/source-scanner/cli.mjs',
+  '.ai/governance/ui/source-scanner/contracts.mjs',
+  '.ai/governance/ui/source-scanner/detector-registry.mjs',
+  '.ai/governance/ui/source-scanner/detectors/accessibility.mjs',
+  '.ai/governance/ui/source-scanner/detectors/component-ownership.mjs',
+  '.ai/governance/ui/source-scanner/detectors/layout-scroll.mjs',
+  '.ai/governance/ui/source-scanner/detectors/material-zindex.mjs',
+  '.ai/governance/ui/source-scanner/detectors/motion-lifecycle.mjs',
+  '.ai/governance/ui/source-scanner/detectors/non-source.mjs',
+  '.ai/governance/ui/source-scanner/detectors/primevue-customization.mjs',
+  '.ai/governance/ui/source-scanner/detectors/responsive-ownership.mjs',
+  '.ai/governance/ui/source-scanner/detectors/token-literals.mjs',
+  '.ai/governance/ui/source-scanner/diagnostics.mjs',
+  '.ai/governance/ui/source-scanner/exceptions.mjs',
+  '.ai/governance/ui/source-scanner/git-source.mjs',
+  '.ai/governance/ui/source-scanner/orchestrator.mjs',
+  '.ai/governance/ui/source-scanner/owners.mjs',
+  '.ai/governance/ui/source-scanner/parse-style.mjs',
+  '.ai/governance/ui/source-scanner/parse-typescript.mjs',
+  '.ai/governance/ui/source-scanner/parse-vue.mjs',
+  '.ai/governance/ui/source-scanner/render.mjs',
+  '.ai/governance/ui/source-scanner/schema-validation.mjs',
+  '.ai/governance/ui/source-scanner/scope.mjs',
+  '.ai/governance/ui/source-scanner/self-test.mjs',
+  '.ai/governance/ui/source-scanner/source-model.mjs',
+])
+const P6_BASELINE_PATH = '.ai/governance/ui/source-baseline.json'
+const P6_BASELINE_COMMIT = 'f8acb7fbbfef0c681affb74e08336ec8bc72bca0'
+const P6_DELIVERY_PATH_SET_SHA256 =
+  '893341ef9ab1d140695c2e93f26dc6de09501dbdc08cca1072419e73eaa010fe'
+const P6_FINAL_LOCAL_COMMIT_PATH = 'scripts/lint-staged-safe.mjs'
+const P6_FINAL_LOCAL_COMMIT_PATH_SET_SHA256 =
+  'd521709a4ecbb0d40ce510ea22f756a23452e5d1ae4765f01396cbca863006d1'
+const P6_FINAL_HISTORICAL_PATH_SET_SHA256 =
+  '86f7220972b2eb76434ef9afa7e95e3406fb049da03a8f0c9dc6458a7e38377f'
+const P6_DELIVERY_ADDITIONAL_PATHS = Object.freeze([
+  '.ai/governance/coverage/project-ui-semantic-coverage.json',
+  '.ai/governance/policies/ui.json',
+  '.ai/governance/ui/fixtures/schema-invalid/ui-policy.json',
+  '.ai/governance/ui/fixtures/schema-valid/ui-policy.json',
+  '.ai/governance/ui/schemas/ui-policy.schema.json',
+  '.ai/manifests/skills-lock.json',
+  '.ai/skills/project-ui/SKILL.md',
+  '.ai/skills/project-ui/references/platform-invariants.md',
+  '.ai/skills/project-ui/references/validation.md',
+  '.ai/skills/project-ui/scripts/validate-semantic-quality.mjs',
+  'wiki/canonical/design/machine-ui-policy.md',
+  'wiki/canonical/design/project-ui-routing.md',
+  'wiki/canonical/design/project-ui-skill.md',
+  'wiki/canonical/design/ui-governance-migration-plan.md',
+])
+const P6_BASELINE_SHA256 = 'f7825a7c186d0228fd4a7944100fea8a600105054367d08a44d1eb90c169e42d'
+const P6_POLICY_DIGEST = 'sha256:17cc7e2142be673d2cf64be7331a169a17772676914f7c8a7514389e19bd7e5f'
+const P6_SCANNER_MANIFEST_DIGEST =
+  'sha256:aff785e123968d9ce2ea2285dec42b486a783521c69be6082a4e3b6f8dc219e0'
+const P6_FIXTURE_AGGREGATE_SHA256 =
+  '20b1ecf6e9816c9227d749471e389e0fc49b65072d90970345c68dcfef8a1a4b'
+const P6_RECOVERED_EXACT_HASHES = Object.freeze({
+  '.ai/governance/ui/source-enforcement.json':
+    'e8210357e8f3c0767c243349f5f9923ad41f22e5123dbda4b1f19c8d1ed64f9a',
+  '.ai/governance/ui/source-coverage.json':
+    'f05dd82325eb90556d8a04c26989a7bdca383b8d3c00940609674f1740a5a0e2',
+  '.ai/governance/ui/schemas/ui-source-baseline.schema.json':
+    'a482a97195dd295a9d2ce10204871c8d7584763b35439ff9884cd4a90f5560a1',
+  '.ai/governance/ui/schemas/ui-source-coverage.schema.json':
+    '087da3a91a773d0eb80e60f4a0d00468fbdd77575edc6238d54d470586f2534e',
+  '.ai/governance/ui/schemas/ui-source-enforcement.schema.json':
+    'eb25ca3dd2797c8a54ac67ce29d0ee99c620556839417871f24fde4f187c675e',
+  '.ai/governance/ui/schemas/ui-source-fixtures.schema.json':
+    '687754ef5c4fa8f85222452d121fa1e89e314f7f0f078361a99f5c308184d410',
+  '.ai/governance/ui/fixtures/source-cases.json':
+    '979a417c5e9b94c292f4f20d5d15d7a4096ab37ae15686831beeee1cad4bff49',
+  '.ai/governance/ui/fixtures/rule-cases.json':
+    'caba2a3ebf089e96f3ecd01f92da4ccfe0b2be3ce6841c53d44cf7077f1f4be4',
+  '.ai/governance/ui/scripts/validate-ui-policy.mjs':
+    '5d972599209300f242e08ddccf7879648d9377fdc307d1492841e969a1e557cd',
+  'scripts/governance/gate.mjs': 'e3bdc8df8d7c09e9589dbe16e9a6a889d4fa8dfc705dfdfbb44793577cb39ea2',
+  'wiki/indexes/design-index.md':
+    '86fe1e52aa5bc7d0848e79aee6ce56c3e1e8c98ab5883fc7fa8e76202cad3be7',
+  'package.json': 'd780408277cc00ce04ef418e1269f3273592d5740ff5edf4b4a7c7e9c20e8dff',
+})
+const P6_LEGACY_SKILL_IDS = Object.freeze([
+  'architecture-browser-master',
+  'ccd-animate-lite',
+  'ccd-gsap-motion',
+  'ccd-material-system',
+  'ccd-motion-system',
+  'ccd-page-archetypes',
+  'ccd-product-language',
+  'ccd-ui-review-gate',
+  'desktop-tauri-guard',
+  'github-ops',
+  'task-orchestrator',
+  'unocss',
+  'vite',
+  'vue',
+  'vueuse-functions',
+])
 const PATH_CONTRACTS = Object.freeze({
   'p4-baseline': Object.freeze({
     mandatoryPaths: P4_BASELINE_PATHS,
@@ -188,6 +307,11 @@ const P5_TERMINAL = Object.freeze({
   LEGACY_SKILLS_RETIRED: 'no',
   LEGACY_RULES_RETIRED: 'no',
 })
+const P6_TERMINAL = Object.freeze({
+  ...P5_TERMINAL,
+  SOURCE_SCANNER_IMPLEMENTED: 'yes',
+  SOURCE_ENFORCEMENT_ACTIVE: 'yes',
+})
 const P3_COUNTS = Object.freeze({
   ruleCount: 68,
   clusterCount: 14,
@@ -219,6 +343,16 @@ const compareStrings = (left, right) => (left === right ? 0 : left < right ? -1 
 const clone = value => structuredClone(value)
 const readText = relPath => fs.readFileSync(path.join(ROOT, relPath), 'utf8')
 const readJson = relPath => JSON.parse(readText(relPath))
+const readJsonAt = (root, relPath) => {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(root, relPath), 'utf8'))
+  } catch (error) {
+    fail('P6_ARTIFACT_INVALID_JSON', `P6 artifact is not valid JSON: ${relPath}`, {
+      relPath,
+      cause: error instanceof Error ? error.message : String(error),
+    })
+  }
+}
 const sha256 = value => crypto.createHash('sha256').update(value).digest('hex')
 const same = (left, right) => JSON.stringify(left) === JSON.stringify(right)
 const sortedUnique = values => [...new Set(values)].sort(compareStrings)
@@ -239,26 +373,106 @@ const assertPathContracts = () => {
       overlap,
     })
 }
-const isForbiddenAlternative = relPath =>
-  PAGE_CONTRACT_PATHS.includes(relPath) || /source[-_]?scanner/iu.test(relPath)
-const validatePathContract = ({ phase, actualPaths }) => {
+const p6BoundaryPaths = (p6Paths, { terminal = false } = {}) => {
+  const normalized = sortedUnique(p6Paths)
+  const missingFixed = P6_4_FIXED_PATHS.filter(relPath => !normalized.includes(relPath))
+  const missingModules = P6_SCANNER_MODULE_PATHS.filter(relPath => !normalized.includes(relPath))
+  const union = sortedUnique([...P5_TERMINAL_PATHS, ...normalized])
+  if (
+    normalized.length !== (terminal ? 206 : 205) ||
+    union.length !== (terminal ? 250 : 249) ||
+    missingFixed.length > 0 ||
+    missingModules.length > 0
+  )
+    fail(
+      'P6_PATH_CONTRACT_DRIFT',
+      `P6 ${terminal ? 'terminal' : 'pre-terminal'} path authority drifted`,
+      {
+        p6: normalized.length,
+        union: union.length,
+        missingFixed,
+        missingModules,
+      }
+    )
+  return union
+}
+const isP6NamedAlternative = relPath =>
+  relPath !== P6_BASELINE_PATH &&
+  relPath !== '.ai/governance/ui/schemas/ui-source-baseline.schema.json' &&
+  (/source[-_]?scanner/iu.test(relPath) ||
+    (relPath.startsWith('.ai/governance/ui/schemas/') &&
+      /source.*\.schema\.json$/iu.test(relPath) &&
+      !P6_4_FIXED_PATHS.includes(relPath)) ||
+    (relPath.startsWith('.ai/governance/ui/') &&
+      /source[-_]?baseline/iu.test(path.posix.basename(relPath))))
+const isForbiddenAlternative = (relPath, { phase, p6Paths = [] } = {}) => {
+  if (PAGE_CONTRACT_PATHS.includes(relPath)) return true
+  if (!['p6-pre-terminal', 'p6-terminal'].includes(phase))
+    return /source[-_]?scanner/iu.test(relPath)
+  if (!isP6NamedAlternative(relPath)) return false
+  return !p6Paths.includes(relPath)
+}
+const validatePathContract = ({ phase, actualPaths, p6Paths = [], finalLocalCommit = false }) => {
   assertPathContracts()
-  const contract = PATH_CONTRACTS[phase]
+  const contract = ['p6-pre-terminal', 'p6-terminal'].includes(phase)
+    ? Object.freeze({
+        mandatoryPaths:
+          phase === 'p6-terminal' && finalLocalCommit
+            ? p6FinalHistoricalBoundaryPaths(p6Paths)
+            : p6BoundaryPaths(p6Paths, { terminal: phase === 'p6-terminal' }),
+        allowedPaths:
+          phase === 'p6-terminal' && finalLocalCommit
+            ? p6FinalHistoricalBoundaryPaths(p6Paths)
+            : p6BoundaryPaths(p6Paths, { terminal: phase === 'p6-terminal' }),
+      })
+    : PATH_CONTRACTS[phase]
   if (!contract) fail('PATH_CONTRACT_PHASE', `Unsupported changed-path phase: ${phase}`)
   const actual = sortedUnique(actualPaths)
-  const forbidden = actual.filter(isForbiddenAlternative)
+  const p6Alternatives = ['p6-pre-terminal', 'p6-terminal'].includes(phase)
+    ? actual.filter(
+        relPath =>
+          isP6NamedAlternative(relPath) &&
+          !relPath.startsWith('.ai/governance/ui/source-scanner/') &&
+          !p6Paths.includes(relPath)
+      )
+    : []
+  if (p6Alternatives.length)
+    fail('P6_ALTERNATIVE_SCANNER_PATH', 'Alternative P6 scanner paths are present', {
+      paths: p6Alternatives,
+    })
+  const unexpectedScannerModules = ['p6-pre-terminal', 'p6-terminal'].includes(phase)
+    ? actual.filter(
+        relPath =>
+          relPath.startsWith('.ai/governance/ui/source-scanner/') && !p6Paths.includes(relPath)
+      )
+    : []
+  if (unexpectedScannerModules.length)
+    fail('P6_UNEXPECTED_SCANNER_MODULE', 'Unexpected scanner modules are present', {
+      paths: unexpectedScannerModules,
+    })
+  const forbidden = actual.filter(relPath => isForbiddenAlternative(relPath, { phase, p6Paths }))
   if (forbidden.length)
     fail('FORBIDDEN_ALTERNATIVE_PRESENT', 'Forbidden alternative paths are present', {
       forbidden,
     })
   const missing = contract.mandatoryPaths.filter(relPath => !actual.includes(relPath))
   if (missing.length)
-    fail('MANDATORY_PATH_MISSING', `Mandatory ${phase} paths are missing`, { missing })
+    fail(
+      ['p6-pre-terminal', 'p6-terminal'].includes(phase)
+        ? 'P6_PATH_MISSING'
+        : 'MANDATORY_PATH_MISSING',
+      `Mandatory ${phase} paths are missing`,
+      { missing }
+    )
   const unexpected = actual.filter(relPath => !contract.allowedPaths.includes(relPath))
   if (unexpected.length)
-    fail('UNAUTHORIZED_CHANGED_PATH', `Changed paths exceed the ${phase} contract`, {
-      unexpected,
-    })
+    fail(
+      ['p6-pre-terminal', 'p6-terminal'].includes(phase)
+        ? 'P6_UNAUTHORIZED_CHANGED_PATH'
+        : 'UNAUTHORIZED_CHANGED_PATH',
+      `Changed paths exceed the ${phase} contract`,
+      { unexpected }
+    )
   return {
     phase,
     actualCount: actual.length,
@@ -299,6 +513,186 @@ const repositoryChangeState = ({ root = ROOT } = {}) => {
   const untracked = gitPaths(['ls-files', '--others', '--exclude-standard'], { cwd: root })
   const paths = sortedUnique([...staged, ...unstaged, ...untracked])
   return { dirty: paths.length > 0, paths, staged, unstaged, untracked }
+}
+const p6DeliveryPaths = p6Paths => {
+  const paths = sortedUnique([...p6Paths, ...P6_DELIVERY_ADDITIONAL_PATHS])
+  const pathSetSha256 = sha256(Buffer.from(`${paths.join('\n')}\n`, 'utf8'))
+  if (
+    p6Paths.length !== 206 ||
+    paths.length !== 220 ||
+    pathSetSha256 !== P6_DELIVERY_PATH_SET_SHA256
+  )
+    fail('P6_DELIVERY_PATH_AUTHORITY_DRIFT', 'Frozen P6 delivery path authority drifted', {
+      p6Count: p6Paths.length,
+      deliveryCount: paths.length,
+      pathSetSha256,
+    })
+  return paths
+}
+const p6FinalLocalCommitPaths = p6Paths => {
+  const deliveryPaths = p6DeliveryPaths(p6Paths)
+  const paths = sortedUnique([...deliveryPaths, P6_FINAL_LOCAL_COMMIT_PATH])
+  const pathSetSha256 = sha256(Buffer.from(`${paths.join('\n')}\n`, 'utf8'))
+  const additional = paths.filter(relPath => !deliveryPaths.includes(relPath))
+  if (
+    paths.length !== 221 ||
+    pathSetSha256 !== P6_FINAL_LOCAL_COMMIT_PATH_SET_SHA256 ||
+    !same(additional, [P6_FINAL_LOCAL_COMMIT_PATH])
+  )
+    fail('P6_DELIVERY_PATH_AUTHORITY_DRIFT', 'P6.6 final local commit path authority drifted', {
+      deliveryCount: deliveryPaths.length,
+      finalCount: paths.length,
+      additional,
+      pathSetSha256,
+    })
+  return paths
+}
+const p6FinalHistoricalBoundaryPaths = p6Paths => {
+  const historicalPaths = p6BoundaryPaths(p6Paths, { terminal: true })
+  const paths = sortedUnique([...historicalPaths, P6_FINAL_LOCAL_COMMIT_PATH])
+  const pathSetSha256 = sha256(Buffer.from(`${paths.join('\n')}\n`, 'utf8'))
+  const additional = paths.filter(relPath => !historicalPaths.includes(relPath))
+  if (
+    historicalPaths.length !== 250 ||
+    paths.length !== 251 ||
+    pathSetSha256 !== P6_FINAL_HISTORICAL_PATH_SET_SHA256 ||
+    !same(additional, [P6_FINAL_LOCAL_COMMIT_PATH])
+  )
+    fail('P6_PATH_CONTRACT_DRIFT', 'P6.6 final historical path authority drifted', {
+      historicalCount: historicalPaths.length,
+      finalCount: paths.length,
+      additional,
+      pathSetSha256,
+    })
+  return paths
+}
+const validateP6DeliverySnapshot = (p6Paths, state, { finalLocalCommit = false } = {}) => {
+  const expectedPaths = finalLocalCommit
+    ? p6FinalLocalCommitPaths(p6Paths)
+    : p6DeliveryPaths(p6Paths)
+  const expectedCount = finalLocalCommit ? 221 : 220
+  const expectedPathSetSha256 = finalLocalCommit
+    ? P6_FINAL_LOCAL_COMMIT_PATH_SET_SHA256
+    : P6_DELIVERY_PATH_SET_SHA256
+  const staged = sortedUnique(state.staged ?? [])
+  const unstaged = sortedUnique(state.unstaged ?? [])
+  const untracked = sortedUnique(state.untracked ?? [])
+  const deleted = sortedUnique(state.deleted ?? [])
+  const localPaths = sortedUnique([...staged, ...unstaged, ...untracked])
+  const dirty = localPaths.length > 0
+
+  if (state.branch !== 'main' || state.originUrl !== 'git@github.com:ichichuang/ccd.git')
+    fail('P6_DELIVERY_REPOSITORY_IDENTITY', 'P6 delivery repository identity drifted')
+  if (state.shallow !== false)
+    fail('P6_DELIVERY_SHALLOW_REPOSITORY', 'P6 delivery requires a non-shallow repository')
+  if (state.originMain !== P6_BASELINE_COMMIT)
+    fail('P6_DELIVERY_ORIGIN_DRIFT', 'origin/main moved during P6 delivery')
+  if (deleted.length) fail('P6_DELIVERY_DELETION', 'P6 delivery forbids deleted paths', { deleted })
+
+  if (dirty) {
+    if (state.head !== P6_BASELINE_COMMIT || state.ahead !== 0 || state.behind !== 0)
+      fail('P6_DELIVERY_DIRTY_BASE_DRIFT', 'Dirty P6 delivery must remain exactly on origin/main')
+    if (!same(localPaths, expectedPaths))
+      fail(
+        'P6_DELIVERY_PATH_SET_DRIFT',
+        `Dirty P6 delivery path set is not the frozen ${expectedCount} paths`,
+        {
+          missing: expectedPaths.filter(relPath => !localPaths.includes(relPath)),
+          unexpected: localPaths.filter(relPath => !expectedPaths.includes(relPath)),
+        }
+      )
+    if (!staged.length)
+      return {
+        mode: 'unstaged-terminal-workspace',
+        pathCount: expectedCount,
+        pathSetSha256: expectedPathSetSha256,
+      }
+    if (!same(staged, expectedPaths) || unstaged.length || untracked.length)
+      fail(
+        'P6_DELIVERY_INDEX_DRIFT',
+        `P6 index must contain the exact isolated ${expectedCount}-path candidate`,
+        {
+          staged,
+          unstaged,
+          untracked,
+        }
+      )
+    return {
+      mode: 'fully-staged-terminal-candidate',
+      pathCount: expectedCount,
+      pathSetSha256: expectedPathSetSha256,
+    }
+  }
+
+  const committedPaths = sortedUnique(state.committedPaths ?? [])
+  if (
+    state.head === P6_BASELINE_COMMIT ||
+    state.headParent !== P6_BASELINE_COMMIT ||
+    state.ahead !== 1 ||
+    state.behind !== 0
+  )
+    fail(
+      'P6_DELIVERY_COMMIT_TOPOLOGY',
+      'Committed P6 delivery must be exactly one local commit on the P5 baseline'
+    )
+  if (!same(committedPaths, expectedPaths))
+    fail(
+      'P6_DELIVERY_COMMIT_PATH_DRIFT',
+      `Committed P6 delivery does not contain the frozen ${expectedCount} paths`,
+      {
+        missing: expectedPaths.filter(relPath => !committedPaths.includes(relPath)),
+        unexpected: committedPaths.filter(relPath => !expectedPaths.includes(relPath)),
+      }
+    )
+  return {
+    mode: 'clean-committed-terminal',
+    pathCount: expectedCount,
+    pathSetSha256: expectedPathSetSha256,
+  }
+}
+const validateP6FinalLocalCommitSnapshot = (p6Paths, state) =>
+  validateP6DeliverySnapshot(p6Paths, state, { finalLocalCommit: true })
+const inspectP6DeliveryRepositoryState = ({
+  root = ROOT,
+  localState = repositoryChangeState({ root }),
+} = {}) => {
+  const deleted = sortedUnique([
+    ...gitPaths(['diff', '--name-only', '--diff-filter=D'], { cwd: root }),
+    ...gitPaths(['diff', '--cached', '--name-only', '--diff-filter=D'], { cwd: root }),
+  ])
+  const head = run('git', ['rev-parse', 'HEAD'], { cwd: root }).stdout.trim()
+  const [behind, ahead] = run(
+    'git',
+    ['rev-list', '--left-right', '--count', 'origin/main...HEAD'],
+    {
+      cwd: root,
+    }
+  )
+    .stdout.trim()
+    .split(/\s+/u)
+    .map(Number)
+  return {
+    branch: run('git', ['branch', '--show-current'], { cwd: root }).stdout.trim(),
+    originUrl: run('git', ['remote', 'get-url', 'origin'], { cwd: root }).stdout.trim(),
+    shallow:
+      run('git', ['rev-parse', '--is-shallow-repository'], { cwd: root }).stdout.trim() === 'true',
+    originMain: run('git', ['rev-parse', 'origin/main'], { cwd: root }).stdout.trim(),
+    head,
+    headParent: localState.dirty
+      ? null
+      : run('git', ['rev-parse', 'HEAD^'], { cwd: root }).stdout.trim(),
+    ahead,
+    behind,
+    staged: localState.staged,
+    unstaged: localState.unstaged,
+    untracked: localState.untracked,
+    deleted,
+    committedPaths: localState.dirty
+      ? []
+      : gitPaths(['diff-tree', '--no-commit-id', '--name-only', '-r', 'HEAD^', 'HEAD'], {
+          cwd: root,
+        }),
+  }
 }
 const resolveHistoricalComparison = ({ root = ROOT, baseline = BASELINE } = {}) => {
   const commitish = `${baseline}^{commit}`
@@ -1406,6 +1800,32 @@ const loadLifecycleDocuments = root =>
     const text = fs.readFileSync(path.join(root, relPath), 'utf8')
     return { relPath, text, markers: markerMap(text) }
   })
+const listP6Files = (root, relRoot) => {
+  if (!fs.existsSync(path.join(root, relRoot))) return []
+  const result = []
+  const visit = relDirectory => {
+    for (const entry of fs
+      .readdirSync(path.join(root, relDirectory), { withFileTypes: true })
+      .sort((left, right) => compareStrings(left.name, right.name))) {
+      const relEntry = path.posix.join(relDirectory, entry.name)
+      if (entry.isDirectory() && !entry.isSymbolicLink()) visit(relEntry)
+      else result.push(relEntry)
+    }
+  }
+  visit(relRoot)
+  return result.sort(compareStrings)
+}
+const hasP6ArtifactEvidence = root =>
+  [
+    ...P6_4_FIXED_PATHS.slice(0, 10),
+    '.ai/governance/ui/source-scanner',
+    '.ai/governance/ui/fixtures/source-valid',
+    '.ai/governance/ui/fixtures/source-invalid',
+    '.ai/governance/ui/source-baseline.json',
+  ].some(relPath => fs.existsSync(path.join(root, relPath))) ||
+  [...listP6Files(root, '.ai'), ...listP6Files(root, 'scripts')].some(relPath =>
+    /source[-_]?scanner/iu.test(relPath)
+  )
 const inferPhase = documents => {
   const values = documents.map(document => document.markers.get('P5_COMPLETE') ?? 'absent')
   if (values.some(value => value === 'yes')) {
@@ -1417,25 +1837,47 @@ const inferPhase = documents => {
     fail('P5_LIFECYCLE_STALE', 'P5_COMPLETE has an invalid value')
   return 'pre-terminal'
 }
-const validateLifecycleDocuments = documents => {
+const validateLifecycleDocuments = (documents, { p6State = 'P5_TERMINAL' } = {}) => {
   const phase = inferPhase(documents)
+  const p6PreTerminal = p6State === 'P6_PRETERMINAL'
+  const p6Terminal = p6State === 'P6_TERMINAL'
+  const terminalExpectations = p6Terminal ? P6_TERMINAL : P5_TERMINAL
   for (const document of documents) {
     if (document.markers.get('P3_COMPLETE') !== 'yes')
       fail('P3_STATE_DRIFT', `${document.relPath} lost P3_COMPLETE=yes`)
     for (const marker of P4_MARKERS)
       if (document.markers.get(marker) !== 'yes')
         fail('P4_STATE_DRIFT', `${document.relPath} lost ${marker}=yes`)
-    if (document.markers.get('SOURCE_SCANNER_IMPLEMENTED') !== 'no')
-      fail('SOURCE_SCANNER_FALSE_POSITIVE', `${document.relPath} has a false source-scanner claim`)
+    if (document.markers.get('SOURCE_SCANNER_IMPLEMENTED') !== (p6Terminal ? 'yes' : 'no'))
+      fail(
+        p6Terminal
+          ? 'P6_TERMINAL_PARTIAL'
+          : p6PreTerminal
+            ? 'P6_PREMATURE_TERMINAL'
+            : 'SOURCE_SCANNER_FALSE_POSITIVE',
+        `${document.relPath} has an invalid source-scanner claim`
+      )
+    const enforcementMarker = document.markers.get('SOURCE_ENFORCEMENT_ACTIVE')
+    if (
+      (p6Terminal && enforcementMarker !== 'yes') ||
+      (!p6Terminal && ![undefined, 'no'].includes(enforcementMarker))
+    )
+      fail(
+        p6Terminal ? 'P6_TERMINAL_PARTIAL' : 'P6_PREMATURE_TERMINAL',
+        `${document.relPath} has an invalid source-enforcement claim`
+      )
     if (document.markers.get('PAGE_CONTRACT_CREATED') !== 'no')
       fail('PAGE_CONTRACT_FALSE_POSITIVE', `${document.relPath} has a false Page Contract claim`)
     if (phase === 'terminal') {
       const terminalOrder = [...document.markers.keys()].filter(marker =>
-        Object.hasOwn(P5_TERMINAL, marker)
+        Object.hasOwn(terminalExpectations, marker)
       )
-      if (!same(terminalOrder, Object.keys(P5_TERMINAL)))
-        fail('P5_TERMINAL_MARKER_DRIFT', `${document.relPath} has invalid P5 marker order`)
-      for (const [marker, expected] of Object.entries(P5_TERMINAL)) {
+      if (!same(terminalOrder, Object.keys(terminalExpectations)))
+        fail(
+          p6Terminal ? 'P6_TERMINAL_PARTIAL' : 'P5_TERMINAL_MARKER_DRIFT',
+          `${document.relPath} has invalid terminal marker order`
+        )
+      for (const [marker, expected] of Object.entries(terminalExpectations)) {
         const actual = document.markers.get(marker)
         if (actual === expected) continue
         if (expected === 'yes' && actual === 'no')
@@ -1469,6 +1911,475 @@ const validateLifecycleDocuments = documents => {
   }
   return phase
 }
+
+const p6Canonicalize = value => {
+  if (Array.isArray(value)) return value.map(p6Canonicalize)
+  if (value && typeof value === 'object')
+    return Object.fromEntries(
+      Object.keys(value)
+        .sort(compareStrings)
+        .map(key => [key, p6Canonicalize(value[key])])
+    )
+  return value
+}
+const p6Digest = value => `sha256:${sha256(`${JSON.stringify(p6Canonicalize(value))}\n`)}`
+const P6_FINDINGS_BY_RULE = Object.freeze({
+  'CCD-UI-002': 9,
+  'CCD-UI-003': 8,
+  'CCD-UI-004': 9,
+  'CCD-UI-005': 8,
+  'CCD-UI-006': 1,
+  'CCD-UI-009': 4,
+  'CCD-UI-010': 3,
+  'CCD-UI-012': 19,
+  'CCD-UI-015': 102,
+  'CCD-UI-016': 124,
+  'CCD-UI-023': 2,
+  'CCD-UI-024': 35,
+  'CCD-UI-027': 2,
+  'CCD-UI-028': 1,
+  'CCD-UI-029': 3,
+  'CCD-UI-030': 11,
+  'CCD-UI-031': 3,
+  'CCD-UI-034': 4,
+  'CCD-UI-037': 17,
+  'CCD-UI-038': 9,
+  'CCD-UI-052': 1,
+  'CCD-UI-054': 2,
+  'CCD-UI-056': 1,
+  'CCD-UI-057': 10,
+  'CCD-UI-064': 3,
+  'CCD-UI-068': 2,
+})
+
+const validateP6RecoveredHashes = root => {
+  const mismatches = []
+  for (const [relPath, expected] of Object.entries(P6_RECOVERED_EXACT_HASHES)) {
+    const absolute = path.join(root, relPath)
+    const actual = fs.existsSync(absolute) ? sha256(fs.readFileSync(absolute)) : 'missing'
+    if (actual !== expected) mismatches.push({ relPath, expected, actual })
+  }
+  if (mismatches.length)
+    fail('P6_RECOVERED_AUTHORITY_DRIFT', 'Recovered P6.4 authority bytes drifted', {
+      mismatches,
+    })
+}
+
+const validateP6TerminalBaseline = (root, fixturePaths) => {
+  const baselineBytes = fs.readFileSync(path.join(root, P6_BASELINE_PATH))
+  const baseline = readJsonAt(root, P6_BASELINE_PATH)
+  if (baseline.repository !== 'ichichuang/ccd' || baseline.baselineCommit !== P6_BASELINE_COMMIT)
+    fail('P6_BASELINE_IDENTITY_DRIFT', 'Canonical baseline repository or commit drifted')
+  const actualBaselineSha256 = sha256(baselineBytes)
+  if (actualBaselineSha256 !== P6_BASELINE_SHA256)
+    fail('P6_BASELINE_HASH_DRIFT', 'Canonical source baseline bytes drifted', {
+      expected: P6_BASELINE_SHA256,
+      actual: actualBaselineSha256,
+    })
+  const schema = readJsonAt(root, '.ai/governance/ui/schemas/ui-source-baseline.schema.json')
+  try {
+    validateSchemaValue(schema, schema, baseline)
+  } catch (error) {
+    if (error instanceof ValidationError)
+      fail('P6_BASELINE_SCHEMA_INVALID', 'Canonical source baseline violates its schema', {
+        cause: error.code,
+      })
+    throw error
+  }
+  const expectedTopLevelKeys = [
+    'baselineCommit',
+    'declaredFileCount',
+    'declaredFindingCount',
+    'declaredFingerprintCount',
+    'declaredRuleCount',
+    'detectorCoverageSummary',
+    'entries',
+    'fingerprintAlgorithm',
+    'policyDigest',
+    'repository',
+    'ruleCoverageSummary',
+    'scannerManifestDigest',
+    'scannerModuleDigests',
+    'scannerVersion',
+    'schemaVersion',
+  ].sort(compareStrings)
+  if (!same(Object.keys(baseline).sort(compareStrings), expectedTopLevelKeys))
+    fail('P6_BASELINE_SCHEMA_INVALID', 'Canonical baseline top-level fields drifted')
+  if (
+    baseline.baselineCommit !== P6_BASELINE_COMMIT ||
+    baseline.declaredFindingCount !== 393 ||
+    baseline.declaredFingerprintCount !== 328 ||
+    !Array.isArray(baseline.entries) ||
+    baseline.entries.length !== 328
+  )
+    fail('P6_BASELINE_IDENTITY_DRIFT', 'Canonical baseline identity or counts drifted')
+  const baselineText = baselineBytes.toString('utf8')
+  if (
+    /\b\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z\b/u.test(baselineText) ||
+    /(?:\/Users\/|\/home\/|\/(?:private\/)?tmp\/|file:\/\/)/u.test(baselineText)
+  )
+    fail('P6_BASELINE_UNSAFE_CONTENT', 'Canonical baseline contains a timestamp or unsafe path')
+  const fingerprints = new Set()
+  const findingsByRule = {}
+  let findingCount = 0
+  for (const entry of baseline.entries) {
+    if (fingerprints.has(entry.fingerprint))
+      fail('P6_BASELINE_SCHEMA_INVALID', 'Canonical baseline contains duplicate fingerprints')
+    fingerprints.add(entry.fingerprint)
+    findingCount += entry.count
+    findingsByRule[entry.ruleId] = (findingsByRule[entry.ruleId] ?? 0) + entry.count
+  }
+  if (
+    findingCount !== 393 ||
+    !same(
+      Object.fromEntries(
+        Object.entries(findingsByRule).sort(([left], [right]) => compareStrings(left, right))
+      ),
+      P6_FINDINGS_BY_RULE
+    )
+  )
+    fail('P6_BASELINE_FINDING_DISTRIBUTION_DRIFT', 'Canonical baseline findings drifted', {
+      findingCount,
+      findingsByRule,
+    })
+
+  const policy = readJsonAt(root, '.ai/governance/policies/ui.json')
+  const policyProjection = {
+    schemaVersion: policy.schemaVersion,
+    repository: policy.repository,
+    counts: { ruleCount: policy.counts?.ruleCount },
+    clusters: policy.clusters,
+    rules: policy.rules,
+    scopeRegistry: policy.scopeRegistry,
+    ruleToSourceMappings: policy.ruleToSourceMappings,
+    sourceRequirementMappings: policy.sourceRequirementMappings,
+    exceptionPolicy: policy.exceptionPolicy,
+  }
+  const enforcement = readJsonAt(root, '.ai/governance/ui/source-enforcement.json')
+  if (
+    baseline.policyDigest !== P6_POLICY_DIGEST ||
+    baseline.policyDigest !== p6Digest(policyProjection) ||
+    baseline.scannerManifestDigest !== P6_SCANNER_MANIFEST_DIGEST ||
+    baseline.scannerManifestDigest !== p6Digest(enforcement)
+  )
+    fail('P6_BASELINE_DIGEST_DRIFT', 'Canonical baseline authority digest drifted')
+
+  const expectedModules = [
+    '.ai/governance/ui/scripts/scan-ui-source.mjs',
+    ...P6_SCANNER_MODULE_PATHS,
+  ].sort(compareStrings)
+  if (!same(Object.keys(baseline.scannerModuleDigests).sort(compareStrings), expectedModules))
+    fail('P6_BASELINE_MODULE_DIGEST_DRIFT', 'Canonical baseline module set drifted')
+  for (const relPath of expectedModules) {
+    const actual = `sha256:${sha256(fs.readFileSync(path.join(root, relPath)))}`
+    if (baseline.scannerModuleDigests[relPath] !== actual)
+      fail('P6_BASELINE_MODULE_DIGEST_DRIFT', `Scanner module digest drifted: ${relPath}`)
+  }
+  const fixtureRows = [...fixturePaths]
+    .sort(compareStrings)
+    .map(relPath => `${relPath}=${sha256(fs.readFileSync(path.join(root, relPath)))}\n`)
+    .join('')
+  if (sha256(fixtureRows) !== P6_FIXTURE_AGGREGATE_SHA256)
+    fail('P6_FIXTURE_BYTE_DRIFT', 'Recovered P6.4 fixture bytes drifted')
+  const exceptions = readJsonAt(root, '.ai/governance/ui/exceptions.json')
+  if (!Array.isArray(exceptions.exceptions) || exceptions.exceptions.length !== 0)
+    fail('P6_REAL_EXCEPTION_PRESENT', 'P6 terminal requires zero real exceptions')
+  const lock = readJsonAt(root, '.ai/manifests/skills-lock.json')
+  const missingLegacySkills = P6_LEGACY_SKILL_IDS.filter(id => {
+    const source = lock.skills?.[id]?.source
+    return (
+      typeof source !== 'string' ||
+      !source.startsWith('repo:') ||
+      !fs.existsSync(path.join(root, source.slice('repo:'.length)))
+    )
+  })
+  if (missingLegacySkills.length || listP6Files(root, '.ai/rules').length === 0)
+    fail('P6_LEGACY_ASSET_DRIFT', 'Legacy Skills and rules must remain present', {
+      missingLegacySkills,
+    })
+  validateP6RecoveredHashes(root)
+  return baseline
+}
+
+const validateP6ArtifactState = (root, documents) => {
+  const baselineExists = fs.existsSync(path.join(root, P6_BASELINE_PATH))
+
+  const canonicalSchemas = new Set(
+    P6_4_FIXED_PATHS.filter(relPath => relPath.includes('/schemas/'))
+  )
+  const scannerPaths = [...listP6Files(root, '.ai'), ...listP6Files(root, 'scripts')].filter(
+    relPath => /source[-_]?scanner/iu.test(relPath)
+  )
+  const shortenedSchemas = listP6Files(root, '.ai/governance/ui/schemas').filter(
+    relPath => /source.*\.schema\.json$/iu.test(relPath) && !canonicalSchemas.has(relPath)
+  )
+  const alternativeBaselines = listP6Files(root, '.ai/governance/ui').filter(
+    relPath =>
+      /source[-_]?baseline/iu.test(path.posix.basename(relPath)) &&
+      relPath !== P6_BASELINE_PATH &&
+      relPath !== '.ai/governance/ui/schemas/ui-source-baseline.schema.json'
+  )
+  const alternativePaths = [...scannerPaths, ...shortenedSchemas, ...alternativeBaselines]
+    .filter(relPath => !relPath.startsWith('.ai/governance/ui/source-scanner/'))
+    .sort(compareStrings)
+  if (alternativePaths.length)
+    fail('P6_ALTERNATIVE_SCANNER_PATH', 'Alternative P6 scanner paths are forbidden', {
+      paths: alternativePaths,
+    })
+
+  if (!hasP6ArtifactEvidence(root))
+    return { state: 'P5_TERMINAL', p6Paths: [], fixturePaths: [], modulePaths: [] }
+
+  const missingFixed = P6_4_FIXED_PATHS.filter(
+    relPath => !fs.existsSync(path.join(root, relPath))
+  ).sort(compareStrings)
+  if (missingFixed.length)
+    fail('P6_ARTIFACT_PARTIAL', 'P6.4 fixed artifacts are partial', { missing: missingFixed })
+  const invalidFixedTypes = P6_4_FIXED_PATHS.filter(relPath => {
+    const stat = fs.lstatSync(path.join(root, relPath))
+    return stat.isSymbolicLink() || !stat.isFile()
+  }).sort(compareStrings)
+  if (invalidFixedTypes.length)
+    fail('P6_ARTIFACT_TYPE', 'P6.4 fixed artifacts must be regular files', {
+      paths: invalidFixedTypes,
+    })
+
+  const enforcement = readJsonAt(root, '.ai/governance/ui/source-enforcement.json')
+  const expectedSourceModules = [
+    '.ai/governance/ui/scripts/scan-ui-source.mjs',
+    ...P6_SCANNER_MODULE_PATHS,
+  ]
+  const declaredSourceModules = enforcement?.sourceModules
+  if (!Array.isArray(declaredSourceModules))
+    fail('P6_SCANNER_MODULE_SET_DRIFT', 'source-enforcement.json must declare sourceModules')
+  const unexpectedDeclaredModules = declaredSourceModules
+    .filter(relPath => !expectedSourceModules.includes(relPath))
+    .sort(compareStrings)
+  if (unexpectedDeclaredModules.length)
+    fail('P6_UNEXPECTED_SCANNER_MODULE', 'Unexpected scanner modules are declared', {
+      paths: unexpectedDeclaredModules,
+    })
+  const missingDeclaredModules = expectedSourceModules
+    .filter(relPath => !declaredSourceModules.includes(relPath))
+    .sort(compareStrings)
+  if (missingDeclaredModules.length)
+    fail('P6_SCANNER_MODULE_MISSING', 'Required scanner modules are not declared', {
+      paths: missingDeclaredModules,
+    })
+  if (!same(declaredSourceModules, expectedSourceModules))
+    fail('P6_SCANNER_MODULE_ORDER_DRIFT', 'Scanner module declaration order drifted')
+
+  const actualModulePaths = listP6Files(root, '.ai/governance/ui/source-scanner')
+  const unexpectedModules = actualModulePaths
+    .filter(relPath => !P6_SCANNER_MODULE_PATHS.includes(relPath))
+    .sort(compareStrings)
+  if (unexpectedModules.length)
+    fail('P6_UNEXPECTED_SCANNER_MODULE', 'Unexpected scanner modules are present', {
+      paths: unexpectedModules,
+    })
+  const missingModules = P6_SCANNER_MODULE_PATHS.filter(
+    relPath => !actualModulePaths.includes(relPath)
+  ).sort(compareStrings)
+  if (missingModules.length)
+    fail('P6_SCANNER_MODULE_MISSING', 'Required scanner modules are missing', {
+      paths: missingModules,
+    })
+  const invalidModuleTypes = P6_SCANNER_MODULE_PATHS.filter(relPath => {
+    const stat = fs.lstatSync(path.join(root, relPath))
+    return stat.isSymbolicLink() || !stat.isFile()
+  }).sort(compareStrings)
+  if (invalidModuleTypes.length)
+    fail('P6_ARTIFACT_TYPE', 'Scanner modules must be regular files', {
+      paths: invalidModuleTypes,
+    })
+
+  const fixtureManifest = readJsonAt(root, '.ai/governance/ui/fixtures/source-cases.json')
+  if (!Array.isArray(fixtureManifest?.cases) || fixtureManifest.cases.length !== 162)
+    fail('P6_FIXTURE_SET_DRIFT', 'P6 fixture manifest must declare exactly 162 cases')
+  const fixturePaths = fixtureManifest.cases.map(item => item?.fixturePath)
+  if (fixturePaths.some(relPath => typeof relPath !== 'string'))
+    fail('P6_FIXTURE_SET_DRIFT', 'Every P6 fixture must declare a string fixturePath')
+  if (new Set(fixturePaths).size !== fixturePaths.length)
+    fail('P6_FIXTURE_SET_DRIFT', 'P6 fixture paths must be unique')
+  const validPrefix = '.ai/governance/ui/fixtures/source-valid/'
+  const invalidPrefix = '.ai/governance/ui/fixtures/source-invalid/'
+  if (
+    fixturePaths.filter(relPath => relPath.startsWith(validPrefix)).length !== 82 ||
+    fixturePaths.filter(relPath => relPath.startsWith(invalidPrefix)).length !== 80 ||
+    fixturePaths.some(
+      relPath => !relPath.startsWith(validPrefix) && !relPath.startsWith(invalidPrefix)
+    )
+  )
+    fail('P6_FIXTURE_SET_DRIFT', 'P6 fixture paths must remain in the exact 82/80 families')
+  const declaredFixturePaths = [...fixturePaths].sort(compareStrings)
+  const actualFixturePaths = [
+    ...listP6Files(root, '.ai/governance/ui/fixtures/source-valid'),
+    ...listP6Files(root, '.ai/governance/ui/fixtures/source-invalid'),
+  ].sort(compareStrings)
+  if (!same(actualFixturePaths, declaredFixturePaths))
+    fail('P6_FIXTURE_SET_DRIFT', 'Fixture files do not exactly match source-cases.json', {
+      missing: declaredFixturePaths.filter(relPath => !actualFixturePaths.includes(relPath)),
+      unexpected: actualFixturePaths.filter(relPath => !declaredFixturePaths.includes(relPath)),
+    })
+  const invalidFixtureTypes = declaredFixturePaths
+    .filter(relPath => {
+      const stat = fs.lstatSync(path.join(root, relPath))
+      return stat.isSymbolicLink() || !stat.isFile()
+    })
+    .sort(compareStrings)
+  if (invalidFixtureTypes.length)
+    fail('P6_ARTIFACT_TYPE', 'P6 fixtures must be regular files', {
+      paths: invalidFixtureTypes,
+    })
+
+  const terminalStatePaths = [
+    '.ai/governance/policies/ui.json',
+    '.ai/governance/ui/fixtures/schema-valid/ui-policy.json',
+    '.ai/governance/coverage/project-ui-semantic-coverage.json',
+  ]
+  if (!baselineExists)
+    for (const relPath of terminalStatePaths) {
+      const value = readJsonAt(root, relPath)
+      if (
+        value.sourceScannerImplemented !== false ||
+        value.applicationSourceEnforcementState !== 'BASELINE_ONLY' ||
+        value.pageContractCreated !== false
+      )
+        fail('P6_PREMATURE_TERMINAL', `${relPath} has premature P6 terminal state`, {
+          relPath,
+        })
+    }
+  if (!baselineExists)
+    for (const document of documents)
+      for (const [marker, expected] of [
+        ['SOURCE_SCANNER_IMPLEMENTED', 'no'],
+        ['PAGE_CONTRACT_CREATED', 'no'],
+        ['LEGACY_SKILLS_RETIRED', 'no'],
+        ['LEGACY_RULES_RETIRED', 'no'],
+      ])
+        if (document.markers.get(marker) !== expected)
+          fail('P6_PREMATURE_TERMINAL', `${document.relPath} has invalid ${marker}`, {
+            relPath: document.relPath,
+            marker,
+            expected,
+            actual: document.markers.get(marker),
+          })
+  const p6WikiPath = 'wiki/canonical/design/ui-source-enforcement.md'
+  const p6Wiki = fs.readFileSync(path.join(root, p6WikiPath), 'utf8')
+  if (!baselineExists) {
+    for (const marker of [
+      'P6_4_PRETERMINAL=yes',
+      'SOURCE_SCANNER_IMPLEMENTED=no',
+      'SOURCE_ENFORCEMENT_ACTIVE=no',
+      'CANONICAL_SOURCE_BASELINE_PRESENT=no',
+      'P6_5_STARTED=no',
+    ])
+      if (!p6Wiki.includes(marker))
+        fail('P6_PREMATURE_TERMINAL', `${p6WikiPath} is missing ${marker}`, {
+          relPath: p6WikiPath,
+          marker,
+        })
+
+    const p6Paths = sortedUnique([...P6_4_FIXED_PATHS, ...P6_SCANNER_MODULE_PATHS, ...fixturePaths])
+    p6BoundaryPaths(p6Paths)
+    return {
+      state: 'P6_PRETERMINAL',
+      p6Paths,
+      fixturePaths: declaredFixturePaths,
+      modulePaths: [...P6_SCANNER_MODULE_PATHS],
+    }
+  }
+
+  const baseline = validateP6TerminalBaseline(root, declaredFixturePaths)
+  for (const relPath of terminalStatePaths) {
+    const value = readJsonAt(root, relPath)
+    if (
+      value.sourceScannerImplemented !== true ||
+      value.applicationSourceEnforcementState !== 'ACTIVE_RATCHET' ||
+      value.pageContractCreated !== false ||
+      value.legacySkillsRetired !== false ||
+      value.legacyRulesRetired !== false
+    )
+      fail('P6_TERMINAL_PARTIAL', `${relPath} has partial P6 terminal state`, { relPath })
+  }
+  const coverage = readJsonAt(root, '.ai/governance/coverage/project-ui-semantic-coverage.json')
+  const sourceEnforcement = coverage.sourceEnforcement
+  if (
+    sourceEnforcement?.phase !== 'P6_TERMINAL' ||
+    sourceEnforcement?.scannerImplementationPresent !== true ||
+    sourceEnforcement?.canonicalBaselinePresent !== true ||
+    sourceEnforcement?.strictNewFingerprintAndCountIncreaseRatchetActive !== true ||
+    sourceEnforcement?.ruleCounts?.sourceEnforceable !== 24 ||
+    sourceEnforcement?.ruleCounts?.assisted !== 22 ||
+    sourceEnforcement?.ruleCounts?.schema !== 8 ||
+    sourceEnforcement?.ruleCounts?.humanReviewOnly !== 14 ||
+    sourceEnforcement?.scopeCount !== 20 ||
+    sourceEnforcement?.governedP5FileCount !== 554 ||
+    sourceEnforcement?.acceptedHistoricalFindingCount !== 393 ||
+    sourceEnforcement?.acceptedHistoricalFindingsDerivedFromCanonicalBaseline !== true ||
+    sourceEnforcement?.realExceptionCount !== 0 ||
+    sourceEnforcement?.pageContractCreated !== false ||
+    sourceEnforcement?.legacySkillsRetained !== true ||
+    sourceEnforcement?.legacyRulesRetained !== true
+  )
+    fail('P6_TERMINAL_PARTIAL', 'Semantic coverage has partial P6 terminal authority')
+  for (const document of documents)
+    for (const [marker, expected] of Object.entries({
+      SOURCE_SCANNER_IMPLEMENTED: 'yes',
+      SOURCE_ENFORCEMENT_ACTIVE: 'yes',
+      PAGE_CONTRACT_CREATED: 'no',
+      LEGACY_SKILLS_RETIRED: 'no',
+      LEGACY_RULES_RETIRED: 'no',
+    }))
+      if (document.markers.get(marker) !== expected)
+        fail('P6_TERMINAL_PARTIAL', `${document.relPath} has invalid ${marker}`, {
+          relPath: document.relPath,
+          marker,
+          expected,
+          actual: document.markers.get(marker),
+        })
+  for (const marker of [
+    'P6_5_BASELINE_RATCHET_ACTIVATION=yes',
+    'SOURCE_SCANNER_IMPLEMENTED=yes',
+    'SOURCE_ENFORCEMENT_ACTIVE=yes',
+    'CANONICAL_SOURCE_BASELINE_PRESENT=yes',
+    'STRICT_SOURCE_RATCHET_ACTIVE=yes',
+    'PAGE_CONTRACT_CREATED=no',
+    'LEGACY_SKILLS_RETIRED=no',
+    'LEGACY_RULES_RETIRED=no',
+    'P6 implementation and local commit are completed by P6.6',
+    'P6.7 performs external push, CI, deployment, and remote-authority acceptance',
+    'Remote acceptance is operational evidence and is not encoded as a repository lifecycle marker',
+  ])
+    if (!p6Wiki.includes(marker))
+      fail('P6_TERMINAL_PARTIAL', `${p6WikiPath} is missing ${marker}`, {
+        relPath: p6WikiPath,
+        marker,
+      })
+  for (const marker of ['P6_6_PENDING=yes', 'P6_7_REMOTE_ACCEPTANCE_PENDING=yes'])
+    if (p6Wiki.includes(marker))
+      fail('P6_TERMINAL_PARTIAL', `${p6WikiPath} retains retired ${marker}`, {
+        relPath: p6WikiPath,
+        marker,
+      })
+  if (/\bP6_COMPLETE=yes\b/u.test(p6Wiki))
+    fail('P6_PREMATURE_COMPLETION', `${p6WikiPath} must not claim P6 completion`)
+
+  const p6Paths = sortedUnique([
+    ...P6_4_FIXED_PATHS,
+    ...P6_SCANNER_MODULE_PATHS,
+    ...fixturePaths,
+    P6_BASELINE_PATH,
+  ])
+  p6BoundaryPaths(p6Paths, { terminal: true })
+  return {
+    state: 'P6_TERMINAL',
+    p6Paths,
+    fixturePaths: declaredFixturePaths,
+    modulePaths: [...P6_SCANNER_MODULE_PATHS],
+    baselineFindingCount: baseline.declaredFindingCount,
+  }
+}
 const validateP3Counts = counts => {
   for (const [name, expected] of Object.entries(P3_COUNTS))
     if (counts?.[name] !== expected)
@@ -1476,7 +2387,11 @@ const validateP3Counts = counts => {
 }
 const validateLifecycle = () => {
   const documents = loadLifecycleDocuments(ROOT)
-  const phase = validateLifecycleDocuments(documents)
+  for (const relPath of PAGE_CONTRACT_PATHS)
+    if (fs.existsSync(path.join(ROOT, relPath)))
+      fail('PAGE_CONTRACT_FALSE_POSITIVE', `${relPath} must remain absent`)
+  const p6 = validateP6ArtifactState(ROOT, documents)
+  const p5Phase = validateLifecycleDocuments(documents, { p6State: p6.state })
   const policy = readJson('.ai/governance/policies/ui.json')
   validateP3Counts(policy.counts)
   const handoffCounts = readJson('.ai/governance/coverage/project-ui-semantic-coverage.json')
@@ -1496,20 +2411,32 @@ const validateLifecycle = () => {
   for (const [name, expected] of Object.entries(expectedHandoff))
     if (handoffCounts?.[name] !== expected)
       fail('P3_COUNT_DRIFT', `p3Handoff.counts.${name} must equal ${expected}`)
-  if (policy.sourceScannerImplemented !== false || policy.pageContractCreated !== false)
-    fail('P5_FALSE_POSITIVE', 'Source scanner and Page Contract must remain absent')
-  for (const relPath of PAGE_CONTRACT_PATHS)
-    if (fs.existsSync(path.join(ROOT, relPath)))
-      fail('PAGE_CONTRACT_FALSE_POSITIVE', `${relPath} must remain absent`)
-  const scannerPaths = sortedUnique([
-    ...gitPaths(['ls-files']),
-    ...gitPaths(['ls-files', '--others', '--exclude-standard']),
-  ]).filter(relPath => /source[-_]?scanner/iu.test(relPath))
-  if (scannerPaths.length)
-    fail('SOURCE_SCANNER_FALSE_POSITIVE', 'Source scanner paths must remain absent', {
-      scannerPaths,
-    })
-  return { phase, lifecycleSources: documents.length, terminalClaims: phase === 'terminal' }
+  const p6Terminal = p6.state === 'P6_TERMINAL'
+  if (
+    policy.sourceScannerImplemented !== p6Terminal ||
+    policy.applicationSourceEnforcementState !==
+      (p6Terminal ? 'ACTIVE_RATCHET' : 'BASELINE_ONLY') ||
+    policy.pageContractCreated !== false ||
+    (p6Terminal && (policy.legacySkillsRetired !== false || policy.legacyRulesRetired !== false))
+  )
+    fail(
+      p6Terminal ? 'P6_TERMINAL_PARTIAL' : 'P5_FALSE_POSITIVE',
+      'Policy lifecycle state does not match the active phase'
+    )
+  if (['P6_PRETERMINAL', 'P6_TERMINAL'].includes(p6.state) && p5Phase !== 'terminal')
+    fail('P6_REQUIRES_P5_TERMINAL', 'P6.4 artifacts require terminal P5 lifecycle state')
+  return {
+    phase:
+      p6.state === 'P6_PRETERMINAL'
+        ? 'p6-pre-terminal'
+        : p6.state === 'P6_TERMINAL'
+          ? 'p6-terminal'
+          : p5Phase,
+    p5Phase,
+    p6Paths: p6.p6Paths,
+    lifecycleSources: documents.length,
+    terminalClaims: p5Phase === 'terminal',
+  }
 }
 const changedPathSet = ({ root = ROOT, comparison }) => {
   if (!comparison?.available)
@@ -1524,6 +2451,17 @@ const changedPathSet = ({ root = ROOT, comparison }) => {
   return [...changed].sort(compareStrings)
 }
 const inferBoundaryPhase = (lifecyclePhase, actualPaths) => {
+  if (['p6-pre-terminal', 'p6-terminal'].includes(lifecyclePhase)) return lifecyclePhase
+  const hasP6Paths = actualPaths.some(
+    relPath =>
+      P6_4_FIXED_PATHS.slice(0, 10).includes(relPath) ||
+      P6_SCANNER_MODULE_PATHS.includes(relPath) ||
+      relPath.startsWith('.ai/governance/ui/fixtures/source-valid/') ||
+      relPath.startsWith('.ai/governance/ui/fixtures/source-invalid/') ||
+      isP6NamedAlternative(relPath) ||
+      relPath === '.ai/governance/ui/source-baseline.json'
+  )
+  if (lifecyclePhase === 'terminal' && hasP6Paths) return 'p6-pre-terminal'
   if (lifecyclePhase === 'terminal') return 'p5-terminal'
   if (lifecyclePhase !== 'pre-terminal')
     fail('PATH_CONTRACT_PHASE', `Unsupported lifecycle phase: ${lifecyclePhase}`)
@@ -1541,7 +2479,7 @@ const protectedPathsForPhase = phase =>
   ])
 const validateProtectedPaths = (
   phase,
-  { root = ROOT, comparison, localState = repositoryChangeState({ root }) } = {}
+  { root = ROOT, comparison, localState = repositoryChangeState({ root }), p6Paths = [] } = {}
 ) => {
   const protectedPaths = protectedPathsForPhase(phase)
   if (comparison?.available)
@@ -1556,7 +2494,7 @@ const validateProtectedPaths = (
   const protectedUntracked = localState.untracked.filter(
     relPath =>
       protectedPaths.some(protectedPath => matchesProtectedPath(relPath, protectedPath)) ||
-      isForbiddenAlternative(relPath)
+      isForbiddenAlternative(relPath, { phase, p6Paths })
   )
   if (protectedUntracked.length)
     fail('PROTECTED_UNTRACKED_PATH_PRESENT', 'Protected untracked paths are present', {
@@ -1575,8 +2513,26 @@ const validateIndexContract = ({
   staged,
   unstaged,
   untracked,
+  finalLocalCommit = false,
 }) => {
   if (!staged.length) return
+  if (phase === 'p6-pre-terminal')
+    fail('P6_INDEX_NOT_EMPTY', 'P6 candidate paths must remain unstaged', { staged })
+  if (phase === 'p6-terminal') {
+    const expectedLocalCount = finalLocalCommit ? 221 : 220
+    if (
+      localChanged.length === expectedLocalCount &&
+      same(sortedUnique(staged), sortedUnique(localChanged)) &&
+      !unstaged.length &&
+      !untracked.length
+    )
+      return
+    fail('P6_INDEX_NOT_EMPTY', 'P6 terminal index must stage the exact isolated candidate', {
+      staged: sortedUnique(staged),
+      unstaged: sortedUnique(unstaged),
+      untracked: sortedUnique(untracked),
+    })
+  }
   if (phase !== 'p5-terminal')
     fail('INDEX_NOT_EMPTY', 'Pre-terminal P5 paths must remain unstaged', { staged })
   if (
@@ -1610,7 +2566,10 @@ const validateHistoricalLegacyState = ({ root = ROOT, comparison }) => {
     fail('LEGACY_ASSET_DRIFT', 'Legacy Skill or rule assets were deleted', { deletedLegacy })
   return { checked: true, deletedLegacy: 0 }
 }
-const validateBoundary = (lifecyclePhase, { root = ROOT, baseline = BASELINE } = {}) => {
+const validateBoundary = (
+  lifecyclePhase,
+  { root = ROOT, baseline = BASELINE, p6Paths = [] } = {}
+) => {
   const localState = repositoryChangeState({ root })
   const comparison = resolveHistoricalComparison({ root, baseline })
   const boundaryMode = localState.dirty ? 'dirty-candidate' : 'committed-clean'
@@ -1622,16 +2581,48 @@ const validateBoundary = (lifecyclePhase, { root = ROOT, baseline = BASELINE } =
     )
   const changed = comparison.available ? changedPathSet({ root, comparison }) : []
   const phase = inferBoundaryPhase(lifecyclePhase, changed)
-  const protectedState = validateProtectedPaths(phase, { root, comparison, localState })
+  const p6Delivery =
+    phase === 'p6-terminal'
+      ? validateP6FinalLocalCommitSnapshot(
+          p6Paths,
+          inspectP6DeliveryRepositoryState({ root, localState })
+        )
+      : null
+  const protectedState = validateProtectedPaths(phase, {
+    root,
+    comparison,
+    localState,
+    p6Paths,
+  })
   const legacyState = validateHistoricalLegacyState({ root, comparison })
   const contract = comparison.available
-    ? validatePathContract({ phase, actualPaths: changed })
+    ? validatePathContract({
+        phase,
+        actualPaths: changed,
+        p6Paths,
+        finalLocalCommit: phase === 'p6-terminal',
+      })
     : {
         phase,
         actualCount: 0,
-        mandatoryCount: PATH_CONTRACTS[phase].mandatoryPaths.length,
-        allowedCount: PATH_CONTRACTS[phase].allowedPaths.length,
-        allowedPaths: [...PATH_CONTRACTS[phase].allowedPaths],
+        mandatoryCount:
+          phase === 'p6-terminal'
+            ? p6FinalHistoricalBoundaryPaths(p6Paths).length
+            : phase === 'p6-pre-terminal'
+              ? p6BoundaryPaths(p6Paths).length
+              : PATH_CONTRACTS[phase].mandatoryPaths.length,
+        allowedCount:
+          phase === 'p6-terminal'
+            ? p6FinalHistoricalBoundaryPaths(p6Paths).length
+            : phase === 'p6-pre-terminal'
+              ? p6BoundaryPaths(p6Paths).length
+              : PATH_CONTRACTS[phase].allowedPaths.length,
+        allowedPaths:
+          phase === 'p6-terminal'
+            ? p6FinalHistoricalBoundaryPaths(p6Paths)
+            : phase === 'p6-pre-terminal'
+              ? p6BoundaryPaths(p6Paths)
+              : [...PATH_CONTRACTS[phase].allowedPaths],
       }
   validateIndexContract({
     phase,
@@ -1640,6 +2631,7 @@ const validateBoundary = (lifecyclePhase, { root = ROOT, baseline = BASELINE } =
     staged: localState.staged,
     unstaged: localState.unstaged,
     untracked: localState.untracked,
+    finalLocalCommit: phase === 'p6-terminal',
   })
   const informational = comparison.available
     ? []
@@ -1660,6 +2652,7 @@ const validateBoundary = (lifecyclePhase, { root = ROOT, baseline = BASELINE } =
     historicalComparison: comparison,
     historicalLegacyState: legacyState,
     informational,
+    p6Delivery,
     ...protectedState,
   }
 }
@@ -1871,6 +2864,68 @@ const BOUNDARY_TEST_IDS = [
   'boundary-unexpected-p5-terminal-path',
   'lifecycle-mixed-terminal',
 ]
+const P6_BOUNDARY_TEST_IDS = [
+  'boundary-valid-p6-pre-terminal',
+  'boundary-missing-p6-path',
+  'boundary-unexpected-p6-path',
+  'boundary-alternative-p6-scanner-path',
+  'boundary-staged-p6-rejected',
+  'boundary-p6-phase-inference',
+]
+const P6_TERMINAL_TEST_IDS = [
+  'boundary-valid-p6-terminal',
+  'boundary-p6-terminal-missing-baseline',
+  'boundary-p6-terminal-alternative-baseline',
+  'boundary-p6-terminal-unexpected-path',
+  'boundary-p6-terminal-staged-rejected',
+  'boundary-p6-terminal-unknown-module',
+  'boundary-p6-terminal-alternative-scanner',
+  'boundary-p6-terminal-page-contract',
+  'boundary-p6-terminal-apps-drift',
+  'boundary-p6-terminal-packages-drift',
+  'boundary-p6-terminal-github-drift',
+  'boundary-p6-terminal-lockfile-drift',
+  'artifact-valid-p6-terminal',
+  'artifact-p6-terminal-missing-baseline',
+  'artifact-p6-terminal-stale-identity',
+  'artifact-p6-terminal-partial-marker',
+  'artifact-p6-terminal-nonzero-exceptions',
+  'artifact-p6-terminal-legacy-deletion',
+  'artifact-p6-terminal-unknown-module',
+  'artifact-p6-terminal-fixture-drift',
+  'artifact-p6-terminal-alternative-scanner',
+  'artifact-p6-terminal-alternative-baseline',
+  'lifecycle-valid-p6-terminal',
+  'lifecycle-partial-p6-terminal',
+  'lifecycle-p6-terminal-page-contract',
+]
+const P6_DELIVERY_TEST_IDS = [
+  'p6-delivery-exact-unstaged-terminal-workspace',
+  'p6-delivery-exact-fully-staged-terminal-candidate',
+  'p6-delivery-partial-staged-candidate',
+  'p6-delivery-mixed-staged-unstaged-candidate',
+  'p6-delivery-extra-staged-path',
+  'p6-delivery-remaining-untracked-path',
+  'p6-delivery-staged-deletion',
+  'p6-delivery-exact-clean-committed-state',
+  'p6-delivery-wrong-parent',
+  'p6-delivery-two-local-commits',
+]
+const P6_FINAL_LOCAL_COMMIT_TEST_IDS = [
+  'p6-final-exact-unstaged-candidate',
+  'p6-final-exact-fully-staged-candidate',
+  'p6-final-exact-clean-committed-state',
+  'p6-final-hook-script-missing',
+  'p6-final-extra-hook-config',
+  'p6-final-lint-staged-config-changed',
+  'p6-final-pre-commit-hook-changed',
+  'p6-final-partial-staging',
+  'p6-final-mixed-staging',
+  'p6-final-remaining-untracked',
+  'p6-final-staged-deletion',
+  'p6-final-wrong-parent',
+  'p6-final-two-local-commits',
+]
 export function runSelfTests({
   routingFixtures = readJson(FILES.routingFixtures),
   syncFixtures = readJson(FILES.syncFixtures),
@@ -1889,17 +2944,26 @@ export function runSelfTests({
   const declaredSelfTestIds = [
     ...SELF_TEST_IDS,
     ...FALSE_POSITIVE_TEST_IDS,
-    ...BOUNDARY_TEST_IDS,
+    ...BOUNDARY_TEST_IDS.slice(0, -1),
+    ...P6_BOUNDARY_TEST_IDS,
+    ...P6_TERMINAL_TEST_IDS,
+    ...P6_DELIVERY_TEST_IDS,
+    ...P6_FINAL_LOCAL_COMMIT_TEST_IDS,
+    BOUNDARY_TEST_IDS.at(-1),
     ...LIFECYCLE_TEST_IDS,
   ]
   if (
     SELF_TEST_IDS.length !== 62 ||
     FALSE_POSITIVE_TEST_IDS.length !== 20 ||
     BOUNDARY_TEST_IDS.length !== 11 ||
+    P6_BOUNDARY_TEST_IDS.length !== 6 ||
+    P6_TERMINAL_TEST_IDS.length !== 25 ||
+    P6_DELIVERY_TEST_IDS.length !== 10 ||
+    P6_FINAL_LOCAL_COMMIT_TEST_IDS.length !== 13 ||
     LIFECYCLE_TEST_IDS.length !== 8 ||
-    new Set(declaredSelfTestIds).size !== 101
+    new Set(declaredSelfTestIds).size !== 155
   )
-    fail('SELF_TEST_COUNT_DRIFT', 'Self-test inventory must contain exactly 101 unique IDs')
+    fail('SELF_TEST_COUNT_DRIFT', 'Self-test inventory must contain exactly 155 unique IDs')
   const routingById = new Map(routingFixtures.cases.map(fixture => [fixture.id, fixture]))
   const executedRouting = new Set(routingEvidence?.nodeSuite?.caseIds ?? [])
   const syncById = new Map((syncEvidence?.records ?? []).map(record => [record.id, record]))
@@ -1940,18 +3004,29 @@ export function runSelfTests({
     return record
   }
   const repositoryDocuments = loadLifecycleDocuments(ROOT)
+  const terminalLifecycleMarkers = new Set([
+    ...Object.keys(P5_TERMINAL),
+    ...Object.keys(P6_TERMINAL),
+  ])
   const preTerminalDocuments = repositoryDocuments.map(document => ({
     relPath: document.relPath,
     markers: new Map([
-      ...[...document.markers].filter(([marker]) => !Object.hasOwn(P5_TERMINAL, marker)),
+      ...[...document.markers].filter(([marker]) => !terminalLifecycleMarkers.has(marker)),
       ...Object.entries(P5_TERMINAL).filter(([, expected]) => expected === 'no'),
     ]),
   }))
   const terminalDocuments = repositoryDocuments.map(document => ({
     relPath: document.relPath,
     markers: new Map([
-      ...[...document.markers].filter(([marker]) => !Object.hasOwn(P5_TERMINAL, marker)),
+      ...[...document.markers].filter(([marker]) => !terminalLifecycleMarkers.has(marker)),
       ...Object.entries(P5_TERMINAL),
+    ]),
+  }))
+  const p6TerminalDocuments = repositoryDocuments.map(document => ({
+    relPath: document.relPath,
+    markers: new Map([
+      ...[...document.markers].filter(([marker]) => !terminalLifecycleMarkers.has(marker)),
+      ...Object.entries(P6_TERMINAL),
     ]),
   }))
   const preTerminalLifecycleText = `## Lifecycle State\n\n\`\`\`text\n${[
@@ -1959,6 +3034,78 @@ export function runSelfTests({
   ]
     .map(([marker, value]) => `${marker}=${value}`)
     .join('\n')}\n\`\`\``
+  const copyCurrentFile = (root, relPath) => {
+    const destination = path.join(root, relPath)
+    fs.mkdirSync(path.dirname(destination), { recursive: true })
+    fs.copyFileSync(path.join(ROOT, relPath), destination)
+  }
+  const createP6TerminalArtifactFixture = mutation => {
+    const root = fs.mkdtempSync(path.join(temporaryRoot, 'p6-terminal-artifact-'))
+    const fixturePaths = readJson('.ai/governance/ui/fixtures/source-cases.json').cases.map(
+      item => item.fixturePath
+    )
+    for (const relPath of [
+      ...P6_4_FIXED_PATHS,
+      ...P6_SCANNER_MODULE_PATHS,
+      ...fixturePaths,
+      P6_BASELINE_PATH,
+      '.ai/governance/policies/ui.json',
+      '.ai/governance/ui/fixtures/schema-valid/ui-policy.json',
+      '.ai/governance/ui/fixtures/rule-cases.json',
+      '.ai/governance/coverage/project-ui-semantic-coverage.json',
+      '.ai/governance/ui/exceptions.json',
+      '.ai/manifests/skills-lock.json',
+      ...LIFECYCLE_SOURCES,
+    ])
+      copyCurrentFile(root, relPath)
+    const fixtureLock = readJsonAt(root, '.ai/manifests/skills-lock.json')
+    for (const id of P6_LEGACY_SKILL_IDS)
+      fs.mkdirSync(path.join(root, fixtureLock.skills[id].source.slice('repo:'.length)), {
+        recursive: true,
+      })
+    fs.mkdirSync(path.join(root, '.ai/rules/core'), { recursive: true })
+    fs.writeFileSync(path.join(root, '.ai/rules/core/fixture.mdc'), 'fixture\n', 'utf8')
+
+    if (mutation === 'missing-baseline') fs.rmSync(path.join(root, P6_BASELINE_PATH))
+    if (mutation === 'stale-identity') {
+      const baseline = readJsonAt(root, P6_BASELINE_PATH)
+      baseline.baselineCommit = '0'.repeat(40)
+      fs.writeFileSync(path.join(root, P6_BASELINE_PATH), canonicalJson(baseline), 'utf8')
+    }
+    if (mutation === 'partial-marker') {
+      const relPath = LIFECYCLE_SOURCES[0]
+      const text = fs.readFileSync(path.join(root, relPath), 'utf8')
+      fs.writeFileSync(
+        path.join(root, relPath),
+        text.replace('SOURCE_ENFORCEMENT_ACTIVE=yes', 'SOURCE_ENFORCEMENT_ACTIVE=no'),
+        'utf8'
+      )
+    }
+    if (mutation === 'real-exception') {
+      const registry = readJsonAt(root, '.ai/governance/ui/exceptions.json')
+      registry.exceptions.push({})
+      fs.writeFileSync(
+        path.join(root, '.ai/governance/ui/exceptions.json'),
+        canonicalJson(registry),
+        'utf8'
+      )
+    }
+    if (mutation === 'legacy-deletion') {
+      const source = fixtureLock.skills[P6_LEGACY_SKILL_IDS[0]].source.slice('repo:'.length)
+      fs.rmSync(path.join(root, source), { recursive: true, force: true })
+    }
+    if (mutation === 'unknown-module')
+      writeFile(root, '.ai/governance/ui/source-scanner/unexpected-module.mjs', 'fixture\n')
+    if (mutation === 'fixture-drift') fs.rmSync(path.join(root, fixturePaths[0]))
+    if (mutation === 'alternative-scanner')
+      writeFile(root, '.ai/governance/ui/source_scanner/rogue.mjs', 'fixture\n')
+    if (mutation === 'alternative-baseline')
+      fs.renameSync(
+        path.join(root, P6_BASELINE_PATH),
+        path.join(root, '.ai/governance/ui/source-baseline-copy.json')
+      )
+    return { root, documents: loadLifecycleDocuments(root) }
+  }
   const tracked = gitPaths(['ls-files'])
   let selfTestPythonInvocation = 0
   const routeWith = ({
@@ -2162,7 +3309,7 @@ export function runSelfTests({
     const documents = loadLifecycleDocuments(fixtureRoot)
     if (inferPhase(documents) !== 'terminal')
       fail('SELF_TEST_SETUP_FAILED', 'Stale lifecycle fixture did not remain terminal')
-    validateLifecycleDocuments(documents)
+    validateLifecycleDocuments(documents, { p6State: 'P6_TERMINAL' })
   })
   reject('P5-ST-R021', 'P3_COUNT_DRIFT', () => {
     const counts = clone(P3_COUNTS)
@@ -2437,6 +3584,15 @@ export function runSelfTests({
 
   const p5_4Fixture = [...P5_4_PATHS]
   const terminalFixture = [...P5_TERMINAL_PATHS]
+  const p6FixturePaths = readJson('.ai/governance/ui/fixtures/source-cases.json').cases.map(
+    item => item.fixturePath
+  )
+  const p6ArtifactFixture = sortedUnique([
+    ...P6_4_FIXED_PATHS,
+    ...P6_SCANNER_MODULE_PATHS,
+    ...p6FixturePaths,
+  ])
+  const p6BoundaryFixture = sortedUnique([...terminalFixture, ...p6ArtifactFixture])
 
   execute('boundary-valid-p4-baseline', () =>
     validatePathContract({ phase: 'p4-baseline', actualPaths: [] })
@@ -2526,6 +3682,374 @@ export function runSelfTests({
       actualPaths: [...terminalFixture, 'unexpected-p5-terminal.txt'],
     })
   )
+  execute('boundary-valid-p6-pre-terminal', () => {
+    const result = validatePathContract({
+      phase: 'p6-pre-terminal',
+      actualPaths: p6BoundaryFixture,
+      p6Paths: p6ArtifactFixture,
+    })
+    if (result.actualCount !== 249)
+      fail('SELF_TEST_BOUNDARY', 'P6 pre-terminal fixture does not contain exactly 249 paths')
+  })
+  reject('boundary-missing-p6-path', 'P6_PATH_MISSING', () =>
+    validatePathContract({
+      phase: 'p6-pre-terminal',
+      actualPaths: p6BoundaryFixture.slice(1),
+      p6Paths: p6ArtifactFixture,
+    })
+  )
+  reject('boundary-unexpected-p6-path', 'P6_UNAUTHORIZED_CHANGED_PATH', () =>
+    validatePathContract({
+      phase: 'p6-pre-terminal',
+      actualPaths: [...p6BoundaryFixture, 'unexpected-p6-path.txt'],
+      p6Paths: p6ArtifactFixture,
+    })
+  )
+  reject('boundary-alternative-p6-scanner-path', 'P6_ALTERNATIVE_SCANNER_PATH', () =>
+    validatePathContract({
+      phase: 'p6-pre-terminal',
+      actualPaths: [...p6BoundaryFixture, '.ai/governance/ui/source_scanner/rogue.mjs'],
+      p6Paths: p6ArtifactFixture,
+    })
+  )
+  reject('boundary-staged-p6-rejected', 'P6_INDEX_NOT_EMPTY', () =>
+    validateIndexContract({
+      phase: 'p6-pre-terminal',
+      changed: p6BoundaryFixture,
+      staged: [p6BoundaryFixture[0]],
+      unstaged: p6BoundaryFixture.slice(1),
+      untracked: [],
+    })
+  )
+  execute('boundary-p6-phase-inference', () => {
+    if (inferBoundaryPhase('terminal', p6BoundaryFixture) !== 'p6-pre-terminal')
+      fail('SELF_TEST_BOUNDARY', 'P6 artifact evidence did not select p6-pre-terminal')
+  })
+
+  const p6TerminalArtifactFixture = sortedUnique([...p6ArtifactFixture, P6_BASELINE_PATH])
+  const p6TerminalBoundaryFixture = sortedUnique([...terminalFixture, ...p6TerminalArtifactFixture])
+  execute('boundary-valid-p6-terminal', () => {
+    const result = validatePathContract({
+      phase: 'p6-terminal',
+      actualPaths: p6TerminalBoundaryFixture,
+      p6Paths: p6TerminalArtifactFixture,
+    })
+    if (result.actualCount !== 250 || result.mandatoryCount !== 250 || result.allowedCount !== 250)
+      fail('SELF_TEST_BOUNDARY', 'P6 terminal fixture does not preserve the 250-path contract')
+  })
+  reject('boundary-p6-terminal-missing-baseline', 'P6_PATH_MISSING', () =>
+    validatePathContract({
+      phase: 'p6-terminal',
+      actualPaths: p6TerminalBoundaryFixture.filter(relPath => relPath !== P6_BASELINE_PATH),
+      p6Paths: p6TerminalArtifactFixture,
+    })
+  )
+  reject('boundary-p6-terminal-alternative-baseline', 'P6_ALTERNATIVE_SCANNER_PATH', () =>
+    validatePathContract({
+      phase: 'p6-terminal',
+      actualPaths: [
+        ...p6TerminalBoundaryFixture.filter(relPath => relPath !== P6_BASELINE_PATH),
+        '.ai/governance/ui/source-baseline-copy.json',
+      ],
+      p6Paths: p6TerminalArtifactFixture,
+    })
+  )
+  reject('boundary-p6-terminal-unexpected-path', 'P6_UNAUTHORIZED_CHANGED_PATH', () =>
+    validatePathContract({
+      phase: 'p6-terminal',
+      actualPaths: [...p6TerminalBoundaryFixture, 'unexpected-p6-terminal.txt'],
+      p6Paths: p6TerminalArtifactFixture,
+    })
+  )
+  reject('boundary-p6-terminal-staged-rejected', 'P6_INDEX_NOT_EMPTY', () =>
+    validateIndexContract({
+      phase: 'p6-terminal',
+      changed: p6TerminalBoundaryFixture,
+      staged: [p6TerminalBoundaryFixture[0]],
+      unstaged: p6TerminalBoundaryFixture.slice(1),
+      untracked: [],
+    })
+  )
+  reject('boundary-p6-terminal-unknown-module', 'P6_UNEXPECTED_SCANNER_MODULE', () =>
+    validatePathContract({
+      phase: 'p6-terminal',
+      actualPaths: [
+        ...p6TerminalBoundaryFixture,
+        '.ai/governance/ui/source-scanner/unexpected-module.mjs',
+      ],
+      p6Paths: p6TerminalArtifactFixture,
+    })
+  )
+  reject('boundary-p6-terminal-alternative-scanner', 'P6_ALTERNATIVE_SCANNER_PATH', () =>
+    validatePathContract({
+      phase: 'p6-terminal',
+      actualPaths: [...p6TerminalBoundaryFixture, '.ai/governance/ui/source_scanner/rogue.mjs'],
+      p6Paths: p6TerminalArtifactFixture,
+    })
+  )
+  reject('boundary-p6-terminal-page-contract', 'FORBIDDEN_ALTERNATIVE_PRESENT', () =>
+    validatePathContract({
+      phase: 'p6-terminal',
+      actualPaths: [...p6TerminalBoundaryFixture, PAGE_CONTRACT_PATHS[1]],
+      p6Paths: p6TerminalArtifactFixture,
+    })
+  )
+  for (const [id, relPath] of [
+    ['boundary-p6-terminal-apps-drift', 'apps/web-demo/src/rogue.ts'],
+    ['boundary-p6-terminal-packages-drift', 'packages/core/src/rogue.ts'],
+    ['boundary-p6-terminal-github-drift', '.github/workflows/rogue.yml'],
+    ['boundary-p6-terminal-lockfile-drift', 'pnpm-lock.yaml'],
+  ])
+    reject(id, 'P6_UNAUTHORIZED_CHANGED_PATH', () =>
+      validatePathContract({
+        phase: 'p6-terminal',
+        actualPaths: [...p6TerminalBoundaryFixture, relPath],
+        p6Paths: p6TerminalArtifactFixture,
+      })
+    )
+
+  const validateTerminalArtifactFixture = mutation => {
+    const fixture = createP6TerminalArtifactFixture(mutation)
+    return validateP6ArtifactState(fixture.root, fixture.documents)
+  }
+  execute('artifact-valid-p6-terminal', () => {
+    const artifact = validateTerminalArtifactFixture(null)
+    if (artifact.state !== 'P6_TERMINAL' || artifact.p6Paths.length !== 206)
+      fail('SELF_TEST_LIFECYCLE', 'Valid P6 terminal artifacts were rejected')
+  })
+  reject('artifact-p6-terminal-missing-baseline', 'P6_PREMATURE_TERMINAL', () =>
+    validateTerminalArtifactFixture('missing-baseline')
+  )
+  reject('artifact-p6-terminal-stale-identity', 'P6_BASELINE_IDENTITY_DRIFT', () =>
+    validateTerminalArtifactFixture('stale-identity')
+  )
+  reject('artifact-p6-terminal-partial-marker', 'P6_TERMINAL_PARTIAL', () =>
+    validateTerminalArtifactFixture('partial-marker')
+  )
+  reject('artifact-p6-terminal-nonzero-exceptions', 'P6_REAL_EXCEPTION_PRESENT', () =>
+    validateTerminalArtifactFixture('real-exception')
+  )
+  reject('artifact-p6-terminal-legacy-deletion', 'P6_LEGACY_ASSET_DRIFT', () =>
+    validateTerminalArtifactFixture('legacy-deletion')
+  )
+  reject('artifact-p6-terminal-unknown-module', 'P6_UNEXPECTED_SCANNER_MODULE', () =>
+    validateTerminalArtifactFixture('unknown-module')
+  )
+  reject('artifact-p6-terminal-fixture-drift', 'P6_FIXTURE_SET_DRIFT', () =>
+    validateTerminalArtifactFixture('fixture-drift')
+  )
+  reject('artifact-p6-terminal-alternative-scanner', 'P6_ALTERNATIVE_SCANNER_PATH', () =>
+    validateTerminalArtifactFixture('alternative-scanner')
+  )
+  reject('artifact-p6-terminal-alternative-baseline', 'P6_ALTERNATIVE_SCANNER_PATH', () =>
+    validateTerminalArtifactFixture('alternative-baseline')
+  )
+  execute('lifecycle-valid-p6-terminal', () => {
+    if (
+      validateLifecycleDocuments(clone(p6TerminalDocuments), {
+        p6State: 'P6_TERMINAL',
+      }) !== 'terminal'
+    )
+      fail('SELF_TEST_LIFECYCLE', 'Valid P6 terminal lifecycle was rejected')
+  })
+  reject('lifecycle-partial-p6-terminal', 'P6_TERMINAL_PARTIAL', () => {
+    const documents = clone(p6TerminalDocuments)
+    documents[0].markers.set('SOURCE_ENFORCEMENT_ACTIVE', 'no')
+    validateLifecycleDocuments(documents, { p6State: 'P6_TERMINAL' })
+  })
+  reject('lifecycle-p6-terminal-page-contract', 'PAGE_CONTRACT_FALSE_POSITIVE', () => {
+    const documents = clone(p6TerminalDocuments)
+    documents[0].markers.set('PAGE_CONTRACT_CREATED', 'yes')
+    validateLifecycleDocuments(documents, { p6State: 'P6_TERMINAL' })
+  })
+  const deliveryPaths = p6DeliveryPaths(p6TerminalArtifactFixture)
+  const deliveryAuthority = {
+    branch: 'main',
+    originUrl: 'git@github.com:ichichuang/ccd.git',
+    shallow: false,
+    originMain: P6_BASELINE_COMMIT,
+    head: P6_BASELINE_COMMIT,
+    headParent: null,
+    ahead: 0,
+    behind: 0,
+    staged: [],
+    unstaged: deliveryPaths.slice(0, 20),
+    untracked: deliveryPaths.slice(20),
+    deleted: [],
+    committedPaths: [],
+  }
+  execute('p6-delivery-exact-unstaged-terminal-workspace', () =>
+    validateP6DeliverySnapshot(p6TerminalArtifactFixture, deliveryAuthority)
+  )
+  execute('p6-delivery-exact-fully-staged-terminal-candidate', () =>
+    validateP6DeliverySnapshot(p6TerminalArtifactFixture, {
+      ...deliveryAuthority,
+      staged: deliveryPaths,
+      unstaged: [],
+      untracked: [],
+    })
+  )
+  reject('p6-delivery-partial-staged-candidate', 'P6_DELIVERY_PATH_SET_DRIFT', () =>
+    validateP6DeliverySnapshot(p6TerminalArtifactFixture, {
+      ...deliveryAuthority,
+      staged: deliveryPaths.slice(0, 1),
+      unstaged: [],
+      untracked: [],
+    })
+  )
+  reject('p6-delivery-mixed-staged-unstaged-candidate', 'P6_DELIVERY_INDEX_DRIFT', () =>
+    validateP6DeliverySnapshot(p6TerminalArtifactFixture, {
+      ...deliveryAuthority,
+      staged: deliveryPaths.slice(0, 1),
+      unstaged: deliveryPaths.slice(1, 20),
+      untracked: deliveryPaths.slice(20),
+    })
+  )
+  reject('p6-delivery-extra-staged-path', 'P6_DELIVERY_PATH_SET_DRIFT', () =>
+    validateP6DeliverySnapshot(p6TerminalArtifactFixture, {
+      ...deliveryAuthority,
+      staged: [...deliveryPaths, 'unexpected-p6-delivery.txt'],
+      unstaged: [],
+      untracked: [],
+    })
+  )
+  reject('p6-delivery-remaining-untracked-path', 'P6_DELIVERY_PATH_SET_DRIFT', () =>
+    validateP6DeliverySnapshot(p6TerminalArtifactFixture, {
+      ...deliveryAuthority,
+      staged: deliveryPaths,
+      unstaged: [],
+      untracked: ['unexpected-p6-delivery.txt'],
+    })
+  )
+  reject('p6-delivery-staged-deletion', 'P6_DELIVERY_DELETION', () =>
+    validateP6DeliverySnapshot(p6TerminalArtifactFixture, {
+      ...deliveryAuthority,
+      staged: deliveryPaths,
+      unstaged: [],
+      untracked: [],
+      deleted: [deliveryPaths[0]],
+    })
+  )
+  const committedDelivery = {
+    ...deliveryAuthority,
+    head: '1111111111111111111111111111111111111111',
+    headParent: P6_BASELINE_COMMIT,
+    ahead: 1,
+    staged: [],
+    unstaged: [],
+    untracked: [],
+    committedPaths: deliveryPaths,
+  }
+  execute('p6-delivery-exact-clean-committed-state', () =>
+    validateP6DeliverySnapshot(p6TerminalArtifactFixture, committedDelivery)
+  )
+  reject('p6-delivery-wrong-parent', 'P6_DELIVERY_COMMIT_TOPOLOGY', () =>
+    validateP6DeliverySnapshot(p6TerminalArtifactFixture, {
+      ...committedDelivery,
+      headParent: '2222222222222222222222222222222222222222',
+    })
+  )
+  reject('p6-delivery-two-local-commits', 'P6_DELIVERY_COMMIT_TOPOLOGY', () =>
+    validateP6DeliverySnapshot(p6TerminalArtifactFixture, { ...committedDelivery, ahead: 2 })
+  )
+
+  const finalLocalCommitAuthority = {
+    ...deliveryAuthority,
+    unstaged: [],
+    untracked: [],
+  }
+  execute('p6-final-exact-unstaged-candidate', () => {
+    const finalPaths = p6FinalLocalCommitPaths(p6TerminalArtifactFixture)
+    const finalHistoricalPaths = p6FinalHistoricalBoundaryPaths(p6TerminalArtifactFixture)
+    const boundary = validatePathContract({
+      phase: 'p6-terminal',
+      actualPaths: finalHistoricalPaths,
+      p6Paths: p6TerminalArtifactFixture,
+      finalLocalCommit: true,
+    })
+    if (boundary.actualCount !== 251 || boundary.allowedCount !== 251)
+      fail('SELF_TEST_BOUNDARY', 'P6.6 final historical boundary must contain 251 paths')
+    validateP6FinalLocalCommitSnapshot(p6TerminalArtifactFixture, {
+      ...finalLocalCommitAuthority,
+      unstaged: finalPaths.slice(0, 21),
+      untracked: finalPaths.slice(21),
+    })
+  })
+  execute('p6-final-exact-fully-staged-candidate', () => {
+    const finalPaths = p6FinalLocalCommitPaths(p6TerminalArtifactFixture)
+    validateP6FinalLocalCommitSnapshot(p6TerminalArtifactFixture, {
+      ...finalLocalCommitAuthority,
+      staged: finalPaths,
+    })
+  })
+  const finalCommittedPaths = p6FinalLocalCommitPaths(p6TerminalArtifactFixture)
+  const finalCommittedAuthority = {
+    ...finalLocalCommitAuthority,
+    head: '3333333333333333333333333333333333333333',
+    headParent: P6_BASELINE_COMMIT,
+    ahead: 1,
+    committedPaths: finalCommittedPaths,
+  }
+  execute('p6-final-exact-clean-committed-state', () =>
+    validateP6FinalLocalCommitSnapshot(p6TerminalArtifactFixture, finalCommittedAuthority)
+  )
+  reject('p6-final-hook-script-missing', 'P6_DELIVERY_PATH_SET_DRIFT', () =>
+    validateP6FinalLocalCommitSnapshot(p6TerminalArtifactFixture, {
+      ...finalLocalCommitAuthority,
+      staged: deliveryPaths,
+    })
+  )
+  for (const [id, relPath] of [
+    ['p6-final-extra-hook-config', 'scripts/lint-staged-extra.mjs'],
+    ['p6-final-lint-staged-config-changed', 'lint-staged.config.mjs'],
+    ['p6-final-pre-commit-hook-changed', '.husky/pre-commit'],
+  ])
+    reject(id, 'P6_DELIVERY_PATH_SET_DRIFT', () =>
+      validateP6FinalLocalCommitSnapshot(p6TerminalArtifactFixture, {
+        ...finalLocalCommitAuthority,
+        staged: [...finalCommittedPaths, relPath],
+      })
+    )
+  reject('p6-final-partial-staging', 'P6_DELIVERY_PATH_SET_DRIFT', () =>
+    validateP6FinalLocalCommitSnapshot(p6TerminalArtifactFixture, {
+      ...finalLocalCommitAuthority,
+      staged: finalCommittedPaths.slice(0, 1),
+    })
+  )
+  reject('p6-final-mixed-staging', 'P6_DELIVERY_INDEX_DRIFT', () =>
+    validateP6FinalLocalCommitSnapshot(p6TerminalArtifactFixture, {
+      ...finalLocalCommitAuthority,
+      staged: finalCommittedPaths.slice(0, 1),
+      unstaged: finalCommittedPaths.slice(1, 21),
+      untracked: finalCommittedPaths.slice(21),
+    })
+  )
+  reject('p6-final-remaining-untracked', 'P6_DELIVERY_PATH_SET_DRIFT', () =>
+    validateP6FinalLocalCommitSnapshot(p6TerminalArtifactFixture, {
+      ...finalLocalCommitAuthority,
+      staged: finalCommittedPaths,
+      untracked: ['unexpected-p6-final.txt'],
+    })
+  )
+  reject('p6-final-staged-deletion', 'P6_DELIVERY_DELETION', () =>
+    validateP6FinalLocalCommitSnapshot(p6TerminalArtifactFixture, {
+      ...finalLocalCommitAuthority,
+      staged: finalCommittedPaths,
+      deleted: [finalCommittedPaths[0]],
+    })
+  )
+  reject('p6-final-wrong-parent', 'P6_DELIVERY_COMMIT_TOPOLOGY', () =>
+    validateP6FinalLocalCommitSnapshot(p6TerminalArtifactFixture, {
+      ...finalCommittedAuthority,
+      headParent: '4444444444444444444444444444444444444444',
+    })
+  )
+  reject('p6-final-two-local-commits', 'P6_DELIVERY_COMMIT_TOPOLOGY', () =>
+    validateP6FinalLocalCommitSnapshot(p6TerminalArtifactFixture, {
+      ...finalCommittedAuthority,
+      ahead: 2,
+    })
+  )
   reject('lifecycle-mixed-terminal', 'P5_LIFECYCLE_MIXED', () => {
     const documents = clone(terminalDocuments)
     documents[0].markers.set('P5_COMPLETE', 'no')
@@ -2574,7 +4098,12 @@ export function runSelfTests({
   const caseIds = [
     ...SELF_TEST_IDS,
     ...FALSE_POSITIVE_TEST_IDS,
-    ...BOUNDARY_TEST_IDS,
+    ...BOUNDARY_TEST_IDS.slice(0, -1),
+    ...P6_BOUNDARY_TEST_IDS,
+    ...P6_TERMINAL_TEST_IDS,
+    ...P6_DELIVERY_TEST_IDS,
+    ...P6_FINAL_LOCAL_COMMIT_TEST_IDS,
+    BOUNDARY_TEST_IDS.at(-1),
     ...LIFECYCLE_TEST_IDS,
   ]
   if (
@@ -2585,7 +4114,7 @@ export function runSelfTests({
   )
     fail(
       'SELF_TEST_EXECUTION_DRIFT',
-      'Executed self-test order or membership differs from the exact 101-case contract'
+      'Executed self-test order or membership differs from the exact 155-case contract'
     )
   return {
     status: 'pass',
@@ -2593,6 +4122,10 @@ export function runSelfTests({
     rejectionCases: 62,
     falsePositiveCases: 20,
     boundaryCases: 11,
+    p6BoundaryCases: 6,
+    p6TerminalCases: 25,
+    p6DeliveryCases: 10,
+    p6FinalLocalCommitCases: 13,
     lifecycleCases: 8,
     caseIds,
   }
@@ -2638,7 +4171,7 @@ const runSuite = async (selfTest, temporaryRoot) => {
       routingPassed: 0,
       syncTotal: 47,
       syncPassed: 0,
-      selfTestTotal: selfTest ? 101 : 0,
+      selfTestTotal: selfTest ? 142 : 0,
       selfTestPassed: 0,
     },
     diagnostics: [],
@@ -2699,7 +4232,7 @@ const runSuite = async (selfTest, temporaryRoot) => {
   const lifecycle = await addCheck(report, 'LIFECYCLE', validateLifecycle)
   if (lifecycle) {
     const boundary = await addCheck(report, 'CHANGED_PATH_BOUNDARY', () =>
-      validateBoundary(lifecycle.phase)
+      validateBoundary(lifecycle.phase, { p6Paths: lifecycle.p6Paths ?? [] })
     )
     if (boundary?.informational?.length) report.informational.push(...boundary.informational)
   }

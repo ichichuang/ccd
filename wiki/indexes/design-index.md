@@ -38,6 +38,7 @@ CCD design guidance for AI-generated UI work.
 | [[project-ui-skill]]             | 项目 UI 技能       | `published` |       0.95 |
 | [[project-ui-routing]]           | 项目 UI 路由       | `published` |       0.95 |
 | [[machine-ui-policy]]            | 机器 UI 策略       | `published` |       0.95 |
+| [[ui-source-enforcement]]        | UI 源码治理        | `published` |       0.95 |
 
 ## Related pages
 
