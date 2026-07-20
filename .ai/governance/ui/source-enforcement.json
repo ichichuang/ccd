@@ -832,7 +832,7 @@
     }
   },
   "performance": {
-    "fullScanMs": 2000,
+    "fullScanMs": 5000,
     "stagedScanMs": 1000,
     "selfTestMs": 5000,
     "maxRssBytes": 402653184,

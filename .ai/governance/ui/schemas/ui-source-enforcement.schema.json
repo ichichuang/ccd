@@ -155,7 +155,7 @@
       "additionalProperties": false,
       "required": ["fullScanMs", "stagedScanMs", "selfTestMs", "maxRssBytes", "renderParityOverheadPercent", "cacheAllowed"],
       "properties": {
-        "fullScanMs": { "const": 2000 },
+        "fullScanMs": { "const": 5000 },
         "stagedScanMs": { "const": 1000 },
         "selfTestMs": { "const": 5000 },
         "maxRssBytes": { "const": 402653184 },

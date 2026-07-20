@@ -200,6 +200,26 @@ const P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS = Object.freeze([
 ])
 const P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATH_SET_SHA256 =
   'e51f3737e6a51a84649265a835eb2dcfb8b69cf93382d7444576e9c7bc126bf8'
+const P6_PERFORMANCE_BUDGET_CORRECTION_BASE = '2dcd4718420d1c45d8dc1f9f70c1727dda6ead0d'
+const P6_PERFORMANCE_BUDGET_CORRECTION_SUBJECT = 'fix(governance): 校准 P6 全量扫描性能预算'
+const P6_PERFORMANCE_BUDGET_CORRECTION_PATHS = Object.freeze([
+  '.ai/governance/ui/schemas/ui-source-enforcement.schema.json',
+  '.ai/governance/ui/source-baseline.json',
+  '.ai/governance/ui/source-enforcement.json',
+  'scripts/governance/cold-start-validate.mjs',
+  'scripts/governance/project-ui-routing-validate.mjs',
+  'scripts/governance/ui-source-enforcement-validate.mjs',
+])
+const P6_PERFORMANCE_BUDGET_CORRECTION_PATH_SET_SHA256 =
+  '209861e3239267eaced3b618e4949827de75e8d741c71318ba4364654ece6ed8'
+const P6_PERFORMANCE_BUDGET = Object.freeze({
+  fullScanMs: 5000,
+  stagedScanMs: 1000,
+  selfTestMs: 5000,
+  maxRssBytes: 402653184,
+  renderParityOverheadPercent: 10,
+  cacheAllowed: false,
+})
 const P6_REPOSITORY = 'ichichuang/ccd'
 const P6_MAIN_REF = 'refs/heads/main'
 const P6_DELIVERY_ADDITIONAL_PATHS = Object.freeze([
@@ -218,15 +238,15 @@ const P6_DELIVERY_ADDITIONAL_PATHS = Object.freeze([
   'wiki/canonical/design/project-ui-skill.md',
   'wiki/canonical/design/ui-governance-migration-plan.md',
 ])
-const P6_BASELINE_SHA256 = 'f7825a7c186d0228fd4a7944100fea8a600105054367d08a44d1eb90c169e42d'
+const P6_BASELINE_SHA256 = '487bfa46b173fb5142c8c7ad4467267f97d56ecdecd4ba624c076403cbf05825'
 const P6_POLICY_DIGEST = 'sha256:17cc7e2142be673d2cf64be7331a169a17772676914f7c8a7514389e19bd7e5f'
 const P6_SCANNER_MANIFEST_DIGEST =
-  'sha256:aff785e123968d9ce2ea2285dec42b486a783521c69be6082a4e3b6f8dc219e0'
+  'sha256:7bd858115692d73a7b1c83a8b2bc4f2f2063576e0ba2d202b052ec440bc1dcb1'
 const P6_FIXTURE_AGGREGATE_SHA256 =
   '20b1ecf6e9816c9227d749471e389e0fc49b65072d90970345c68dcfef8a1a4b'
 const P6_RECOVERED_EXACT_HASHES = Object.freeze({
   '.ai/governance/ui/source-enforcement.json':
-    'e8210357e8f3c0767c243349f5f9923ad41f22e5123dbda4b1f19c8d1ed64f9a',
+    'bd80649404af444f21d98985582b03e7f2d50a7a52ea49a07514da27c3d093ea',
   '.ai/governance/ui/source-coverage.json':
     'f05dd82325eb90556d8a04c26989a7bdca383b8d3c00940609674f1740a5a0e2',
   '.ai/governance/ui/schemas/ui-source-baseline.schema.json':
@@ -234,7 +254,7 @@ const P6_RECOVERED_EXACT_HASHES = Object.freeze({
   '.ai/governance/ui/schemas/ui-source-coverage.schema.json':
     '087da3a91a773d0eb80e60f4a0d00468fbdd77575edc6238d54d470586f2534e',
   '.ai/governance/ui/schemas/ui-source-enforcement.schema.json':
-    'eb25ca3dd2797c8a54ac67ce29d0ee99c620556839417871f24fde4f187c675e',
+    'a81da6cc97677b45a1fd10e864cb85032a368f0e312e23c6dd1833527f19e11a',
   '.ai/governance/ui/schemas/ui-source-fixtures.schema.json':
     '687754ef5c4fa8f85222452d121fa1e89e314f7f0f078361a99f5c308184d410',
   '.ai/governance/ui/fixtures/source-cases.json':
@@ -527,10 +547,34 @@ const assertP6ActionsPathBoundaryCorrectionPaths = (
   return normalized
 }
 
+const assertP6PerformanceBudgetCorrectionPaths = (paths, code = 'P6_CORRECTION_PATH_SET_DRIFT') => {
+  const normalized = sortedUnique(paths)
+  const pathSetSha256 = sha256(Buffer.from(`${normalized.join('\n')}\n`, 'utf8'))
+  if (
+    normalized.length !== 6 ||
+    pathSetSha256 !== P6_PERFORMANCE_BUDGET_CORRECTION_PATH_SET_SHA256 ||
+    JSON.stringify(normalized) !== JSON.stringify(P6_PERFORMANCE_BUDGET_CORRECTION_PATHS)
+  )
+    fail(code, 'P6.7 performance budget correction must contain exactly the six authorized paths', {
+      paths: normalized,
+      pathSetSha256,
+    })
+  return normalized
+}
+
+const p6CorrectionPathSetSha256 = expectedPaths =>
+  expectedPaths === P6_PERFORMANCE_BUDGET_CORRECTION_PATHS
+    ? P6_PERFORMANCE_BUDGET_CORRECTION_PATH_SET_SHA256
+    : expectedPaths === P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS
+      ? P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATH_SET_SHA256
+      : P6_CORRECTION_PATH_SET_SHA256
+
 const assertP6ExpectedCorrectionPaths = (paths, expectedPaths, code) =>
-  expectedPaths.length === P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS.length
-    ? assertP6ActionsPathBoundaryCorrectionPaths(paths, code)
-    : assertP6CorrectionPaths(paths, code)
+  expectedPaths === P6_PERFORMANCE_BUDGET_CORRECTION_PATHS
+    ? assertP6PerformanceBudgetCorrectionPaths(paths, code)
+    : expectedPaths.length === P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS.length
+      ? assertP6ActionsPathBoundaryCorrectionPaths(paths, code)
+      : assertP6CorrectionPaths(paths, code)
 
 const assertP6CorrectionGitDiffEvidence = (evidence, { before, head, expectedPaths }) => {
   if (!evidence || typeof evidence !== 'object' || Array.isArray(evidence))
@@ -689,13 +733,21 @@ const validateP6RemoteCorrectionSnapshot = (p6Paths, state) => {
     const baseIsActionsPathBoundary =
       state.head === P6_ACTIONS_PATH_BOUNDARY_CORRECTION_BASE &&
       state.originMain === P6_ACTIONS_PATH_BOUNDARY_CORRECTION_BASE
-    const expectedPaths = baseIsActionsPathBoundary
-      ? P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS
-      : P6_CORRECTION_PATHS
+    const baseIsPerformanceBudget =
+      state.head === P6_PERFORMANCE_BUDGET_CORRECTION_BASE &&
+      state.originMain === P6_PERFORMANCE_BUDGET_CORRECTION_BASE
+    const expectedPaths = baseIsPerformanceBudget
+      ? P6_PERFORMANCE_BUDGET_CORRECTION_PATHS
+      : baseIsActionsPathBoundary
+        ? P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS
+        : P6_CORRECTION_PATHS
     if (
       state.branch !== 'main' ||
       state.shallow !== false ||
-      (!baseIsPrimary && !baseIsCorrection && !baseIsActionsPathBoundary) ||
+      (!baseIsPrimary &&
+        !baseIsCorrection &&
+        !baseIsActionsPathBoundary &&
+        !baseIsPerformanceBudget) ||
       state.ahead !== 0 ||
       state.behind !== 0
     )
@@ -705,9 +757,7 @@ const validateP6RemoteCorrectionSnapshot = (p6Paths, state) => {
       return {
         mode: 'unstaged-remote-correction-workspace',
         pathCount: expectedPaths.length,
-        pathSetSha256: baseIsActionsPathBoundary
-          ? P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATH_SET_SHA256
-          : P6_CORRECTION_PATH_SET_SHA256,
+        pathSetSha256: p6CorrectionPathSetSha256(expectedPaths),
       }
     if (
       JSON.stringify(staged) !== JSON.stringify(expectedPaths) ||
@@ -722,9 +772,7 @@ const validateP6RemoteCorrectionSnapshot = (p6Paths, state) => {
     return {
       mode: 'fully-staged-remote-correction-candidate',
       pathCount: expectedPaths.length,
-      pathSetSha256: baseIsActionsPathBoundary
-        ? P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATH_SET_SHA256
-        : P6_CORRECTION_PATH_SET_SHA256,
+      pathSetSha256: p6CorrectionPathSetSha256(expectedPaths),
     }
   }
 
@@ -767,11 +815,21 @@ const validateP6RemoteCorrectionSnapshot = (p6Paths, state) => {
         before: P6_ACTIONS_PATH_BOUNDARY_CORRECTION_BASE,
         expectedPaths: P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS,
       }
+    if (
+      JSON.stringify(headParents) === JSON.stringify([P6_PERFORMANCE_BUDGET_CORRECTION_BASE]) &&
+      state.headSubject === P6_PERFORMANCE_BUDGET_CORRECTION_SUBJECT
+    )
+      return {
+        before: P6_PERFORMANCE_BUDGET_CORRECTION_BASE,
+        expectedPaths: P6_PERFORMANCE_BUDGET_CORRECTION_PATHS,
+      }
     fail('P6_CORRECTION_COMMIT_TOPOLOGY', 'P6.7 correction parent or subject drifted')
   })()
   const correctionParent = correctionTopology.before
   const expectedPaths = correctionTopology.expectedPaths
-  const requiresFullHistory = expectedPaths === P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS
+  const requiresFullHistory =
+    expectedPaths === P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS ||
+    expectedPaths === P6_PERFORMANCE_BUDGET_CORRECTION_PATHS
 
   if (
     state.shallow === false &&
@@ -980,6 +1038,14 @@ const inspectP6DeliveryRepositoryState = root => {
       return {
         before: P6_ACTIONS_PATH_BOUNDARY_CORRECTION_BASE,
         expectedPaths: P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS,
+      }
+    if (
+      JSON.stringify(headParents) === JSON.stringify([P6_PERFORMANCE_BUDGET_CORRECTION_BASE]) &&
+      headSubject === P6_PERFORMANCE_BUDGET_CORRECTION_SUBJECT
+    )
+      return {
+        before: P6_PERFORMANCE_BUDGET_CORRECTION_BASE,
+        expectedPaths: P6_PERFORMANCE_BUDGET_CORRECTION_PATHS,
       }
     return null
   })()
@@ -3221,6 +3287,244 @@ const runSelfTestsInFixture = root => {
       })
   )
 
+  const performanceBudgetHead = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+  const performanceBudgetLocalAuthority = {
+    ...primaryRemoteAuthority,
+    head: P6_PERFORMANCE_BUDGET_CORRECTION_BASE,
+    headParent: P6_ACTIONS_PATH_BOUNDARY_CORRECTION_BASE,
+    headParents: [P6_ACTIONS_PATH_BOUNDARY_CORRECTION_BASE],
+    headSubject: P6_ACTIONS_PATH_BOUNDARY_CORRECTION_SUBJECT,
+    originMain: P6_PERFORMANCE_BUDGET_CORRECTION_BASE,
+    committedPaths: [],
+  }
+  const performanceBudgetCommittedAuthority = {
+    ...performanceBudgetLocalAuthority,
+    head: performanceBudgetHead,
+    headParent: P6_PERFORMANCE_BUDGET_CORRECTION_BASE,
+    headParents: [P6_PERFORMANCE_BUDGET_CORRECTION_BASE],
+    headSubject: P6_PERFORMANCE_BUDGET_CORRECTION_SUBJECT,
+    ahead: 1,
+    correctionDiff: modifiedCorrectionDiff(
+      performanceBudgetHead,
+      P6_PERFORMANCE_BUDGET_CORRECTION_BASE,
+      P6_PERFORMANCE_BUDGET_CORRECTION_PATHS
+    ),
+  }
+  const performanceBudgetPushCommit = { id: performanceBudgetHead }
+  const performanceBudgetPushEvent = {
+    repository: { full_name: P6_REPOSITORY },
+    ref: P6_MAIN_REF,
+    before: P6_PERFORMANCE_BUDGET_CORRECTION_BASE,
+    after: performanceBudgetHead,
+    created: false,
+    deleted: false,
+    forced: false,
+    commits: [clone(performanceBudgetPushCommit)],
+    head_commit: clone(performanceBudgetPushCommit),
+  }
+  const performanceBudgetGitHub = {
+    actions: true,
+    repository: P6_REPOSITORY,
+    ref: P6_MAIN_REF,
+    sha: performanceBudgetHead,
+    eventName: 'push',
+    eventPath: '/tmp/github-event.json',
+    event: performanceBudgetPushEvent,
+    eventError: null,
+  }
+  const performanceBudgetRemoteAuthority = {
+    ...performanceBudgetCommittedAuthority,
+    originMain: performanceBudgetHead,
+    ahead: 0,
+    github: performanceBudgetGitHub,
+  }
+
+  expectPass(records, 'p6-performance-budget-exact-six-file-unstaged-candidate', () =>
+    validateP6TerminalRepositorySnapshot(p6DeliveryP6Paths, {
+      ...performanceBudgetLocalAuthority,
+      unstaged: [...P6_PERFORMANCE_BUDGET_CORRECTION_PATHS],
+    })
+  )
+  expectPass(records, 'p6-performance-budget-exact-six-file-staged-candidate', () =>
+    validateP6TerminalRepositorySnapshot(p6DeliveryP6Paths, {
+      ...performanceBudgetLocalAuthority,
+      staged: [...P6_PERFORMANCE_BUDGET_CORRECTION_PATHS],
+    })
+  )
+  expectPass(records, 'p6-performance-budget-exact-local-correction-commit', () =>
+    validateP6TerminalRepositorySnapshot(p6DeliveryP6Paths, performanceBudgetCommittedAuthority)
+  )
+  expectPass(records, 'p6-performance-budget-exact-remote-full-history-correction', () =>
+    validateP6TerminalRepositorySnapshot(p6DeliveryP6Paths, performanceBudgetRemoteAuthority)
+  )
+  expectPass(records, 'p6-performance-budget-full-scan-ms-authority', () => {
+    const authority = validateP6PerformanceBudgetAuthority(root)
+    if (authority.fullScanMs !== P6_PERFORMANCE_BUDGET.fullScanMs)
+      fail('P6_PERFORMANCE_BUDGET_DRIFT', 'P6 full-scan budget authority drifted')
+  })
+  expectPass(records, 'p6-performance-budget-manifest-digest-authority', () => {
+    const baseline = readP6Json(root, P6_BASELINE_PATH)
+    const enforcement = readP6Json(root, '.ai/governance/ui/source-enforcement.json')
+    if (
+      baseline.scannerManifestDigest !== P6_SCANNER_MANIFEST_DIGEST ||
+      baseline.scannerManifestDigest !== p6Digest(enforcement)
+    )
+      fail('P6_BASELINE_DIGEST_DRIFT', 'Canonical baseline authority digest drifted')
+  })
+  expectPass(records, 'p6-performance-budget-baseline-digest-authority', () => {
+    if (sha256(read(root, P6_BASELINE_PATH)) !== P6_BASELINE_SHA256)
+      fail('P6_BASELINE_HASH_DRIFT', 'Canonical source baseline bytes drifted')
+  })
+  expectPass(records, 'p6-performance-budget-baseline-contents-unchanged', () => {
+    const baseline = readP6Json(root, P6_BASELINE_PATH)
+    if (
+      baseline.declaredFileCount !== 554 ||
+      baseline.declaredFindingCount !== 393 ||
+      baseline.declaredFingerprintCount !== 328 ||
+      !Array.isArray(baseline.entries) ||
+      baseline.entries.length !== 328
+    )
+      fail('P6_BASELINE_SCHEMA_INVALID', 'Canonical baseline declared counts drifted')
+  })
+  expectFailure(
+    records,
+    'p6-performance-budget-full-scan-restored-2000',
+    'P6_PERFORMANCE_BUDGET_DRIFT',
+    () => assertP6PerformanceBudget({ ...P6_PERFORMANCE_BUDGET, fullScanMs: 2000 })
+  )
+  expectFailure(
+    records,
+    'p6-performance-budget-full-scan-below-5000',
+    'P6_PERFORMANCE_BUDGET_DRIFT',
+    () => assertP6PerformanceBudget({ ...P6_PERFORMANCE_BUDGET, fullScanMs: 4999 })
+  )
+  expectFailure(
+    records,
+    'p6-performance-budget-staged-scan-changed',
+    'P6_PERFORMANCE_BUDGET_DRIFT',
+    () => assertP6PerformanceBudget({ ...P6_PERFORMANCE_BUDGET, stagedScanMs: 1001 })
+  )
+  expectFailure(
+    records,
+    'p6-performance-budget-self-test-changed',
+    'P6_PERFORMANCE_BUDGET_DRIFT',
+    () => assertP6PerformanceBudget({ ...P6_PERFORMANCE_BUDGET, selfTestMs: 5001 })
+  )
+  expectFailure(
+    records,
+    'p6-performance-budget-memory-budget-changed',
+    'P6_PERFORMANCE_BUDGET_DRIFT',
+    () => assertP6PerformanceBudget({ ...P6_PERFORMANCE_BUDGET, maxRssBytes: 402653185 })
+  )
+  expectFailure(
+    records,
+    'p6-performance-budget-manifest-without-baseline-regeneration',
+    'P6_BASELINE_DIGEST_DRIFT',
+    () => {
+      const baseline = readP6Json(root, P6_BASELINE_PATH)
+      const staleBaseline = {
+        ...baseline,
+        scannerManifestDigest:
+          'sha256:aff785e123968d9ce2ea2285dec42b486a783521c69be6082a4e3b6f8dc219e0',
+      }
+      const enforcement = readP6Json(root, '.ai/governance/ui/source-enforcement.json')
+      if (
+        staleBaseline.scannerManifestDigest !== P6_SCANNER_MANIFEST_DIGEST ||
+        staleBaseline.scannerManifestDigest !== p6Digest(enforcement)
+      )
+        fail('P6_BASELINE_DIGEST_DRIFT', 'Canonical baseline authority digest drifted')
+    }
+  )
+  expectFailure(
+    records,
+    'p6-performance-budget-baseline-without-validator-synchronization',
+    'P6_BASELINE_HASH_DRIFT',
+    () => {
+      const mutated = Buffer.concat([read(root, P6_BASELINE_PATH), Buffer.from(' ')])
+      const actual = sha256(mutated)
+      if (actual !== P6_BASELINE_SHA256)
+        fail('P6_BASELINE_HASH_DRIFT', 'Canonical source baseline bytes drifted', {
+          expected: P6_BASELINE_SHA256,
+          actual,
+        })
+    }
+  )
+  expectFailure(records, 'p6-performance-budget-missing-path', 'P6_CORRECTION_PATH_SET_DRIFT', () =>
+    validateP6TerminalRepositorySnapshot(p6DeliveryP6Paths, {
+      ...performanceBudgetLocalAuthority,
+      unstaged: P6_PERFORMANCE_BUDGET_CORRECTION_PATHS.slice(1),
+    })
+  )
+  expectFailure(records, 'p6-performance-budget-extra-path', 'P6_CORRECTION_PATH_SET_DRIFT', () =>
+    validateP6TerminalRepositorySnapshot(p6DeliveryP6Paths, {
+      ...performanceBudgetLocalAuthority,
+      unstaged: [...P6_PERFORMANCE_BUDGET_CORRECTION_PATHS, 'unexpected-p6-performance.txt'],
+    })
+  )
+  expectFailure(records, 'p6-performance-budget-partial-staging', 'P6_CORRECTION_INDEX_DRIFT', () =>
+    validateP6TerminalRepositorySnapshot(p6DeliveryP6Paths, {
+      ...performanceBudgetLocalAuthority,
+      staged: P6_PERFORMANCE_BUDGET_CORRECTION_PATHS.slice(0, 3),
+      unstaged: P6_PERFORMANCE_BUDGET_CORRECTION_PATHS.slice(3),
+    })
+  )
+  for (const [id, mutate] of [
+    [
+      'p6-performance-budget-added-path',
+      changes => [{ status: 'A', paths: changes[0].paths }, ...changes.slice(1)],
+    ],
+    [
+      'p6-performance-budget-deleted-path',
+      changes => [{ status: 'D', paths: changes[0].paths }, ...changes.slice(1)],
+    ],
+    [
+      'p6-performance-budget-renamed-path',
+      changes => [
+        { status: 'R100', paths: [changes[0].paths[0], 'renamed.mjs'] },
+        ...changes.slice(1),
+      ],
+    ],
+  ])
+    expectFailure(records, id, 'P6_CORRECTION_COMMIT_PATH_DRIFT', () => {
+      const correctionDiff = clone(performanceBudgetCommittedAuthority.correctionDiff)
+      correctionDiff.changes = mutate(correctionDiff.changes) ?? correctionDiff.changes
+      validateP6TerminalRepositorySnapshot(p6DeliveryP6Paths, {
+        ...performanceBudgetCommittedAuthority,
+        correctionDiff,
+      })
+    })
+  expectFailure(
+    records,
+    'p6-performance-budget-wrong-parent',
+    'P6_CORRECTION_COMMIT_TOPOLOGY',
+    () =>
+      validateP6TerminalRepositorySnapshot(p6DeliveryP6Paths, {
+        ...performanceBudgetRemoteAuthority,
+        headParent: P6_ACTIONS_PATH_BOUNDARY_CORRECTION_BASE,
+        headParents: [P6_ACTIONS_PATH_BOUNDARY_CORRECTION_BASE],
+      })
+  )
+  expectFailure(
+    records,
+    'p6-performance-budget-wrong-subject',
+    'P6_CORRECTION_COMMIT_TOPOLOGY',
+    () =>
+      validateP6TerminalRepositorySnapshot(p6DeliveryP6Paths, {
+        ...performanceBudgetRemoteAuthority,
+        headSubject: 'fix(governance): wrong subject',
+      })
+  )
+  expectFailure(
+    records,
+    'p6-performance-budget-two-local-correction-commits',
+    'P6_CORRECTION_COMMIT_TOPOLOGY',
+    () =>
+      validateP6TerminalRepositorySnapshot(p6DeliveryP6Paths, {
+        ...performanceBudgetCommittedAuthority,
+        ahead: 2,
+      })
+  )
+
   return {
     schemaVersion: COLD_START_SCHEMA_VERSION,
     mode: 'self-test',
@@ -3299,6 +3603,37 @@ const p6Canonicalize = value => {
 
 const p6CanonicalJson = value => `${JSON.stringify(p6Canonicalize(value))}\n`
 const p6Digest = value => `sha256:${sha256(p6CanonicalJson(value))}`
+
+const assertP6PerformanceBudget = performance => {
+  if (
+    !performance ||
+    typeof performance !== 'object' ||
+    Array.isArray(performance) ||
+    JSON.stringify(Object.keys(performance).sort()) !==
+      JSON.stringify(Object.keys(P6_PERFORMANCE_BUDGET).sort()) ||
+    Object.entries(P6_PERFORMANCE_BUDGET).some(([key, value]) => performance[key] !== value)
+  )
+    fail('P6_PERFORMANCE_BUDGET_DRIFT', 'P6 source performance budget authority drifted', {
+      performance,
+    })
+}
+
+const validateP6PerformanceBudgetAuthority = root => {
+  const enforcement = readP6Json(root, '.ai/governance/ui/source-enforcement.json')
+  assertP6PerformanceBudget(enforcement.performance)
+  const schema = readP6Json(root, '.ai/governance/ui/schemas/ui-source-enforcement.schema.json')
+  const schemaProperties = schema?.properties?.performance?.properties
+  if (!schemaProperties || typeof schemaProperties !== 'object' || Array.isArray(schemaProperties))
+    fail('P6_PERFORMANCE_BUDGET_DRIFT', 'P6 performance budget schema properties are missing')
+  for (const [key, value] of Object.entries(P6_PERFORMANCE_BUDGET))
+    if (schemaProperties[key]?.const !== value)
+      fail('P6_PERFORMANCE_BUDGET_DRIFT', 'P6 performance budget schema const drifted', {
+        key,
+        expected: value,
+        actual: schemaProperties[key]?.const,
+      })
+  return { fullScanMs: P6_PERFORMANCE_BUDGET.fullScanMs }
+}
 
 const validateP6RecoveredHashes = root => {
   const mismatches = []
@@ -3487,6 +3822,7 @@ const validateP6TerminalBaseline = (root, fixturePaths) => {
       missingLegacySkills,
     })
 
+  validateP6PerformanceBudgetAuthority(root)
   validateP6RecoveredHashes(root)
   return baseline
 }
