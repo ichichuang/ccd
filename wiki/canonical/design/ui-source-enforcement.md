@@ -7,6 +7,9 @@ aliases:
 tags:
   - design
   - governance
+tags_zh:
+  - 设计
+  - 治理
 status: published
 confidence: 0.95
 source_langs:

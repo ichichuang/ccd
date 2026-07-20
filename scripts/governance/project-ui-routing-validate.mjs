@@ -172,14 +172,24 @@ const P6_FINAL_HISTORICAL_PATH_SET_SHA256 =
 const P6_PRIMARY_COMMIT = 'dfbb4c951f35de1bccfae2a7923c0329f4a49b81'
 const P6_CORRECTION_COMMIT = 'd0e018cf6bfd918bd58dce20a345c27bfb12d5ab'
 const P6_CORRECTION_COMMIT_SUBJECT = 'fix(governance): 修正 P6 远端终态身份与浅克隆验收'
-const P6_CORRECTION_HEAD_EVENT_FIX_SUBJECT =
-  'fix(governance): 兼容 P6 修正推送 head 事件'
+const P6_CORRECTION_HEAD_EVENT_FIX_COMMIT = 'a139ec78f17386caa170557181e452c24d09af4b'
+const P6_CORRECTION_HEAD_EVENT_FIX_SUBJECT = 'fix(governance): 兼容 P6 修正推送 head 事件'
 const P6_CORRECTION_PATHS = Object.freeze([
   'scripts/governance/cold-start-validate.mjs',
   'scripts/governance/project-ui-routing-validate.mjs',
 ])
 const P6_CORRECTION_PATH_SET_SHA256 =
   '653ea74eea3ed65e72a197e3b30c4ae37341432fa0cdc6d6d9efb436825bd83b'
+const P6_ACTIONS_PATH_BOUNDARY_CORRECTION_BASE = 'a139ec78f17386caa170557181e452c24d09af4b'
+const P6_ACTIONS_PATH_BOUNDARY_CORRECTION_SUBJECT = 'fix(governance): 修正 P6 Actions 完整历史验收'
+const P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS = Object.freeze([
+  '.github/workflows/deploy.yml',
+  'scripts/governance/cold-start-validate.mjs',
+  'scripts/governance/project-ui-routing-validate.mjs',
+  'wiki/canonical/design/ui-source-enforcement.md',
+])
+const P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATH_SET_SHA256 =
+  'e51f3737e6a51a84649265a835eb2dcfb8b69cf93382d7444576e9c7bc126bf8'
 const P6_REPOSITORY = 'ichichuang/ccd'
 const P6_MAIN_REF = 'refs/heads/main'
 const P6_DELIVERY_ADDITIONAL_PATHS = Object.freeze([
@@ -369,6 +379,7 @@ const readJsonAt = (root, relPath) => {
 const sha256 = value => crypto.createHash('sha256').update(value).digest('hex')
 const same = (left, right) => JSON.stringify(left) === JSON.stringify(right)
 const sortedUnique = values => [...new Set(values)].sort(compareStrings)
+const splitNull = value => value.split('\0').filter(Boolean)
 const assertPathContracts = () => {
   const overlap = P5_4_PATHS.filter(relPath => P5_5_PATHS.includes(relPath))
   if (
@@ -435,7 +446,9 @@ const validatePathContract = ({ phase, actualPaths, p6Paths = [], finalLocalComm
             : p6BoundaryPaths(p6Paths, { terminal: phase === 'p6-terminal' }),
         allowedPaths:
           phase === 'p6-terminal' && finalLocalCommit
-            ? p6FinalHistoricalBoundaryPaths(p6Paths)
+            ? [...p6FinalHistoricalBoundaryPaths(p6Paths), '.github/workflows/deploy.yml'].sort(
+                compareStrings
+              )
             : p6BoundaryPaths(p6Paths, { terminal: phase === 'p6-terminal' }),
       })
     : PATH_CONTRACTS[phase]
@@ -647,22 +660,103 @@ const assertP6CorrectionPaths = (paths, code = 'P6_CORRECTION_PATH_SET_DRIFT') =
     })
   return normalized
 }
-const p6PushCommitPaths = commit => {
-  if (!commit || typeof commit !== 'object' || Array.isArray(commit))
-    fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push commit entry is malformed')
-  const groups = ['added', 'modified', 'removed'].map(key => {
-    if (!Array.isArray(commit[key]) || commit[key].some(item => typeof item !== 'string'))
-      fail('P6_CORRECTION_EVENT_INVALID', `GitHub push commit ${key} paths are malformed`)
-    return commit[key]
-  })
-  const flattened = groups.flat()
-  if (new Set(flattened).size !== flattened.length)
-    fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push commit paths contain duplicates')
-  if (groups[2].length > 0)
-    fail('P6_DELIVERY_DELETION', 'P6.7 correction push forbids deleted paths', {
-      deleted: groups[2],
+const assertP6ActionsPathBoundaryCorrectionPaths = (
+  paths,
+  code = 'P6_CORRECTION_PATH_SET_DRIFT'
+) => {
+  const normalized = sortedUnique(paths)
+  const pathSetSha256 = sha256(Buffer.from(`${normalized.join('\n')}\n`, 'utf8'))
+  if (
+    normalized.length !== 4 ||
+    pathSetSha256 !== P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATH_SET_SHA256 ||
+    !same(normalized, P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS)
+  )
+    fail(code, 'P6.7 Actions correction must contain exactly the four authorized paths', {
+      paths: normalized,
+      pathSetSha256,
     })
-  return assertP6CorrectionPaths(flattened)
+  return normalized
+}
+const assertP6ExpectedCorrectionPaths = (paths, expectedPaths, code) =>
+  expectedPaths.length === P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS.length
+    ? assertP6ActionsPathBoundaryCorrectionPaths(paths, code)
+    : assertP6CorrectionPaths(paths, code)
+const assertP6CorrectionGitDiffEvidence = (evidence, { before, head, expectedPaths }) => {
+  if (!evidence || typeof evidence !== 'object' || Array.isArray(evidence))
+    fail('P6_CORRECTION_COMMIT_PATH_DRIFT', 'Local Git correction diff evidence is missing')
+  if (evidence.head !== head || !same(evidence.parents, [before]))
+    fail('P6_CORRECTION_COMMIT_TOPOLOGY', 'Local Git correction parent topology drifted')
+  if (evidence.parentCommitAvailable !== true || evidence.parentTreeAvailable !== true)
+    fail(
+      'P6_CORRECTION_PARENT_OBJECT_UNAVAILABLE',
+      'P6.7 correction parent commit or tree is unavailable locally'
+    )
+  if (!Array.isArray(evidence.changes))
+    fail('P6_CORRECTION_COMMIT_PATH_DRIFT', 'Local Git correction diff is malformed')
+  const modifiedPaths = []
+  for (const change of evidence.changes) {
+    if (
+      !change ||
+      typeof change !== 'object' ||
+      change.status !== 'M' ||
+      !Array.isArray(change.paths) ||
+      change.paths.length !== 1 ||
+      typeof change.paths[0] !== 'string'
+    )
+      fail('P6_CORRECTION_COMMIT_PATH_DRIFT', 'P6.7 correction permits modified paths only', {
+        changes: evidence.changes,
+      })
+    modifiedPaths.push(change.paths[0])
+  }
+  assertP6ExpectedCorrectionPaths(modifiedPaths, expectedPaths, 'P6_CORRECTION_COMMIT_PATH_DRIFT')
+  return evidence
+}
+const readP6CorrectionGitDiff = ({ root, before, head, expectedPaths }) => {
+  const actualHead = run('git', ['rev-parse', 'HEAD'], { cwd: root }).stdout.trim()
+  const parents = run('git', ['cat-file', '-p', 'HEAD'], { cwd: root })
+    .stdout.split('\n')
+    .filter(line => line.startsWith('parent '))
+    .map(line => line.slice('parent '.length))
+  if (actualHead !== head || !same(parents, [before]))
+    fail('P6_CORRECTION_COMMIT_TOPOLOGY', 'Local Git correction parent topology drifted')
+
+  const parentCommitAvailable =
+    run('git', ['cat-file', '-e', `${before}^{commit}`], {
+      cwd: root,
+      allowFailure: true,
+    }).status === 0
+  const parentTreeAvailable =
+    parentCommitAvailable &&
+    run('git', ['cat-file', '-e', `${before}^{tree}`], {
+      cwd: root,
+      allowFailure: true,
+    }).status === 0
+  if (!parentCommitAvailable || !parentTreeAvailable)
+    fail(
+      'P6_CORRECTION_PARENT_OBJECT_UNAVAILABLE',
+      'P6.7 correction parent commit or tree is unavailable locally'
+    )
+
+  const tokens = splitNull(
+    run('git', ['diff-tree', '--no-commit-id', '--name-status', '-r', '-z', 'HEAD^', 'HEAD'], {
+      cwd: root,
+    }).stdout
+  )
+  const changes = []
+  for (let index = 0; index < tokens.length; ) {
+    const status = tokens[index]
+    index += 1
+    const pathCount = /^[RC]/u.test(status) ? 2 : 1
+    const paths = tokens.slice(index, index + pathCount)
+    if (paths.length !== pathCount)
+      fail('P6_CORRECTION_COMMIT_PATH_DRIFT', 'Local Git correction diff is malformed')
+    index += pathCount
+    changes.push({ status, paths })
+  }
+  return assertP6CorrectionGitDiffEvidence(
+    { head: actualHead, parents, parentCommitAvailable, parentTreeAvailable, changes },
+    { before, head, expectedPaths }
+  )
 }
 const p6PushHead = event => {
   const hasAfter = Object.hasOwn(event, 'after')
@@ -673,13 +767,12 @@ const p6PushHead = event => {
     fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push head field is malformed')
   const after = hasAfter ? event.after : null
   const head = hasHead ? event.head : null
-  if (!after && !head)
-    fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push head identity is missing')
+  if (!after && !head) fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push head identity is missing')
   if (after && head && after !== head)
     fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push head identity is conflicting')
   return after ?? head
 }
-const validateP6CorrectionPushEvent = (state, { before = P6_PRIMARY_COMMIT } = {}) => {
+const validateP6CorrectionPushEvent = (state, { before, expectedPaths }) => {
   const context = state.github
   if (
     !context ||
@@ -703,9 +796,7 @@ const validateP6CorrectionPushEvent = (state, { before = P6_PRIMARY_COMMIT } = {
     event.before !== before ||
     pushedHead !== state.head ||
     event.created !== false ||
-    event.deleted !== false ||
-    event.size !== 1 ||
-    event.distinct_size !== 1
+    event.deleted !== false
   )
     fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push event authority drifted')
   if (event.forced !== false)
@@ -714,13 +805,22 @@ const validateP6CorrectionPushEvent = (state, { before = P6_PRIMARY_COMMIT } = {
     fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push event must contain one correction commit')
 
   const [commit] = event.commits
-  if (commit.id !== state.head || commit.distinct !== true)
+  if (!commit || typeof commit !== 'object' || Array.isArray(commit))
+    fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push commit entry is malformed')
+  if (Object.hasOwn(commit, 'id') && commit.id !== state.head)
     fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push commit identity drifted')
-  p6PushCommitPaths(commit)
-  if (!event.head_commit || event.head_commit.id !== state.head)
-    fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push head commit identity drifted')
-  p6PushCommitPaths(event.head_commit)
-  return { event: 'push', ref: P6_MAIN_REF, forced: false, pathCount: 2 }
+  if (event.head_commit !== null && event.head_commit !== undefined) {
+    if (typeof event.head_commit !== 'object' || Array.isArray(event.head_commit))
+      fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push head commit entry is malformed')
+    if (Object.hasOwn(event.head_commit, 'id') && event.head_commit.id !== state.head)
+      fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push head commit identity drifted')
+  }
+  assertP6CorrectionGitDiffEvidence(state.correctionDiff, {
+    before,
+    head: state.head,
+    expectedPaths,
+  })
+  return { event: 'push', ref: P6_MAIN_REF, forced: false, pathCount: expectedPaths.length }
 }
 const validateP6RemoteCorrectionSnapshot = (p6Paths, state) => {
   assertP6RepositoryIdentity(state)
@@ -734,41 +834,49 @@ const validateP6RemoteCorrectionSnapshot = (p6Paths, state) => {
     fail('P6_DELIVERY_DELETION', 'P6.7 correction forbids deleted paths', { deleted })
 
   if (dirty) {
-    const baseIsPrimary =
-      state.head === P6_PRIMARY_COMMIT && state.originMain === P6_PRIMARY_COMMIT
+    const baseIsPrimary = state.head === P6_PRIMARY_COMMIT && state.originMain === P6_PRIMARY_COMMIT
     const baseIsCorrection =
       state.head === P6_CORRECTION_COMMIT && state.originMain === P6_CORRECTION_COMMIT
+    const baseIsActionsPathBoundary =
+      state.head === P6_ACTIONS_PATH_BOUNDARY_CORRECTION_BASE &&
+      state.originMain === P6_ACTIONS_PATH_BOUNDARY_CORRECTION_BASE
+    const expectedPaths = baseIsActionsPathBoundary
+      ? P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS
+      : P6_CORRECTION_PATHS
     if (
       state.branch !== 'main' ||
       state.shallow !== false ||
-      (!baseIsPrimary && !baseIsCorrection) ||
+      (!baseIsPrimary && !baseIsCorrection && !baseIsActionsPathBoundary) ||
       state.ahead !== 0 ||
       state.behind !== 0
     )
       fail('P6_CORRECTION_DIRTY_BASE_DRIFT', 'Dirty P6.7 correction must remain on remote P6')
-    assertP6CorrectionPaths(localPaths)
+    assertP6ExpectedCorrectionPaths(localPaths, expectedPaths, 'P6_CORRECTION_PATH_SET_DRIFT')
     if (!staged.length)
       return {
         mode: 'unstaged-remote-correction-workspace',
-        pathCount: 2,
-        pathSetSha256: P6_CORRECTION_PATH_SET_SHA256,
+        pathCount: expectedPaths.length,
+        pathSetSha256: baseIsActionsPathBoundary
+          ? P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATH_SET_SHA256
+          : P6_CORRECTION_PATH_SET_SHA256,
       }
-    if (!same(staged, P6_CORRECTION_PATHS) || unstaged.length || untracked.length)
-      fail('P6_CORRECTION_INDEX_DRIFT', 'P6.7 index must contain both validators only', {
+    if (!same(staged, expectedPaths) || unstaged.length || untracked.length)
+      fail('P6_CORRECTION_INDEX_DRIFT', 'P6.7 index must contain one complete correction only', {
         staged,
         unstaged,
         untracked,
       })
     return {
       mode: 'fully-staged-remote-correction-candidate',
-      pathCount: 2,
-      pathSetSha256: P6_CORRECTION_PATH_SET_SHA256,
+      pathCount: expectedPaths.length,
+      pathSetSha256: baseIsActionsPathBoundary
+        ? P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATH_SET_SHA256
+        : P6_CORRECTION_PATH_SET_SHA256,
     }
   }
 
   const onMain =
-    state.branch === 'main' ||
-    (state.github?.actions === true && state.github.ref === P6_MAIN_REF)
+    state.branch === 'main' || (state.github?.actions === true && state.github.ref === P6_MAIN_REF)
   if (!onMain) fail('P6_CORRECTION_COMMIT_TOPOLOGY', 'P6.7 terminal state must be on main')
   const headParents = state.headParents ?? (state.headParent ? [state.headParent] : [])
 
@@ -787,16 +895,30 @@ const validateP6RemoteCorrectionSnapshot = (p6Paths, state) => {
     return { mode: 'clean-pushed-primary-terminal', pathCount: 221 }
   }
 
-  const correctionParent = (() => {
-    if (same(headParents, [P6_PRIMARY_COMMIT]) && state.headSubject === P6_CORRECTION_COMMIT_SUBJECT)
-      return P6_PRIMARY_COMMIT
+  const correctionTopology = (() => {
+    if (
+      same(headParents, [P6_PRIMARY_COMMIT]) &&
+      state.headSubject === P6_CORRECTION_COMMIT_SUBJECT
+    )
+      return { before: P6_PRIMARY_COMMIT, expectedPaths: P6_CORRECTION_PATHS }
     if (
       same(headParents, [P6_CORRECTION_COMMIT]) &&
       state.headSubject === P6_CORRECTION_HEAD_EVENT_FIX_SUBJECT
     )
-      return P6_CORRECTION_COMMIT
+      return { before: P6_CORRECTION_COMMIT, expectedPaths: P6_CORRECTION_PATHS }
+    if (
+      same(headParents, [P6_ACTIONS_PATH_BOUNDARY_CORRECTION_BASE]) &&
+      state.headSubject === P6_ACTIONS_PATH_BOUNDARY_CORRECTION_SUBJECT
+    )
+      return {
+        before: P6_ACTIONS_PATH_BOUNDARY_CORRECTION_BASE,
+        expectedPaths: P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS,
+      }
     fail('P6_CORRECTION_COMMIT_TOPOLOGY', 'P6.7 correction parent or subject drifted')
   })()
+  const correctionParent = correctionTopology.before
+  const expectedPaths = correctionTopology.expectedPaths
+  const requiresFullHistory = expectedPaths === P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS
 
   if (
     state.shallow === false &&
@@ -804,20 +926,39 @@ const validateP6RemoteCorrectionSnapshot = (p6Paths, state) => {
     state.ahead === 1 &&
     state.behind === 0
   ) {
-    assertP6CorrectionPaths(state.committedPaths ?? [], 'P6_CORRECTION_COMMIT_PATH_DRIFT')
-    return { mode: 'clean-local-remote-correction-commit', pathCount: 2 }
+    assertP6CorrectionGitDiffEvidence(state.correctionDiff, {
+      before: correctionParent,
+      head: state.head,
+      expectedPaths,
+    })
+    return { mode: 'clean-local-remote-correction-commit', pathCount: expectedPaths.length }
   }
 
   if (state.originMain !== state.head || state.ahead !== 0 || state.behind !== 0)
     fail('P6_CORRECTION_COMMIT_TOPOLOGY', 'P6.7 pushed correction topology drifted')
+  if (requiresFullHistory && state.shallow !== false)
+    fail(
+      'P6_CORRECTION_BASELINE_OBJECT_UNAVAILABLE',
+      'Current P6.7 correction requires complete Git history for the canonical source baseline'
+    )
   if (state.shallow === true) {
-    validateP6CorrectionPushEvent(state, { before: correctionParent })
-    return { mode: 'clean-pushed-remote-correction-shallow-event', pathCount: 2 }
+    validateP6CorrectionPushEvent(state, { before: correctionParent, expectedPaths })
+    return {
+      mode: 'clean-pushed-remote-correction-shallow-event',
+      pathCount: expectedPaths.length,
+    }
   }
-  assertP6CorrectionPaths(state.committedPaths ?? [], 'P6_CORRECTION_COMMIT_PATH_DRIFT')
+  assertP6CorrectionGitDiffEvidence(state.correctionDiff, {
+    before: correctionParent,
+    head: state.head,
+    expectedPaths,
+  })
   if (state.github?.actions === true && state.github.eventName === 'push')
-    validateP6CorrectionPushEvent(state, { before: correctionParent })
-  return { mode: 'clean-pushed-remote-correction-full-history', pathCount: 2 }
+    validateP6CorrectionPushEvent(state, { before: correctionParent, expectedPaths })
+  return {
+    mode: 'clean-pushed-remote-correction-full-history',
+    pathCount: expectedPaths.length,
+  }
 }
 const validateP6DeliverySnapshot = (p6Paths, state, { finalLocalCommit = false } = {}) => {
   const expectedPaths = finalLocalCommit
@@ -945,6 +1086,11 @@ const inspectP6DeliveryRepositoryState = ({
     .stdout.split('\n')
     .filter(line => line.startsWith('parent '))
     .map(line => line.slice('parent '.length))
+  const shallow =
+    run('git', ['rev-parse', '--is-shallow-repository'], { cwd: root }).stdout.trim() === 'true'
+  const headSubject = run('git', ['log', '-1', '--format=%s', 'HEAD'], {
+    cwd: root,
+  }).stdout.trim()
   const [behind, ahead] = run(
     'git',
     ['rev-list', '--left-right', '--count', 'origin/main...HEAD'],
@@ -955,16 +1101,37 @@ const inspectP6DeliveryRepositoryState = ({
     .stdout.trim()
     .split(/\s+/u)
     .map(Number)
+  const correctionExpectation = (() => {
+    if (same(headParents, [P6_PRIMARY_COMMIT]) && headSubject === P6_CORRECTION_COMMIT_SUBJECT)
+      return { before: P6_PRIMARY_COMMIT, expectedPaths: P6_CORRECTION_PATHS }
+    if (
+      same(headParents, [P6_CORRECTION_COMMIT]) &&
+      headSubject === P6_CORRECTION_HEAD_EVENT_FIX_SUBJECT
+    )
+      return { before: P6_CORRECTION_COMMIT, expectedPaths: P6_CORRECTION_PATHS }
+    if (
+      same(headParents, [P6_ACTIONS_PATH_BOUNDARY_CORRECTION_BASE]) &&
+      headSubject === P6_ACTIONS_PATH_BOUNDARY_CORRECTION_SUBJECT
+    )
+      return {
+        before: P6_ACTIONS_PATH_BOUNDARY_CORRECTION_BASE,
+        expectedPaths: P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS,
+      }
+    return null
+  })()
+  const correctionDiff =
+    !localState.dirty && correctionExpectation
+      ? readP6CorrectionGitDiff({ root, head, ...correctionExpectation })
+      : null
   return {
     branch: run('git', ['branch', '--show-current'], { cwd: root }).stdout.trim(),
     originUrl: run('git', ['remote', 'get-url', 'origin'], { cwd: root }).stdout.trim(),
-    shallow:
-      run('git', ['rev-parse', '--is-shallow-repository'], { cwd: root }).stdout.trim() === 'true',
+    shallow,
     originMain: run('git', ['rev-parse', 'origin/main'], { cwd: root }).stdout.trim(),
     head,
     headParent: headParents.length === 1 ? headParents[0] : null,
     headParents,
-    headSubject: run('git', ['log', '-1', '--format=%s', 'HEAD'], { cwd: root }).stdout.trim(),
+    headSubject,
     ahead,
     behind,
     github: inspectP6GitHubContext(),
@@ -972,13 +1139,13 @@ const inspectP6DeliveryRepositoryState = ({
     unstaged: localState.unstaged,
     untracked: localState.untracked,
     deleted,
+    correctionDiff,
     committedPaths:
-      localState.dirty ||
-      run('git', ['rev-parse', '--is-shallow-repository'], { cwd: root }).stdout.trim() === 'true'
-      ? []
-      : gitPaths(['diff-tree', '--no-commit-id', '--name-only', '-r', 'HEAD^', 'HEAD'], {
-          cwd: root,
-        }),
+      localState.dirty || shallow
+        ? []
+        : gitPaths(['diff-tree', '--no-commit-id', '--name-only', '-r', 'HEAD^', 'HEAD'], {
+            cwd: root,
+          }),
   }
 }
 const resolveHistoricalComparison = ({ root = ROOT, baseline = BASELINE } = {}) => {
@@ -2766,11 +2933,25 @@ const protectedPathsForPhase = phase =>
   ])
 const validateProtectedPaths = (
   phase,
-  { root = ROOT, comparison, localState = repositoryChangeState({ root }), p6Paths = [] } = {}
+  {
+    root = ROOT,
+    comparison,
+    localState = repositoryChangeState({ root }),
+    p6Paths = [],
+    allowPagesWorkflowCorrection = false,
+  } = {}
 ) => {
   const protectedPaths = protectedPathsForPhase(phase)
   if (comparison?.available)
     for (const protectedPath of protectedPaths) {
+      if (protectedPath === '.github' && allowPagesWorkflowCorrection) {
+        const githubChanged = splitNull(
+          run('git', ['diff', '--name-only', '-z', comparison.baseline, '--', protectedPath], {
+            cwd: root,
+          }).stdout
+        ).sort(compareStrings)
+        if (same(githubChanged, ['.github/workflows/deploy.yml'])) continue
+      }
       const result = run('git', ['diff', '--exit-code', comparison.baseline, '--', protectedPath], {
         cwd: root,
         allowFailure: true,
@@ -2882,6 +3063,9 @@ const validateBoundary = (
     comparison,
     localState,
     p6Paths,
+    allowPagesWorkflowCorrection:
+      p6Delivery?.pathCount === P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS.length ||
+      same(localState.paths, P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS),
   })
   const legacyState = validateHistoricalLegacyState({ root, comparison })
   const contract = comparison.available
@@ -2902,13 +3086,15 @@ const validateBoundary = (
               : PATH_CONTRACTS[phase].mandatoryPaths.length,
         allowedCount:
           phase === 'p6-terminal'
-            ? p6FinalHistoricalBoundaryPaths(p6Paths).length
+            ? p6FinalHistoricalBoundaryPaths(p6Paths).length + 1
             : phase === 'p6-pre-terminal'
               ? p6BoundaryPaths(p6Paths).length
               : PATH_CONTRACTS[phase].allowedPaths.length,
         allowedPaths:
           phase === 'p6-terminal'
-            ? p6FinalHistoricalBoundaryPaths(p6Paths)
+            ? [...p6FinalHistoricalBoundaryPaths(p6Paths), '.github/workflows/deploy.yml'].sort(
+                compareStrings
+              )
             : phase === 'p6-pre-terminal'
               ? p6BoundaryPaths(p6Paths)
               : [...PATH_CONTRACTS[phase].allowedPaths],
@@ -3248,6 +3434,38 @@ const P6_REMOTE_CORRECTION_TEST_IDS = [
   'p6-correction-event-fix-subject-drift',
   'p6-correction-event-fix-wrong-before',
   'p6-correction-push-deletion',
+  'p6-actions-path-official-payload-no-path-arrays',
+  'p6-actions-path-exact-four-file-unstaged-candidate',
+  'p6-actions-path-exact-four-file-staged-candidate',
+  'p6-actions-path-exact-local-correction-commit',
+  'p6-actions-path-exact-remote-full-history-correction',
+  'p6-actions-path-full-history-https-origin',
+  'p6-actions-path-pages-depth-two',
+  'p6-actions-path-after-head',
+  'p6-actions-path-head-head',
+  'p6-actions-path-both-heads',
+  'p6-actions-path-exact-four-modified-statuses',
+  'p6-actions-path-both-heads-missing',
+  'p6-actions-path-conflicting-heads',
+  'p6-actions-path-wrong-before',
+  'p6-actions-path-wrong-parent',
+  'p6-actions-path-wrong-subject',
+  'p6-actions-path-parent-object-unavailable',
+  'p6-actions-path-pages-depth-one',
+  'p6-actions-path-forced-push',
+  'p6-actions-path-wrong-ref',
+  'p6-actions-path-wrong-repository',
+  'p6-actions-path-two-pushed-commits',
+  'p6-actions-path-extra-path',
+  'p6-actions-path-missing-workflow',
+  'p6-actions-path-missing-wiki',
+  'p6-actions-path-missing-cold-start-validator',
+  'p6-actions-path-missing-routing-validator',
+  'p6-actions-path-added-path',
+  'p6-actions-path-deleted-path',
+  'p6-actions-path-renamed-path',
+  'p6-actions-path-partial-staging',
+  'p6-actions-path-second-local-commit',
 ]
 export function runSelfTests({
   routingFixtures = readJson(FILES.routingFixtures),
@@ -3284,11 +3502,11 @@ export function runSelfTests({
     P6_TERMINAL_TEST_IDS.length !== 25 ||
     P6_DELIVERY_TEST_IDS.length !== 10 ||
     P6_FINAL_LOCAL_COMMIT_TEST_IDS.length !== 13 ||
-    P6_REMOTE_CORRECTION_TEST_IDS.length !== 31 ||
+    P6_REMOTE_CORRECTION_TEST_IDS.length !== 63 ||
     LIFECYCLE_TEST_IDS.length !== 8 ||
-    new Set(declaredSelfTestIds).size !== 186
+    new Set(declaredSelfTestIds).size !== 218
   )
-    fail('SELF_TEST_COUNT_DRIFT', 'Self-test inventory must contain exactly 186 unique IDs')
+    fail('SELF_TEST_COUNT_DRIFT', 'Self-test inventory must contain exactly 218 unique IDs')
   const routingById = new Map(routingFixtures.cases.map(fixture => [fixture.id, fixture]))
   const executedRouting = new Set(routingEvidence?.nodeSuite?.caseIds ?? [])
   const syncById = new Map((syncEvidence?.records ?? []).map(record => [record.id, record]))
@@ -4292,8 +4510,11 @@ export function runSelfTests({
       p6Paths: p6TerminalArtifactFixture,
       finalLocalCommit: true,
     })
-    if (boundary.actualCount !== 251 || boundary.allowedCount !== 251)
-      fail('SELF_TEST_BOUNDARY', 'P6.6 final historical boundary must contain 251 paths')
+    if (boundary.actualCount !== 251 || boundary.allowedCount !== 252)
+      fail(
+        'SELF_TEST_BOUNDARY',
+        'P6.7 boundary must preserve 251 historical paths and allow only the Pages workflow'
+      )
     validateP6FinalLocalCommitSnapshot(p6TerminalArtifactFixture, {
       ...finalLocalCommitAuthority,
       unstaged: finalPaths.slice(0, 21),
@@ -4376,6 +4597,13 @@ export function runSelfTests({
     })
   )
 
+  const modifiedCorrectionDiff = (head, before, paths) => ({
+    head,
+    parents: [before],
+    parentCommitAvailable: true,
+    parentTreeAvailable: true,
+    changes: paths.map(relPath => ({ status: 'M', paths: [relPath] })),
+  })
   const primaryRemoteAuthority = {
     ...finalLocalCommitAuthority,
     head: P6_PRIMARY_COMMIT,
@@ -4404,13 +4632,11 @@ export function runSelfTests({
     originMain: P6_PRIMARY_COMMIT,
     ahead: 1,
     committedPaths: P6_CORRECTION_PATHS,
+    correctionDiff: modifiedCorrectionDiff(correctionHead, P6_PRIMARY_COMMIT, P6_CORRECTION_PATHS),
   }
   const pushCommit = {
     id: correctionHead,
     distinct: true,
-    added: [],
-    modified: [...P6_CORRECTION_PATHS],
-    removed: [],
   }
   const pushEvent = {
     repository: { full_name: P6_REPOSITORY },
@@ -4474,13 +4700,15 @@ export function runSelfTests({
     originMain: P6_CORRECTION_COMMIT,
     ahead: 1,
     committedPaths: P6_CORRECTION_PATHS,
+    correctionDiff: modifiedCorrectionDiff(
+      correctionRepairHead,
+      P6_CORRECTION_COMMIT,
+      P6_CORRECTION_PATHS
+    ),
   }
   const repairPushCommit = {
     id: correctionRepairHead,
     distinct: true,
-    added: [],
-    modified: [...P6_CORRECTION_PATHS],
-    removed: [],
   }
   const repairPushHeadEvent = {
     repository: { full_name: P6_REPOSITORY },
@@ -4512,6 +4740,62 @@ export function runSelfTests({
     shallow: true,
     committedPaths: [],
     github: correctionRepairGitHub,
+  }
+  const actionsPathBoundaryHead = '9999999999999999999999999999999999999999'
+  const actionsPathBoundaryLocalAuthority = {
+    ...primaryRemoteAuthority,
+    head: P6_ACTIONS_PATH_BOUNDARY_CORRECTION_BASE,
+    headParent: P6_CORRECTION_COMMIT,
+    headParents: [P6_CORRECTION_COMMIT],
+    headSubject: P6_CORRECTION_HEAD_EVENT_FIX_SUBJECT,
+    originMain: P6_ACTIONS_PATH_BOUNDARY_CORRECTION_BASE,
+    committedPaths: [],
+  }
+  const actionsPathBoundaryCommittedAuthority = {
+    ...actionsPathBoundaryLocalAuthority,
+    head: actionsPathBoundaryHead,
+    headParent: P6_ACTIONS_PATH_BOUNDARY_CORRECTION_BASE,
+    headParents: [P6_ACTIONS_PATH_BOUNDARY_CORRECTION_BASE],
+    headSubject: P6_ACTIONS_PATH_BOUNDARY_CORRECTION_SUBJECT,
+    ahead: 1,
+    correctionDiff: modifiedCorrectionDiff(
+      actionsPathBoundaryHead,
+      P6_ACTIONS_PATH_BOUNDARY_CORRECTION_BASE,
+      P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS
+    ),
+  }
+  const actionsPathBoundaryPushCommit = { id: actionsPathBoundaryHead }
+  const actionsPathBoundaryPushEvent = {
+    repository: { full_name: P6_REPOSITORY },
+    ref: P6_MAIN_REF,
+    before: P6_ACTIONS_PATH_BOUNDARY_CORRECTION_BASE,
+    after: actionsPathBoundaryHead,
+    created: false,
+    deleted: false,
+    forced: false,
+    commits: [clone(actionsPathBoundaryPushCommit)],
+    head_commit: clone(actionsPathBoundaryPushCommit),
+  }
+  const actionsPathBoundaryGitHub = {
+    actions: true,
+    repository: P6_REPOSITORY,
+    ref: P6_MAIN_REF,
+    sha: actionsPathBoundaryHead,
+    eventName: 'push',
+    eventPath: '/tmp/github-event.json',
+    event: actionsPathBoundaryPushEvent,
+    eventError: null,
+  }
+  const actionsPathBoundaryRemoteAuthority = {
+    ...actionsPathBoundaryCommittedAuthority,
+    originMain: actionsPathBoundaryHead,
+    ahead: 0,
+    github: actionsPathBoundaryGitHub,
+  }
+  const actionsPathBoundaryPagesAuthority = {
+    ...actionsPathBoundaryRemoteAuthority,
+    branch: '',
+    shallow: false,
   }
 
   execute('p6-correction-pushed-primary-full-history', () =>
@@ -4563,13 +4847,19 @@ export function runSelfTests({
     })
   )
   execute('p6-correction-event-fix-exact-local-commit', () =>
-    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, correctionRepairCommittedAuthority)
+    validateP6TerminalRepositorySnapshot(
+      p6TerminalArtifactFixture,
+      correctionRepairCommittedAuthority
+    )
   )
   execute('p6-correction-event-fix-exact-pushed-full-history', () =>
     validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, correctionRepairRemoteAuthority)
   )
   execute('p6-correction-event-fix-exact-pushed-shallow-head-event', () =>
-    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, correctionRepairShallowAuthority)
+    validateP6TerminalRepositorySnapshot(
+      p6TerminalArtifactFixture,
+      correctionRepairShallowAuthority
+    )
   )
   reject('p6-correction-wrong-repository', 'P6_DELIVERY_REPOSITORY_IDENTITY', () =>
     validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
@@ -4693,15 +4983,241 @@ export function runSelfTests({
       github,
     })
   })
-  reject('p6-correction-push-deletion', 'P6_DELIVERY_DELETION', () => {
-    const github = clone(correctionGitHub)
-    github.event.commits[0].modified = P6_CORRECTION_PATHS.slice(0, 1)
-    github.event.commits[0].removed = P6_CORRECTION_PATHS.slice(1)
+  reject('p6-correction-push-deletion', 'P6_CORRECTION_COMMIT_PATH_DRIFT', () => {
+    const correctionDiff = clone(correctionShallowAuthority.correctionDiff)
+    correctionDiff.changes[1].status = 'D'
     validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
       ...correctionShallowAuthority,
+      correctionDiff,
+    })
+  })
+  execute('p6-actions-path-official-payload-no-path-arrays', () =>
+    validateP6TerminalRepositorySnapshot(
+      p6TerminalArtifactFixture,
+      actionsPathBoundaryPagesAuthority
+    )
+  )
+  execute('p6-actions-path-exact-four-file-unstaged-candidate', () =>
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...actionsPathBoundaryLocalAuthority,
+      unstaged: [...P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS],
+    })
+  )
+  execute('p6-actions-path-exact-four-file-staged-candidate', () =>
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...actionsPathBoundaryLocalAuthority,
+      staged: [...P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS],
+    })
+  )
+  execute('p6-actions-path-exact-local-correction-commit', () =>
+    validateP6TerminalRepositorySnapshot(
+      p6TerminalArtifactFixture,
+      actionsPathBoundaryCommittedAuthority
+    )
+  )
+  execute('p6-actions-path-exact-remote-full-history-correction', () =>
+    validateP6TerminalRepositorySnapshot(
+      p6TerminalArtifactFixture,
+      actionsPathBoundaryRemoteAuthority
+    )
+  )
+  execute('p6-actions-path-full-history-https-origin', () =>
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...actionsPathBoundaryRemoteAuthority,
+      shallow: false,
+      originUrl: 'https://github.com/ichichuang/ccd.git',
+    })
+  )
+  reject('p6-actions-path-pages-depth-two', 'P6_CORRECTION_BASELINE_OBJECT_UNAVAILABLE', () =>
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...actionsPathBoundaryPagesAuthority,
+      shallow: true,
+    })
+  )
+  execute('p6-actions-path-after-head', () =>
+    validateP6TerminalRepositorySnapshot(
+      p6TerminalArtifactFixture,
+      actionsPathBoundaryPagesAuthority
+    )
+  )
+  execute('p6-actions-path-head-head', () => {
+    const github = clone(actionsPathBoundaryGitHub)
+    github.event.head = actionsPathBoundaryHead
+    delete github.event.after
+    return validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...actionsPathBoundaryPagesAuthority,
       github,
     })
   })
+  execute('p6-actions-path-both-heads', () => {
+    const github = clone(actionsPathBoundaryGitHub)
+    github.event.head = actionsPathBoundaryHead
+    return validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...actionsPathBoundaryPagesAuthority,
+      github,
+    })
+  })
+  execute('p6-actions-path-exact-four-modified-statuses', () =>
+    validateP6TerminalRepositorySnapshot(
+      p6TerminalArtifactFixture,
+      actionsPathBoundaryCommittedAuthority
+    )
+  )
+  reject('p6-actions-path-both-heads-missing', 'P6_CORRECTION_EVENT_INVALID', () => {
+    const github = clone(actionsPathBoundaryGitHub)
+    delete github.event.after
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...actionsPathBoundaryPagesAuthority,
+      github,
+    })
+  })
+  reject('p6-actions-path-conflicting-heads', 'P6_CORRECTION_EVENT_INVALID', () => {
+    const github = clone(actionsPathBoundaryGitHub)
+    github.event.head = '8888888888888888888888888888888888888888'
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...actionsPathBoundaryPagesAuthority,
+      github,
+    })
+  })
+  reject('p6-actions-path-wrong-before', 'P6_CORRECTION_EVENT_INVALID', () => {
+    const github = clone(actionsPathBoundaryGitHub)
+    github.event.before = P6_CORRECTION_COMMIT
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...actionsPathBoundaryPagesAuthority,
+      github,
+    })
+  })
+  reject('p6-actions-path-wrong-parent', 'P6_CORRECTION_COMMIT_TOPOLOGY', () =>
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...actionsPathBoundaryCommittedAuthority,
+      headParent: P6_CORRECTION_COMMIT,
+      headParents: [P6_CORRECTION_COMMIT],
+    })
+  )
+  reject('p6-actions-path-wrong-subject', 'P6_CORRECTION_COMMIT_TOPOLOGY', () =>
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...actionsPathBoundaryCommittedAuthority,
+      headSubject: 'fix(governance): wrong subject',
+    })
+  )
+  reject(
+    'p6-actions-path-parent-object-unavailable',
+    'P6_CORRECTION_PARENT_OBJECT_UNAVAILABLE',
+    () => {
+      const correctionDiff = clone(actionsPathBoundaryCommittedAuthority.correctionDiff)
+      correctionDiff.parentCommitAvailable = false
+      correctionDiff.parentTreeAvailable = false
+      validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+        ...actionsPathBoundaryCommittedAuthority,
+        correctionDiff,
+      })
+    }
+  )
+  reject('p6-actions-path-pages-depth-one', 'P6_CORRECTION_PARENT_OBJECT_UNAVAILABLE', () => {
+    const correctionDiff = clone(actionsPathBoundaryPagesAuthority.correctionDiff)
+    correctionDiff.parentCommitAvailable = false
+    correctionDiff.parentTreeAvailable = false
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...actionsPathBoundaryPagesAuthority,
+      correctionDiff,
+    })
+  })
+  reject('p6-actions-path-forced-push', 'P6_CORRECTION_FORCED_PUSH', () => {
+    const github = clone(actionsPathBoundaryGitHub)
+    github.event.forced = true
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...actionsPathBoundaryPagesAuthority,
+      github,
+    })
+  })
+  reject('p6-actions-path-wrong-ref', 'P6_CORRECTION_EVENT_INVALID', () => {
+    const github = clone(actionsPathBoundaryGitHub)
+    github.ref = 'refs/heads/not-main'
+    github.event.ref = 'refs/heads/not-main'
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...actionsPathBoundaryPagesAuthority,
+      branch: 'main',
+      github,
+    })
+  })
+  reject('p6-actions-path-wrong-repository', 'P6_CORRECTION_EVENT_INVALID', () => {
+    const github = clone(actionsPathBoundaryGitHub)
+    github.event.repository.full_name = 'someone/else'
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...actionsPathBoundaryPagesAuthority,
+      github,
+    })
+  })
+  reject('p6-actions-path-two-pushed-commits', 'P6_CORRECTION_EVENT_INVALID', () => {
+    const github = clone(actionsPathBoundaryGitHub)
+    github.event.commits.push(clone(actionsPathBoundaryPushCommit))
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...actionsPathBoundaryPagesAuthority,
+      github,
+    })
+  })
+  for (const [id, mutate] of [
+    ['p6-actions-path-extra-path', changes => changes.push({ status: 'M', paths: ['extra.txt'] })],
+    [
+      'p6-actions-path-missing-workflow',
+      changes => changes.filter(change => change.paths[0] !== '.github/workflows/deploy.yml'),
+    ],
+    [
+      'p6-actions-path-missing-wiki',
+      changes =>
+        changes.filter(
+          change => change.paths[0] !== 'wiki/canonical/design/ui-source-enforcement.md'
+        ),
+    ],
+    [
+      'p6-actions-path-missing-cold-start-validator',
+      changes =>
+        changes.filter(change => change.paths[0] !== 'scripts/governance/cold-start-validate.mjs'),
+    ],
+    [
+      'p6-actions-path-missing-routing-validator',
+      changes =>
+        changes.filter(
+          change => change.paths[0] !== 'scripts/governance/project-ui-routing-validate.mjs'
+        ),
+    ],
+    [
+      'p6-actions-path-added-path',
+      changes => [{ status: 'A', paths: changes[0].paths }, ...changes.slice(1)],
+    ],
+    [
+      'p6-actions-path-deleted-path',
+      changes => [{ status: 'D', paths: changes[0].paths }, ...changes.slice(1)],
+    ],
+    [
+      'p6-actions-path-renamed-path',
+      changes => [
+        { status: 'R100', paths: [changes[0].paths[0], 'renamed.yml'] },
+        ...changes.slice(1),
+      ],
+    ],
+  ])
+    reject(id, 'P6_CORRECTION_COMMIT_PATH_DRIFT', () => {
+      const correctionDiff = clone(actionsPathBoundaryCommittedAuthority.correctionDiff)
+      correctionDiff.changes = mutate(correctionDiff.changes) ?? correctionDiff.changes
+      validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+        ...actionsPathBoundaryCommittedAuthority,
+        correctionDiff,
+      })
+    })
+  reject('p6-actions-path-partial-staging', 'P6_CORRECTION_INDEX_DRIFT', () =>
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...actionsPathBoundaryLocalAuthority,
+      staged: P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS.slice(0, 2),
+      unstaged: P6_ACTIONS_PATH_BOUNDARY_CORRECTION_PATHS.slice(2),
+    })
+  )
+  reject('p6-actions-path-second-local-commit', 'P6_CORRECTION_COMMIT_TOPOLOGY', () =>
+    validateP6TerminalRepositorySnapshot(p6TerminalArtifactFixture, {
+      ...actionsPathBoundaryCommittedAuthority,
+      ahead: 2,
+    })
+  )
   reject('lifecycle-mixed-terminal', 'P5_LIFECYCLE_MIXED', () => {
     const documents = clone(terminalDocuments)
     documents[0].markers.set('P5_COMPLETE', 'no')
@@ -4767,19 +5283,19 @@ export function runSelfTests({
   )
     fail(
       'SELF_TEST_EXECUTION_DRIFT',
-      'Executed self-test order or membership differs from the exact 176-case contract'
+      'Executed self-test order or membership differs from the exact 218-case contract'
     )
   return {
     status: 'pass',
     cases: executed.length,
-    rejectionCases: 62,
+    rejectionCases: 84,
     falsePositiveCases: 20,
     boundaryCases: 11,
     p6BoundaryCases: 6,
     p6TerminalCases: 25,
     p6DeliveryCases: 10,
     p6FinalLocalCommitCases: 13,
-    p6RemoteCorrectionCases: 21,
+    p6RemoteCorrectionCases: 63,
     lifecycleCases: 8,
     caseIds,
   }
@@ -4825,7 +5341,7 @@ const runSuite = async (selfTest, temporaryRoot) => {
       routingPassed: 0,
       syncTotal: 47,
       syncPassed: 0,
-      selfTestTotal: selfTest ? 176 : 0,
+      selfTestTotal: selfTest ? 211 : 0,
       selfTestPassed: 0,
     },
     diagnostics: [],
