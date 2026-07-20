@@ -180,7 +180,10 @@ const P6_FINAL_LOCAL_COMMIT_PATH_SET_SHA256 =
 const P6_FINAL_HISTORICAL_PATH_SET_SHA256 =
   '86f7220972b2eb76434ef9afa7e95e3406fb049da03a8f0c9dc6458a7e38377f'
 const P6_PRIMARY_COMMIT = 'dfbb4c951f35de1bccfae2a7923c0329f4a49b81'
+const P6_CORRECTION_COMMIT = 'd0e018cf6bfd918bd58dce20a345c27bfb12d5ab'
 const P6_CORRECTION_COMMIT_SUBJECT = 'fix(governance): 修正 P6 远端终态身份与浅克隆验收'
+const P6_CORRECTION_HEAD_EVENT_FIX_SUBJECT =
+  'fix(governance): 兼容 P6 修正推送 head 事件'
 const P6_CORRECTION_PATHS = Object.freeze([
   'scripts/governance/cold-start-validate.mjs',
   'scripts/governance/project-ui-routing-validate.mjs',
@@ -514,7 +517,23 @@ const p6PushCommitPaths = commit => {
   return assertP6CorrectionPaths(flattened)
 }
 
-const validateP6CorrectionPushEvent = state => {
+const p6PushHead = event => {
+  const hasAfter = Object.hasOwn(event, 'after')
+  const hasHead = Object.hasOwn(event, 'head')
+  if (hasAfter && typeof event.after !== 'string')
+    fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push after field is malformed')
+  if (hasHead && typeof event.head !== 'string')
+    fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push head field is malformed')
+  const after = hasAfter ? event.after : null
+  const head = hasHead ? event.head : null
+  if (!after && !head)
+    fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push head identity is missing')
+  if (after && head && after !== head)
+    fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push head identity is conflicting')
+  return after ?? head
+}
+
+const validateP6CorrectionPushEvent = (state, { before = P6_PRIMARY_COMMIT } = {}) => {
   const context = state.github
   if (
     !context ||
@@ -530,12 +549,13 @@ const validateP6CorrectionPushEvent = state => {
     fail('P6_CORRECTION_EVENT_INVALID', 'GitHub push context is missing or malformed')
 
   const event = context.event
+  const pushedHead = p6PushHead(event)
   if (
     typeof event.repository?.full_name !== 'string' ||
     event.repository.full_name.toLowerCase() !== P6_REPOSITORY ||
     event.ref !== P6_MAIN_REF ||
-    event.before !== P6_PRIMARY_COMMIT ||
-    event.after !== state.head ||
+    event.before !== before ||
+    pushedHead !== state.head ||
     event.created !== false ||
     event.deleted !== false ||
     event.size !== 1 ||
@@ -569,11 +589,14 @@ const validateP6RemoteCorrectionSnapshot = (p6Paths, state) => {
     fail('P6_DELIVERY_DELETION', 'P6.7 correction forbids deleted paths', { deleted })
 
   if (dirty) {
+    const baseIsPrimary =
+      state.head === P6_PRIMARY_COMMIT && state.originMain === P6_PRIMARY_COMMIT
+    const baseIsCorrection =
+      state.head === P6_CORRECTION_COMMIT && state.originMain === P6_CORRECTION_COMMIT
     if (
       state.branch !== 'main' ||
       state.shallow !== false ||
-      state.head !== P6_PRIMARY_COMMIT ||
-      state.originMain !== P6_PRIMARY_COMMIT ||
+      (!baseIsPrimary && !baseIsCorrection) ||
       state.ahead !== 0 ||
       state.behind !== 0
     )
@@ -623,15 +646,23 @@ const validateP6RemoteCorrectionSnapshot = (p6Paths, state) => {
     return { mode: 'clean-pushed-primary-terminal', pathCount: 221 }
   }
 
-  if (
-    JSON.stringify(headParents) !== JSON.stringify([P6_PRIMARY_COMMIT]) ||
-    state.headSubject !== P6_CORRECTION_COMMIT_SUBJECT
-  )
+  const correctionParent = (() => {
+    if (
+      JSON.stringify(headParents) === JSON.stringify([P6_PRIMARY_COMMIT]) &&
+      state.headSubject === P6_CORRECTION_COMMIT_SUBJECT
+    )
+      return P6_PRIMARY_COMMIT
+    if (
+      JSON.stringify(headParents) === JSON.stringify([P6_CORRECTION_COMMIT]) &&
+      state.headSubject === P6_CORRECTION_HEAD_EVENT_FIX_SUBJECT
+    )
+      return P6_CORRECTION_COMMIT
     fail('P6_CORRECTION_COMMIT_TOPOLOGY', 'P6.7 correction parent or subject drifted')
+  })()
 
   if (
     state.shallow === false &&
-    state.originMain === P6_PRIMARY_COMMIT &&
+    state.originMain === correctionParent &&
     state.ahead === 1 &&
     state.behind === 0
   ) {
@@ -642,12 +673,12 @@ const validateP6RemoteCorrectionSnapshot = (p6Paths, state) => {
   if (state.originMain !== state.head || state.ahead !== 0 || state.behind !== 0)
     fail('P6_CORRECTION_COMMIT_TOPOLOGY', 'P6.7 pushed correction topology drifted')
   if (state.shallow === true) {
-    validateP6CorrectionPushEvent(state)
+    validateP6CorrectionPushEvent(state, { before: correctionParent })
     return { mode: 'clean-pushed-remote-correction-shallow-event', pathCount: 2 }
   }
   assertP6CorrectionPaths(state.committedPaths ?? [], 'P6_CORRECTION_COMMIT_PATH_DRIFT')
   if (state.github?.actions === true && state.github.eventName === 'push')
-    validateP6CorrectionPushEvent(state)
+    validateP6CorrectionPushEvent(state, { before: correctionParent })
   return { mode: 'clean-pushed-remote-correction-full-history', pathCount: 2 }
 }
 
@@ -2435,6 +2466,9 @@ const runSelfTestsInFixture = root => {
     commits: [clone(pushCommit)],
     head_commit: clone(pushCommit),
   }
+  const pushHeadEvent = clone(pushEvent)
+  pushHeadEvent.head = correctionHead
+  delete pushHeadEvent.after
   const correctionGitHub = {
     actions: true,
     repository: P6_REPOSITORY,
@@ -2444,6 +2478,10 @@ const runSelfTestsInFixture = root => {
     eventPath: '/tmp/github-event.json',
     event: pushEvent,
     eventError: null,
+  }
+  const correctionHeadGitHub = {
+    ...correctionGitHub,
+    event: pushHeadEvent,
   }
   const correctionRemoteAuthority = {
     ...correctionCommittedAuthority,
@@ -2457,6 +2495,64 @@ const runSelfTestsInFixture = root => {
     shallow: true,
     committedPaths: [],
     github: correctionGitHub,
+  }
+  const correctionRepairHead = '7777777777777777777777777777777777777777'
+  const correctionRepairLocalAuthority = {
+    ...correctionRemoteAuthority,
+    head: P6_CORRECTION_COMMIT,
+    headParent: P6_PRIMARY_COMMIT,
+    headParents: [P6_PRIMARY_COMMIT],
+    headSubject: P6_CORRECTION_COMMIT_SUBJECT,
+    originMain: P6_CORRECTION_COMMIT,
+    committedPaths: [],
+  }
+  const correctionRepairCommittedAuthority = {
+    ...correctionRepairLocalAuthority,
+    head: correctionRepairHead,
+    headParent: P6_CORRECTION_COMMIT,
+    headParents: [P6_CORRECTION_COMMIT],
+    headSubject: P6_CORRECTION_HEAD_EVENT_FIX_SUBJECT,
+    originMain: P6_CORRECTION_COMMIT,
+    ahead: 1,
+    committedPaths: P6_CORRECTION_PATHS,
+  }
+  const repairPushCommit = {
+    id: correctionRepairHead,
+    distinct: true,
+    added: [],
+    modified: [...P6_CORRECTION_PATHS],
+    removed: [],
+  }
+  const repairPushHeadEvent = {
+    repository: { full_name: P6_REPOSITORY },
+    ref: P6_MAIN_REF,
+    before: P6_CORRECTION_COMMIT,
+    head: correctionRepairHead,
+    created: false,
+    deleted: false,
+    forced: false,
+    size: 1,
+    distinct_size: 1,
+    commits: [clone(repairPushCommit)],
+    head_commit: clone(repairPushCommit),
+  }
+  const correctionRepairGitHub = {
+    ...correctionGitHub,
+    sha: correctionRepairHead,
+    event: repairPushHeadEvent,
+  }
+  const correctionRepairRemoteAuthority = {
+    ...correctionRepairCommittedAuthority,
+    originMain: correctionRepairHead,
+    ahead: 0,
+    behind: 0,
+  }
+  const correctionRepairShallowAuthority = {
+    ...correctionRepairRemoteAuthority,
+    branch: '',
+    shallow: true,
+    committedPaths: [],
+    github: correctionRepairGitHub,
   }
 
   expectPass(records, 'p6-correction-pushed-primary-full-history', () =>
@@ -2494,6 +2590,27 @@ const runSelfTestsInFixture = root => {
   )
   expectPass(records, 'p6-correction-exact-pushed-shallow-event', () =>
     validateP6TerminalRepositorySnapshot(p6DeliveryP6Paths, correctionShallowAuthority)
+  )
+  expectPass(records, 'p6-correction-exact-pushed-shallow-head-event', () =>
+    validateP6TerminalRepositorySnapshot(p6DeliveryP6Paths, {
+      ...correctionShallowAuthority,
+      github: correctionHeadGitHub,
+    })
+  )
+  expectPass(records, 'p6-correction-event-fix-exact-unstaged-candidate', () =>
+    validateP6TerminalRepositorySnapshot(p6DeliveryP6Paths, {
+      ...correctionRepairLocalAuthority,
+      unstaged: [...P6_CORRECTION_PATHS],
+    })
+  )
+  expectPass(records, 'p6-correction-event-fix-exact-local-commit', () =>
+    validateP6TerminalRepositorySnapshot(p6DeliveryP6Paths, correctionRepairCommittedAuthority)
+  )
+  expectPass(records, 'p6-correction-event-fix-exact-pushed-full-history', () =>
+    validateP6TerminalRepositorySnapshot(p6DeliveryP6Paths, correctionRepairRemoteAuthority)
+  )
+  expectPass(records, 'p6-correction-event-fix-exact-pushed-shallow-head-event', () =>
+    validateP6TerminalRepositorySnapshot(p6DeliveryP6Paths, correctionRepairShallowAuthority)
   )
   expectFailure(
     records,
@@ -2587,6 +2704,53 @@ const runSelfTestsInFixture = root => {
       ...correctionShallowAuthority,
       github: { ...correctionGitHub, event: null },
     })
+  )
+  expectFailure(records, 'p6-correction-push-head-missing', 'P6_CORRECTION_EVENT_INVALID', () => {
+    const github = clone(correctionGitHub)
+    delete github.event.after
+    validateP6TerminalRepositorySnapshot(p6DeliveryP6Paths, {
+      ...correctionShallowAuthority,
+      github,
+    })
+  })
+  expectFailure(records, 'p6-correction-push-head-drift', 'P6_CORRECTION_EVENT_INVALID', () => {
+    const github = clone(correctionHeadGitHub)
+    github.event.head = '6666666666666666666666666666666666666666'
+    validateP6TerminalRepositorySnapshot(p6DeliveryP6Paths, {
+      ...correctionShallowAuthority,
+      github,
+    })
+  })
+  expectFailure(records, 'p6-correction-push-head-conflict', 'P6_CORRECTION_EVENT_INVALID', () => {
+    const github = clone(correctionGitHub)
+    github.event.head = '6666666666666666666666666666666666666666'
+    validateP6TerminalRepositorySnapshot(p6DeliveryP6Paths, {
+      ...correctionShallowAuthority,
+      github,
+    })
+  })
+  expectFailure(
+    records,
+    'p6-correction-event-fix-subject-drift',
+    'P6_CORRECTION_COMMIT_TOPOLOGY',
+    () =>
+      validateP6TerminalRepositorySnapshot(p6DeliveryP6Paths, {
+        ...correctionRepairRemoteAuthority,
+        headSubject: 'fix(governance): wrong subject',
+      })
+  )
+  expectFailure(
+    records,
+    'p6-correction-event-fix-wrong-before',
+    'P6_CORRECTION_EVENT_INVALID',
+    () => {
+      const github = clone(correctionRepairGitHub)
+      github.event.before = P6_PRIMARY_COMMIT
+      validateP6TerminalRepositorySnapshot(p6DeliveryP6Paths, {
+        ...correctionRepairShallowAuthority,
+        github,
+      })
+    }
   )
   expectFailure(records, 'p6-correction-push-deletion', 'P6_DELIVERY_DELETION', () => {
     const github = clone(correctionGitHub)
