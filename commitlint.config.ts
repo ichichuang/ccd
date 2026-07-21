@@ -19,14 +19,12 @@ const configuration: UserConfig = {
       [
         'feat', // ✨ 新功能 (feature)
         'fix', // 🐛 修复 Bug
-        'docs', // 📝 文档变更 (documentation)
         'style', // 💄 代码格式 (不影响代码运行的变动，空格、格式化等)
         'refactor', // ♻️ 代码重构 (既不是新增功能也不是修改 bug 的代码变动)
         'perf', // ⚡️ 性能优化 (Performance)
-        'test', // ✅ 测试相关 (添加缺失的测试或更正现有的测试)
         'build', // 📦 构建系统或外部依赖项的变更 (如: webpack, npm, vite)
         'ci', // 👷 持续集成配置文件的变更 (如: GitHub Actions, Travis)
-        'chore', // 🔧 杂务/其他 (不修改源代码或测试文件的变更)
+        'chore', // 🔧 杂务/其他
         'revert', // ⏪ 撤销某次提交
         'wip', // 🚧 开发中 (Work In Progress)
         'release', // 🔖 发布版本

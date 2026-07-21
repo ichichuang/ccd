@@ -4,10 +4,6 @@
     // ✅ Node 侧仅负责工具链与构建脚本
     "uno.config.ts",
     "eslint.config.ts",
-    "vitest.config.ts",
-    "cypress.config.ts",
-    "playwright.config.ts",
-    "e2e/**/*.ts",
     "commitlint.config.ts",
     "apps/web-demo/build/**/*",
     "scripts/**/*.ts",
@@ -45,9 +41,6 @@
     // 自动生成的类型声明文件，不参与 Node 编译（避免 DOM/browser 类型污染）
     "apps/web-demo/src/types/auto-imports.d.ts",
     "apps/web-demo/src/types/components.d.ts",
-    // Node 侧只编译工具链依赖的生产模块，测试文件由 Vitest 接管
-    "apps/web-demo/src/**/*.spec.ts",
-    "apps/web-demo/src/**/*.test.ts",
     // router.ts 使用了 import.meta.env（Vite 浏览器专属 API），
     // 在 Node 上下文中没有此 API，必须排除以防止类型冲突。
     // 根本原因：src/constants/**/*.ts 通配包含了此文件，故需显式排除。

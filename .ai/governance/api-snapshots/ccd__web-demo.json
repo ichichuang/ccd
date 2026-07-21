@@ -1,6 +1,0 @@
-{
-  "package": "@ccd/web-demo",
-  "path": "apps/web-demo",
-  "exports": ["."],
-  "rootSymbols": []
-}

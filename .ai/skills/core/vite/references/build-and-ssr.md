@@ -92,13 +92,13 @@ export default defineConfig({
 **Note:** Vite's SSR support is **low-level** and designed mostly for meta-framework authors, not application developers. If you need SSR for your app, use a Vite-based meta-framework instead:
 
 - **Nuxt** (Vue) - https://nuxt.com
-- **SvelteKit** (Svelte) - https://svelte.dev/docs/kit
+- **SvelteKit** (Svelte) - https://svelte.dev
 - **SolidStart** (Solid) - https://start.solidjs.com
 - **TanStack Start** (React) - https://tanstack.com/start
 
 These frameworks build on top of Vite's SSR primitives so you don't have to wire them up yourself.
 
-**Need a server?** Consider [Nitro](https://nitro.build) -- think of it as "Vite for servers." Nitro provides a portable, framework-agnostic server layer with file-based API routing, auto-imports, and deployment presets for dozens of platforms (Node.js, Deno, Bun, Cloudflare Workers, Vercel, Netlify, etc.). It integrates naturally with Vite and is what powers Nuxt's server engine. See the [Nitro docs](https://nitro.build) for more details.
+**Need a server?** Consider [Nitro](https://nitro.build) -- think of it as "Vite for servers." Nitro provides a portable, framework-agnostic server layer with file-based API routing, auto-imports, and deployment presets for Node.js, Deno, Bun, Cloudflare Workers, Vercel, and Netlify.
 
 ## JavaScript API
 

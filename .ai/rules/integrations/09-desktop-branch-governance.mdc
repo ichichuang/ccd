@@ -1,13 +1,11 @@
 ---
-description: Desktop workspace governance for Vue 3 + Tauri v2 adapter containment, capability drift control, and snapshot hygiene.
+description: Desktop workspace governance for Vue 3 + Tauri v2 adapter containment and capability drift control.
 globs:
   - "apps/desktop/src/**/*.ts"
   - "apps/desktop/src/**/*.vue"
   - "apps/desktop/src-tauri/**"
   - "scripts/drift-check.mjs"
   - "scripts/sync-desktop-config.mjs"
-  - "e2e/**"
-  - "test-results/**"
 alwaysApply: false
 ---
 
@@ -16,7 +14,7 @@ alwaysApply: false
 This rule is workspace/path aware:
 
 - Desktop runtime governance is active for changes under `apps/desktop/**`.
-- Any direct edit under `apps/desktop/src-tauri/**`, `apps/desktop/src/adapters/**`, `scripts/sync-desktop-config.mjs`, or desktop visual snapshots activates this rule.
+- Any direct edit under `apps/desktop/src-tauri/**`, `apps/desktop/src/adapters/**`, or `scripts/sync-desktop-config.mjs` activates this rule.
 
 ## [LAW] Bridge SSOT
 
@@ -33,16 +31,9 @@ This rule is workspace/path aware:
   - `pnpm sync:desktop-config`
   - `pnpm check:drift`
 
-## [LAW] Snapshot Residue Hygiene
-
-- If desktop branch cleanup removes routes/pages/features, stale visual baselines MUST be pruned from:
-  - `e2e/__snapshots__/**`
-  - `test-results/**`
-- `example`-related residue is forbidden after cleanup; do not keep dead baseline assets.
-
 ## [PATTERN] Validation Ladder
 
 - Prefer targeted checks first:
   - `pnpm check:drift`
   - `pnpm type-check`
-- Run Playwright snapshot update/check only when visual baselines changed.
+- Run `pnpm arch:runtime` and `pnpm build:desktop` for desktop runtime changes.

@@ -12,7 +12,6 @@ defineProps<{
 <template>
   <section
     id="auth-visual-stage"
-    data-testid="auth-visual-stage"
     class="auth-visual-stage"
     :class="{
       'auth-visual-stage--mobile': responsive.isMobile,

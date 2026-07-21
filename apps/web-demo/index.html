@@ -23,19 +23,8 @@
     <script>
       ;(function () {
         try {
-          var params = new URLSearchParams(window.location.search)
-          var e2eMode =
-            params.get('%E2E_MODE_QUERY_KEY%') ||
-            localStorage.getItem('%E2E_MODE_STORAGE_KEY%') ||
-            ''
           var mode = localStorage.getItem('%THEME_MODE_STORAGE_KEY%') || '%DEFAULT_THEME_MODE%'
           var html = document.documentElement
-          if (e2eMode) {
-            html.dataset.e2eMode = e2eMode
-          }
-          if (params.get('%E2E_PRELOADER_HOLD_QUERY_KEY%') === '1') {
-            html.dataset.e2ePreloaderHold = 'true'
-          }
           html.dataset.appReady = 'false'
           html.dataset.preloaderState = 'visible'
           var isDark =
@@ -84,12 +73,6 @@
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
-      }
-
-      html[data-e2e-mode='visual'] #preloader-bg,
-      html[data-e2e-mode='visual'] #preloader-bg * {
-        transition: none !important;
-        animation: none !important;
       }
 
       .pure-css-loader {
@@ -155,7 +138,6 @@
     <!-- 101 Handoff: 预加载层置于 #app 外，避免 Vue mount 时被销毁，由 loadingDone 淡出后移除 -->
     <div
       id="preloader-bg"
-      data-testid="native-preloader"
     >
       <div
         class="pure-css-loader"

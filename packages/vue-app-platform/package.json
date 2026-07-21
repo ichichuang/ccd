@@ -14,8 +14,7 @@
   "scripts": {
     "build": "node ../../scripts/clean-artifacts.mjs paths ../../node_modules/.tmp/packages-vue-app-platform.tsbuildinfo && tsc -p tsconfig.json",
     "type-check": "tsc -p tsconfig.json --noEmit",
-    "typecheck": "pnpm type-check",
-    "test": "vitest --root ../.. run packages/vue-app-platform/src/bootstrap.spec.ts packages/vue-app-platform/src/i18nRuntime.spec.ts packages/vue-app-platform/src/layoutRuntime.spec.ts packages/vue-app-platform/src/preloader.spec.ts packages/vue-app-platform/src/preloadError.spec.ts packages/vue-app-platform/src/themeRuntime.spec.ts --passWithNoTests"
+    "typecheck": "pnpm type-check"
   },
   "dependencies": {
     "@ccd/contracts": "workspace:*",

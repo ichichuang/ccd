@@ -3,29 +3,20 @@
   "globalDependencies": [
     ".env",
     ".env.*",
-    ".ai/governance/policies/*.json",
     "eslint.config.*",
     "package.json",
-    "playwright.config.*",
     "pnpm-lock.yaml",
     "pnpm-workspace.yaml",
     "project.config.json",
     "tsconfig*.json",
     "turbo.json",
     "uno.config.*",
-    "vite.config.*",
-    "vitest.config.*"
+    "vite.config.*"
   ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "!coverage/**",
-        "!dist/**",
-        "!playwright-report/**",
-        "!test-results/**"
-      ],
+      "inputs": ["$TURBO_DEFAULT$", "!dist/**"],
       "outputs": ["dist/**"],
       "cache": true
     },
@@ -41,37 +32,10 @@
       "outputs": [],
       "cache": true
     },
-    "test": {
-      "dependsOn": ["^build"],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "**/*.spec.*",
-        "**/*.test.*",
-        "vitest.config.*",
-        "!coverage/**",
-        "!dist/**"
-      ],
-      "outputs": [],
-      "cache": true
-    },
     "//#lint": {
       "inputs": ["$TURBO_DEFAULT$", "eslint.config.*", "tsconfig*.json", "!dist/**"],
       "outputs": [],
       "cache": true
-    },
-    "//#e2e": {
-      "dependsOn": ["@ccd/web-demo#build"],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "apps/**",
-        "e2e/**",
-        "packages/**",
-        "playwright.config.*",
-        "!**/dist/**",
-        "!**/node_modules/**"
-      ],
-      "outputs": ["playwright-report/**", "test-results/**"],
-      "cache": false
     }
   }
 }

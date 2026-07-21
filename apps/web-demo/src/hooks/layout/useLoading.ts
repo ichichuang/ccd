@@ -48,8 +48,6 @@
  * ```
  */
 import { useLayoutStoreWithOut } from '@/stores/modules/system'
-import { RUNTIME_E2E_EVENTS } from '@/constants/runtime'
-import { dispatchRuntimeE2EEvent, shouldHoldPreloaderForE2E } from '@/utils/runtime/e2e'
 
 /** 101 Handoff: 原生 HTML 预加载层是否已淡出（仅执行一次） */
 let hasNativePreloaderHandedOff = false
@@ -62,8 +60,6 @@ export function fadeOutNativePreloader() {
   const finalizeHandoff = () => {
     root?.setAttribute('data-preloader-state', 'hidden')
     root?.setAttribute('data-app-ready', 'true')
-    dispatchRuntimeE2EEvent(RUNTIME_E2E_EVENTS.preloaderHidden)
-    dispatchRuntimeE2EEvent(RUNTIME_E2E_EVENTS.appReady)
   }
 
   if (!el) {
@@ -81,13 +77,6 @@ export function fadeOutNativePreloader() {
       el.remove()
       finalizeHandoff()
     }, 400)
-  }
-
-  if (shouldHoldPreloaderForE2E()) {
-    root?.setAttribute('data-preloader-state', 'held')
-    dispatchRuntimeE2EEvent(RUNTIME_E2E_EVENTS.preloaderReady)
-    window.addEventListener(RUNTIME_E2E_EVENTS.releasePreloader, doFadeOut, { once: true })
-    return
   }
 
   doFadeOut()

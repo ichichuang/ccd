@@ -15,7 +15,3 @@ export function getSyncHandler(type: string): SyncHandler | undefined {
 export function isSyncTypeAllowed(type: string): boolean {
   return registry.has(type)
 }
-
-export function resetSyncRegistryForTest(): void {
-  registry.clear()
-}

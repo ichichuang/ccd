@@ -289,7 +289,6 @@ const actionButtonPt = {
 <template>
   <section
     class="col-stretch min-w-0 gap-lg"
-    data-testid="showcase-runtime-page"
   >
     <ShowcaseHero
       :eyebrow="$t(`${item.localeBaseKey}.eyebrow`)"
@@ -302,7 +301,6 @@ const actionButtonPt = {
       :title="$t('showcase.runtimePages.boundaryTitle')"
       :description="$t('showcase.runtimePages.boundaryDescription')"
       icon="i-lucide-badge-check"
-      data-testid="showcase-runtime-boundary"
     >
       <div class="grid min-w-0 grid-cols-1 gap-md lg:grid-cols-3">
         <ShowcaseCard
@@ -322,13 +320,11 @@ const actionButtonPt = {
     >
       <section
         class="col-stretch min-w-0 gap-lg"
-        data-testid="showcase-runtime-demo"
       >
         <ShowcaseToolbar
           :title="$t('showcase.runtimePages.toolbarTitle')"
           :description="$t('showcase.runtimePages.toolbarDescription')"
           :summary="$t(`showcase.runtimePages.${currentKind}.focusDescription`)"
-          data-testid="showcase-runtime-action-toolbar"
         >
           <template #actions>
             <Button
@@ -336,7 +332,6 @@ const actionButtonPt = {
               icon="i-lucide-play"
               severity="primary"
               :pt="actionButtonPt"
-              data-testid="showcase-runtime-run-check"
               @click="runRuntimeCheck"
             />
             <Button
@@ -345,7 +340,6 @@ const actionButtonPt = {
               severity="secondary"
               outlined
               :pt="actionButtonPt"
-              data-testid="showcase-runtime-reset-check"
               @click="resetRuntimeCheck"
             />
             <Tag
@@ -361,7 +355,6 @@ const actionButtonPt = {
               </span>
               <strong
                 class="code-inline m-0 min-w-0 text-sm font-semibold text-foreground"
-                data-testid="showcase-runtime-run-count"
               >
                 {{ runCount }}
               </strong>
@@ -372,7 +365,6 @@ const actionButtonPt = {
               </span>
               <strong
                 class="code-inline m-0 min-w-0 break-words text-right text-sm font-semibold text-foreground"
-                data-testid="showcase-runtime-last-action"
               >
                 {{ $t(`showcase.runtimePages.actionStatus.${actionStatus}`) }}
               </strong>
@@ -383,7 +375,6 @@ const actionButtonPt = {
             icon="i-lucide-eye"
             :title="$t('showcase.runtimePages.readonlyTitle')"
             :description="$t('showcase.runtimePages.readonlyDescription')"
-            data-testid="showcase-runtime-readonly-note"
           />
         </ShowcaseToolbar>
 
@@ -393,7 +384,6 @@ const actionButtonPt = {
             :title="$t(`showcase.runtimePages.${currentKind}.focusTitle`)"
             :description="$t('showcase.runtimePages.stateDescription')"
             :tag="$t(currentBadgeKey)"
-            data-testid="showcase-runtime-state-panel"
           >
             <dl
               class="grid min-w-0 grid-cols-1 gap-sm md:grid-cols-2"
@@ -409,7 +399,6 @@ const actionButtonPt = {
                 </dt>
                 <dd
                   class="code-inline m-0 min-w-0 break-all text-sm font-semibold text-foreground"
-                  :data-testid="`showcase-runtime-state-${row.key}`"
                 >
                   {{ row.value }}
                 </dd>
@@ -421,7 +410,6 @@ const actionButtonPt = {
             :icon="currentConfig.resultIcon"
             :title="$t('showcase.runtimePages.resultTitle')"
             :description="$t('showcase.runtimePages.resultDescription')"
-            data-testid="showcase-runtime-result-panel"
           >
             <div class="col-stretch min-w-0 gap-sm">
               <div class="demo-well col-stretch min-w-0 gap-xs">
@@ -457,7 +445,6 @@ const actionButtonPt = {
       :title="$t('showcase.runtimePages.notesTitle')"
       :description="$t('showcase.runtimePages.notesDescription')"
       icon="i-lucide-list-checks"
-      data-testid="showcase-runtime-contract"
     >
       <div class="grid min-w-0 grid-cols-1 gap-md lg:grid-cols-2">
         <ShowcaseCard
@@ -473,7 +460,6 @@ const actionButtonPt = {
 
     <section
       class="grid min-w-0 grid-cols-1 gap-md xl:grid-cols-2"
-      data-testid="showcase-runtime-source-area"
     >
       <ShowcaseSourceLinks :source-paths="pageSourcePaths" />
       <ShowcaseEvidencePanel
@@ -481,14 +467,12 @@ const actionButtonPt = {
         :description="$t('showcase.runtimePages.evidenceDescription')"
         :empty-text="$t('showcase.shell.source.empty')"
         :source-paths="currentConfig.evidencePaths"
-        data-testid="showcase-runtime-evidence-area"
       />
     </section>
 
     <ShowcaseRelatedLinks
       :item="item"
       :related-ids="item.relatedIds"
-      data-testid="showcase-runtime-related"
     />
   </section>
 </template>

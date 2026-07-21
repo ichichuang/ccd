@@ -19,7 +19,7 @@ onMounted(() => {
 
   entranceMotion = createScopedGsapContext(
     () => {
-      const card = scope.querySelector<HTMLElement>('[data-testid="auth-login-card"]')
+      const card = scope.querySelector<HTMLElement>('.auth-login-card')
       const identityItems = Array.from(
         scope.querySelectorAll<HTMLElement>(
           '.auth-login-card__eyebrow, .auth-login-card__title, .auth-login-card__subtitle'

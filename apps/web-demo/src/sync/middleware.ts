@@ -34,11 +34,6 @@ export function registerSyncMiddleware(middleware: SyncMiddleware): void {
   middlewares.push(middleware)
 }
 
-export function resetSyncMiddlewaresForTest(): void {
-  middlewares.length = 0
-  runtimeClientId = 'local-sync-client'
-}
-
 function createContext(input: SyncContextInput): SyncContext {
   return {
     type: input.type,

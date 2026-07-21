@@ -578,17 +578,17 @@ packages/vue-ui/src/ProForm/
 
 为保证实现过程可控，建议按以下阶段执行：
 
-1. **Phase 1：基础设施**
+1. **Stage 1：基础设施**
    - 实现 `engine/types` 中的关键类型（本 TDD 已给出接口草案）。
    - 实现基础 `FieldRegistry` 与 `SubscriptionStore`（State Engine）。
-2. **Phase 2：依赖图与事务系统**
+2. **Stage 2：依赖图与事务系统**
    - 实现 `engine/dependency`（DependencyGraph + Scheduler）。
    - 实现 `engine/core/TransactionManager` 并与 State Engine 集成。
-3. **Phase 3：Hook 层**
+3. **Stage 3：Hook 层**
    - 实现 `useForm`、`useField`、`useFieldArray` 等 Hook，桥接 Engine 与 Vue 组件。
-4. **Phase 4：验证集成**
+4. **Stage 4：验证集成**
    - 在 `engine/validation` 中接入 Zod/VeeValidate resolver。
-5. **Phase 5：渲染层**
+5. **Stage 5：渲染层**
    - 实现 `renderers/PrimeVueRenderer.vue` 及其下的 PrimeVue 字段包装组件。
 
 所有新增实现均必须遵守本 TDD 的：

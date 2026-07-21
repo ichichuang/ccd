@@ -1,94 +1,61 @@
 #!/usr/bin/env node
 
-import path from 'node:path'
+import fs from 'node:fs'
 import os from 'node:os'
+import path from 'node:path'
 import process from 'node:process'
-import {
-  SkillSyncError,
-  assertNoTraversalOverride,
-  canonicalSyncJson,
-  renderSyncReport,
-  syncSkills,
-} from './skill-sync-engine.mjs'
 
-const parseArgs = argv => {
-  const parsed = { check: false, json: false, codexTargetRoot: null, claudeProjectRoot: null }
-  const seen = new Set()
+function parseArgs(argv) {
+  const options = { check: false, clients: [], targetRoot: null }
   for (let index = 0; index < argv.length; index += 1) {
-    const argument = argv[index]
-    if (argument === '--') continue
-    if (argument === '--check' || argument === '--json') {
-      if (seen.has(argument))
-        throw new SkillSyncError('CLI_ARGUMENT_ERROR', 'Repeated argument: ' + argument)
-      seen.add(argument)
-      parsed[argument === '--check' ? 'check' : 'json'] = true
-      continue
-    }
-    if (!['--codex-target-root', '--claude-project-root'].includes(argument))
-      throw new SkillSyncError('CLI_ARGUMENT_ERROR', 'Unknown combined sync argument: ' + argument)
-    if (seen.has(argument))
-      throw new SkillSyncError('CLI_ARGUMENT_ERROR', 'Repeated argument: ' + argument)
-    const value = argv[index + 1]
-    if (!value || value.startsWith('--'))
-      throw new SkillSyncError('CLI_ARGUMENT_ERROR', 'Missing value for ' + argument)
-    seen.add(argument)
-    index += 1
-    if (argument === '--codex-target-root') parsed.codexTargetRoot = value
-    else parsed.claudeProjectRoot = value
+    const value = argv[index]
+    if (value === '--check') options.check = true
+    else if (value === '--client') options.clients.push(argv[++index])
+    else if (value === '--target-root') options.targetRoot = path.resolve(argv[++index])
+    else if (value !== '--') throw new Error(`Unknown argument: ${value}`)
   }
-  if (Boolean(parsed.codexTargetRoot) !== Boolean(parsed.claudeProjectRoot))
-    throw new SkillSyncError(
-      'ISOLATED_ROOT_REQUIRED',
-      'Combined isolated overrides must be supplied together'
-    )
-  const overrides = {}
-  if (parsed.codexTargetRoot) {
-    assertNoTraversalOverride(parsed.codexTargetRoot)
-    assertNoTraversalOverride(parsed.claudeProjectRoot)
-    overrides.codexTargetRoot = path.resolve(parsed.codexTargetRoot)
-    overrides.claudeProjectRoot = path.resolve(parsed.claudeProjectRoot)
-    if (overrides.claudeProjectRoot === path.resolve(os.homedir()))
-      throw new SkillSyncError(
-        'REAL_HOME_TARGET_FORBIDDEN',
-        'Combined sync must not target the personal Claude HOME copy'
-      )
+  if (options.clients.length === 0) options.clients = ['codex', 'claude']
+  if (options.clients.some(client => !['codex', 'claude'].includes(client))) {
+    throw new Error('Client must be codex or claude')
   }
-  return { ...parsed, mode: parsed.check ? 'check' : 'apply', overrides }
+  return options
 }
-const exitCode = report =>
-  report.status === 'drift'
-    ? 1
-    : report.status === 'rejected' || report.status === 'rolled-back'
-      ? 2
-      : 0
 
-try {
-  const args = parseArgs(process.argv.slice(2))
-  const report = syncSkills({
-    repoRoot: process.cwd(),
-    clients: ['claude', 'codex'],
-    overrides: args.overrides,
-    mode: args.mode,
-  })
-  process.stdout.write(renderSyncReport(report, args.json))
-  process.exitCode = exitCode(report)
-} catch (error) {
-  const code = error instanceof SkillSyncError ? error.code : 'UNEXPECTED_SYNC_FAILURE'
-  const report = {
-    reportVersion: 1,
-    mode: process.argv.includes('--check') ? 'check' : 'apply',
-    status: 'rejected',
-    transactionId: null,
-    clients: ['claude', 'codex'],
-    managedSkills: [],
-    changes: [],
-    preserved: [],
-    rollbacks: [],
-    diagnostics: [
-      { severity: 'error', code, message: code, client: null, skillId: null, target: null },
-    ],
+function filesUnder(directory) {
+  const files = []
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    const absolutePath = path.join(directory, entry.name)
+    if (entry.isDirectory()) files.push(...filesUnder(absolutePath))
+    else if (entry.isFile()) files.push(absolutePath)
   }
-  if (process.argv.includes('--json')) process.stdout.write(canonicalSyncJson(report))
-  else process.stderr.write(code + ': ' + report.diagnostics[0].message + '\n')
-  process.exitCode = 2
+  return files
 }
+
+function targetFor(client, override) {
+  if (override) return path.join(override, client, 'project-ui')
+  if (client === 'codex') return path.join(os.homedir(), '.codex', 'skills', 'project-ui')
+  return path.join(process.cwd(), '.claude', 'skills', 'project-ui')
+}
+
+const options = parseArgs(process.argv.slice(2))
+const source = path.join(process.cwd(), '.ai', 'skills', 'project-ui')
+let hasDrift = false
+
+for (const client of options.clients) {
+  const target = targetFor(client, options.targetRoot)
+  for (const sourceFile of filesUnder(source)) {
+    const relativePath = path.relative(source, sourceFile)
+    const targetFile = path.join(target, relativePath)
+    const content = fs.readFileSync(sourceFile)
+    const current = fs.existsSync(targetFile) ? fs.readFileSync(targetFile) : null
+    if (current?.equals(content)) continue
+    hasDrift = true
+    if (!options.check) {
+      fs.mkdirSync(path.dirname(targetFile), { recursive: true })
+      fs.writeFileSync(targetFile, content)
+    }
+  }
+  console.log(`${client}: ${hasDrift ? (options.check ? 'out of date' : 'synchronized') : 'current'}`)
+}
+
+if (options.check && hasDrift) process.exit(1)

@@ -23,7 +23,7 @@ export const validationMessage = {
 } as const
 
 /** 异步唯一性演示：视为已注册的用户名 */
-export const RESERVED_USERNAMES = ['admin', 'root', 'superuser', 'test'] as const
+export const RESERVED_USERNAMES = ['admin', 'root', 'superuser', 'demo'] as const
 
 /** 异步唯一性演示：视为已注册的邮箱 */
 export const RESERVED_REGISTERED_EMAILS = ['admin@example.com', 'root@example.com'] as const

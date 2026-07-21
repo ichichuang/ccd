@@ -88,7 +88,7 @@ export function setupErrorHandler(app: App) {
   window.addEventListener(
     'error',
     event => {
-      // [Phase 13.11] Mute benign ResizeObserver layout warnings
+      // Mute benign ResizeObserver layout warnings.
       const msg = typeof event.message === 'string' ? event.message : ''
       if (
         msg.includes('ResizeObserver loop') ||
@@ -129,7 +129,7 @@ export function setupErrorHandler(app: App) {
    * 未捕获 Promise 拒绝（典型：异步接口未 catch）
    */
   window.addEventListener('unhandledrejection', event => {
-    // [Phase 13.11] Mute ResizeObserver if wrapped in a rejected promise
+    // Mute ResizeObserver if wrapped in a rejected promise.
     const msg = event.reason?.message ?? String(event.reason ?? '')
     if (msg.includes('ResizeObserver loop')) return
 

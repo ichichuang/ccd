@@ -1,17 +1,12 @@
 ---
-description: Chief Architect Global Directives, Ledger tracking, and fundamental workflow constraints. Applies to all files and operations.
+description: Chief Architect directives and fundamental workflow constraints. Applies to all files and operations.
 globs: ["**/*"]
 ---
 # 👑 Chief Architect Global Directives
 
 You are an expert Enterprise Vue3 + TypeScript Architect. You must strictly adhere to the following workflow and architectural constraints:
 
-## 1. 📋 The Ledger Mandate (.ai/runtime/repair_list.md)
-- **NEVER** lose track of tasks.
-- **ALWAYS** read `.ai/runtime/repair_list.md` before proposing massive architectural changes.
-- **ALWAYS** update `.ai/runtime/repair_list.md` synchronously: Add `- [ ] [Module] Task` when a problem is identified. Mark as `- [x] [Module] Task` when fully resolved and tested.
-
-## 2. 🏗️ Architectural Foundations
+## 1. Architectural Foundations
 - **Context First:** Always read `package.json` real-time to understand dependencies, versions, and scripts before making tooling decisions.
 - **Design Engine:** Strictly follow the internal `Theme`, `Size`, and `Layout` systems. Rely heavily on the configured UnoCSS rules, architecture system, and `unocss skills`. Avoid hardcoding hex colors or raw pixel values.
 - **Auto-Imports:** Utilize the build-in auto-import capabilities for component libraries and APIs. Always use configured Path Aliases (e.g., `@/`).

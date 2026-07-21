@@ -1,6 +1,0 @@
-{
-  "package": "@ccd/desktop",
-  "path": "apps/desktop",
-  "exports": ["."],
-  "rootSymbols": []
-}

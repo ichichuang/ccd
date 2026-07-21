@@ -38,7 +38,6 @@ export interface ShowcaseCatalogItem {
   componentKey: string
   sourcePaths: string[]
   dashboardLink?: boolean
-  e2eTarget?: boolean
   tags: string[]
   relatedIds?: string[]
 }
@@ -50,5 +49,4 @@ export type ShowcaseRouteMeta = NonNullable<RouteConfig['meta']> & {
   showcaseKind: ShowcasePageKind
   showcaseSourcePaths: string[]
   dashboardLink?: boolean
-  e2eTarget?: boolean
 }

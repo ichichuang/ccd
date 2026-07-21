@@ -68,26 +68,7 @@ export const requestSystemAsyncRoutesMock = async (): Promise<SystemAsyncRouteIt
   }
 
   await new Promise(resolve => setTimeout(resolve, 100))
-  const routes: SystemAsyncRouteItem[] = [
-    {
-      path: '/runtime/http-request',
-      name: 'RuntimeHttpRequestAlias',
-      redirect: '/runtime/http',
-      meta: { titleKey: 'router.console.runtime.http', showLink: false },
-    },
-    {
-      path: '/system/theme-runtime',
-      name: 'SystemThemeRuntimeAlias',
-      redirect: '/system/theme',
-      meta: { titleKey: 'router.console.system.theme', showLink: false },
-    },
-    {
-      path: '/architecture/governance-metadata',
-      name: 'ArchitectureGovernanceMetadataAlias',
-      redirect: '/architecture/governance',
-      meta: { titleKey: 'router.console.architecture.governance', showLink: false },
-    },
-  ]
+  const routes: SystemAsyncRouteItem[] = []
   return parseZodHttpPayload(systemAsyncRouteItemSchema.array(), routes)
 }
 

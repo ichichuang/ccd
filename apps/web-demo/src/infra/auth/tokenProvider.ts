@@ -6,7 +6,7 @@
  * typed bridge, without importing Pinia stores or vue-router directly.
  */
 
-import { CAPABILITY_BRIDGE_TEST_RESET_TOKEN, createCapabilityBridge } from '@ccd/shared-utils'
+import { createCapabilityBridge } from '@ccd/shared-utils'
 import { DateUtils } from '@/utils/date'
 
 export type AuthToken = string | null
@@ -74,18 +74,4 @@ export function notifyUnauthorized(): Promise<void> {
     })
 
   return unauthorizedPromise
-}
-
-/**
- * Compatibility alias for architecture demo pages and older non-production examples.
- * New runtime code should use readAuthToken().
- */
-export function getToken(): AuthToken {
-  return readAuthToken()
-}
-
-export function resetAuthBridgeForTest(): void {
-  bridge.resetForTest(CAPABILITY_BRIDGE_TEST_RESET_TOKEN)
-  unauthorizedPromise = null
-  lastUnauthorizedHandledAt = null
 }

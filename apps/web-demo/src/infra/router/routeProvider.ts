@@ -1,4 +1,4 @@
-import { CAPABILITY_BRIDGE_TEST_RESET_TOKEN, createCapabilityBridge } from '@ccd/shared-utils'
+import { createCapabilityBridge } from '@ccd/shared-utils'
 
 export interface RouterCapabilities {
   getAdminMenuTree: () => MenuItem[]
@@ -28,8 +28,4 @@ export function isRouterCapabilitiesInstalled(): boolean {
 
 export function getRouterCapabilities(): RouterCapabilities {
   return bridge.getOrThrow()
-}
-
-export function resetRouterCapabilitiesForTest(): void {
-  bridge.resetForTest(CAPABILITY_BRIDGE_TEST_RESET_TOKEN)
 }

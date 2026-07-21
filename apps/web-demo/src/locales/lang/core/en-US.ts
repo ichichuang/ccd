@@ -81,6 +81,9 @@ const enUSCore = {
       systemConfigurationScrollbar: 'CScrollbar',
       systemConfigurationUnocss: 'UnoCSS',
     },
+    system: {
+      settings: 'Global Settings',
+    },
   },
   http: {
     error: {
@@ -271,6 +274,46 @@ const enUSCore = {
     showFooter: 'Show Footer',
     sidebarAccordion: 'Sidebar Accordion Mode',
     openFullSettingsPage: 'Open full settings page',
+  },
+  settingsPage: {
+    eyebrow: 'System',
+    title: 'Global Settings',
+    description:
+      'Manage theme, density, language, layout mode, layout modules, and responsive runtime preview from a full page surface.',
+    runtimeTag: 'Runtime-backed',
+    nav: {
+      appearance: 'Appearance',
+      sizeLocale: 'Size & Language',
+      layoutMode: 'Layout Mode',
+      layoutModules: 'Layout Modules',
+      preview: 'Preview',
+    },
+    appearance: {
+      title: 'Appearance',
+      description: 'Theme mode and color presets continue to use the existing theme store.',
+    },
+    sizeLocale: { title: 'Size & Language' },
+    layoutMode: {
+      title: 'Layout Mode',
+      description: 'The page writes the same preferred layout mode consumed by LayoutAdmin.',
+    },
+    layoutModules: {
+      title: 'Layout Modules',
+      description: 'Module switches reuse the existing visibility rules for each layout mode.',
+    },
+    preview: {
+      title: 'Responsive Preview',
+      description: 'Current runtime state from device, breakpoint, layout, and size stores.',
+      breakpoint: 'Breakpoint',
+      deviceType: 'Device',
+      effectiveMode: 'Effective layout',
+      sizePreset: 'Size preset',
+    },
+    sizeDescriptions: {
+      compact: 'Compact density keeps repeat operations tight.',
+      comfortable: 'Comfortable density is the default app rhythm.',
+      loose: 'Loose density increases touch and scan space.',
+    },
   },
   layout: {
     sidebar: {},

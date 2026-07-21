@@ -1,10 +1,10 @@
 # Page Archetypes
 
-Page archetypes govern conceptual page planning before implementation. Agents must choose one dominant archetype, document exceptions, preserve action priority and scroll ownership, and avoid treating these patterns as Page Contract Schema.
+Page archetypes govern conceptual page planning before implementation. Choose one dominant archetype, note exceptions, and preserve action priority and scroll ownership.
 
-## Scope and Non-Schema Status
+## Scope
 
-These eight archetypes are conceptual page-planning patterns. They are not Page Contract Schema and do not create machine-readable page contracts.
+These eight archetypes are conceptual page-planning patterns.
 
 ## Archetype Selection
 
@@ -125,7 +125,3 @@ Each archetype must define loading, empty, error, disabled, success, focus, and 
 ## Inappropriate Usage
 
 Do not choose an archetype because it looks fashionable. Choose it because the page job and region topology require it.
-
-## Page Contract Boundary
-
-A future Page Contract Schema may encode page contracts. These archetypes remain human planning guidance until that phase exists.

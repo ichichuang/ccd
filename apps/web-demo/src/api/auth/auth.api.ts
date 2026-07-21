@@ -52,7 +52,7 @@ export const requestAuthLogin = async (data: LoginParams): Promise<LoginResult> 
 }
 
 /**
- * 模拟登录：仅用于本地开发测试与显式开启的线上演示
+ * 模拟登录：仅用于本地开发与显式开启的线上演示
  * 账号密码规则：admin/123456 → 管理员，user/123456 → 普通用户
  */
 export const requestAuthLoginMock = async (payload: LoginParams): Promise<LoginResult> => {
@@ -71,7 +71,7 @@ export const requestAuthLoginMock = async (payload: LoginParams): Promise<LoginR
   const mockUser = MOCK_USERS[username]
 
   if (!mockUser) {
-    throw new AuthApiError(AUTH_ERROR_CODES.unknownUser, `Unsupported test account: ${username}`)
+    throw new AuthApiError(AUTH_ERROR_CODES.unknownUser, `Unsupported demo account: ${username}`)
   }
 
   const userInfo: UserInfo = {

@@ -5,12 +5,10 @@
  */
 import type { AnimateName } from '@ccd/vue-ui'
 import { AnimateWrapper } from '@ccd/vue-ui'
-import { RUNTIME_E2E_EVENTS } from '@/constants/runtime'
 import AmbientBackground from '@/layouts/components/AmbientBackground.vue'
 import AsyncErrorFallback from '@/layouts/components/AsyncErrorFallback.vue'
 import LoadingFallback from '@/layouts/components/LoadingFallback.vue'
 import { useLayoutStore } from '@/stores/modules/system'
-import { dispatchRuntimeE2EEvent } from '@/utils/runtime/e2e'
 import type { Component } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -64,25 +62,10 @@ onUnmounted(() => {
 })
 
 const isLoadingRef = ref(true)
-const runtimeLoadingState = ref<'true' | 'false'>('true')
-
-function syncRuntimeLoadingState(loading: boolean): void {
-  if (typeof document === 'undefined') return
-
-  const nextState = loading ? 'true' : 'false'
-  if (runtimeLoadingState.value === nextState) return
-
-  runtimeLoadingState.value = nextState
-  document.documentElement.dataset.runtimeLoading = nextState
-  dispatchRuntimeE2EEvent(
-    loading ? RUNTIME_E2E_EVENTS.runtimeLoadingStart : RUNTIME_E2E_EVENTS.runtimeLoadingIdle
-  )
-}
 
 watch(
   () => isLoading.value,
   loading => {
-    syncRuntimeLoadingState(loading)
     nextTick(() => {
       isLoadingRef.value = loading
     })
@@ -163,7 +146,6 @@ const currentLayoutComponent = computed(() => {
       delay="0s"
       :omit-layout-full="false"
       class="layout-full flex-1 min-h-0"
-      data-testid="layout-animate-boundary"
     >
       <component
         :is="currentLayoutComponent"

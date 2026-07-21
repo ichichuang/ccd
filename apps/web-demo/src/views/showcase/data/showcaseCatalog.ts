@@ -290,7 +290,6 @@ const overviewItem: ShowcaseItemInput = {
   componentKey: '@/views/showcase/index.vue',
   sourcePath: 'apps/web-demo/src/views/showcase/index.vue',
   dashboardLink: true,
-  e2eTarget: true,
   tags: ['overview'],
 }
 
@@ -393,7 +392,6 @@ const proTableCatalogItems = proTableItems.map(
     componentKey: `@/views/showcase/components/pro-table/${slug}/index.vue`,
     sourcePath: `apps/web-demo/src/views/showcase/components/pro-table/${slug}/index.vue`,
     dashboardLink: slug === 'basic',
-    e2eTarget: slug === 'basic',
     tags: ['components', 'tables', 'pro-table'],
   })
 ) satisfies ShowcaseItemInput[]
@@ -447,7 +445,6 @@ const proFormCatalogItems = proFormItems.map(([slug, nameSuffix, keySuffix, rank
   componentKey: `@/views/showcase/components/pro-form/${slug}/index.vue`,
   sourcePath: `apps/web-demo/src/views/showcase/components/pro-form/${slug}/index.vue`,
   dashboardLink: slug === 'validation',
-  e2eTarget: slug === 'validation',
   tags: ['components', 'forms', 'pro-form'],
 })) satisfies ShowcaseItemInput[]
 
@@ -474,7 +471,6 @@ const chartCatalogItems = chartItems.map(([slug, nameSuffix, keySuffix, rank, de
   componentKey: `@/views/showcase/components/charts/${slug}/index.vue`,
   sourcePath: `apps/web-demo/src/views/showcase/components/charts/${slug}/index.vue`,
   dashboardLink: slug === 'theme',
-  e2eTarget: slug === 'theme',
   tags: ['components', 'charts'],
 })) satisfies ShowcaseItemInput[]
 
@@ -491,7 +487,6 @@ const standaloneItems: ShowcaseItemInput[] = [
     demoLevel: 'preview',
     componentKey: '@/views/showcase/feedback/dialog-toast/index.vue',
     sourcePath: 'apps/web-demo/src/views/showcase/feedback/dialog-toast/index.vue',
-    e2eTarget: true,
     tags: ['feedback', 'dialog', 'toast'],
   },
   ...((
@@ -740,7 +735,6 @@ const standaloneItems: ShowcaseItemInput[] = [
     componentKey: `@/views/showcase/${String(path).replace('/showcase/', '')}/index.vue`,
     sourcePath: `apps/web-demo/src/views/showcase/${String(path).replace('/showcase/', '')}/index.vue`,
     dashboardLink: ['design-tokens', 'runtime-overview', 'governance'].includes(String(id)),
-    e2eTarget: id === 'design-tokens',
     tags: [String(groupId)],
   })) satisfies ShowcaseItemInput[]),
 ]
@@ -938,7 +932,6 @@ function createRouteMeta(item: ShowcaseCatalogItem): ShowcaseRouteMeta {
     showcaseKind: item.kind,
     showcaseSourcePaths: item.sourcePaths,
     dashboardLink: item.dashboardLink,
-    e2eTarget: item.e2eTarget,
   }
 }
 

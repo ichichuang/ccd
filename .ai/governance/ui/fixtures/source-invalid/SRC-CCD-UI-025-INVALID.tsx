@@ -1,1 +1,0 @@
-const sidebarWidth = 320

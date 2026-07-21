@@ -9,7 +9,7 @@ if [[ "$#" -eq 0 ]]; then
 fi
 
 COMMAND_LABEL="${CCD_EXEC_LABEL:-$*}"
-COMMAND_PHASE="${CCD_EXEC_PHASE:-command}"
+COMMAND_CONTEXT="${CCD_EXEC_CONTEXT:-command}"
 COMMAND_HINT="${CCD_EXEC_HINT:-}"
 
 set +e
@@ -20,7 +20,7 @@ set -e
 if [[ "$STATUS" -ne 0 ]]; then
   {
     echo
-    echo "[FAIL] ${COMMAND_PHASE}: ${COMMAND_LABEL}"
+    echo "[FAIL] ${COMMAND_CONTEXT}: ${COMMAND_LABEL}"
     echo "[FAIL] exit code: ${STATUS}"
     if [[ -n "$COMMAND_HINT" ]]; then
       echo "[NEXT] ${COMMAND_HINT}"

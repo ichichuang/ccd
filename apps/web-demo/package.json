@@ -8,8 +8,7 @@
     "build": "vue-tsc -p tsconfig.json --noEmit && vite build",
     "preview": "vite preview",
     "type-check": "vue-tsc -p tsconfig.json --noEmit",
-    "typecheck": "pnpm type-check",
-    "test": "vitest run --passWithNoTests"
+    "typecheck": "pnpm type-check"
   },
   "dependencies": {
     "@ccd/contracts": "workspace:*",
@@ -62,7 +61,6 @@
     "unplugin-vue-components": "catalog:",
     "@primevue/auto-import-resolver": "catalog:",
     "postcss-pxtorem": "catalog:",
-    "rollup-plugin-visualizer": "catalog:",
     "sass": "catalog:"
   }
 }

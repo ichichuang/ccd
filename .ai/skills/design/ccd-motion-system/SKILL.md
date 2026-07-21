@@ -153,7 +153,7 @@ Before committing, answer:
 What state change does this motion explain?
 Does it continue correctly across theme changes?
 Does reduced motion disable non-essential movement?
-Can it run on CI visual tests without flake?
+Can it remain deterministic in continuous integration?
 Does it compete with the primary task?
 Does it require new dependencies?
 ```

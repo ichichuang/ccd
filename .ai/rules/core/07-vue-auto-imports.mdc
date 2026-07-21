@@ -15,7 +15,7 @@ Auto-imports are configured in `build/plugins.ts` via `unplugin-auto-import` and
 
 **Never import what is already globally available. Doing so creates duplicate bindings and lint errors.**
 
-The generated declarations may expose the Vue `h` helper, but CCD forbids that helper for app, package, and test rendering. Use Vue templates for template-backed surfaces or TSX render/return output for `.tsx` surfaces instead.
+The generated declarations may expose the Vue `h` helper, but CCD forbids that helper for app and package rendering. Use Vue templates or TSX render output instead.
 
 ---
 
@@ -69,7 +69,7 @@ const { data, loading } = useHttpRequest(buildMyMethod)
 
 ### ❌ FORBIDDEN — Vue hyperscript helper imports or calls
 
-The Vue `h` helper is not an allowed workaround for component-per-file linting or test harness rendering. Use a single template-backed harness, an SFC template, or TSX output in a `.tsx` surface. If a task explicitly requires TSX output, first verify the existing test and build tooling already covers the `.tsx` surface; otherwise stop and report the tooling-scope blocker instead of falling back to templates or helper calls.
+The Vue `h` helper is not an allowed workaround for component-per-file linting. Use an SFC template or TSX output in a `.tsx` surface. If a task requires TSX, verify the existing build tooling covers that surface.
 
 ### ✅ ALLOWED EXCEPTION — type-only imports
 

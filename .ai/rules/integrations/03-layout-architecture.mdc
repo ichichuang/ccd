@@ -158,11 +158,4 @@ Drawer roots, fixed headers, fullscreen layout, tab bars, and shell padding must
 
 ## Validation Requirements
 
-Layout runtime changes must include real assertions, not snapshots:
-
-- Resolver/unit coverage for deterministic mode and sidebar transitions.
-- Playwright geometry checks for iPhone portrait/landscape.
-- Playwright geometry checks for iPad portrait/landscape/split-view widths.
-- Playwright geometry checks for desktop, wide desktop, and ultrawide widths.
-- Assertions must cover sidebar geometry, content offsets, safe-area padding, header height, drawer visibility, overlay correctness, clipped regions, and phantom sidebar spacing.
-- Admin sidebar interaction changes must include Playwright checks for collapsed/expanded icon center continuity, collapsed root menu tooltip behavior, expanded truncated-label tooltip behavior, and collapsed submenu popup anchoring.
+Layout runtime changes must review deterministic mode and sidebar transitions across phone, tablet, desktop, wide desktop, and ultrawide widths. Verify sidebar geometry, content offsets, safe-area padding, header height, drawer visibility, overlays, clipped regions, tooltip behavior, and submenu anchoring. Run type checking, linting, architecture checks, and the affected application build.

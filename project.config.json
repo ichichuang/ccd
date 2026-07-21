@@ -15,7 +15,6 @@
     "version": "1.0.38"
   },
   "governance": {
-    "policyVersion": "2026.05.18",
-    "phase": "phase-4-self-protecting-platform"
+    "policyVersion": "2026.05.18"
   }
 }

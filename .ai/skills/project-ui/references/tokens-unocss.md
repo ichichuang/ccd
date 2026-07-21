@@ -58,9 +58,9 @@ PrimeVue styling belongs in theme presets, adapter boundaries, and PassThrough c
 
 This section requires agents to apply shared primitive and resolver boundaries rules with explicit ownership, current monorepo evidence, accessibility-safe behavior, token-driven styling, and validation before reporting completion.
 
-## Tests and Implementation Evidence
+## Validation and Implementation Evidence
 
-This section requires agents to apply tests and implementation evidence rules with explicit ownership, current monorepo evidence, accessibility-safe behavior, token-driven styling, and validation before reporting completion.
+Apply validation and implementation evidence rules with explicit ownership, current monorepo evidence, accessible behavior, token-driven styling, and production checks before reporting completion.
 
 ## Future Registered Exceptions
 

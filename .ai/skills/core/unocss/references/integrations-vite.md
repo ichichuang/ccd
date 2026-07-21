@@ -210,7 +210,7 @@ Visit `http://localhost:5173/__unocss` in dev mode to:
 
 - Inspect generated CSS rules
 - See applied classes per file
-- Test utilities in REPL
+- Try utilities in REPL
 
 ## Legacy Browser Support
 

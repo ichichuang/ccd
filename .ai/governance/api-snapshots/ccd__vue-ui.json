@@ -1,6 +1,0 @@
-{
-  "package": "@ccd/vue-ui",
-  "path": "packages/vue-ui",
-  "exports": ["."],
-  "rootSymbols": []
-}

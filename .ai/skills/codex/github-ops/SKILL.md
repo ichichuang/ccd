@@ -69,9 +69,8 @@ Typical files to inspect:
 Current CCD governance notes:
 
 - CI architecture enforcement enters through `pnpm governance:gate`.
-- GitHub Pages deployment should build `@ccd/web-demo` and upload `apps/web-demo/dist`.
 - Critical governance ownership is declared in `.github/CODEOWNERS`.
-- Remote workflow metadata may include stale deleted workflow names until GitHub prunes historical workflow records.
+- Vercel is the web deployment owner.
 
 ## API for Advanced Queries
 

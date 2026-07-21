@@ -212,7 +212,6 @@ const dashboardCapabilities = computed<DashboardCapabilityLink[]>(() =>
         v-for="benefit in dashboardBenefits"
         :key="benefit.key"
         class="material-solid col-stretch min-w-0 gap-md p-md"
-        data-testid="dashboard-benefit-card"
       >
         <span class="glass-icon-box text-primary">
           <Icons
@@ -256,7 +255,6 @@ const dashboardCapabilities = computed<DashboardCapabilityLink[]>(() =>
           :key="capability.id"
           :to="capability.item.path"
           class="material-solid interactive-card col-stretch min-w-0 gap-md p-md no-underline"
-          data-testid="dashboard-capability-card"
         >
           <div class="row-between min-w-0 gap-md">
             <span class="glass-icon-box text-primary">
@@ -365,7 +363,6 @@ const dashboardCapabilities = computed<DashboardCapabilityLink[]>(() =>
         v-for="tile in dashboardPreviewTiles"
         :key="tile.key"
         class="material-solid col-stretch min-w-0 gap-md p-md"
-        data-testid="dashboard-preview-tile"
       >
         <div class="row-start min-w-0 gap-md">
           <span class="glass-icon-box text-primary">

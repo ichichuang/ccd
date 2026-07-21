@@ -12,11 +12,9 @@ export {
   type JsonStorageStringifyResult,
 } from './storageCodec.js'
 export {
-  CAPABILITY_BRIDGE_TEST_RESET_TOKEN,
   createCapabilityBridge,
   type CapabilityBridge,
   type CapabilityBridgeOptions,
-  type CapabilityBridgeTestResetToken,
 } from './createCapabilityBridge.js'
 export {
   createConsoleLogger,

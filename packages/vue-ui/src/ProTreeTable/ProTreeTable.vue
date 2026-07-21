@@ -448,11 +448,6 @@ function isRecord(value: unknown): value is Record<string, unknown> {
     :data-pro-tree-table-disabled="String(props.disabled)"
     class="pro-tree-table min-w-0"
   >
-    <!--
-      P2-A4 intentionally excludes editing, virtual scrolling, range selection,
-      ProTable treeMode, server persistence, TreeTable filtering, VNode render output,
-      and a headless hierarchical engine.
-    -->
     <TreeTable
       :value="primeNodes"
       :expanded-keys="primeExpandedKeys"

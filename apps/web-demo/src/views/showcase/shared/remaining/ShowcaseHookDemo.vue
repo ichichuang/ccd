@@ -164,13 +164,11 @@ async function toggleLocale(): Promise<void> {
 <template>
   <section
     class="col-stretch min-w-0 gap-lg"
-    data-testid="showcase-hooks-demo"
   >
     <ShowcaseToolbar
       :title="$t('showcase.remaining.hooks.toolbarTitle')"
       :description="$t('showcase.remaining.hooks.toolbarDescription')"
       :summary="$t(`showcase.remaining.hooks.${currentHook}.description`)"
-      data-testid="showcase-hooks-action-toolbar"
     >
       <template #actions>
         <Button
@@ -180,7 +178,6 @@ async function toggleLocale(): Promise<void> {
           severity="primary"
           :loading="theme.isAnimating.value"
           :pt="actionButtonPt"
-          data-testid="showcase-hooks-toggle-theme"
           @click="toggleTheme"
         />
         <Button
@@ -189,7 +186,6 @@ async function toggleLocale(): Promise<void> {
           icon="i-lucide-languages"
           severity="primary"
           :pt="actionButtonPt"
-          data-testid="showcase-hooks-toggle-locale"
           @click="toggleLocale"
         />
         <Tag
@@ -203,7 +199,6 @@ async function toggleLocale(): Promise<void> {
         icon="i-lucide-eye"
         :title="$t('showcase.remaining.hooks.readOnlyTitle')"
         :description="$t('showcase.remaining.hooks.readOnlyDescription')"
-        data-testid="showcase-hooks-readonly-actions"
       />
     </ShowcaseToolbar>
 
@@ -213,7 +208,6 @@ async function toggleLocale(): Promise<void> {
         :title="$t(`showcase.remaining.hooks.${currentHook}.title`)"
         :description="$t('showcase.remaining.hooks.intentDescription')"
         :tag="currentHookBadge"
-        data-testid="showcase-hooks-intent-card"
       >
         <p class="text-sm text-muted-foreground m-0">
           {{ $t(`showcase.remaining.hooks.${currentHook}.description`) }}
@@ -224,7 +218,6 @@ async function toggleLocale(): Promise<void> {
         icon="i-lucide-activity"
         :title="$t('showcase.remaining.hooks.stateTitle')"
         :description="$t('showcase.remaining.hooks.stateDescription')"
-        data-testid="showcase-hooks-state-panel"
       >
         <dl
           class="grid min-w-0 grid-cols-1 gap-sm md:grid-cols-2"
@@ -240,7 +233,6 @@ async function toggleLocale(): Promise<void> {
             </dt>
             <dd
               class="code-inline m-0 min-w-0 break-words text-right text-sm font-semibold text-foreground"
-              :data-testid="`showcase-hooks-state-${row.key}`"
             >
               {{ row.value }}
             </dd>
@@ -253,7 +245,6 @@ async function toggleLocale(): Promise<void> {
       :title="$t('showcase.remaining.hooks.contractTitle')"
       :description="$t('showcase.remaining.hooks.contractDescription')"
       icon="i-lucide-badge-check"
-      data-testid="showcase-hooks-contract"
     >
       <div class="grid min-w-0 grid-cols-1 gap-md lg:grid-cols-3">
         <ShowcaseCard

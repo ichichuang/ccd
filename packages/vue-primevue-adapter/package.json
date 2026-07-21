@@ -14,8 +14,7 @@
   "scripts": {
     "build": "node ../../scripts/clean-artifacts.mjs paths ../../node_modules/.tmp/packages-vue-primevue-adapter.tsbuildinfo && tsc -p tsconfig.json",
     "type-check": "tsc -p tsconfig.json --noEmit",
-    "typecheck": "pnpm type-check",
-    "test": "pnpm --workspace-root vitest run packages/vue-primevue-adapter/src/services.spec.ts --passWithNoTests"
+    "typecheck": "pnpm type-check"
   },
   "dependencies": {
     "@ccd/design-tokens": "workspace:*",

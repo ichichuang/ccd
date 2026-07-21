@@ -1,1 +1,0 @@
-const viewport = deviceStore.viewport

@@ -79,6 +79,9 @@ const zhCNCore = {
       systemConfigurationScrollbar: '滚动条系统',
       systemConfigurationUnocss: 'UnoCSS系统',
     },
+    system: {
+      settings: '全局设置',
+    },
   },
   http: {
     error: {
@@ -269,6 +272,45 @@ const zhCNCore = {
     showFooter: '显示 Footer',
     sidebarAccordion: '侧边栏手风琴模式',
     openFullSettingsPage: '打开完整设置页',
+  },
+  settingsPage: {
+    eyebrow: '系统',
+    title: '全局设置',
+    description: '以完整页面管理主题、尺寸、语言、布局模式、布局模块与响应式运行时预览。',
+    runtimeTag: '复用运行时',
+    nav: {
+      appearance: '外观',
+      sizeLocale: '尺寸与语言',
+      layoutMode: '布局模式',
+      layoutModules: '布局模块',
+      preview: '预览',
+    },
+    appearance: {
+      title: '外观',
+      description: '主题模式与配色继续使用现有 theme store。',
+    },
+    sizeLocale: { title: '尺寸与语言' },
+    layoutMode: {
+      title: '布局模式',
+      description: '本页写入 LayoutAdmin 已消费的同一 preferred layout mode。',
+    },
+    layoutModules: {
+      title: '布局模块',
+      description: '模块开关复用各布局模式下的既有可见性规则。',
+    },
+    preview: {
+      title: '响应式预览',
+      description: '展示来自设备、断点、布局与尺寸 Store 的当前运行时状态。',
+      breakpoint: '断点',
+      deviceType: '设备',
+      effectiveMode: '生效布局',
+      sizePreset: '尺寸预设',
+    },
+    sizeDescriptions: {
+      compact: '紧凑密度适合高频重复操作。',
+      comfortable: '舒适密度是应用默认节奏。',
+      loose: '宽松密度提供更大的触控与扫视空间。',
+    },
   },
   layout: {
     sidebar: {},

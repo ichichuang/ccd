@@ -47,10 +47,3 @@ export function getOrResolveTheme<T>(key: string, isDark: boolean, resolver: () 
 export function clearThemeCache(): void {
   cache.clear()
 }
-
-/**
- * Return the current cache size (for testing).
- */
-export function themeCacheSize(): number {
-  return cache.size
-}

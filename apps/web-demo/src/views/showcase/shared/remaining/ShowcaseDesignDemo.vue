@@ -271,13 +271,11 @@ function resetSample(): void {
 <template>
   <section
     class="col-stretch min-w-0 gap-lg"
-    data-testid="showcase-design-demo"
   >
     <ShowcaseToolbar
       :title="$t('showcase.remaining.design.toolbarTitle')"
       :description="$t('showcase.remaining.design.toolbarDescription')"
       :summary="$t(currentSummaryKey)"
-      data-testid="showcase-design-action-toolbar"
     >
       <template #actions>
         <Button
@@ -285,7 +283,6 @@ function resetSample(): void {
           icon="i-lucide-scan-search"
           severity="primary"
           :pt="actionButtonPt"
-          data-testid="showcase-design-inspect-sample"
           @click="inspectSample"
         />
         <Button
@@ -294,7 +291,6 @@ function resetSample(): void {
           severity="secondary"
           outlined
           :pt="actionButtonPt"
-          data-testid="showcase-design-reset-sample"
           @click="resetSample"
         />
         <Tag
@@ -310,7 +306,6 @@ function resetSample(): void {
           </span>
           <strong
             class="code-inline m-0 min-w-0 text-sm font-semibold text-foreground"
-            data-testid="showcase-design-run-count"
           >
             {{ runCount }}
           </strong>
@@ -321,7 +316,6 @@ function resetSample(): void {
           </span>
           <strong
             class="code-inline m-0 min-w-0 break-words text-right text-sm font-semibold text-foreground"
-            data-testid="showcase-design-last-action"
           >
             {{ $t(`showcase.remaining.design.actionStatus.${actionStatus}`) }}
           </strong>
@@ -332,7 +326,6 @@ function resetSample(): void {
           </span>
           <strong
             class="code-inline m-0 min-w-0 break-words text-right text-sm font-semibold text-foreground"
-            data-testid="showcase-design-active-sample"
           >
             {{ $t(`showcase.remaining.design.rows.${activePreview.key}.title`) }}
           </strong>
@@ -343,7 +336,6 @@ function resetSample(): void {
         icon="i-lucide-shield-check"
         :title="$t('showcase.remaining.design.readOnlyTitle')"
         :description="$t('showcase.remaining.design.readOnlyDescription')"
-        data-testid="showcase-design-readonly-note"
       />
     </ShowcaseToolbar>
 
@@ -353,18 +345,15 @@ function resetSample(): void {
         :title="$t('showcase.remaining.design.previewTitle')"
         :description="$t('showcase.remaining.design.previewDescription')"
         :tag="$t(currentBadgeKey)"
-        data-testid="showcase-design-sample-panel"
       >
         <div
           class="grid min-w-0 grid-cols-1 gap-sm md:grid-cols-2"
-          data-testid="showcase-design-preview-area"
         >
           <article
             v-for="row in currentPreviewRows"
             :key="row.key"
             class="col-stretch min-w-0"
             :class="getPreviewRowClass(row.key)"
-            :data-testid="`showcase-design-preview-${row.key}`"
           >
             <span class="center rounded-md p-sm bg-primary-light text-primary">
               <Icons
@@ -391,7 +380,6 @@ function resetSample(): void {
         :icon="currentConfig.resultIcon"
         :title="$t('showcase.remaining.design.stateTitle')"
         :description="$t('showcase.remaining.design.stateDescription')"
-        data-testid="showcase-design-state-panel"
       >
         <dl
           class="grid min-w-0 grid-cols-1 gap-sm md:grid-cols-2"
@@ -407,7 +395,6 @@ function resetSample(): void {
             </dt>
             <dd
               class="code-inline m-0 min-w-0 break-all text-sm font-semibold text-foreground"
-              :data-testid="`showcase-design-state-${row.key}`"
             >
               {{ row.value }}
             </dd>
@@ -420,7 +407,6 @@ function resetSample(): void {
       :title="$t('showcase.remaining.design.contractTitle')"
       :description="$t('showcase.remaining.design.contractDescription')"
       icon="i-lucide-badge-check"
-      data-testid="showcase-design-contract"
     >
       <div class="grid min-w-0 grid-cols-1 gap-md lg:grid-cols-3">
         <ShowcaseCard
@@ -438,7 +424,6 @@ function resetSample(): void {
       :title="$t('showcase.remaining.design.sourceTitle')"
       :description="$t('showcase.remaining.design.sourceDescription')"
       icon="i-lucide-folder-code"
-      data-testid="showcase-design-source-area"
     >
       <ShowcaseSourceLinks :source-paths="sourcePaths" />
     </ShowcaseSection>

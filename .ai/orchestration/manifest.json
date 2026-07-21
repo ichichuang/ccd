@@ -2,31 +2,19 @@
   "schemaVersion": 1,
   "roles": [
     {
-      "id": "architect-governance",
-      "name": "Architecture Governance Agent",
-      "scope": [".ai/**", "wiki/**", "scripts/**", "package.json"],
-      "permissions": ["generate", "validate", "report", "repair"],
-      "routes": ["ai-protocol", "runtime-isolation", "governance-automation"]
+      "id": "architecture",
+      "scope": [".ai/**", "scripts/**", "package.json"],
+      "routes": ["ai"]
     },
     {
-      "id": "frontend-runtime",
-      "name": "Frontend Runtime Agent",
-      "scope": ["src/**", "build/**", "e2e/**"],
-      "permissions": ["implement", "validate"],
-      "routes": ["core-vue", "core-unocss", "core-vueuse", "browser-validation"]
+      "id": "frontend",
+      "scope": ["apps/web-demo/**", "packages/vue-*/**"],
+      "routes": ["project-ui", "vue", "unocss", "vite"]
     },
     {
-      "id": "desktop-runtime",
-      "name": "Desktop Runtime Agent",
-      "scope": ["src-tauri/**", "scripts/sync-desktop-config.mjs", "wiki/canonical/runtime/**"],
-      "permissions": ["implement", "validate", "repair"],
-      "routes": ["desktop-tauri"]
+      "id": "desktop",
+      "scope": ["apps/desktop/**"],
+      "routes": ["desktop"]
     }
-  ],
-  "delegation": {
-    "defaultReviewer": "architect-governance",
-    "runtimeIsolationGate": ["architect-governance"],
-    "protocolCompatibilityGate": ["architect-governance"],
-    "desktopIsolationGate": ["architect-governance", "desktop-runtime"]
-  }
+  ]
 }

@@ -102,7 +102,7 @@ Good visual theses:
 
 ```text
 A calm settings editor where configuration groups are visible at once and runtime state reads as low-noise bento cards.
-A governed architecture console where package boundaries and runtime ownership read before demos.
+A governed product surface where package boundaries and runtime ownership are clear before examples.
 A login gateway where the form is the hero and branding stays quiet.
 ```
 

@@ -1,7 +1,6 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "include": ["src/**/*", "vite.config.ts", "build/**/*.ts", "../vite.shared.ts"],
-  "exclude": ["src/**/__tests__/**"],
   "compilerOptions": {
     "composite": true,
     "tsBuildInfoFile": "../../node_modules/.tmp/apps-web-demo.tsbuildinfo",

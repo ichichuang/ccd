@@ -113,7 +113,6 @@ const value = formatDate(isoString)
 |---|---|---|
 | `src/utils/date/**` | `new Date()`, `Date.now()` | DateUtils internals |
 | `src/utils/http/interceptors.ts` | `Date.now()` | Request timestamp stamping |
-| Test files (`*.spec.ts`, `*.test.ts`) | `new Date()` with time mocking | Controlled test behavior |
 
 All other locations: **zero tolerance**.
 

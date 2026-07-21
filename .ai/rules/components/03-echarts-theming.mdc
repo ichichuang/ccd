@@ -48,16 +48,17 @@ Any deviation from this path is an architecture violation.
 
 All resize-like events MUST route through the shared scheduler. Do not add direct `instance.resize()` calls in views or local business wrappers.
 
-### Required Coverage For Rendering Changes
+### Required Validation For Rendering Changes
 
-When touching `src/components/UseEcharts/**`, run targeted validation:
+When touching chart rendering, run production validation:
 
 ```bash
-pnpm vitest run src/components/UseEcharts/echarts-render-core.spec.ts src/components/UseEcharts/UseEcharts.spec.ts
-pnpm exec playwright test e2e/use-echarts-render.spec.ts --project=chromium
+pnpm type-check
+pnpm lint:check
+pnpm build:web-demo
 ```
 
-The Playwright coverage must preserve these scenarios:
+Review these runtime behaviors:
 
 - visible canvas has non-zero dimensions and painted pixels
 - Tabs activation renders a painted chart

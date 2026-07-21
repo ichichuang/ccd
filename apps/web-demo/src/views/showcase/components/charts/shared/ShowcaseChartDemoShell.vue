@@ -88,7 +88,6 @@ function recordFinished(): void {
 <template>
   <article
     class="col-stretch min-w-0 gap-lg"
-    data-testid="showcase-chart-shell"
   >
     <ShowcaseHero
       :eyebrow="$t(`${item.localeBaseKey}.eyebrow`)"
@@ -160,7 +159,6 @@ function recordFinished(): void {
         class="showcase-chart-stage demo-stage min-w-0"
         :class="{ 'showcase-chart-stage--compact': compact }"
         :aria-label="chartRegionLabel"
-        data-testid="showcase-chart-region"
       >
         <UseEcharts
           :option="option"
@@ -238,7 +236,6 @@ function recordFinished(): void {
       :title="$t('showcase.remaining.chart.evidenceTitle')"
       :description="$t('showcase.remaining.chart.evidenceDescription')"
       icon="i-lucide-folder-code"
-      data-testid="showcase-chart-source-area"
     >
       <div class="grid min-w-0 grid-cols-1 gap-md xl:grid-cols-2">
         <ShowcaseSourceLinks :source-paths="shellSourcePaths" />

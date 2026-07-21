@@ -1,13 +1,67 @@
 # CCD
 
-自保护确定性多运行时平台架构。
+## Purpose
 
-## Wiki 入口
+CCD is a deterministic multi-runtime application platform that shares contracts and runtime-neutral core logic across web and Tauri desktop applications.
 
-- 架构知识库：[`wiki/index.md`](./wiki/index.md)
-- 中文导览：[`wiki/indexes-zh/开始阅读.md`](./wiki/indexes-zh/开始阅读.md)
-- AI 入口：[`wiki/indexes/ai-entry.md`](./wiki/indexes/ai-entry.md)
-- 命令与验证：[`wiki/canonical/governance/command-surface.md`](./wiki/canonical/governance/command-surface.md)
-- 验证门禁：[`wiki/canonical/governance/validation-gates.md`](./wiki/canonical/governance/validation-gates.md)
+## Stack
 
-`wiki/**` 是 CCD 唯一维护中的知识库。历史资料保留在 Git history 中。
+- Vue 3, TypeScript, Vite, Pinia, and Vue Router
+- PrimeVue, UnoCSS, and shared CCD UI packages
+- Tauri 2 for the desktop runtime
+- pnpm workspaces and Turbo for monorepo orchestration
+- ESLint, Stylelint, Prettier, and dependency-cruiser for production quality gates
+
+## Install
+
+```bash
+pnpm install
+```
+
+The repository runtime versions are defined in `mise.toml` and `package.json`.
+
+## Development
+
+```bash
+pnpm dev:web-demo
+pnpm dev:desktop
+```
+
+## Build
+
+```bash
+pnpm build:web-demo
+pnpm build:desktop
+```
+
+## Directory structure
+
+```text
+apps/
+  web-demo/       Web application
+  desktop/        Tauri desktop application
+packages/
+  contracts/      Shared interfaces and types
+  core/           Runtime-neutral application logic
+  design-tokens/  Theme and design primitives
+  shared-utils/   Shared runtime-neutral utilities
+  unocss-preset/  CCD UnoCSS preset
+  vue-*/          Shared Vue platform packages
+scripts/          Production automation and architecture checks
+.ai/              Repository AI protocol, rules, skills, and routing
+```
+
+## Environment variables
+
+The committed `.env`, `.env.development`, and `.env.production` files define non-secret defaults. Use local overrides for secrets.
+
+- `VITE_APP_TITLE`, `VITE_APP_ENV`: application identity and environment
+- `VITE_API_BASE_URL`, `VITE_API_TIMEOUT`, `VITE_PROXY_TIMEOUT`: API routing and timeouts
+- `VITE_PORT`, `VITE_DESKTOP_PORT`: development ports
+- `VITE_PUBLIC_PATH`, `VITE_ROUTER_MODE`, `VITE_ROOT_REDIRECT`: public URL and routing
+- `VITE_PINIA_PERSIST_KEY_PREFIX`: persisted state namespace
+- `VITE_PUBLIC_STORAGE_OBFUSCATION_KEY`: client-visible storage obfuscation material
+- `VITE_COMPRESSION`, `VITE_BUILD_SOURCEMAP`: production build behavior
+- `VITE_DROP_DEBUGGER`, `VITE_DROP_CONSOLE`: production debug stripping
+- `VITE_AUTH_ENABLED`, `VITE_PUBLIC_DEMO_ENABLED`, `VITE_DEMO_MOCK_ENABLED`: optional application modes
+- `VITE_SYNC_WS_URL`: optional synchronization endpoint

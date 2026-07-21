@@ -78,13 +78,4 @@ export function initTransport(options: SyncTransportOptions = {}): void {
   activeSocket?.connect()
 }
 
-export function resetTransportForTest(): void {
-  activeSocket?.close()
-  activeChannel?.close()
-  activeSocket = null
-  activeChannel = null
-  initialized = false
-  setSyncClientId('local-sync-client')
-}
-
 export const createDebouncedSyncTask = useDebounceFn

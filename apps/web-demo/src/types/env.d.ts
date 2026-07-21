@@ -43,7 +43,7 @@ declare global {
   /** 构建时注入的应用信息（vite.config define，对象或 JSON 字符串，仅含 pkg.name/version 与 lastBuildTime） */
   const __APP_INFO__: string | { pkg?: { name?: string; version?: string }; lastBuildTime?: string }
 
-  // 非组件环境全局 API（见 wiki/canonical/governance/ai-governance-control-plane.md）
+  // 非组件环境全局 API
   interface Window {
     $message?: {
       success: (message: string, title?: string) => void
@@ -90,7 +90,6 @@ declare interface ImportMetaEnv {
   // ========== 布尔型配置（值为字符串 'true' | 'false'） ==========
   readonly VITE_DROP_DEBUGGER: 'true' | 'false'
   readonly VITE_DROP_CONSOLE: 'true' | 'false'
-  readonly VITE_BUILD_ANALYZE: 'true' | 'false'
   readonly VITE_BUILD_SOURCEMAP: 'true' | 'false'
   readonly VITE_LEGACY: 'true' | 'false'
   readonly VITE_CDN: 'true' | 'false'

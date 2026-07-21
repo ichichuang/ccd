@@ -43,7 +43,6 @@ const {
 <template>
   <section
     id="global-settings-page"
-    data-testid="global-settings-page"
     data-archetype="A1-toolbar-content"
     class="col-stretch min-w-0 gap-md p-xs sm:p-sm md:p-md lg:p-lg"
   >
@@ -51,19 +50,19 @@ const {
       <div class="row-between gap-md flex-wrap">
         <div class="col-stretch gap-xs min-w-0 max-w-960px">
           <span class="text-xs font-semibold text-primary text-no-wrap">
-            {{ t('console.settingsPage.eyebrow') }}
+            {{ t('settingsPage.eyebrow') }}
           </span>
           <h1 class="text-2xl font-bold text-foreground m-0">
-            {{ t('console.settingsPage.title') }}
+            {{ t('settingsPage.title') }}
           </h1>
           <p class="text-sm text-muted-foreground m-0 text-ellipsis-2">
-            {{ t('console.settingsPage.description') }}
+            {{ t('settingsPage.description') }}
           </p>
         </div>
 
         <Tag
           severity="info"
-          :value="t('console.settingsPage.runtimeTag')"
+          :value="t('settingsPage.runtimeTag')"
         />
       </div>
 
@@ -89,10 +88,10 @@ const {
               {{ t('settings.themeMode') }}
             </span>
             <h2 class="text-lg font-semibold text-foreground m-0">
-              {{ t('console.settingsPage.appearance.title') }}
+              {{ t('settingsPage.appearance.title') }}
             </h2>
             <p class="text-sm text-muted-foreground m-0">
-              {{ t('console.settingsPage.appearance.description') }}
+              {{ t('settingsPage.appearance.description') }}
             </p>
           </div>
           <Tag
@@ -243,7 +242,7 @@ const {
               {{ t('settings.size') }}
             </span>
             <h2 class="text-lg font-semibold text-foreground m-0">
-              {{ t('console.settingsPage.sizeLocale.title') }}
+              {{ t('settingsPage.sizeLocale.title') }}
             </h2>
             <p class="text-sm text-muted-foreground m-0">
               {{ selectedSizeDescription }}
@@ -294,10 +293,10 @@ const {
             {{ t('settings.layoutMode') }}
           </span>
           <h2 class="text-lg font-semibold text-foreground m-0">
-            {{ t('console.settingsPage.layoutMode.title') }}
+            {{ t('settingsPage.layoutMode.title') }}
           </h2>
           <p class="text-sm text-muted-foreground m-0">
-            {{ t('console.settingsPage.layoutMode.description') }}
+            {{ t('settingsPage.layoutMode.description') }}
           </p>
         </header>
 
@@ -336,10 +335,10 @@ const {
               {{ t('settings.showHeader') }}
             </span>
             <h2 class="text-lg font-semibold text-foreground m-0">
-              {{ t('console.settingsPage.layoutModules.title') }}
+              {{ t('settingsPage.layoutModules.title') }}
             </h2>
             <p class="text-sm text-muted-foreground m-0">
-              {{ t('console.settingsPage.layoutModules.description') }}
+              {{ t('settingsPage.layoutModules.description') }}
             </p>
           </div>
           <Icons
@@ -387,13 +386,13 @@ const {
         <header class="row-between gap-md flex-wrap">
           <div class="col-stretch gap-xs min-w-0">
             <span class="text-xs font-semibold text-primary text-no-wrap">
-              {{ t('console.settingsPage.runtimeTag') }}
+              {{ t('settingsPage.runtimeTag') }}
             </span>
             <h2 class="text-lg font-semibold text-foreground m-0">
-              {{ t('console.settingsPage.preview.title') }}
+              {{ t('settingsPage.preview.title') }}
             </h2>
             <p class="text-sm text-muted-foreground m-0">
-              {{ t('console.settingsPage.preview.description') }}
+              {{ t('settingsPage.preview.description') }}
             </p>
           </div>
           <Icons

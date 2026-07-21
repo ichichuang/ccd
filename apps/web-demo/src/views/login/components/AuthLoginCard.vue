@@ -19,7 +19,6 @@ const { t } = useI18n({ useScope: 'global' })
   <section
     class="auth-login-card col-stretch"
     :class="{ 'auth-login-card--compact': compact }"
-    data-testid="auth-login-card"
     aria-labelledby="login-card-title"
   >
     <header class="auth-login-card__header row-between">

@@ -128,7 +128,6 @@ function formatSelectionKeys(value: ProTreeTableSelectionKeys): string {
         :description="$t('showcase.proTreeTable.demo.description')"
       >
         <section
-          data-testid="showcase-pro-tree-table-demo"
           class="col-stretch min-w-0 gap-md"
         >
           <ProTreeTable
@@ -139,7 +138,6 @@ function formatSelectionKeys(value: ProTreeTableSelectionKeys): string {
             selection-mode="single"
             lazy
             :load-children="loadChildren"
-            data-testid="showcase-pro-tree-table"
             @node-expand="recordTreeEvent('expand', $event)"
             @node-collapse="recordTreeEvent('collapse', $event)"
             @node-select="recordTreeEvent('select', $event)"
@@ -150,7 +148,6 @@ function formatSelectionKeys(value: ProTreeTableSelectionKeys): string {
 
           <div class="grid min-w-0 grid-cols-1 gap-sm md:grid-cols-2 xl:grid-cols-6">
             <article
-              data-testid="showcase-pro-tree-table-expanded"
               class="material-elevated col-stretch min-w-0 gap-xs p-md"
             >
               <span class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -162,7 +159,6 @@ function formatSelectionKeys(value: ProTreeTableSelectionKeys): string {
             </article>
 
             <article
-              data-testid="showcase-pro-tree-table-mode"
               class="material-elevated col-stretch min-w-0 gap-xs p-md"
             >
               <span class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -174,7 +170,6 @@ function formatSelectionKeys(value: ProTreeTableSelectionKeys): string {
             </article>
 
             <article
-              data-testid="showcase-pro-tree-table-selection"
               class="material-elevated col-stretch min-w-0 gap-xs p-md"
             >
               <span class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -186,7 +181,6 @@ function formatSelectionKeys(value: ProTreeTableSelectionKeys): string {
             </article>
 
             <article
-              data-testid="showcase-pro-tree-table-lazy-loads"
               class="material-elevated col-stretch min-w-0 gap-xs p-md"
             >
               <span class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -198,7 +192,6 @@ function formatSelectionKeys(value: ProTreeTableSelectionKeys): string {
             </article>
 
             <article
-              data-testid="showcase-pro-tree-table-lazy-children"
               class="material-elevated col-stretch min-w-0 gap-xs p-md"
             >
               <span class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -210,7 +203,6 @@ function formatSelectionKeys(value: ProTreeTableSelectionKeys): string {
             </article>
 
             <article
-              data-testid="showcase-pro-tree-table-event"
               class="material-elevated col-stretch min-w-0 gap-xs p-md"
             >
               <span class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">

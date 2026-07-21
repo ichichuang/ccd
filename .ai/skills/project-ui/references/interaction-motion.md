@@ -62,10 +62,6 @@ This section requires agents to apply local ownership and cleanup rules with exp
 
 This section requires agents to apply performance boundaries rules with explicit ownership, current monorepo evidence, accessibility-safe behavior, token-driven styling, and validation before reporting completion.
 
-## Testing and Review
+## Validation and Review
 
-This section requires agents to apply testing and review rules with explicit ownership, current monorepo evidence, accessibility-safe behavior, token-driven styling, and validation before reporting completion.
-
-## Current Routing Limitation
-
-Current Skill routing does not auto-load this reference. Manual loading is required until P5 routing and synchronization exists.
+Apply validation and review rules with explicit ownership, current monorepo evidence, accessible behavior, token-driven styling, and production checks before reporting completion.

@@ -833,7 +833,6 @@ function handleRowEditSave(payload: ProTableRowEditSavePayload<ProTableDemoRow>)
 <template>
   <article
     class="col-stretch min-w-0 gap-lg"
-    data-testid="showcase-pro-table-shell"
   >
     <ShowcaseHero
       :eyebrow="$t(`${item.localeBaseKey}.eyebrow`)"
@@ -869,7 +868,6 @@ function handleRowEditSave(payload: ProTableRowEditSavePayload<ProTableDemoRow>)
           :title="$t('showcase.proTable.table.title')"
           :description="$t('showcase.proTable.table.description')"
           icon="i-lucide-table-2"
-          data-testid="showcase-pro-table-workspace"
         >
           <div class="col-stretch min-w-0 gap-md">
             <div
@@ -963,7 +961,6 @@ function handleRowEditSave(payload: ProTableRowEditSavePayload<ProTableDemoRow>)
               :title="$t('showcase.proTable.toolbar.title')"
               :description="$t('showcase.proTable.toolbar.description')"
               :summary="actionSummary"
-              data-testid="showcase-pro-table-action-toolbar"
             >
               <template #actions>
                 <Button
@@ -1018,7 +1015,6 @@ function handleRowEditSave(payload: ProTableRowEditSavePayload<ProTableDemoRow>)
             <section
               class="material-solid col-stretch min-w-0 gap-sm p-sm"
               :aria-label="tableRegionLabel"
-              data-testid="showcase-pro-table-demo-region"
             >
               <ProTable
                 ref="tableRef"
@@ -1080,7 +1076,6 @@ function handleRowEditSave(payload: ProTableRowEditSavePayload<ProTableDemoRow>)
       :title="$t('showcase.proTable.stateArea.title')"
       :description="$t('showcase.proTable.stateArea.description')"
       icon="i-lucide-activity"
-      data-testid="showcase-pro-table-state-area"
     >
       <div class="grid min-w-0 grid-cols-1 gap-md lg:grid-cols-3">
         <ShowcaseCard
@@ -1138,7 +1133,6 @@ function handleRowEditSave(payload: ProTableRowEditSavePayload<ProTableDemoRow>)
       :title="$t('showcase.proTable.capabilities.title')"
       :description="$t('showcase.proTable.capabilities.description')"
       icon="i-lucide-panels-top-left"
-      data-testid="showcase-pro-table-capabilities"
     >
       <div class="grid min-w-0 grid-cols-1 gap-md xl:grid-cols-2">
         <div class="col-stretch min-w-0 gap-md">
@@ -1169,7 +1163,6 @@ function handleRowEditSave(payload: ProTableRowEditSavePayload<ProTableDemoRow>)
       :title="$t('showcase.proTable.source.title')"
       :description="$t('showcase.proTable.source.description')"
       icon="i-lucide-folder-code"
-      data-testid="showcase-pro-table-source-area"
     >
       <div class="grid min-w-0 grid-cols-1 gap-md xl:grid-cols-2">
         <ShowcaseSourceLinks :source-paths="sourcePaths" />

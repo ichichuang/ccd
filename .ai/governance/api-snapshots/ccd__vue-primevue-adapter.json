@@ -1,6 +1,0 @@
-{
-  "package": "@ccd/vue-primevue-adapter",
-  "path": "packages/vue-primevue-adapter",
-  "exports": ["."],
-  "rootSymbols": []
-}

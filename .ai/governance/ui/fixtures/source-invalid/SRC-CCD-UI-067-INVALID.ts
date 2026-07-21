@@ -1,1 +1,0 @@
-render({ width: window.innerWidth })

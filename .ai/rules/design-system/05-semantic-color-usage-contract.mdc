@@ -35,7 +35,7 @@ alwaysApply: false
 ## Forbidden Patterns
 - `bg-warning`, `text-warning`, `border-warning`
 - `bg-destructive`, `text-destructive`, `border-destructive`
-- Any new docs/examples that represent project semantic families with `warning` or `destructive`
+- Any new examples that represent project semantic families with `warning` or `destructive`
 
 ## PrimeVue Adapter Boundary Exception
 - `src/utils/theme/presetPrimitive.ts` may keep primitive key `warning` as compatibility bridge.
@@ -71,7 +71,7 @@ AI behavior requirements:
 
 ## Pre-Output Checklist (AI Must Pass)
 - [ ] All semantic color classes use canonical family names from this contract
-- [ ] No `warning`/`destructive` aliases in business code or design docs
+- [ ] No `warning`/`destructive` aliases in business code or design guidance
 - [ ] `warn` and `danger` are used consistently for project-facing semantics
 - [ ] Any PrimeVue `warning` usage is limited to adapter boundary mapping only
 - [ ] No decorative `*-light` token is being treated as a text-grade action/content token

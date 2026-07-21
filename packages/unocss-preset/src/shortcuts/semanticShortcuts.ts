@@ -2,7 +2,7 @@
  * Pure semantic shortcut object for UnoCSS.
  *
  * NO dynamic regex here. All dynamic/validated generation lives in this package.
- * DX usage contract: `wiki/canonical/governance/command-surface.md`.
+ * This package owns all dynamic and validated shortcut generation.
  */
 export const semanticShortcuts = {
   // Flex 9-grid (9个高频 flex 定位语义)

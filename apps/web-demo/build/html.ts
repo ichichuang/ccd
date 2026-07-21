@@ -1,6 +1,6 @@
 import type { PluginOption } from 'vite'
 import { brand } from '../src/constants/brand'
-import { RUNTIME_QUERY_KEYS, RUNTIME_STORAGE_KEYS } from '../src/constants/runtime'
+import { RUNTIME_STORAGE_KEYS } from '../src/constants/runtime'
 import { THEME_PRESETS, DEFAULT_THEME_MODE, DEFAULT_THEME_NAME } from '@ccd/design-tokens'
 import { generateThemeVars } from '../src/utils/theme/engine'
 import type { ViteEnv } from './utils'
@@ -25,7 +25,7 @@ function buildApiOriginResourceHints(apiBaseUrl: string): string {
  * 在构建/开发时向 index.html 注入品牌配置
  * 数据源：src/constants/brand.ts
  *
- * Phase 13.33: 注入主题变量 fallback，消除 First Paint 时的 CSS 变量真空期 (Anti-FOIT)
+ * 注入主题变量 fallback，消除 First Paint 时的 CSS 变量真空期 (Anti-FOIT)
  * 数据源：src/constants/theme.ts，无硬编码颜色
  */
 export function configHtmlPlugin(env: ViteEnv): PluginOption {
@@ -37,7 +37,7 @@ export function configHtmlPlugin(env: ViteEnv): PluginOption {
       // 1. 注入主题 fallback（必须在 theme-mode 脚本之前，确保 First Paint 时变量已存在）
       const themeFallback = generateThemeFallbackCss()
       const themeFallbackBlock = `    <style id="theme-fallback">
-    /* Injected by Vite at build-time to prevent FOIT (Phase 13.33) */
+    /* Injected by Vite at build-time to prevent FOIT */
 ${themeFallback}
     </style>
 
@@ -55,9 +55,6 @@ ${themeFallback}
         .replace(/%THEME_MODE_STORAGE_KEY%/g, RUNTIME_STORAGE_KEYS.themeMode)
         .replace(/%THEME_PRIMARY_STORAGE_KEY%/g, RUNTIME_STORAGE_KEYS.themePrimary)
         .replace(/%THEME_BACKGROUND_STORAGE_KEY%/g, RUNTIME_STORAGE_KEYS.themeBackground)
-        .replace(/%E2E_MODE_STORAGE_KEY%/g, RUNTIME_STORAGE_KEYS.e2eMode)
-        .replace(/%E2E_MODE_QUERY_KEY%/g, RUNTIME_QUERY_KEYS.e2eMode)
-        .replace(/%E2E_PRELOADER_HOLD_QUERY_KEY%/g, RUNTIME_QUERY_KEYS.e2ePreloaderHold)
     },
   }
 }

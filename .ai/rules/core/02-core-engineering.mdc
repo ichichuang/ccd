@@ -29,7 +29,7 @@ globs: ["**/*.vue", "**/*.ts", "**/*.tsx", "**/*.js"]
 
 ## Rendering Rules (MUST)
 - If code must construct/return VNodes dynamically: use **TSX**.
-- ❌ **NEVER** use legacy programmatic rendering helpers such as the Vue `h` helper or `resolveComponent()` in business code, test harnesses, or lint-cleanup patches.
+- ❌ **NEVER** use legacy programmatic rendering helpers such as the Vue `h` helper or `resolveComponent()` in business code or lint-cleanup patches.
 
 ## Build-Time vs Run-Time Boundary
 

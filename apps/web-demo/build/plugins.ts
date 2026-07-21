@@ -13,7 +13,6 @@ import { createPrimeVueComponentResolver } from './resolvers/primevue'
 import { configCompressPlugin } from './compress'
 import { configHtmlPlugin } from './html'
 import { viteBuildInfo } from './info'
-import { viteBuildPerformancePlugin } from './performance'
 
 export const BUILD_PLUGIN_COMPATIBILITY_NOTES = [
   {
@@ -54,13 +53,6 @@ export const BUILD_PLUGIN_COMPATIBILITY_NOTES = [
     vite8Risk:
       'Medium; serving strategy should decide whether this stays in build or moves to CDN/CD.',
   },
-  {
-    id: 'viteBuildPerformancePlugin',
-    keep: true,
-    owner: 'bundle analysis',
-    value: 'Opt-in visualizer artifact for bundle budget investigations.',
-    vite8Risk: 'Low; remains disabled unless VITE_BUILD_ANALYZE=true.',
-  },
 ] as const
 
 interface BuildPluginOptions {
@@ -73,7 +65,7 @@ export function getPluginsList(
   command: 'build' | 'serve',
   options: BuildPluginOptions = {}
 ): PluginOption[] {
-  const { VITE_COMPRESSION, VITE_BUILD_ANALYZE } = env
+  const { VITE_COMPRESSION } = env
   const isDev = command === 'serve'
   const isBuild = command === 'build'
   const enableIconWatcher = options.enableIconWatcher ?? true
@@ -187,7 +179,7 @@ export function getPluginsList(
     }),
   ]
 
-  // 构建阶段的压缩与体积分析
+  // 构建阶段压缩
   if (isBuild && VITE_COMPRESSION !== 'none') {
     const compressPlugins = configCompressPlugin(VITE_COMPRESSION, false)
     if (Array.isArray(compressPlugins)) {
@@ -195,10 +187,6 @@ export function getPluginsList(
     } else {
       plugins.push(compressPlugins)
     }
-  }
-
-  if (isBuild && VITE_BUILD_ANALYZE) {
-    plugins.push(viteBuildPerformancePlugin(true))
   }
 
   return plugins.filter(Boolean) as PluginOption[]

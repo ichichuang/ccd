@@ -22,7 +22,6 @@ defineSlots<{
   <section
     id="dashboard-page"
     data-archetype="A3-stats-grid"
-    data-testid="dashboard-public-landing"
     class="col-stretch min-w-0 gap-lg p-xs sm:p-sm md:p-md lg:p-lg"
   >
     <header class="material-elevated col-stretch min-w-0 gap-lg">

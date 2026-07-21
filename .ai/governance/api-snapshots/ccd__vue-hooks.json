@@ -1,6 +1,0 @@
-{
-  "package": "@ccd/vue-hooks",
-  "path": "packages/vue-hooks",
-  "exports": ["."],
-  "rootSymbols": []
-}

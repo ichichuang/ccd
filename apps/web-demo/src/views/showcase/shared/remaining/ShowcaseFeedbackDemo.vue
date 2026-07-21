@@ -73,7 +73,6 @@ function recordEmptyStateAction(): void {
   <ShowcaseFeedbackDialogBridge v-slot="{ openInfoDialog: openDialog }">
     <div
       class="col-stretch min-w-0 gap-lg"
-      data-testid="showcase-feedback-demo"
     >
       <ShowcaseSection
         :title="$t('showcase.remaining.feedback.stageTitle')"
@@ -83,7 +82,6 @@ function recordEmptyStateAction(): void {
         <ShowcaseToolbar
           :title="$t('showcase.remaining.feedback.toolbarTitle')"
           :description="$t('showcase.remaining.feedback.toolbarDescription')"
-          data-testid="showcase-feedback-action-toolbar"
         >
           <template #actions>
             <Button
@@ -117,7 +115,6 @@ function recordEmptyStateAction(): void {
             icon="i-lucide-panel-top-open"
             :title="$t('showcase.remaining.feedback.emptyTitle')"
             :description="$t('showcase.remaining.feedback.emptyDescription')"
-            data-testid="showcase-feedback-stage"
           >
             <div class="demo-stage col-stretch min-w-0 gap-md">
               <div class="demo-well col-stretch min-w-0 gap-xs">
@@ -162,7 +159,6 @@ function recordEmptyStateAction(): void {
             icon="i-lucide-list-checks"
             :title="$t('showcase.remaining.feedback.logTitle')"
             :description="$t('showcase.remaining.feedback.logDescription')"
-            data-testid="showcase-feedback-log"
           >
             <CScrollbar class="max-h-[32vh]">
               <ul
@@ -191,7 +187,6 @@ function recordEmptyStateAction(): void {
                 :title="$t('showcase.remaining.feedback.noLogsTitle')"
                 :description="$t('showcase.remaining.feedback.noLogsDescription')"
                 :action-label="$t('showcase.remaining.feedback.emptyAction')"
-                data-testid="showcase-feedback-log-empty"
                 @action="recordEmptyStateAction"
               />
             </CScrollbar>
@@ -203,7 +198,6 @@ function recordEmptyStateAction(): void {
         :title="$t('showcase.remaining.feedback.contractTitle')"
         :description="$t('showcase.remaining.feedback.contractDescription')"
         icon="i-lucide-badge-check"
-        data-testid="showcase-feedback-contract"
       >
         <div class="grid min-w-0 grid-cols-1 gap-md lg:grid-cols-3">
           <ShowcaseCard

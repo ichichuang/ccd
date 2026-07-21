@@ -12,10 +12,6 @@ function resolveSizePersistKey(): string {
     return `${nodePrefix}-size`
   }
 
-  if (import.meta.env?.MODE === 'test') {
-    return 'ccd-test-storage-size'
-  }
-
   return import.meta.env?.DEV ? 'ccd-storage-dev-size' : 'ccd-storage-size'
 }
 

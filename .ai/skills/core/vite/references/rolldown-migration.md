@@ -125,7 +125,7 @@ Rolldown unlocks features not possible before:
 For large projects, migrate via `rolldown-vite` first:
 
 ```bash
-# Step 1: Test with rolldown-vite
+# Step 1: Verify with rolldown-vite
 pnpm add -D rolldown-vite
 
 # Replace vite import in config

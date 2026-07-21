@@ -4,7 +4,7 @@ description: Vue 3 Composition API, script setup macros, reactivity system, and 
 metadata:
   author: Anthony Fu
   version: '2026.1.31'
-  source: Generated from https://github.com/vuejs/docs, scripts at https://github.com/antfu/skills
+  source: Vue 3.5 reference material
 ---
 
 # Vue
@@ -14,8 +14,8 @@ metadata:
 ## CCD Project Overlay
 
 - CCD auto-import rules override generic Vue examples. In auto-import-aware Vue/TS/TSX surfaces, use auto-imported Vue APIs as globals and keep Vue imports type-only unless `.ai/rules/core/07-vue-auto-imports.mdc` marks the path as outside the contract.
-- Do not import or call the Vue `h` helper. Use SFC templates or TSX return/render output for component rendering; test harnesses should keep one reusable component per file and must not use the Vue `h` helper to avoid lint warnings.
-- If a `.ts` test surface is not JSX-enabled, do not claim TSX compliance from that file. Convert to `.tsx` only when the existing test/build tooling already covers it; otherwise stop with a tooling-scope blocker or request an explicit scoped tooling change.
+- Do not import or call the Vue `h` helper. Use SFC templates or TSX return/render output for component rendering.
+- Use `.tsx` only where the existing build tooling covers it.
 
 ## Preferences
 

@@ -1,1 +1,0 @@
-const { width } = useWindowSize()

@@ -3,17 +3,14 @@ packages:
   - "packages/*"
 
 catalog:
-  '@axe-core/playwright': ^4.12.1
   '@commitlint/cli': ^19.6.0
   '@commitlint/config-conventional': ^19.6.0
   '@eslint/js': ^10.0.1
-  '@faker-js/faker': ^9.9.0
   '@iconify-json/logos': ^1.2.10
   '@iconify-json/lucide': ^1.2.86
   '@iconify-json/ph': ^1.2.2
   '@iconify-json/solar': ^1.2.5
   '@iconify/utils': ^3.1.0
-  '@playwright/test': ^1.60.0
   '@primeuix/themes': ^2.0.3
   '@primevue/auto-import-resolver': ^4.5.5
   '@primevue/core': ^4.5.5
@@ -38,12 +35,10 @@ catalog:
   '@vitejs/plugin-vue-jsx': ^5.1.5
   '@vue/compiler-dom': ^3.5.35
   '@vue/compiler-sfc': ^3.5.35
-  '@vue/test-utils': ^2.4.6
   '@vue/tsconfig': ^0.9.1
   '@vueuse/core': ^14.3.0
   alova: ^3.5.1
   autoprefixer: ^10.4.23
-  baseline-browser-mapping: ^2.9.19
   chokidar: ^4.0.3
   commitizen: ^4.3.1
   concurrently: ^9.1.0
@@ -58,16 +53,13 @@ catalog:
   eslint-plugin-boundaries: ^6.0.2
   eslint-plugin-vue: ^10.9.2
   eslint-plugin-vuejs-accessibility: ^2.5.0
-  fast-glob: ^3.3.3
   glob: ^11.1.0
   globals: ^17.6.0
   gsap: ^3.14.2
   husky: ^9.1.7
-  jsdom: ^28.1.0
   lint-staged: ^15.2.11
   lodash-es: ^4.18.0
   lz-string: ^1.5.0
-  magic-string: ^0.30.21
   mitt: ^3.0.1
   npm-run-all2: ^7.0.2
   overlayscrollbars: ^2.14.0
@@ -80,14 +72,11 @@ catalog:
   postcss-pxtorem: ^6.1.0
   prettier: ^3.8.1
   primevue: ^4.5.5
-  rollup-plugin-visualizer: ^6.0.3
   sass: ^1.97.3
   stylelint: ^17.4.0
   stylelint-config-prettier-scss: ^1.0.0
   stylelint-config-standard-scss: ^17.0.0
   terser: ^5.46.0
-  ts-node: ^10.9.2
-  tsx: ^4.20.3
   turbo: ^2.6.3
   typescript: ^5.9.3
   typescript-eslint: ^8.61.0
@@ -97,7 +86,6 @@ catalog:
   uuid: ^13.0.1
   vite: ^8.0.16
   vite-plugin-compression: ^0.5.1
-  vitest: ^4.1.8
   vue: ^3.5.35
   vue-echarts: ^8.0.0
   vue-eslint-parser: ^10.4.1

@@ -1,20 +1,12 @@
 # Validation Ladder
 
-## Level 1
+Use the narrowest relevant production checks first:
 
-- Static readback
-- Focused diff review
+1. Package or app type check.
+2. Repository lint.
+3. Architecture and runtime boundaries.
+4. Web build for web-facing changes.
+5. Desktop build for desktop-facing changes.
+6. Full workspace validation for cross-cutting changes.
 
-## Level 2
-
-- Type checks
-- Unit tests
-- Lint
-
-## Level 3
-
-- Browser validation
-- E2E
-- Performance or Lighthouse checks
-
-Choose the lowest level that still covers the risk introduced by the change.
+Report commands that could not run and the reason.

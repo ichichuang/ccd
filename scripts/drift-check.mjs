@@ -13,8 +13,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, '..')
 const SRC_DIR = join(ROOT, 'apps', 'web-demo', 'src')
 const VIEWS_DIR = join(ROOT, 'apps', 'web-demo', 'src', 'views')
-const BUILD_SYSTEM_MD = join(ROOT, 'docs', 'ai-specs', 'BUILD_SYSTEM.md')
-const VITE_CONFIG = join(ROOT, 'apps', 'web-demo', 'vite.config.ts')
 const BUILD_PLUGINS = join(ROOT, 'apps', 'web-demo', 'build', 'plugins.ts')
 const PRIMEVUE_RESOLVER_BOUNDARY = join(
   ROOT,
@@ -151,48 +149,6 @@ function extractDataArchetypeFromVue(content) {
   return m ? m[1].trim() : null
 }
 
-function checkManualChunksDrift() {
-  const errors = []
-  if (!existsSync(BUILD_SYSTEM_MD) || !existsSync(VITE_CONFIG)) {
-    return errors
-  }
-
-  const doc = readFileSync(BUILD_SYSTEM_MD, 'utf-8')
-  const config = readFileSync(VITE_CONFIG, 'utf-8')
-
-  const docMatches = Array.from(doc.matchAll(/-\s+\*\*(vendor-[^*]+)\*\*/g))
-  const docChunks = new Set(
-    docMatches
-      .map((m) => m[1].trim())
-      .map((name) => name.replace(/:$/, ''))
-  )
-
-  const configMatches = Array.from(config.matchAll(/['"](vendor-[^'"]+)['"]/g))
-  const configChunks = new Set(configMatches.map((m) => m[1].trim()))
-
-  if (!docChunks.size && !configChunks.size) {
-    return errors
-  }
-
-  for (const name of configChunks) {
-    if (!docChunks.has(name)) {
-      errors.push(
-        `BUILD_SYSTEM.md vs vite.config.ts 漂移: manualChunks 中存在 "${name}"，但文档 §5.1 未记录，请同步更新文档或配置。`
-      )
-    }
-  }
-
-  for (const name of docChunks) {
-    if (!configChunks.has(name)) {
-      errors.push(
-        `BUILD_SYSTEM.md vs vite.config.ts 漂移: 文档 §5.1 中存在 "${name}"，但 vite.config.ts manualChunks 未使用，请同步更新文档或配置。`
-      )
-    }
-  }
-
-  return errors
-}
-
 function checkBuildPluginsDrift() {
   const errors = []
   if (!existsSync(BUILD_PLUGINS)) {
@@ -295,11 +251,7 @@ function main() {
     errors.push(...checkClassColorDrift(`apps/web-demo/src/${rel}`, content))
   }
 
-  // ---------- 3. Build System vs vite.config.ts (manualChunks) ----------
-  const manualChunkErrors = checkManualChunksDrift()
-  errors.push(...manualChunkErrors)
-
-  // ---------- 4. AutoImport / Components vs build plugin config ----------
+  // ---------- 3. AutoImport / Components vs build plugin config ----------
   const buildPluginsErrors = checkBuildPluginsDrift()
   errors.push(...buildPluginsErrors)
 

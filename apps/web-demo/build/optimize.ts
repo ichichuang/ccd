@@ -50,7 +50,7 @@ export const include = [
   'primevue/useconfirm',
   'primevue/usetoast',
 
-  // PrimeVue 子路径组件 (SchemaForm componentMap、auto-import 及首屏 E2E 路径使用)
+  // PrimeVue 子路径组件 (SchemaForm componentMap 与 auto-import 使用)
   'primevue/accordion',
   'primevue/accordioncontent',
   'primevue/accordionheader',

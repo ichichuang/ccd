@@ -1,1 +1,0 @@
-deviceStore.initializeSingleton()

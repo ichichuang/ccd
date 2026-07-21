@@ -29,7 +29,6 @@ const REQUIRED_FIELDS = [
   'product.keywords',
   'release.version',
   'governance.policyVersion',
-  'governance.phase',
 ]
 
 const COMMANDS = new Set(['print', 'validate', 'sync', 'doctor'])
@@ -69,7 +68,6 @@ function normalizeConfig(config) {
     },
     governance: {
       policyVersion: config.governance.policyVersion,
-      phase: config.governance.phase,
     },
   }
 }
@@ -141,7 +139,7 @@ function validateConfig(config) {
     errors.push('release.version must be strict semver')
   }
 
-  for (const field of ['policyVersion', 'phase']) {
+  for (const field of ['policyVersion']) {
     if (governance[field] !== undefined && typeof governance[field] !== 'string') {
       errors.push(`governance.${field} must be a string`)
     }
@@ -245,7 +243,7 @@ function syncReleaseManifest(config) {
 function syncGovernanceVersion(config) {
   const json = readJson(GOVERNANCE_VERSION_PATH)
   json.policyVersion = config.governance.policyVersion
-  json.governancePhase = config.governance.phase
+  delete json.governancePhase
   writeJson(GOVERNANCE_VERSION_PATH, json)
 }
 
@@ -496,15 +494,6 @@ function doctorRows(config) {
       governanceVersion.policyVersion
     )
   )
-  rows.push(
-    row(
-      '.ai/governance/policies/version.json',
-      'governancePhase',
-      config.governance.phase,
-      governanceVersion.governancePhase
-    )
-  )
-
   return rows
 }
 

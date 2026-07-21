@@ -35,7 +35,7 @@ Raw `#RRGGBB` values are allowed only as canonical theme source data, not as UI 
 
 Allowed files:
 - `src/constants/theme.ts` — explicit `THEME_PRESETS` source data.
-- `src/constants/theme.spec.ts` and token validation scripts — expected values and contrast checks.
+- Theme validation scripts — expected values and contrast checks.
 - `src/utils/theme/**` — color parsing, conversion, derivation, validation, and compiler internals.
 
 Rules for this exception:
@@ -43,7 +43,7 @@ Rules for this exception:
 - `THEME_PRESETS` SHOULD use `CompleteThemePreset[]` and define both `light` and `dark` mode explicitly.
 - Preset edits MUST NOT modify Theme Engine runtime modules unless the task explicitly asks for engine behavior changes.
 - Every preset and mode MUST include complete semantic families: `primary`, `accent`, `success`, `warn`, `danger`, `info`, `help`, base scalar tokens, neutral tokens, and independent `sidebar` tokens.
-- After changing preset data, run `pnpm exec tsx scripts/upgrade-all-themes.mjs`, `pnpm exec vitest run src/constants/theme.spec.ts src/utils/theme`, and ESLint for the touched theme files.
+- After changing preset data, run `pnpm type-check`, `pnpm lint:check`, and the affected application build.
 
 ## Semantic Contrast Validation Contract
 

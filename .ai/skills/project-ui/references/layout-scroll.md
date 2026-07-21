@@ -60,6 +60,6 @@ Current AppContainer evidence is `apps/web-demo/src/layouts/components/AppContai
 
 `packages/vue-app-platform/src/layoutRuntime.ts` is current implementation evidence for application layout-runtime behavior. UI work must inspect and preserve its app-shell, viewport, region, and scroll responsibilities before changing related behavior; page-local logic must not duplicate or replace that responsibility. P2C does not modify AppContainer or route scrolling, and later layout migration remains separately governed.
 
-## Later Layout-Phase Boundary
+## Follow-up layout boundary
 
-Later layout-phase work may change app containers or route scrolling only under explicit runtime scope. This reference records governance, not migration.
+Follow-up layout work may change app containers or route scrolling only under explicit runtime scope. This reference records governance, not migration.

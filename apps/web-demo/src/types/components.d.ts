@@ -8,14 +8,10 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    AutoComplete: typeof import('primevue/autocomplete')['default']
     Button: typeof import('primevue/button')['default']
-    DatePicker: typeof import('primevue/datepicker')['default']
     EmptyState: typeof import('@ccd/vue-ui')['EmptyState']
     Icons: typeof import('@ccd/vue-ui')['Icons']
-    InputNumber: typeof import('primevue/inputnumber')['default']
     InputText: typeof import('primevue/inputtext')['default']
-    Password: typeof import('primevue/password')['default']
     ProForm: typeof import('@ccd/vue-ui')['ProForm']
     ProTable: typeof import('@ccd/vue-ui')['ProTable']
     RouterLink: typeof import('vue-router')['RouterLink']

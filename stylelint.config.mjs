@@ -11,7 +11,6 @@ export default {
     '**/node_modules/**',
     '**/dist/**',
     '**/dist-ssr/**',
-    '**/coverage/**',
     '**/target/**',
     '**/*.min.css',
   ],

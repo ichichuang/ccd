@@ -22,7 +22,7 @@ import coreRoutes from './modules/core'
 
 // 业务静态路由模块以 lazy manifest 暴露；core routes 保持启动关键路径同步注册。
 const routeModuleLoaders = defineRouteModuleLoaders(
-  import.meta.glob<RouteModuleFile>(['./modules/*.ts', '!./modules/*.spec.ts'])
+  import.meta.glob<RouteModuleFile>(['./modules/*.ts', '!./modules/core.ts'])
 )
 let normalizedStaticRoutes: RouteConfig[] = []
 let staticRoutesLoadPromise: Promise<RouteConfig[]> | null = null

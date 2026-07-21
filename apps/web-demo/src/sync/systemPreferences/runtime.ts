@@ -6,7 +6,7 @@ import {
   readLocalSystemPreferences,
   writeLocalSystemPreferences,
 } from './localPersist'
-import { initTransport, resetTransportForTest } from '@/sync/runtime'
+import { initTransport } from '@/sync/runtime'
 import { syncAction } from '@/sync/syncAction'
 import type {
   SystemPreferencePayload,
@@ -15,7 +15,6 @@ import type {
 } from '@ccd/contracts'
 import { registerSystemPreferenceSync } from './register'
 import { sanitizeSystemPreferencePayload } from './guards'
-import { resetSystemPreferenceSyncStateForTest } from './state'
 import { DateUtils } from '@/utils/date'
 
 type SyncStoreId = 'theme' | 'size' | 'layout' | 'locale' | 'preferences'
@@ -98,12 +97,4 @@ export function setupSystemPreferencesSync(options: SystemPreferencesSyncOptions
   } else {
     writeLocalSystemPreferences(current)
   }
-}
-
-export function resetSystemPreferencesSyncForTest(): void {
-  resetTransportForTest()
-  resetSystemPreferenceSyncStateForTest()
-  initialized = false
-  cloudSaveHandler = undefined
-  lastLocalPreferenceTimestamp = 0
 }

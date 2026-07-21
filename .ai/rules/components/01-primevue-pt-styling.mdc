@@ -182,7 +182,7 @@ Outside these files, targeting PrimeVue internal `.p-*` selectors is prohibited.
 | `Tag` | `root`, `label`, `icon` |
 | `Badge` | `root` |
 
-Consult PrimeVue v4 docs for complete slot maps when using complex components.
+Consult the PrimeVue v4 component reference for complete slot maps.
 
 ---
 

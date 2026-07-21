@@ -23,9 +23,6 @@ export const approvedPrimeVueAppImportFiles = new Set(
 export const isPrimeVueModule = specifier =>
   specifier === 'primevue' || specifier.startsWith('primevue/') || specifier.startsWith('@primevue/')
 
-export const isPrimeVueTestFile = relPath =>
-  /\.(?:spec|test)\.(?:ts|tsx|js|jsx|mjs|cjs)$/.test(relPath)
-
 export const extractPrimeVueReferences = content => {
   const references = []
   const sideEffectImportPattern = /^\s*import\s*['"]([^'"]+)['"]/gm
@@ -89,7 +86,6 @@ export function classifyPrimeVueBoundaryReference(relPath, content, reference) {
   }
 
   if (isPrimeVueAdapterFile(relPath)) return { allowed: true, reason: 'adapter' }
-  if (isPrimeVueTestFile(relPath)) return { allowed: true, reason: 'test-file' }
   if (isPrimeVueBuildResolverBoundaryFile(relPath)) {
     return { allowed: true, reason: 'build-resolver' }
   }
@@ -103,6 +99,6 @@ export function classifyPrimeVueBoundaryReference(relPath, content, reference) {
   return {
     allowed: false,
     ruleId: 'primevue-direct-import-boundary',
-    message: `Direct PrimeVue module "${reference.specifier}" is allowed only inside @ccd/vue-ui internals, @ccd/vue-primevue-adapter, tests, governed build/generated boundaries, or the approved app exact allowlist`,
+    message: `Direct PrimeVue module "${reference.specifier}" is allowed only inside @ccd/vue-ui internals, @ccd/vue-primevue-adapter, governed build boundaries, or an approved app entrypoint`,
   }
 }

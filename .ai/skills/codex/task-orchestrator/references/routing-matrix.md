@@ -1,16 +1,11 @@
 # Routing Matrix
 
-## Route To Simple
+- Generic product UI: `project-ui`
+- Vue components and composables: `vue`
+- UnoCSS, shortcuts, or design tokens: `unocss`
+- Vite configuration or build plugins: `vite`
+- Tauri and desktop adapters: `desktop-tauri-guard`
+- GitHub metadata and workflows: `github-ops`
+- AI protocol or ambiguous architecture work: `task-orchestrator`
 
-- One bounded UI fix
-- One test update
-- One config edit
-- One component or utility change with obvious validation
-
-## Route To Complex
-
-- Refactors across modules
-- Architecture or state-boundary changes
-- Performance work
-- Auth, routing, storage, schema, or API changes
-- Tasks that require browser validation or parallel work
+Select multiple skills only when distinct evidence independently activates each route.

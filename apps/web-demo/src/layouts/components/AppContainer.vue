@@ -48,7 +48,6 @@ function markConsoleScrollRoot(instance: ConsoleScrollRootInstance): void {
       <div
         v-show="layoutStore.isPageLoading && !layoutStore.isLoading && !isFullscreen"
         class="page-loading-overlay-content page-loading-overlay-surface absolute inset-0 min-w-0 min-h-0 z-content pointer-events-auto"
-        data-testid="app-container-page-loading"
       >
         <Loading
           :type="1"

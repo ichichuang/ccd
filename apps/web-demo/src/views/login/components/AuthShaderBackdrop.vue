@@ -15,7 +15,7 @@ onMounted(() => {
   bubbleDriftMotion = createScopedGsapContext(
     () => {
       const bubbles = Array.from(
-        scope.querySelectorAll<HTMLElement>('[data-testid="auth-glass-bubble"]')
+        scope.querySelectorAll<HTMLElement>('.auth-glass-bubble')
       )
       const drift = [
         { x: -5, y: -7, scale: 1.008, opacity: 0.95, duration: 24 },
@@ -64,7 +64,6 @@ onBeforeUnmount(() => {
   <div
     ref="backdropRef"
     class="auth-shader-backdrop absolute inset-0 z-base pointer-events-none overflow-hidden"
-    data-testid="auth-shader-backdrop"
     aria-hidden="true"
   >
     <div class="auth-shader-backdrop__field absolute inset-0" />
@@ -74,27 +73,21 @@ onBeforeUnmount(() => {
     <div class="auth-shader-backdrop__card-glow" />
     <div
       class="auth-shader-backdrop__ice-panel auth-shader-backdrop__ice-panel--left"
-      data-testid="auth-glass-panel"
     />
     <div
       class="auth-shader-backdrop__ice-panel auth-shader-backdrop__ice-panel--right"
-      data-testid="auth-glass-panel"
     />
     <div
       class="auth-shader-backdrop__bubble auth-shader-backdrop__bubble--large"
-      data-testid="auth-glass-bubble"
     />
     <div
       class="auth-shader-backdrop__bubble auth-shader-backdrop__bubble--wide"
-      data-testid="auth-glass-bubble"
     />
     <div
       class="auth-shader-backdrop__bubble auth-shader-backdrop__bubble--pearl"
-      data-testid="auth-glass-bubble"
     />
     <div
       class="auth-shader-backdrop__bubble auth-shader-backdrop__bubble--drop"
-      data-testid="auth-glass-bubble"
     />
     <div class="auth-shader-backdrop__glow auth-shader-backdrop__glow--primary" />
     <div class="auth-shader-backdrop__glow auth-shader-backdrop__glow--accent" />

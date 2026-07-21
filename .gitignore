@@ -20,9 +20,6 @@ jspm_packages/
 # Build outputs
 dist
 dist-ssr
-coverage
-coverage-final.json
-lcov.info
 *.local
 
 # Tauri/Rust generated outputs (main branch treats src-tauri artifacts as local build cache)
@@ -35,7 +32,6 @@ apps/*/src-tauri/gen/
 # 忽略包含敏感信息的环境变量文件
 .env.local
 .env.development.local
-.env.test.local
 .env.production.local
 
 # 本地混淆材料覆盖文件（开发者可创建此文件覆盖 VITE_PUBLIC_STORAGE_OBFUSCATION_KEY；该值对客户端可见）
@@ -72,7 +68,6 @@ node_modules/.tmp/
 
 # Build/dev caches
 .vite/
-.vitest/
 .cache/
 .turbo/
 .parcel-cache/
@@ -90,24 +85,6 @@ node_modules/.vite/
 package-lock.json
 yarn.lock
 
-# Testing
-/tests/e2e/videos/
-/tests/e2e/screenshots/
-/playwright-report/
-/html-report/
-/blob-report/
-/test-results/
-.nyc_output/
-.playwright-cli/
-.playwright/
-e2e/**/screenshots/
-e2e/**/videos/
-e2e/**/traces/
-e2e/**/test-results/
-e2e/**/*.actual.png
-e2e/**/*.diff.png
-e2e/**/*.received.png
-
 # Local Netlify folder
 .netlify
 
@@ -116,8 +93,7 @@ tmp/
 temp/
 output/
 reports/
-artifacts/browser/
-.codex/browser-qa/
+artifacts/
 
 # OS generated files
 Thumbs.db
@@ -125,12 +101,6 @@ Thumbs.db
 # Generated AI adapters
 .claude/settings.local.json
 .claude/skills/
-
-# Local AI runtime state
-.ai/runtime/repair_list.md
-# Legacy local ledger ignored during Markdown migration compatibility.
-.ai/runtime/repair_list.txt
-.ai/runtime/*.json
 
 # Workspace build outputs
 apps/*/dist/

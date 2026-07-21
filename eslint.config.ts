@@ -88,7 +88,6 @@ export default tseslint.config(
     ignores: [
       '**/dist/**',
       '**/dist-ssr/**',
-      '**/coverage/**',
       'apps/desktop/src-tauri/target/**',
       'public/**',
       '*.d.ts',
@@ -101,7 +100,6 @@ export default tseslint.config(
       '**/node_modules',
       '**/*.min.js',
       '**/public',
-      'docs/**',
       // [NEW] 忽略自动生成的类型定义文件
       'apps/web-demo/src/types/components.d.ts',
       'apps/web-demo/src/types/auto-imports.d.ts',

@@ -45,7 +45,6 @@ function selectTheme(name: string): void {
 <template>
   <div
     class="auth-palette-picker"
-    data-testid="auth-palette-picker"
     role="group"
     :aria-label="t('settings.themePreset')"
   >

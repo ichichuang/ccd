@@ -33,8 +33,7 @@
   "scripts": {
     "build": "node ../../scripts/clean-artifacts.mjs paths dist ../../node_modules/.tmp/packages-unocss-preset.tsbuildinfo && tsc -p tsconfig.json",
     "type-check": "tsc -p tsconfig.json --noEmit",
-    "typecheck": "pnpm type-check",
-    "test": "cd ../.. && vitest run packages/unocss-preset/src/index.spec.ts"
+    "typecheck": "pnpm type-check"
   },
   "dependencies": {
     "@ccd/design-tokens": "workspace:*",

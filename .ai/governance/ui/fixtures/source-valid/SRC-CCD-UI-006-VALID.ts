@@ -1,1 +1,0 @@
-window.$toast.success('Saved')

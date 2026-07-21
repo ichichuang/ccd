@@ -87,7 +87,7 @@ function getRouteIconSourceFiles(dir: string): string[] {
     cwd: fullDir,
     nodir: true,
     absolute: true,
-    ignore: ['**/*.d.ts', '**/*.spec.ts', '**/*.test.ts'],
+    ignore: ['**/*.d.ts'],
   })
 }
 
@@ -217,7 +217,7 @@ function buildDynamicSizeDemoSafelist(): string[] {
   return ['p-0', 'm-0', ...SIZE_SCALE_KEYS.flatMap(k => [`p-${k}`, `m-${k}`])]
 }
 
-/** Theme docs bind `bg-${family}/10 text-${family}` from COLOR_FAMILIES.quadFamilies. */
+/** Theme examples bind `bg-${family}/10 text-${family}` from COLOR_FAMILIES.quadFamilies. */
 function buildDynamicThemeDemoSafelist(): string[] {
   return COLOR_FAMILIES.quadFamilies.flatMap(family => [`bg-${family}/10`, `text-${family}`])
 }

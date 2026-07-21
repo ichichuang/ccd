@@ -95,11 +95,9 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
 
   const isDev = mode === 'development'
   const isBuild = command === 'build'
-  const lifecycleEvent = process.env.npm_lifecycle_event ?? ''
   const isAutomatedServer =
     process.env.CI === 'true' ||
     process.env.CI === '1' ||
-    lifecycleEvent.startsWith('e2e') ||
     VITE_SERVER_OPEN === 'false'
   const shouldOpenDevServer = isDev && !isAutomatedServer
   const shouldOpenPreview = VITE_SERVER_OPEN === 'true' && !isAutomatedServer
@@ -153,9 +151,6 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
           '**/node_modules/**',
           '**/.git/**',
           '**/dist/**',
-          '**/.playwright/**',
-          '**/playwright-report/**',
-          '**/test-results/**',
           '**/.eslintrc-auto-import.json',
           '**/src/types/auto-imports.d.ts',
           '**/src/types/components.d.ts',

@@ -9,7 +9,6 @@ import { useThemeStore } from '@/stores/modules/system'
 import { THEME_PRESETS, DEFAULT_THEME_NAME } from '@ccd/design-tokens'
 import type { ThemeMode, ThemeTransitionMode } from '@ccd/design-tokens'
 import { RUNTIME_STORAGE_KEYS } from '@/constants/runtime'
-import { RUNTIME_E2E_EVENTS } from '@/constants/runtime'
 import { generateThemeVars, applyTheme } from '@/utils/theme/engine'
 import { rgbToHex } from '@ccd/design-tokens'
 import {
@@ -17,7 +16,6 @@ import {
   getSystemPrefersDark,
   resolveThemeModeIsDark,
 } from '@/utils/theme/mode'
-import { dispatchRuntimeE2EEvent, isVisualE2EMode } from '@/utils/runtime/e2e'
 import {
   getTransitionConfig,
   calculateCircleRadius,
@@ -200,19 +198,12 @@ export function useThemeSwitch(): UseThemeSwitchReturn {
     const root = document.documentElement
     root.dataset.themeTransitioning = 'true'
     root.dataset.themeTransitionMode = transition
-    dispatchRuntimeE2EEvent(RUNTIME_E2E_EVENTS.themeTransitionStart, {
-      mode: themeStore.mode,
-      transition,
-    })
   }
 
   const endThemeTransitionSignal = (targetMode: ThemeMode): void => {
     const root = document.documentElement
     root.dataset.themeTransitioning = 'false'
     root.dataset.themeMode = targetMode
-    dispatchRuntimeE2EEvent(RUNTIME_E2E_EVENTS.themeTransitionEnd, {
-      mode: targetMode,
-    })
   }
 
   const applyModeSnapshot = (targetMode: ThemeMode, systemPrefersDark: boolean): void => {
@@ -287,9 +278,8 @@ export function useThemeSwitch(): UseThemeSwitchReturn {
       transitionModeOverride || transitionMode.value
     )
     const systemPrefersDark = getSystemPrefersDark()
-    const visualE2EMode = isVisualE2EMode()
 
-    if (!document?.startViewTransition || visualE2EMode) {
+    if (!document?.startViewTransition) {
       setThemeLocked(true)
       sharedIsAnimating.value = true
       activeTransitionTarget = targetMode

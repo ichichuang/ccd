@@ -10,9 +10,6 @@
 
 # AI and governance authority
 /.ai/ @platform-architecture
-/wiki/canonical/architecture/ @platform-architecture
-/wiki/canonical/decisions/ @platform-architecture
-/wiki/canonical/governance/ @platform-architecture
 /scripts/architecture/ @platform-architecture
 /scripts/governance/ @platform-architecture
 

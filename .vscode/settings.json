@@ -3,10 +3,10 @@
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
-    "AGENTS.md": "CLAUDE.md,.ai/README.md,.ai/config/cursor.settings.json,.ai/config/claude.settings.local.json,.ai/protocol/AI.entry.md,.ai/protocol/AGENTS.core.md,.ai/protocol/adapters/README.md,.ai/protocol/adapters/codex.md,.ai/protocol/adapters/claude.md,.ai/protocol/adapters/cursor.md,.ai/runtime/repair_list.template.md,.ai/runtime/repair_list.md,.ai/manifests/skills-lock.json",
+    "AGENTS.md": "CLAUDE.md,.ai/README.md,.ai/config/cursor.settings.json,.ai/config/claude.settings.local.json,.ai/protocol/AI.entry.md,.ai/protocol/AGENTS.core.md,.ai/protocol/adapters/README.md,.ai/protocol/adapters/codex.md,.ai/protocol/adapters/claude.md,.ai/protocol/adapters/cursor.md",
     "package.json": "pnpm-lock.yaml,.npmrc,pnpm-workspace.yaml,.editorconfig,.gitattributes,.gitignore,.prettierrc.json,commitlint.config.ts,README.md,LICENSE,CHANGELOG.md,lint-staged.config.mjs,stylelint.config.mjs",
     "ai-doctor.mjs": "ai-sync.mjs,codex-preflight.mjs,lint-staged-safe.mjs,drift-check.mjs",
-    "vite.config.ts": "vite.config.*.ts,vitest.config.ts,index.html",
+    "vite.config.ts": "vite.config.*.ts,index.html",
     "tsconfig.json": "tsconfig.*.json,tsconfig.tsbuildinfo",
     "eslint.config.ts": ".eslintignore,eslint.config.js,eslint.config.mjs,.eslintrc-auto-import.json",
     "uno.config.ts": "uno.config.*.ts,uno.theme.ts,uno.shortcuts.ts",
@@ -135,15 +135,13 @@
     "apps/*/dist/**": true,
     "packages/*/dist/**": true,
     ".turbo/**": true,
-    "playwright-report/**": true,
-    "test-results/**": true
+    ".cache/**": true
   },
   "files.watcherExclude": {
     "**/node_modules/**": true,
     "**/dist/**": true,
     "**/.turbo/**": true,
-    "**/playwright-report/**": true,
-    "**/test-results/**": true
+    "**/.cache/**": true
   },
   "files.associations": {
     "*.css": "postcss",

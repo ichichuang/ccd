@@ -93,7 +93,7 @@ These exceptions do NOT extend to business pages or general components.
 
 When using a complex PrimeVue component (see Tiers below):
 
-1. **Fetch** the live docs page: `https://primevue.org/[component-name-lowercase]`
+1. **Fetch** the live component page: `https://primevue.org/[component-name-lowercase]`
 2. **Verify** against the page:
    - (a) Prop names and types
    - (b) Event names — v4 uses `@update:modelValue` pattern
@@ -176,7 +176,7 @@ For every element in `<template>`:
 
 1. Classify the component by Tier (Section 2.3).
 2. **Tier 1** → Proceed from memory. Basic props (`label`, `icon`, `severity`, `disabled`, `v-model`) are stable.
-3. **Tier 2** → If using more than 3 props or any slot, fetch the docs page.
+3. **Tier 2** → If using more than 3 props or any slot, fetch the component page.
 4. **Tier 3** → ALWAYS fetch `https://primevue.org/[component]` before writing the first line.
 
 ### Step 3 — PT PRESET CHECK
@@ -202,7 +202,7 @@ Before finalizing any PrimeVue template output:
 
 - [ ] No native `<button>`, `<input>`, `<select>`, `<textarea>`, `<table>`, `<dialog>`, `<progress>` in business code
 - [ ] No v3 component names (`Dropdown`, `Calendar`, `InputSwitch`, `Sidebar`, `TabView`, `Steps`)
-- [ ] All Tier 3 component APIs verified against PrimeVue v4 docs
+- [ ] All Tier 3 component APIs verified against the PrimeVue v4 reference
 - [ ] No `:deep(.p-*)` in `<style scoped>` outside documented exceptions
 - [ ] Global PT presets checked — no conflict with local `:pt`
 - [ ] Compound component structure used for Tabs / Stepper / Accordion

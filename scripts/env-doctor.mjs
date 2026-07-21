@@ -240,7 +240,7 @@ const checkRuntimeScript = relPath => {
 }
 
 const checkDemoModeEnvDefaults = () => {
-  const envFiles = ['.env', '.env.development', '.env.production', '.env.analyze']
+  const envFiles = ['.env', '.env.development', '.env.production']
   const booleanKeys = ['VITE_DEMO_MOCK_ENABLED', 'VITE_PUBLIC_DEMO_ENABLED']
 
   envFiles.forEach(relPath => {
@@ -377,7 +377,6 @@ const checkViteEnvSchemas = () => {
   const profiles = [
     { name: 'development', files: ['.env', '.env.development'], expectedAppEnv: 'development' },
     { name: 'production', files: ['.env', '.env.production'], expectedAppEnv: 'production' },
-    { name: 'analyze', files: ['.env', '.env.analyze'], expectedAppEnv: 'development' },
   ]
 
   profiles.forEach(profile => {
@@ -601,6 +600,9 @@ inspectShellBinding('non-interactive')
 inspectShellBinding('interactive')
 
 console.log('----------------------')
+if (strict && warningCount > 0) {
+  fail(`strict mode rejects ${warningCount} environment warning(s)`)
+}
 if (failed) {
   console.log('Environment doctor failed.')
   process.exit(1)

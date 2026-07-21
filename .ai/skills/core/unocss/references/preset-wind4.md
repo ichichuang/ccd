@@ -207,7 +207,7 @@ presetWind4({
 1. Update theme keys according to the table above
 2. Remove `@unocss/reset` imports
 3. Enable `preflights.reset: true`
-4. Test color outputs (oklch vs rgb)
+4. Verify color outputs (oklch vs rgb)
 5. Update any custom theme extensions
 
 ```ts

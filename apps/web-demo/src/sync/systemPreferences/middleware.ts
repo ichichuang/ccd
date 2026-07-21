@@ -3,7 +3,6 @@ export {
   applySyncMiddleware,
   handleRemoteMessage,
   registerSyncMiddleware,
-  resetSyncMiddlewaresForTest,
   setSyncClientId,
   type SyncContext,
   type SyncContextInput,

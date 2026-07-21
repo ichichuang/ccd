@@ -131,9 +131,6 @@ function messageFor(kind) {
 export const noHardcodedColorsRule = {
   meta: {
     type: 'problem',
-    docs: {
-      description: 'Disallow hardcoded colors and raw palette classes outside token sources.',
-    },
     schema: [],
     messages: {
       hardcodedColor: '{{message}}',

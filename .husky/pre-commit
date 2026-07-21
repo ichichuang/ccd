@@ -8,15 +8,17 @@ run_pnpm() {
   bash "$RUNTIME" pnpm "$@"
 }
 
-echo "🏛️  Running Enterprise Guardian: Architecture Doctor..."
-run_pnpm ai:doctor
+echo "Running project metadata validation..."
+run_pnpm project:validate
 
-echo "🛡️  Running Enterprise Guardian: TypeScript Check..."
+echo "Running TypeScript checks..."
 run_pnpm type-check
 
-echo "🔍 Running Enterprise Guardian: Drift Check..."
-run_pnpm drift-check
+echo "Running lint checks..."
+run_pnpm lint:check
 
-run_pnpm lint:staged:safe
+echo "Running architecture boundary checks..."
+run_pnpm arch:boundaries
+run_pnpm arch:runtime
 
-echo "✅ 本地检查通过，准备提交..."
+echo "Pre-commit checks passed."

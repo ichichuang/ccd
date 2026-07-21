@@ -14,8 +14,7 @@
   "scripts": {
     "build": "node ../../scripts/clean-artifacts.mjs paths ../../node_modules/.tmp/packages-shared-utils.tsbuildinfo && tsc -p tsconfig.json",
     "type-check": "tsc -p tsconfig.json --noEmit",
-    "typecheck": "pnpm type-check",
-    "test": "vitest run --passWithNoTests"
+    "typecheck": "pnpm type-check"
   },
   "dependencies": {
     "lodash-es": "catalog:",

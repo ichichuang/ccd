@@ -12,16 +12,11 @@ export interface CapabilityBridgeOptions<T extends object> {
   readonly onMissing: 'throw' | 'null'
 }
 
-export const CAPABILITY_BRIDGE_TEST_RESET_TOKEN: unique symbol = Symbol('CapabilityBridgeTestReset')
-
-export type CapabilityBridgeTestResetToken = typeof CAPABILITY_BRIDGE_TEST_RESET_TOKEN
-
 export interface CapabilityBridge<T extends object> {
   install(capabilities: T): void
   isInstalled(): boolean
   get(): T | null
   getOrThrow(): T
-  resetForTest(token: CapabilityBridgeTestResetToken): void
 }
 
 export function createCapabilityBridge<T extends object>(
@@ -62,13 +57,6 @@ export function createCapabilityBridge<T extends object>(
         throw createMissingError()
       }
       return instance as T
-    },
-
-    resetForTest(token): void {
-      if (token !== CAPABILITY_BRIDGE_TEST_RESET_TOKEN) {
-        throw new Error(`[${label}] resetForTest is test-only`)
-      }
-      instance = null
     },
   }
 }

@@ -200,13 +200,11 @@ function resetSample(): void {
 <template>
   <section
     class="col-stretch min-w-0 gap-lg"
-    data-testid="showcase-utils-demo"
   >
     <ShowcaseToolbar
       :title="$t('showcase.remaining.utils.toolbarTitle')"
       :description="$t('showcase.remaining.utils.toolbarDescription')"
       :summary="$t(`showcase.remaining.utils.${currentUtility}.description`)"
-      data-testid="showcase-utils-action-toolbar"
     >
       <template #actions>
         <Button
@@ -214,7 +212,6 @@ function resetSample(): void {
           icon="i-lucide-play"
           severity="primary"
           :pt="actionButtonPt"
-          data-testid="showcase-utils-run-sample"
           @click="rerunSample"
         />
         <Button
@@ -223,7 +220,6 @@ function resetSample(): void {
           severity="secondary"
           outlined
           :pt="actionButtonPt"
-          data-testid="showcase-utils-reset-sample"
           @click="resetSample"
         />
         <Tag
@@ -239,7 +235,6 @@ function resetSample(): void {
           </span>
           <strong
             class="code-inline m-0 min-w-0 text-sm font-semibold text-foreground"
-            data-testid="showcase-utils-run-count"
           >
             {{ runCount }}
           </strong>
@@ -250,7 +245,6 @@ function resetSample(): void {
           </span>
           <strong
             class="code-inline m-0 min-w-0 break-words text-right text-sm font-semibold text-foreground"
-            data-testid="showcase-utils-last-action"
           >
             {{ $t(`showcase.remaining.utils.actionStatus.${actionStatus}`) }}
           </strong>
@@ -264,7 +258,6 @@ function resetSample(): void {
         :title="$t('showcase.remaining.utils.sampleTitle')"
         :description="$t('showcase.remaining.utils.sampleDescription')"
         :tag="currentUtilityBadge"
-        data-testid="showcase-utils-sample-panel"
       >
         <dl class="grid min-w-0 grid-cols-1 gap-sm">
           <div
@@ -286,7 +279,6 @@ function resetSample(): void {
         :icon="currentConfig.outputIcon"
         :title="$t('showcase.remaining.utils.outputTitle')"
         :description="$t('showcase.remaining.utils.outputDescription')"
-        data-testid="showcase-utils-output-panel"
       >
         <dl
           v-if="rows.length"
@@ -303,7 +295,6 @@ function resetSample(): void {
             </dt>
             <dd
               class="code-inline m-0 min-w-0 break-all text-sm font-semibold text-foreground"
-              :data-testid="`showcase-utils-output-${row.key}`"
             >
               {{ row.value }}
             </dd>
@@ -315,7 +306,6 @@ function resetSample(): void {
           icon="i-lucide-list-x"
           :title="$t('showcase.remaining.utils.outputEmptyTitle')"
           :description="$t('showcase.remaining.utils.outputEmptyDescription')"
-          data-testid="showcase-utils-output-empty"
         />
       </ShowcaseCard>
     </div>
@@ -325,7 +315,6 @@ function resetSample(): void {
       icon="i-lucide-globe-2"
       :title="$t('showcase.remaining.utils.runtimeTitle')"
       :description="$t('showcase.remaining.utils.runtimeDescription')"
-      data-testid="showcase-utils-runtime-panel"
     >
       <dl class="grid min-w-0 grid-cols-1 gap-sm md:grid-cols-3">
         <div
@@ -338,7 +327,6 @@ function resetSample(): void {
           </dt>
           <dd
             class="code-inline m-0 min-w-0 break-all text-sm font-semibold text-foreground"
-            :data-testid="`showcase-utils-runtime-${row.key}`"
           >
             {{ row.value }}
           </dd>
@@ -350,7 +338,6 @@ function resetSample(): void {
       :title="$t('showcase.remaining.utils.contractTitle')"
       :description="$t('showcase.remaining.utils.contractDescription')"
       icon="i-lucide-badge-check"
-      data-testid="showcase-utils-contract"
     >
       <div class="grid min-w-0 grid-cols-1 gap-md lg:grid-cols-3">
         <ShowcaseCard

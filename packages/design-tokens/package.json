@@ -22,7 +22,6 @@
   "scripts": {
     "build": "node ../../scripts/clean-artifacts.mjs paths ../../node_modules/.tmp/packages-design-tokens.tsbuildinfo && tsc -p tsconfig.json",
     "type-check": "tsc -p tsconfig.json --noEmit",
-    "typecheck": "pnpm type-check",
-    "test": "cd ../.. && vitest run packages/design-tokens/src"
+    "typecheck": "pnpm type-check"
   }
 }

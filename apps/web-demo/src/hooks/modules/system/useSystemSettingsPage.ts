@@ -245,26 +245,26 @@ export function useSystemSettingsPage(): UseSystemSettingsPageReturn {
 
   const previewItems = computed<PreviewItem[]>(() => [
     {
-      label: t('console.settingsPage.preview.breakpoint'),
+      label: t('settingsPage.preview.breakpoint'),
       value: runtime.breakpoint.value,
     },
     {
-      label: t('console.settingsPage.preview.deviceType'),
+      label: t('settingsPage.preview.deviceType'),
       value: runtime.deviceType.value,
     },
     {
-      label: t('console.settingsPage.preview.effectiveMode'),
+      label: t('settingsPage.preview.effectiveMode'),
       value: t(layoutModeLabelKeys[runtime.effectiveMode.value]),
     },
     {
-      label: t('console.settingsPage.preview.sizePreset'),
+      label: t('settingsPage.preview.sizePreset'),
       value: t(sizeOptionKeys[sizeStore.sizeName]),
     },
   ])
 
   const selectedThemeName = computed(() => themeStore.themeName)
   const selectedSizeDescription = computed(() =>
-    t(`console.settingsPage.sizeDescriptions.${sizeStore.sizeName}`)
+    t(`settingsPage.sizeDescriptions.${sizeStore.sizeName}`)
   )
   const selectedTransitionEffectLabel = computed(() =>
     t(transitionModeMeta[themeStore.transitionMode].labelKey)
