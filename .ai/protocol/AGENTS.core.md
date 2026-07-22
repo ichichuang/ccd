@@ -24,9 +24,8 @@ Load these rules in order when relevant:
 1. `.ai/rules/core/00-global-architect.mdc`
 2. `.ai/rules/core/00-root-gatekeeper.mdc`
 3. `.ai/rules/core/01-global-preflight.mdc`
-4. `.ai/rules/core/02-ui-preflight.mdc` for visual changes
-5. `.ai/rules/core/10-ai-generation-workflow.mdc` for new routes, pages, or hooks
-6. Matching domain rules under `.ai/rules/**`
+4. `.ai/rules/core/10-ai-generation-workflow.mdc` for new routes, pages, or hooks
+5. Matching domain rules under `.ai/rules/**`
 
 ## Skills and validation
 

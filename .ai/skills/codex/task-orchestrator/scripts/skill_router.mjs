@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url'
 
 const aiRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..')
 const manifestPath = path.join(aiRoot, 'manifests/skill-routing.json')
+const uiOverlappingRoutes = new Set(['project-ui', 'unocss', 'vue'])
 
 function parseArgs(argv) {
   const json = argv.includes('--json')
@@ -14,11 +15,16 @@ function parseArgs(argv) {
   return { json, task: values.join(' ').trim() }
 }
 
+function matchesKeyword(task, keyword) {
+  const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return new RegExp(`(^|[^a-z0-9])${escaped}($|[^a-z0-9])`, 'i').test(task)
+}
+
 function route(task, manifest) {
   const normalized = task.toLowerCase()
   const matches = manifest.routes
     .map(item => {
-      const keywordMatches = item.keywords.filter(keyword => normalized.includes(keyword.toLowerCase()))
+      const keywordMatches = item.keywords.filter(keyword => matchesKeyword(normalized, keyword.toLowerCase()))
       const pathMatches = item.paths.filter(candidate => normalized.includes(candidate.toLowerCase()))
       return {
         id: item.id,
@@ -30,10 +36,13 @@ function route(task, manifest) {
     .filter(item => item.evidence.length > 0)
     .sort((left, right) => right.priority - left.priority || left.id.localeCompare(right.id))
 
-  const selectedSkills = [...new Set(matches.flatMap(item => item.skills))]
+  const selectedMatches = matches.some(item => item.id === 'project-ui')
+    ? matches.filter(item => item.id === 'project-ui' || !uiOverlappingRoutes.has(item.id))
+    : matches
+  const selectedSkills = [...new Set(selectedMatches.flatMap(item => item.skills))]
   return {
     task,
-    routes: matches.map(({ id, evidence }) => ({ id, evidence })),
+    routes: selectedMatches.map(({ id, evidence }) => ({ id, evidence })),
     skills: selectedSkills.length > 0 ? selectedSkills : manifest.fallback,
   }
 }

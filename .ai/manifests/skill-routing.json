@@ -39,7 +39,7 @@
     },
     {
       "id": "project-ui",
-      "keywords": ["ui", "layout", "page", "route", "menu", "style", "accessibility"],
+      "keywords": ["ui", "ux", "layout", "page", "menu", "style", "styling", "visual", "responsive", "motion", "chart", "accessibility"],
       "paths": ["apps/web-demo/src/views/", "apps/web-demo/src/layouts/", "packages/vue-ui/"],
       "skills": ["project-ui"],
       "priority": 450

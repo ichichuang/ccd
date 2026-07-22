@@ -1,5 +1,5 @@
 ---
-description: Cross-platform interaction patterns — touch/pointer event handling, hover boundary, gesture composables, and PrimeVue touch workarounds.
+description: Cross-platform interaction runtime rules for touch and pointer event handling.
 globs: ["src/**/*.vue", "src/**/*.tsx", "src/**/*.ts"]
 alwaysApply: true
 ---
@@ -10,17 +10,14 @@ alwaysApply: true
 
 When handling cross-platform interactions, apply solutions in this order:
 
-1. **CSS boundary** first (`interaction.scss` media queries)
-2. **Composables** for logic (`useTap`, `useSwipeAction`, `useDragAction`, `useLongPressAction`)
-3. **Directives** for declarative template use (`v-tap`, `v-swipe`, `v-long-press`)
-4. **Component swap** for PrimeVue incompatibility (`v-if="deviceStore.isPCLayout"`)
+1. **Composables** for logic (`useTap`, `useSwipeAction`, `useDragAction`, `useLongPressAction`)
+2. **Directives** for declarative template use (`v-tap`, `v-swipe`, `v-long-press`)
 
 ## Law 1 — No Raw Touch/Pointer Event Listeners
 
 ### FORBIDDEN in templates:
 - `@touchstart`, `@touchend`, `@touchmove`
 - `@pointerdown`, `@pointerup`, `@pointermove`
-- `@mouseenter`, `@mouseleave` (use CSS `:hover` gated by media query)
 
 ### REQUIRED alternatives:
 - `v-tap="handler"` — unified tap (replaces explicit touch+click dual-bind)
@@ -31,22 +28,7 @@ When handling cross-platform interactions, apply solutions in this order:
 ### `@click` exception:
 `@click` remains valid for simple click handlers — it works on both mouse and touch. Only use `v-tap` when you need `isTapping` state or must differentiate touch-tap from mouse-click.
 
-## Law 2 — Hover is PC-Only
-
-- All hover effects are gated by `@media (hover: hover) and (pointer: fine)` in `interaction.scss`
-- Touch devices get `:active` feedback only
-- UnoCSS `hover:` variants in shortcuts remain; `interaction.scss` overrides them on touch
-- NEVER add new hover-dependent UX without considering the touch fallback
-
-## Law 3 — PrimeVue Touch Workarounds
-
-- **DataTable drag**: Component swap pattern (`v-if="deviceStore.isPCLayout"` / `v-else`)
-- **Tooltip**: Use `{ event: 'focus' }` config on `v-tooltip` for touch devices
-- **Carousel/Tabs horizontal**: `touch-action: pan-x` (handled in `interaction.scss`)
-- **DataTable scroll**: `touch-action: pan-y` (handled in `interaction.scss`)
-- NEVER use `:deep(.p-*)` for interaction overrides
-
-## Law 4 — VueUse is the Only Gesture Foundation
+## Law 2 — VueUse is the Only Gesture Foundation
 
 `@vueuse/core` is the ONLY permitted gesture/pointer library. FORBIDDEN:
 
@@ -56,18 +38,6 @@ When handling cross-platform interactions, apply solutions in this order:
 - Any other touch/gesture library
 
 All interaction composables in `src/hooks/modules/useInteraction/` are built on `@vueuse/core` internals.
-
-## Law 5 — Interaction Shortcut Registry
-
-Only these interaction-related UnoCSS shortcuts exist (closed set):
-
-- `interactive-card` — card with hover ring escalation
-- `interactive-item` — list row with hover highlight + translate
-- `motion-lift` — hover lift effect
-- `interaction-shrink` — active scale-down
-- `ring-focus-focus` — keyboard focus ring
-
-Adding new interaction shortcuts requires extending `semanticShortcuts.ts` AND updating the Closed Shortcut Registry in `00-unocss-guardrails.mdc`.
 
 ## Quick Reference
 

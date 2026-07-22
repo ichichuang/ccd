@@ -1,5 +1,5 @@
 ---
-description: Unified layout runtime SSOT and responsive shell rendering rules.
+description: Unified layout runtime SSOT and responsive shell runtime rules.
 globs: ["src/layouts/**/*.{vue,tsx}", "src/App.vue"]
 alwaysApply: true
 ---
@@ -87,10 +87,6 @@ runtime.showTopMenu.value
 runtime.drawerSafeAreaStyle.value
 ```
 
-## [LAW] Layout Container Exclusivity
-- `layout-full`, `layout-container`, `layout-narrow`, `layout-screen` are mutually exclusive.
-- NEVER nest width archetypes.
-
 ## Runtime Ownership Boundaries
 
 - Device store owns raw device, viewport, breakpoint, orientation, pixel ratio, and resize lifecycle state.
@@ -98,36 +94,6 @@ runtime.drawerSafeAreaStyle.value
 - Layout store owns user preferences and persisted layout configuration only.
 - Layout runtime resolves effective mode, drawer/sidebar mode, structural visibility, transient drawer state, and safe-area styles.
 - Size engine owns CSS variable dimensions, typography scaling, breakpoint scaling, pixel-ratio-aware sizing, and density presets.
-
-## [LAW] Admin Sidebar Menu Interaction Contract
-
-The admin sidebar menu is a continuous interaction surface. Preserve the existing route-driven menu generation, permission filtering, active route highlighting, expanded-key persistence, PrimeVue `PanelMenu`, and `TieredMenu` popup behavior.
-
-Visible renderer rules:
-
-- The visible admin sidebar menu MUST keep one persistent `PanelMenu` renderer across expanded, animating, and collapsed states.
-- Collapsed mode MUST be a CSS/layout/interaction state, not a renderer replacement.
-- `TieredMenu` is allowed ONLY as a floating popup for collapsed root submenu interaction.
-- Do NOT render a separate visible collapsed rail tree, duplicate root menu renderer, or swap `PanelMenu` for another visible component during sidebar collapse.
-
-State ownership rules:
-
-- Visual collapse state, logical collapse state, and animation phase MUST remain separate.
-- Visual phase controls label opacity, arrow opacity, fallback icon visibility, item alignment, and animation classes.
-- Logical collapsed state controls interaction semantics only: inline submenu suppression and popup submenu behavior.
-- Do NOT use logical collapsed state alone to hide labels, remove arrows, or switch visible menu DOM during the width transition.
-
-Geometry continuity rules:
-
-- Expanded and collapsed states MUST preserve the same icon box size, icon center line, menu item height, hover area rhythm, and active indicator alignment.
-- The collapsed width MUST be derived from menu geometry and icon size tokens. Do NOT hardcode arbitrary collapsed widths in layout renderers.
-- Changing sidebar icon size requires validating `--sidebar-collapsed-width`, root item width, icon box width, and expanded/collapsed icon center alignment.
-
-Tooltip and fallback rules:
-
-- Collapsed sidebar root menu items MUST show their menu name on hover/focus.
-- Expanded sidebar menu items MUST show a title tooltip ONLY when the label is actually truncated.
-- Menu items without route icons MUST use the shared menu fallback icon token. Do NOT display first-letter or first-character text fallback in the collapsed sidebar.
 
 ## Safe Area Runtime
 
@@ -144,9 +110,7 @@ Drawer roots, fixed headers, fullscreen layout, tab bars, and shell padding must
 
 ## Integration Guidance
 - Use `v-if`/`v-show` with runtime flags, never responsive utility classes on shell structures.
-- Pass explicit density or mode props to child components when presentation needs variants.
 - Child components may render from props, but MUST NOT infer mobile/tablet/drawer behavior locally.
-- Drawer/sidebar/menu compactness must come from explicit props or layout runtime state, not device sniffing inside the child.
 
 ## Anti-Patterns
 - `md:hidden`, `max-lg:flex` to control shell structure visibility.
@@ -158,4 +122,4 @@ Drawer roots, fixed headers, fullscreen layout, tab bars, and shell padding must
 
 ## Validation Requirements
 
-Layout runtime changes must review deterministic mode and sidebar transitions across phone, tablet, desktop, wide desktop, and ultrawide widths. Verify sidebar geometry, content offsets, safe-area padding, header height, drawer visibility, overlays, clipped regions, tooltip behavior, and submenu anchoring. Run type checking, linting, architecture checks, and the affected application build.
+Layout runtime changes must verify deterministic mode resolution and safe-area state across supported device classes. Run type checking, linting, architecture checks, and the affected application build.

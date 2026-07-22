@@ -2,7 +2,15 @@
 
 import json
 import pathlib
+import re
 import sys
+
+
+UI_OVERLAPPING_ROUTES = {"project-ui", "unocss", "vue"}
+
+
+def matches_keyword(task: str, keyword: str) -> bool:
+    return re.search(r"(^|[^a-z0-9])" + re.escape(keyword) + r"($|[^a-z0-9])", task) is not None
 
 
 def main() -> int:
@@ -18,7 +26,7 @@ def main() -> int:
     matches = []
 
     for item in manifest["routes"]:
-        evidence = [value for value in item["keywords"] if value.lower() in normalized]
+        evidence = [value for value in item["keywords"] if matches_keyword(normalized, value.lower())]
         evidence += [value for value in item["paths"] if value.lower() in normalized]
         if evidence:
             matches.append(
@@ -31,10 +39,15 @@ def main() -> int:
             )
 
     matches.sort(key=lambda item: (-item["priority"], item["id"]))
-    skills = list(dict.fromkeys(skill for item in matches for skill in item["skills"]))
+    selected_matches = (
+        [item for item in matches if item["id"] == "project-ui" or item["id"] not in UI_OVERLAPPING_ROUTES]
+        if any(item["id"] == "project-ui" for item in matches)
+        else matches
+    )
+    skills = list(dict.fromkeys(skill for item in selected_matches for skill in item["skills"]))
     result = {
         "task": task,
-        "routes": [{"id": item["id"], "evidence": item["evidence"]} for item in matches],
+        "routes": [{"id": item["id"], "evidence": item["evidence"]} for item in selected_matches],
         "skills": skills or manifest["fallback"],
     }
 

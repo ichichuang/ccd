@@ -6,7 +6,7 @@ alwaysApply: true
 
 # Rule 03 — Vue 3 + TypeScript Architecture
 
-> Governs component **logic & structure** ONLY. All visual/CSS output MUST obey `00-unocss-guardrails.mdc`.
+> Governs component **logic & structure** only.
 
 ---
 
@@ -332,8 +332,6 @@ const editor = markRaw(new ExternalEditor(config))
 ## Jurisdiction
 
 > **This file governs**: Vue 3 Composition API logic and TypeScript structure.
->
-> **Styling / CSS output**: Unconditionally defers to `00-unocss-guardrails.mdc`.
 >
 > **Data flow / Stores**: Defers to `core/05-state-boundaries.mdc`.
 >

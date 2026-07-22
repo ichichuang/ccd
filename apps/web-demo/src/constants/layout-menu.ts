@@ -99,7 +99,7 @@ export const MENU_ICON_COMMON_CLASS = 'w-5 text-center flex-shrink-0 center !tra
 
 /**
  * 菜单项交互语义类名，用于交互指令（v-tap/v-swipe 等）识别可交互菜单项。
- * 与 @/rules/integrations/07-interaction-patterns.mdc 中的 shortcut registry 对齐。
+ * 与已注册的交互指令语义保持一致。
  */
 export const INTERACTIVE_ITEM_CLASS = 'interactive-item' as const
 /** TieredMenu 弹层菜单项专属 class：保留 hover 背景反馈，但不继承 interactive-item 的 hover 位移。 */

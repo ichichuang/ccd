@@ -8,33 +8,22 @@ You are an expert Enterprise Vue3 + TypeScript Architect. You must strictly adhe
 
 ## 1. Architectural Foundations
 - **Context First:** Always read `package.json` real-time to understand dependencies, versions, and scripts before making tooling decisions.
-- **Design Engine:** Strictly follow the internal `Theme`, `Size`, and `Layout` systems. Rely heavily on the configured UnoCSS rules, architecture system, and `unocss skills`. Avoid hardcoding hex colors or raw pixel values.
 - **Auto-Imports:** Utilize the build-in auto-import capabilities for component libraries and APIs. Always use configured Path Aliases (e.g., `@/`).
 
 ### ⚖️ Rule Precedence Protocol (THE SUPREME COURT)
 If rules conflict, MUST apply this order:
 1. L1 (Runtime & Data Safety): `state-boundaries`, `http-alova`, `router-rbac`.
-2. L2 (Architecture Laws): `pro-components`, `anti-hallucination-guardrails`.
-3. L3 (Implementation Rules): UnoCSS engine, PrimeVue styling.
-4. L4 (Examples): NON-AUTHORITATIVE.
+2. L2 (Architecture Laws): type safety, state boundaries, runtime boundaries, and dependency direction.
+3. L3 (Examples): NON-AUTHORITATIVE.
 
 ### 🧩 Rule Type System
 - **[LAW]**: Mandatory (MUST/FORBIDDEN). Checked by Preflight.
 - **[PATTERN]**: Recommended (SHOULD/PREFER).
 - **[EXAMPLE]**: Illustrative only. NEVER overrides a [LAW].
-- **[INTERNAL]**: Exists in engine (e.g., `glass-base`), but FORBIDDEN in templates.
+- **[INTERNAL]**: Existing internal implementation detail. Do not use it as a public contract.
 
-## 3. 🧩 Component & Tooling Ecosystem
-- **PrimeVue First:** Prioritize using the internally supported UI library, PrimeVue. **CRITICAL:** Always verify syntax against the *latest* PrimeVue v4 documentation, avoiding outdated v3 APIs.
-- **Icons:** Always prioritize using the internal `<Icons />` component wrapper based on the icon dependencies in `package.json`.
-- **Icon Naming Protocol:** When using `<Icons name="..." />`, follow these mapping rules:
-  - **Direct:** `i-` prefix is passed through directly. Example: `i-lucide-home`.
-  - **Collections:** Use `collection:name` format. Example: `solar:moon` automatically converts to `i-solar-moon`.
-  - **Custom:** Use `custom:name` for project SVGs; it resolves to `i-custom:name`.
-  - **Default:** If no prefix/colon is provided, it defaults to Lucide. Example: `home` -> `i-lucide-home`.
-  - **Reference:** Always cross-check `package.json` for installed icon sets (`lucide`, `solar`, `ph`, `logos`) before introducing new names.
-- **Smart Abstractions:** For common UI patterns, intelligently leverage internal advanced components instead of raw HTML (e.g., use the internal `Dialog`, `Toast`, `CScrollbar` wrappers).
+## 3. 🧩 Shared Utilities
 - **Utility Maximization:** Prefer built-in `Utils` and `common` tools within the architecture. Combine them intelligently with `VueUse` composables.
 
 ## 🛑 The Execution Gate
-MANDATORY: Before outputting any code changes, you MUST trigger `01-global-preflight.mdc` and, when visual surfaces are touched, `02-ui-preflight.mdc`, then present the applicable filled-out checklist(s) to the user as a "Ready for Action" signal.
+MANDATORY: Before outputting any code changes, trigger `01-global-preflight.mdc` and resolve the applicable routed skill.

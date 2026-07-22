@@ -7,11 +7,6 @@
       "routes": ["ai"]
     },
     {
-      "id": "frontend",
-      "scope": ["apps/web-demo/**", "packages/vue-*/**"],
-      "routes": ["project-ui", "vue", "unocss", "vite"]
-    },
-    {
       "id": "desktop",
       "scope": ["apps/desktop/**"],
       "routes": ["desktop"]
