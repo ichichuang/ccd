@@ -20,14 +20,6 @@ declare module 'vue' {
   }
 }
 
-/** Design Compiler 架构锚点：允许 data-archetype / data-region 通过模板类型校验 */
-declare module '@vue/runtime-dom' {
-  interface HTMLAttributes {
-    'data-archetype'?: string
-    'data-region'?: string
-  }
-}
-
 // 3. 注入全局命名空间
 declare global {
   // 基础类型映射：解决 setupLocales 等文件中 App 找不到的问题

@@ -798,34 +798,6 @@ const enUSShowcase = {
         note: 'Stateful behavior stays with its owner; the showcase keeps local demo status separate from runtime state.',
       },
     },
-    placeholder: {
-      description: 'This route is ready for its dedicated showcase page.',
-      sources: 'Planned sources',
-      what: {
-        title: 'What this is',
-      },
-      why: {
-        title: 'Why it matters',
-        description: 'This route is part of the public showcase catalog.',
-      },
-      try: {
-        title: 'What to try',
-      },
-      source: {
-        title: 'Where the source lives',
-      },
-      demo: {
-        title: 'Preview shell',
-        description: 'The dedicated demo is not implemented yet, but the route is loadable.',
-        stateTitle: 'Fallback is active',
-        stateDescription:
-          'This page keeps navigation, catalog metadata, related links, and source references available.',
-      },
-      catalog: {
-        title: 'More in this group',
-        description: 'Use the catalog cards to move through nearby showcase pages.',
-      },
-    },
     remaining: {
       tags: {
         value: 'Value',
@@ -836,10 +808,6 @@ const enUSShowcase = {
         'catalog-overview': {
           description:
             'Browse the core capability routes that carry the product demo, design system, runtime, and delivery story.',
-        },
-        'catalog-components': {
-          description:
-            'Scan component, table, form, chart, and feedback routes from one group entry before opening a focused demo.',
         },
         'catalog-single-group': {
           description:

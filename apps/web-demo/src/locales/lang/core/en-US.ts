@@ -4,7 +4,6 @@
 const enUSCore = {
   login: {
     submit: 'Sign in',
-    forgotPassword: 'Forgot password?',
     usernameLabel: 'Email or username',
     usernamePlaceholder: 'admin or user',
     usernameRequired: 'Username is required',
@@ -13,35 +12,15 @@ const enUSCore = {
     passwordPlaceholder: 'Enter your password',
     passwordRequired: 'Password is required',
     passwordMin: 'Password must be at least 6 characters',
-    quickAdmin: 'Admin',
-    quickUser: 'User',
-    quickAccounts: 'Quick accounts',
-    brandSloganLine1: 'Reusable app experience kit',
     gatewayEyebrow: 'CCD Auth Gateway',
     cardTitle: 'Sign in to CCD',
     cardSubtitle: 'Enter the CCD product demo and showcase routes',
-    stageSubtitle:
-      'Shared capabilities and app experiences stay separated before access is granted.',
-    signals: {
-      governanceGate: 'review-ready checks',
-      runtimeIsolated: 'runtime separated',
-      safeStorage: 'app-owned storage',
-      validationPassed: 'checks passed',
-    },
     errorTitle: 'Login failed',
     errorMessageGeneric: 'Login failed, please check your username and password',
     themeToggle: 'Toggle theme',
     localeSelect: 'Switch language',
     passwordShow: 'Show password',
     passwordHide: 'Hide password',
-    rememberMe: 'Remember me',
-    diagram: {
-      contracts: 'contracts',
-      apps: 'apps',
-      core: 'core',
-      governed: 'governed',
-      isolated: 'isolated',
-    },
   },
   auth: {
     restore: {

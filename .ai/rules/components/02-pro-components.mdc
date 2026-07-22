@@ -71,19 +71,19 @@ When a Pro wrapper exists, direct raw component usage is rejected by default.
 
 ---
 
-## LAW 2 — Business View Shell (A1 Default, A2 Detail Variant)
+## LAW 2 — Business View Structure
 
-Admin table, form, settings, and CRUD business views **MUST** follow the A1-toolbar-content archetype.
-Read-heavy detail or inspection pages generated with `pnpm ai:scaffold:view-route -- --kind detail`
-are an approved A2-sidebar-inspector variant, matching the design-state contract.
-Do not use A2 for standard CRUD/table/form views.
+Admin table, form, settings, and CRUD views **MUST** keep actions and content in a clear,
+task-driven structure. Read-heavy detail or inspection views may use a split master/detail layout
+when that structure matches the page's primary task. Standard CRUD, table, and form views should
+keep actions in the page toolbar and content in the primary flow.
 
 ### 2.1 — Root Wrapper
 
 ```html
 <!-- ✅ REQUIRED: transparent root — Transparent Root Policy -->
 <!-- ❌ FORBIDDEN: any bg-* / surface-* / material-* on root wrapper -->
-<div class="col-stretch gap-md" data-archetype="A1-toolbar-content">
+<div class="col-stretch gap-md">
   <div class="layout-narrow col-stretch gap-md">
     <!-- content sections below -->
   </div>
@@ -94,7 +94,7 @@ Do not use A2 for standard CRUD/table/form views.
 - For standard flowing content (for example showcases, forms), the root wrapper MUST NOT constrain height. Use `col-stretch gap-md` or `layout-container` (for examples).
 - Do NOT wrap the entire view in `<CScrollbar>` if the parent `LayoutAdmin` already provides the main scrollable area.
 - Use `<CScrollbar>` only for local scrollable regions (for example inside a fixed-height sidebar, drawer panel, or a specific datatable wrapper).
-- For approved detail/inspection pages, `data-archetype="A2-sidebar-inspector"` is allowed only when the page's primary task is readonly inspection, profile detail, or document review.
+- Detail or inspection layouts are appropriate only when the page's primary task is readonly inspection, profile detail, or document review.
 
 ### 2.2 — Scrollable Container
 

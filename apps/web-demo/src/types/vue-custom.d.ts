@@ -1,6 +1,6 @@
 /**
- * Vue 全局指令与自定义属性类型扩展
- * 解决 vue-tsc 对 vTooltip、data-archetype、data-region 的类型校验
+ * Vue 全局指令类型扩展
+ * 解决 vue-tsc 对项目自定义指令的类型校验
  */
 import type { Directive } from 'vue'
 
@@ -15,15 +15,5 @@ declare module 'vue' {
     vSwipe: Directive<HTMLElement, (direction: string) => void>
     /** v-long-press — 长按手势（值：回调函数） */
     vLongPress: Directive<HTMLElement, (event: PointerEvent) => void>
-  }
-
-  export interface HTMLAttributes {
-    'data-archetype'?: string
-    'data-region'?: string
-  }
-
-  export interface ComponentCustomProps {
-    'data-archetype'?: string
-    'data-region'?: string
   }
 }

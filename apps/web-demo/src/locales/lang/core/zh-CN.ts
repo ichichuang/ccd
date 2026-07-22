@@ -4,7 +4,6 @@
 const zhCNCore = {
   login: {
     submit: '登录',
-    forgotPassword: '忘记密码？',
     usernameLabel: '邮箱或用户名',
     usernamePlaceholder: 'admin 或 user',
     usernameRequired: '用户名不能为空',
@@ -13,34 +12,15 @@ const zhCNCore = {
     passwordPlaceholder: '请输入您的密码',
     passwordRequired: '密码不能为空',
     passwordMin: '密码长度不能小于 6 位',
-    quickAdmin: 'Admin',
-    quickUser: 'User',
-    quickAccounts: '快速账号',
-    brandSloganLine1: '可复用应用体验套件',
     gatewayEyebrow: 'CCD Auth Gateway',
     cardTitle: '登录到 CCD',
     cardSubtitle: '进入 CCD 产品演示与展示路线',
-    stageSubtitle: '共享能力与应用体验在授权前保持清晰分离。',
-    signals: {
-      governanceGate: '评审就绪检查',
-      runtimeIsolated: '运行时已分离',
-      safeStorage: '应用持有存储',
-      validationPassed: '检查通过',
-    },
     errorTitle: '登录失败',
     errorMessageGeneric: '登录失败，请检查账号和密码',
     themeToggle: '切换主题',
     localeSelect: '切换语言',
     passwordShow: '显示密码',
     passwordHide: '隐藏密码',
-    rememberMe: '记住我',
-    diagram: {
-      contracts: 'contracts',
-      apps: 'apps',
-      core: 'core',
-      governed: 'governed',
-      isolated: 'isolated',
-    },
   },
   auth: {
     restore: {

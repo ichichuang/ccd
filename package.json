@@ -84,8 +84,6 @@
     "codex:preflight": "node scripts/codex-preflight.mjs",
     "claude:preflight": "node scripts/claude-preflight.mjs",
     "sync:desktop-config": "node scripts/sync-desktop-config.mjs",
-    "drift-check": "node scripts/drift-check.mjs",
-    "check:drift": "node scripts/drift-check.mjs",
     "arch:boundaries": "depcruise --config .dependency-cruiser.cjs apps packages && node scripts/architecture/validate-boundaries.mjs",
     "arch:runtime": "node scripts/architecture/check-runtime-leaks.mjs && node scripts/architecture/check-root-runtime-decommissioned.mjs",
     "desktop:security": "node scripts/architecture/check-desktop-security.mjs",

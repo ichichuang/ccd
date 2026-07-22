@@ -43,7 +43,6 @@ const {
 <template>
   <section
     id="global-settings-page"
-    data-archetype="A1-toolbar-content"
     class="col-stretch min-w-0 gap-md p-xs sm:p-sm md:p-md lg:p-lg"
   >
     <header class="material-elevated col-stretch min-w-0 gap-md">

@@ -35,7 +35,6 @@ export interface ShowcaseCatalogItem {
   rank: number
   kind: ShowcasePageKind
   demoLevel: ShowcaseDemoLevel
-  componentKey: string
   sourcePaths: string[]
   dashboardLink?: boolean
   tags: string[]

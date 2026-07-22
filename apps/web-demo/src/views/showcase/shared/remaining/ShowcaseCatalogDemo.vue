@@ -17,12 +17,6 @@ const catalogItems = computed<ShowcaseCatalogItem[]>(() => {
     )
   }
 
-  if (props.kind === 'catalog-components') {
-    return showcaseCatalog.filter(candidate =>
-      ['components', 'tables', 'forms', 'charts', 'feedback'].includes(candidate.groupId)
-    )
-  }
-
   return showcaseCatalog.filter(
     candidate => candidate.groupId === props.item.groupId && candidate.id !== props.item.id
   )

@@ -724,33 +724,6 @@ const zhCNShowcase = {
         note: '有状态行为留在其所有者中；展示页把本地演示状态与运行时状态分开。',
       },
     },
-    placeholder: {
-      description: '该路由已接入，等待专属展示页。',
-      sources: '计划源码',
-      what: {
-        title: '这是什么',
-      },
-      why: {
-        title: '为什么重要',
-        description: '该路由属于公开展示目录的一部分。',
-      },
-      try: {
-        title: '可以尝试什么',
-      },
-      source: {
-        title: '源码位置',
-      },
-      demo: {
-        title: '预览外壳',
-        description: '专属演示尚未实现，但路由已经可加载。',
-        stateTitle: '兜底页已启用',
-        stateDescription: '该页面保留导航、目录元数据、相关链接与源码引用。',
-      },
-      catalog: {
-        title: '同组更多页面',
-        description: '使用目录卡片浏览相邻展示页面。',
-      },
-    },
     remaining: {
       tags: {
         value: '价值',
@@ -760,9 +733,6 @@ const zhCNShowcase = {
       demos: {
         'catalog-overview': {
           description: '浏览承载产品演示、设计系统、运行时与交付故事的核心能力路由。',
-        },
-        'catalog-components': {
-          description: '从一个分组入口扫视组件、表格、表单、图表与反馈路由，再进入聚焦演示。',
         },
         'catalog-single-group': {
           description: '查看当前能力组的相邻路由，并跳转到与你任务匹配的聚焦实现。',

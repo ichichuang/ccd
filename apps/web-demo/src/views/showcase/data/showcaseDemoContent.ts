@@ -3,7 +3,6 @@ import type { ShowcaseCatalogItem } from './types'
 
 export const remainingShowcaseImplementedIds = [
   'overview',
-  'components-root',
   'components-primevue-adapter',
   'components-empty-state',
   'components-icons',
@@ -43,7 +42,6 @@ export const remainingShowcaseImplementedIds = [
 export type RemainingShowcaseId = (typeof remainingShowcaseImplementedIds)[number]
 
 export type RemainingShowcaseDemoKind =
-  | 'catalog-components'
   | 'catalog-overview'
   | 'catalog-single-group'
   | 'component-c-scrollbar'
@@ -122,13 +120,6 @@ const REMAINING_SHOWCASE_CONTENT = {
     features: ['productEntry', 'catalogMap', 'plainCopy'],
     explanations: ['sourceTrace', 'deliveryDiscipline'],
     technical: ['adapterOwnership', 'noRawRuntime'],
-  },
-  'components-root': {
-    id: 'components-root',
-    demoKind: 'catalog-components',
-    features: ['componentAdapter', 'emptyStateReady', 'chartWrapper'],
-    explanations: ['iconLanguage', 'scrollRegion'],
-    technical: ['sourceTrace', 'plainCopy'],
   },
   'components-primevue-adapter': {
     id: 'components-primevue-adapter',

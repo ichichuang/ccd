@@ -25,8 +25,6 @@ interface ShowcaseRouteGroup {
 }
 
 const SHOWCASE_VIEW_SOURCE_PREFIX = 'apps/web-demo/src/views/showcase/'
-const SHOWCASE_PLACEHOLDER_SOURCE_PATH =
-  'apps/web-demo/src/views/showcase/shared/ShowcaseRoutePlaceholder.vue'
 const showcaseViewModules = import.meta.glob<unknown>('../**/*.vue')
 
 const SHOWCASE_SHARED_SOURCE_PATHS = [
@@ -287,7 +285,6 @@ const overviewItem: ShowcaseItemInput = {
   rank: 0,
   kind: 'overview',
   demoLevel: 'complete',
-  componentKey: '@/views/showcase/index.vue',
   sourcePath: 'apps/web-demo/src/views/showcase/index.vue',
   dashboardLink: true,
   tags: ['overview'],
@@ -305,7 +302,6 @@ const componentItems: ShowcaseItemInput[] = [
     rank: 11,
     kind: 'demo',
     demoLevel: 'complete',
-    componentKey: '@/views/showcase/components/primevue-adapter/index.vue',
     sourcePath: 'apps/web-demo/src/views/showcase/components/primevue-adapter/index.vue',
     dashboardLink: true,
     tags: ['components', 'primevue'],
@@ -321,7 +317,6 @@ const componentItems: ShowcaseItemInput[] = [
     rank: 12,
     kind: 'demo',
     demoLevel: 'preview',
-    componentKey: '@/views/showcase/components/empty-state/index.vue',
     sourcePath: 'apps/web-demo/src/views/showcase/components/empty-state/index.vue',
     tags: ['components', 'empty-state'],
   },
@@ -336,7 +331,6 @@ const componentItems: ShowcaseItemInput[] = [
     rank: 13,
     kind: 'demo',
     demoLevel: 'preview',
-    componentKey: '@/views/showcase/components/icons/index.vue',
     sourcePath: 'apps/web-demo/src/views/showcase/components/icons/index.vue',
     tags: ['components', 'icons'],
   },
@@ -351,7 +345,6 @@ const componentItems: ShowcaseItemInput[] = [
     rank: 14,
     kind: 'demo',
     demoLevel: 'preview',
-    componentKey: '@/views/showcase/components/c-scrollbar/index.vue',
     sourcePath: 'apps/web-demo/src/views/showcase/components/c-scrollbar/index.vue',
     tags: ['components', 'scroll'],
   },
@@ -389,7 +382,6 @@ const proTableCatalogItems = proTableItems.map(
     rank,
     kind: 'table',
     demoLevel,
-    componentKey: `@/views/showcase/components/pro-table/${slug}/index.vue`,
     sourcePath: `apps/web-demo/src/views/showcase/components/pro-table/${slug}/index.vue`,
     dashboardLink: slug === 'basic',
     tags: ['components', 'tables', 'pro-table'],
@@ -410,7 +402,6 @@ const proTreeTableCatalogItems = proTreeTableItems.map(
     rank,
     kind: 'table',
     demoLevel,
-    componentKey: `@/views/showcase/components/pro-tree-table/${slug}/index.vue`,
     sourcePath: `apps/web-demo/src/views/showcase/components/pro-tree-table/${slug}/index.vue`,
     tags: ['components', 'tables', 'pro-tree-table', 'experimental'],
   })
@@ -442,7 +433,6 @@ const proFormCatalogItems = proFormItems.map(([slug, nameSuffix, keySuffix, rank
   rank,
   kind: 'form',
   demoLevel,
-  componentKey: `@/views/showcase/components/pro-form/${slug}/index.vue`,
   sourcePath: `apps/web-demo/src/views/showcase/components/pro-form/${slug}/index.vue`,
   dashboardLink: slug === 'validation',
   tags: ['components', 'forms', 'pro-form'],
@@ -468,7 +458,6 @@ const chartCatalogItems = chartItems.map(([slug, nameSuffix, keySuffix, rank, de
   rank,
   kind: 'chart',
   demoLevel,
-  componentKey: `@/views/showcase/components/charts/${slug}/index.vue`,
   sourcePath: `apps/web-demo/src/views/showcase/components/charts/${slug}/index.vue`,
   dashboardLink: slug === 'theme',
   tags: ['components', 'charts'],
@@ -485,7 +474,6 @@ const standaloneItems: ShowcaseItemInput[] = [
     rank: 90,
     kind: 'demo',
     demoLevel: 'preview',
-    componentKey: '@/views/showcase/feedback/dialog-toast/index.vue',
     sourcePath: 'apps/web-demo/src/views/showcase/feedback/dialog-toast/index.vue',
     tags: ['feedback', 'dialog', 'toast'],
   },
@@ -732,7 +720,6 @@ const standaloneItems: ShowcaseItemInput[] = [
     rank,
     kind,
     demoLevel: id === 'design-tokens' || id === 'runtime-overview' ? 'complete' : 'preview',
-    componentKey: `@/views/showcase/${String(path).replace('/showcase/', '')}/index.vue`,
     sourcePath: `apps/web-demo/src/views/showcase/${String(path).replace('/showcase/', '')}/index.vue`,
     dashboardLink: ['design-tokens', 'runtime-overview', 'governance'].includes(String(id)),
     tags: [String(groupId)],
@@ -769,8 +756,7 @@ const showcaseCatalogInputs: ShowcaseItemInput[] = [
     rank: 10,
     kind: 'overview',
     demoLevel: 'preview',
-    componentKey: '@/views/showcase/components/index.vue',
-    sourcePath: 'apps/web-demo/src/views/showcase/components/index.vue',
+    sourcePath: 'apps/web-demo/src/views/showcase/data/showcaseCatalog.ts',
     tags: ['components'],
   },
   ...componentItems,
@@ -889,36 +875,21 @@ function toShowcaseViewModuleKey(sourcePath: string, id: string): string {
   return `../${sourcePath.slice(SHOWCASE_VIEW_SOURCE_PREFIX.length)}`
 }
 
-export function getShowcaseSourceModuleKey(item: ShowcaseCatalogItem): string {
+function getShowcaseSourceModuleKey(item: ShowcaseCatalogItem): string {
   const [sourcePath] = item.sourcePaths
   if (!sourcePath) throw new Error(`[ShowcaseCatalog] Missing source path for ${item.id}`)
   return toShowcaseViewModuleKey(sourcePath, item.id)
 }
 
-export function getShowcasePlaceholderModuleKey(): string {
-  return toShowcaseViewModuleKey(SHOWCASE_PLACEHOLDER_SOURCE_PATH, 'placeholder')
-}
-
-export function hasShowcaseViewModule(item: ShowcaseCatalogItem): boolean {
-  return getShowcaseSourceModuleKey(item) in showcaseViewModules
-}
-
 function createLazyComponent(item: ShowcaseCatalogItem): NonNullable<RouteConfig['component']> {
   const sourceModuleKey = getShowcaseSourceModuleKey(item)
-  const placeholderModuleKey = getShowcasePlaceholderModuleKey()
+  const loadModule: ShowcaseViewModuleLoader | undefined = showcaseViewModules[sourceModuleKey]
 
-  return async () => {
-    const loadModule: ShowcaseViewModuleLoader | undefined =
-      showcaseViewModules[sourceModuleKey] ?? showcaseViewModules[placeholderModuleKey]
-
-    if (!loadModule) {
-      throw new Error(
-        `[ShowcaseCatalog] Missing showcase view module: ${sourceModuleKey} and ${placeholderModuleKey}`
-      )
-    }
-
-    return loadModule()
+  if (!loadModule) {
+    throw new Error(`[ShowcaseCatalog] Missing showcase view module: ${sourceModuleKey}`)
   }
+
+  return async () => loadModule()
 }
 
 function createRouteMeta(item: ShowcaseCatalogItem): ShowcaseRouteMeta {

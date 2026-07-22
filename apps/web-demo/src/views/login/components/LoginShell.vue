@@ -30,7 +30,6 @@ onMounted(() => {
       const formFooterItems = Array.from(
         scope.querySelectorAll<HTMLElement>('.login-form-options, .login-submit-button')
       )
-      const quickAccounts = scope.querySelector<HTMLElement>('.auth-quick-accounts')
       const paletteOrbs = Array.from(scope.querySelectorAll<HTMLElement>('.auth-palette-orb'))
 
       if (!card) return
@@ -40,7 +39,6 @@ onMounted(() => {
       if (headerActions) gsap.set(headerActions, { autoAlpha: 0, y: 6 })
       if (formFields.length > 0) gsap.set(formFields, { autoAlpha: 0, y: 8 })
       if (formFooterItems.length > 0) gsap.set(formFooterItems, { autoAlpha: 0, y: 6 })
-      if (quickAccounts) gsap.set(quickAccounts, { autoAlpha: 0, y: 6 })
       if (paletteOrbs.length > 0) gsap.set(paletteOrbs, { autoAlpha: 0, y: 4 })
 
       const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
@@ -73,10 +71,6 @@ onMounted(() => {
           { autoAlpha: 1, y: 0, duration: 0.42, stagger: 0.05, ease: 'sine.out' },
           '-=0.06'
         )
-      }
-
-      if (quickAccounts) {
-        tl.to(quickAccounts, { autoAlpha: 1, y: 0, duration: 0.38, ease: 'sine.out' }, '-=0.04')
       }
 
       if (paletteOrbs.length > 0) {
