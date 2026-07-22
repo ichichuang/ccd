@@ -241,42 +241,22 @@ const checkRuntimeScript = relPath => {
 
 const checkDemoModeEnvDefaults = () => {
   const envFiles = ['.env', '.env.development', '.env.production']
-  const booleanKeys = ['VITE_DEMO_MOCK_ENABLED', 'VITE_PUBLIC_DEMO_ENABLED']
 
   envFiles.forEach(relPath => {
     const values = readEnvFile(relPath)
     if (!values) return
 
-    booleanKeys.forEach(key => {
-      const value = values.get(key)
-      if (value !== undefined && value !== 'true' && value !== 'false') {
-        fail(`${relPath} ${key} must be true or false`)
-      }
-    })
+    const value = values.get('VITE_DEMO_MOCK_ENABLED')
+    if (value === undefined) {
+      fail(`${relPath} missing VITE_DEMO_MOCK_ENABLED`)
+    } else if (value !== 'true' && value !== 'false') {
+      fail(`${relPath} VITE_DEMO_MOCK_ENABLED must be true or false`)
+    } else if (value !== 'false') {
+      fail(`${relPath} VITE_DEMO_MOCK_ENABLED committed default must be false`)
+    }
   })
 
-  const productionEnv = readEnvFile('.env.production')
-  if (!productionEnv) {
-    warn('.env.production missing; production demo/mock default could not be checked')
-    return
-  }
-
-  const publicDemoEnabled = productionEnv.get('VITE_PUBLIC_DEMO_ENABLED') === 'true'
-  const legacyDemoMockEnabled = productionEnv.get('VITE_DEMO_MOCK_ENABLED') === 'true'
-
-  if (legacyDemoMockEnabled && !publicDemoEnabled) {
-    fail(
-      '.env.production enables VITE_DEMO_MOCK_ENABLED without VITE_PUBLIC_DEMO_ENABLED=true'
-    )
-    return
-  }
-
-  if (publicDemoEnabled) {
-    warn('.env.production explicitly enables public demo mode')
-    return
-  }
-
-  ok('production demo/mock defaults require explicit public demo opt-in')
+  ok('demo mock defaults are false; runtime opt-in requires exact true')
 }
 
 const collectViteEnvProfileIssues = ({ name, files, expectedAppEnv }) => {

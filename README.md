@@ -63,5 +63,6 @@ The committed `.env`, `.env.development`, and `.env.production` files define non
 - `VITE_PUBLIC_STORAGE_OBFUSCATION_KEY`: client-visible storage obfuscation material
 - `VITE_COMPRESSION`, `VITE_BUILD_SOURCEMAP`: production build behavior
 - `VITE_DROP_DEBUGGER`, `VITE_DROP_CONSOLE`: production debug stripping
-- `VITE_AUTH_ENABLED`, `VITE_PUBLIC_DEMO_ENABLED`, `VITE_DEMO_MOCK_ENABLED`: optional application modes
+- `VITE_AUTH_ENABLED`: independent authentication feature gate
+- `VITE_DEMO_MOCK_ENABLED`: explicit authentication and dynamic-route demo boundary; enabled only when exactly `true`, with committed development and production defaults set to `false`
 - `VITE_SYNC_WS_URL`: optional synchronization endpoint

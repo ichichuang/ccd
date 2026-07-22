@@ -145,7 +145,7 @@ When a route path is moved or grouped under a new canonical parent, old paths ma
 
 - Legacy paths MUST redirect to the canonical route path.
 - Legacy compatibility routes MUST set `meta.showLink = false` so they do not create menu/sidebar entries.
-- Dynamic route mock data and backend route fixtures MUST be updated when static route paths move.
+- Isolated dynamic-route demonstration data under `apps/web-demo/src/demo/mock/**` and backend route fixtures MUST be updated when static route paths move.
 - If a legacy dynamic route is retained, it SHOULD define an explicit stable `name` to avoid collisions with the canonical route.
 
 **FORBIDDEN:**

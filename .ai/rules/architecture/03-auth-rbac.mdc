@@ -77,13 +77,13 @@ const { hasAuth } = useAuth()
 - **元素级 / 按钮级：** 以本文件为准（`v-auth`、`v-auth.disable`、`hasAuth`）。
 - **路由注册、后端菜单、`meta.auths`：** 以 [`integrations/02-router-rbac.mdc`](../integrations/02-router-rbac.mdc) 为准。
 
-## 5. 示例工程权限码约定（与 mock 对齐）
+## 5. 显式演示边界权限码约定
 
-演示页与 `requestAuthLoginMock` 使用同一套三段式字符串，仅 `module` 前缀区分场景，避免与真实业务权限混淆：
+仅当 `VITE_DEMO_MOCK_ENABLED` 严格等于 `true` 时，`apps/web-demo/src/demo/mock/**` 提供认证、角色、权限和动态路由演示数据。开发与生产默认均使用真实 API。演示权限使用三段式字符串，并通过 `module` 前缀与真实业务权限区分：
 
 | 前缀 | 用途 |
 |------|------|
-| `example:architecture:*` | 指令页、Hook 演示、mock `user` 账号默认权限 |
+| `example:architecture:*` | 指令页、Hook 演示、演示 `user` 账号默认权限 |
 | `example:enterprise:*` | Enterprise CRUD（角色表）工具栏与行内编辑 |
 | `example:advanced:*` | ProTable Advanced 示例列操作 |
 

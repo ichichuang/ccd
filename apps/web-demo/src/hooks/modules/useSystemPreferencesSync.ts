@@ -3,7 +3,6 @@ import {
   buildSystemPreferencesSaveMethod,
   type SystemPreferencesSaveReq,
 } from '@/api/system/preferences.api'
-import { DEMO_MOCK_ENABLED } from '@/constants/mock'
 import { useHttpRequest } from '@/hooks/modules/useHttpRequest'
 import { useUserStore } from '@/stores/modules/session'
 import {
@@ -43,7 +42,7 @@ export function useSystemPreferencesSync(): UseSystemPreferencesSyncReturn {
   )
 
   const loadUserPreferences = async (): Promise<SystemPreferences | null> => {
-    if (!userStore.getToken || DEMO_MOCK_ENABLED) {
+    if (!userStore.getToken) {
       return readLocalSystemPreferences()
     }
 
@@ -66,7 +65,7 @@ export function useSystemPreferencesSync(): UseSystemPreferencesSyncReturn {
   const saveUserPreferences = async (
     preferences = readSystemPreferencesFromStores()
   ): Promise<SystemPreferences | null> => {
-    if (!userStore.getToken || DEMO_MOCK_ENABLED) {
+    if (!userStore.getToken) {
       return preferences
     }
 

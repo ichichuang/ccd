@@ -1,6 +1,6 @@
 import { appLogger } from '@/adapters/logger.adapter'
 import { HTTP_CONFIG } from '@/constants/http'
-import { DEMO_MOCK_ENABLED } from '@/constants/mock'
+import { DEMO_MOCK_ENABLED } from '@/demo/mock'
 import { t } from '@/locales'
 import { DateUtils } from '@/utils/date'
 import type { ConnectionConfig, ConnectionState } from './types'
@@ -22,9 +22,8 @@ export class ConnectionManager {
       autoReconnect: true,
       maxReconnectAttempts: HTTP_CONFIG.maxReconnectAttempts,
       reconnectDelay: HTTP_CONFIG.reconnectDelay,
-      // HEALTH-01: 仅在存在真实后端时轮询健康检查。mock/demo 模式（开发态始终为
-      // mock，功能请求均由 mock 数据短路）下没有后端可探测，关闭轮询以消除对缺失
-      // 后端的 /api/health 反复 502/ECONNREFUSED 噪音；生产对接后端时照常轮询。
+      // 显式 demo mock 仅用于独立验证认证和动态路由；该模式可在没有后端时运行，
+      // 因此关闭健康检查。开发与生产默认都保持真实后端健康检查。
       healthCheckEnabled: !DEMO_MOCK_ENABLED,
       healthCheckInterval: HTTP_CONFIG.healthCheckInterval,
       healthCheckUrl: HTTP_CONFIG.healthCheckUrl,
@@ -180,8 +179,7 @@ export class ConnectionManager {
    */
   private async performHealthCheck(): Promise<boolean> {
     if (!this.config.healthCheckEnabled || !this.config.healthCheckUrl) {
-      // 未启用健康检查（无真实后端）或未配置 URL：不发起网络探测，
-      // 使用浏览器在线状态作为判断依据，避免对缺失后端的无谓请求。
+      // 显式 demo mock 或未配置 URL 时不发起网络探测，使用浏览器在线状态判断。
       return navigator.onLine
     }
 

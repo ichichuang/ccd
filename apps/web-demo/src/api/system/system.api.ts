@@ -6,17 +6,13 @@
 
 import { get } from '@/utils/http/methods'
 import {
-  systemAsyncRouteItemSchema,
   systemAsyncRoutesRawSchema,
   type SystemAsyncRouteItem,
   type SystemAsyncRoutesRawRes,
 } from '@/types/dto/system.dto'
-import { parseZodHttpPayload } from '@/adapters/http.adapter'
 import { appLogger } from '@/adapters/logger.adapter'
-import { DEMO_MOCK_ENABLED } from '@/constants/mock'
-
-/** 动态路由 API 路径（对接后端时使用） */
-const SYSTEM_ASYNC_ROUTES_URL = '/system/menu/routes'
+import { API_ENDPOINTS } from '@/constants/http'
+import { DEMO_MOCK_ENABLED, requestDemoSystemAsyncRoutes } from '@/demo/mock'
 
 /** 路由校验错误码 */
 export const SYSTEM_ERROR_CODES = {
@@ -52,24 +48,13 @@ function extractRoutes(raw: SystemAsyncRoutesRawRes): SystemAsyncRouteItem[] {
 
 /**
  * 获取动态路由 API
- * 当前为 mock 实现；对接后端时改为 requestSystemAsyncRoutesReal。
+ * 显式演示模式使用隔离边界；默认请求真实后端。
  */
 export const requestSystemAsyncRoutes = async (): Promise<SystemAsyncRouteItem[]> => {
-  return requestSystemAsyncRoutesMock()
-}
-
-/**
- * 模拟「获取动态路由」
- * 返回兼容路由，表示当前主要使用静态路由；对接后端时切换为 requestSystemAsyncRoutesReal
- */
-export const requestSystemAsyncRoutesMock = async (): Promise<SystemAsyncRouteItem[]> => {
-  if (!DEMO_MOCK_ENABLED) {
-    throw new SystemApiError(SYSTEM_ERROR_CODES.invalidResponse, 'Mock routes are disabled')
+  if (DEMO_MOCK_ENABLED) {
+    return requestDemoSystemAsyncRoutes()
   }
-
-  await new Promise(resolve => setTimeout(resolve, 100))
-  const routes: SystemAsyncRouteItem[] = []
-  return parseZodHttpPayload(systemAsyncRouteItemSchema.array(), routes)
+  return requestSystemAsyncRoutesReal()
 }
 
 /**
@@ -107,7 +92,7 @@ function validateRouteItems(routes: SystemAsyncRouteItem[]): SystemAsyncRouteIte
  * 增强：基础字段校验，过滤无效路由项
  */
 export const requestSystemAsyncRoutesReal = async (): Promise<SystemAsyncRouteItem[]> => {
-  const raw = await get<SystemAsyncRoutesRawRes>(SYSTEM_ASYNC_ROUTES_URL, {
+  const raw = await get<SystemAsyncRoutesRawRes>(API_ENDPOINTS.system.asyncRoutes, {
     enableCache: false,
     cacheFor: { mode: 'memory', expire: 300000 },
     responseSchema: systemAsyncRoutesRawSchema,

@@ -1,6 +1,6 @@
 import { useUserStore, useUserStoreWithOut } from '@/stores/modules/session'
 import { AUTH_ENABLED } from '@/constants/router'
-import { AUTH_ERROR_CODES, requestAuthLogin, requestAuthCurrentUser } from '@/api/auth/auth.api'
+import { requestAuthLogin, requestAuthCurrentUser } from '@/api/auth/auth.api'
 import type { LoginParams, LoginResult, UserInfo } from '@/types/dto/auth.dto'
 import { useSystemPreferencesSync } from '@/hooks/modules/useSystemPreferencesSync'
 import {
@@ -44,35 +44,12 @@ export interface UseAuthReturn {
   restoreLoginFromToken: () => Promise<UserInfo | null>
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return value !== null && typeof value === 'object'
-}
-
-function readErrorCode(error: unknown): string | undefined {
-  if (!isRecord(error)) return undefined
-  return typeof error.code === 'string' ? error.code : undefined
-}
-
-function isExplicitAuthFailure(error: unknown): boolean {
-  const code = readErrorCode(error)
-  return (
-    code === AUTH_ERROR_CODES.tokenMissing ||
-    code === AUTH_ERROR_CODES.tokenInvalid ||
-    code === AUTH_ERROR_CODES.invalidCredentials ||
-    code === AUTH_ERROR_CODES.unknownUser
-  )
-}
-
 function classifyAuthRestoreError(error: unknown): AuthRestoreFailureKind {
   if (isHttpRequestError(error)) {
     if (error.status === 403) return 'permission'
     if (error.status === 401) return 'terminal-auth'
     if (isRetryableError(error)) return 'transient'
     return 'non-retryable'
-  }
-
-  if (isExplicitAuthFailure(error)) {
-    return 'terminal-auth'
   }
 
   return 'non-retryable'

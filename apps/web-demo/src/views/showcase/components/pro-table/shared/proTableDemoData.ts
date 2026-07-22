@@ -8,8 +8,6 @@ import type {
 import { isRecord } from '@ccd/shared-utils'
 
 type Translate = (key: string) => string
-const scheduleDemoRequestDelay = globalThis.setTimeout.bind(globalThis)
-const cancelDemoRequestDelay = globalThis.clearTimeout.bind(globalThis)
 
 export type ProTableDemoOwner = 'adapter' | 'catalog' | 'core' | 'vueUi' | 'webDemo'
 export type ProTableDemoPriority = 'critical' | 'high' | 'medium' | 'low'
@@ -310,41 +308,15 @@ function toAbortError(): DOMException {
   return new DOMException('The ProTable demo request was aborted.', 'AbortError')
 }
 
-function waitForDemoRequest(signal?: AbortSignal): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if (signal?.aborted) {
-      reject(toAbortError())
-      return
-    }
-
-    let timeoutId: ReturnType<typeof scheduleDemoRequestDelay> | undefined
-
-    function cleanup(): void {
-      if (timeoutId !== undefined) {
-        cancelDemoRequestDelay(timeoutId)
-        timeoutId = undefined
-      }
-      signal?.removeEventListener('abort', abortHandler)
-    }
-
-    function abortHandler(): void {
-      cleanup()
-      reject(toAbortError())
-    }
-
-    signal?.addEventListener('abort', abortHandler, { once: true })
-    timeoutId = scheduleDemoRequestDelay(() => {
-      cleanup()
-      resolve()
-    }, 140)
-  })
+function throwIfDemoRequestAborted(signal?: AbortSignal): void {
+  if (signal?.aborted) throw toAbortError()
 }
 
 export function createProTableDemoRequest(
   rows: readonly ProTableDemoRow[]
 ): RequestFn<ProTableDemoRow> {
   return async params => {
-    await waitForDemoRequest(params.signal)
+    throwIfDemoRequestAborted(params.signal)
 
     const filteredRows = applyGlobalFilter(rows, params.filter.global)
     const sortedRows = applyServerSort(filteredRows, params)
@@ -394,7 +366,7 @@ function createLoadParamsFromApiContext(ctx: ProTableApiExecutorContext): ProTab
 export function createProTableApiExecutor(rows: readonly ProTableDemoRow[]): ProTableApiExecutor {
   return async ctx => {
     const params = createLoadParamsFromApiContext(ctx)
-    await waitForDemoRequest(params.signal)
+    throwIfDemoRequestAborted(params.signal)
 
     const filteredRows = applyGlobalFilter(rows, params.filter.global)
     const sortedRows = applyServerSort(filteredRows, params)

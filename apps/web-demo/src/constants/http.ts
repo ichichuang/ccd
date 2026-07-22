@@ -9,6 +9,16 @@ export const HTTP_BASE_URL_POLICY = {
   developmentProxyPath: '/api',
 } satisfies HttpBaseUrlPolicy
 
+export const API_ENDPOINTS = {
+  auth: {
+    login: '/auth/login',
+    currentUser: '/auth/userInfo',
+  },
+  system: {
+    asyncRoutes: '/system/menu/routes',
+  },
+} as const
+
 export const HTTP_CONFIG = {
   // 基础配置
   timeout,

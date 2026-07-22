@@ -94,7 +94,6 @@ declare interface ImportMetaEnv {
   readonly VITE_LEGACY: 'true' | 'false'
   readonly VITE_CDN: 'true' | 'false'
   readonly VITE_AUTH_ENABLED?: 'true' | 'false'
-  readonly VITE_PUBLIC_DEMO_ENABLED?: 'true' | 'false'
   readonly VITE_DEMO_MOCK_ENABLED?: 'true' | 'false'
   readonly VITE_SYNC_WS_URL?: string
 

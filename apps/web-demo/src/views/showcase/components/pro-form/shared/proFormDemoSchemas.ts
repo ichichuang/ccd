@@ -60,7 +60,6 @@ const REGION_ASSIGNEE_OPTIONS: Record<ProFormDemoRegion, readonly string[]> = {
 }
 
 const DEFAULT_MILESTONES = ['Intake review', 'Customer preview', 'Launch handoff'] as const
-const scheduleProFormOptionDelay = globalThis.setTimeout.bind(globalThis)
 
 function requiredString(value: unknown): boolean {
   return typeof value === 'string' && value.trim().length > 0
@@ -68,12 +67,6 @@ function requiredString(value: unknown): boolean {
 
 function minimumStringLength(value: unknown, minLength: number): boolean {
   return typeof value === 'string' && value.trim().length >= minLength
-}
-
-function waitForLocalOptions(ms: number): Promise<void> {
-  return new Promise(resolve => {
-    scheduleProFormOptionDelay(resolve, ms)
-  })
 }
 
 function validationIssuesToErrors(issues: readonly ValidationIssue[]): Record<string, string[]> {
@@ -351,10 +344,11 @@ function asyncFields(t: ProFormDemoTranslate): FormSchema<ProFormDemoValues>['fi
       defaultValue: 'Maya Chen',
       deps: ['region'],
       span: 6,
-      options: async ({ form }) => {
-        await waitForLocalOptions(180)
+      options: ({ form }) => {
         const region = form.region === 'emea' || form.region === 'apac' ? form.region : 'americas'
-        return REGION_ASSIGNEE_OPTIONS[region].map(name => ({ label: name, value: name }))
+        return Promise.resolve(
+          REGION_ASSIGNEE_OPTIONS[region].map(name => ({ label: name, value: name }))
+        )
       },
     },
   ]

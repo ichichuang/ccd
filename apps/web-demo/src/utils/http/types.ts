@@ -120,8 +120,8 @@ export interface ConnectionConfig {
   maxReconnectAttempts: number
   reconnectDelay: number
   /**
-   * 是否启用后端健康检查轮询。无真实后端时（mock/demo 模式）应为 false，
-   * 避免对缺失后端反复探测 /api/health 产生 502/ECONNREFUSED 噪音。
+   * 是否启用后端健康检查轮询。仅显式 demo mock 边界可关闭该检查，
+   * 开发与生产默认都应探测真实后端。
    */
   healthCheckEnabled: boolean
   healthCheckUrl?: string
