@@ -33,17 +33,46 @@
         "scope": []
       },
       "csp": {
-        "default-src": ["'self'", "ipc:", "http://ipc.localhost"],
-        "base-uri": ["'none'"],
-        "connect-src": ["'self'", "ipc:", "http://ipc.localhost"],
-        "font-src": ["'self'", "data:"],
-        "form-action": ["'none'"],
-        "frame-ancestors": ["'none'"],
-        "frame-src": ["'none'"],
-        "img-src": ["'self'", "data:", "blob:"],
-        "object-src": ["'none'"],
-        "script-src": ["'self'"],
-        "style-src": ["'self'"]
+        "default-src": [
+          "'self'",
+          "ipc:",
+          "http://ipc.localhost"
+        ],
+        "base-uri": [
+          "'none'"
+        ],
+        "connect-src": [
+          "'self'",
+          "ipc:",
+          "http://ipc.localhost"
+        ],
+        "font-src": [
+          "'self'",
+          "data:"
+        ],
+        "form-action": [
+          "'none'"
+        ],
+        "frame-ancestors": [
+          "'none'"
+        ],
+        "frame-src": [
+          "'none'"
+        ],
+        "img-src": [
+          "'self'",
+          "data:",
+          "blob:"
+        ],
+        "object-src": [
+          "'none'"
+        ],
+        "script-src": [
+          "'self'"
+        ],
+        "style-src": [
+          "'self'"
+        ]
       }
     }
   },
@@ -58,9 +87,9 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "longDescription": "Self-protecting deterministic multi-runtime platform architecture.",
+    "longDescription": "Reusable Vue and Tauri application platform.",
     "publisher": "Chi Chuang",
-    "shortDescription": "CCD deterministic multi-runtime platform.",
+    "shortDescription": "Reusable Vue and Tauri application platform.",
     "targets": "all"
   }
 }

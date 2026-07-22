@@ -4,17 +4,17 @@
  */
 export const brand = {
   /** Package, URL, browser-title, and og:title identifier. */
-  name: 'ccd',
+  name: "ccd",
   /** Header display title. */
-  displayName: 'CCD',
+  displayName: "CCD",
   /** Header display subtitle. */
   subtitle: 'Platform',
-  /** package.json description and meta description. */
-  description: 'Self-protecting deterministic multi-runtime platform architecture.',
-  /** og:description slogan. */
-  slogan: 'Self-protecting deterministic multi-runtime platform architecture',
+  /** Product and meta description. */
+  description: "Reusable Vue and Tauri application platform.",
+  /** Product positioning used for og:description. */
+  slogan: "Reusable Vue and Tauri application platform.",
   /** og:author and meta author. */
-  author: 'Chi Chuang',
+  author: "Chi Chuang",
 } as const
 
 export type Brand = typeof brand

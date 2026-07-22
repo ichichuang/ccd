@@ -4,17 +4,22 @@
     "packageName": "ccd",
     "displayName": "CCD",
     "desktopProductName": "CCD Desktop",
-    "description": "Self-protecting deterministic multi-runtime platform architecture.",
+    "description": "Reusable Vue and Tauri application platform.",
     "author": "Chi Chuang",
     "homepage": "https://www.ccd.wzdxcc.cloudns.org/",
     "license": "GPL-3.0",
     "identifier": "com.ccd.desktop",
-    "keywords": ["vue3", "typescript", "vite", "tauri", "monorepo", "governance", "architecture"]
+    "keywords": [
+      "vue3",
+      "typescript",
+      "vite",
+      "tauri",
+      "monorepo",
+      "application-platform",
+      "design-system"
+    ]
   },
   "release": {
     "version": "1.0.38"
-  },
-  "governance": {
-    "policyVersion": "2026.05.18"
   }
 }

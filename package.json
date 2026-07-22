@@ -11,7 +11,7 @@
     "virtual:*"
   ],
   "author": "Chi Chuang",
-  "description": "Self-protecting deterministic multi-runtime platform architecture.",
+  "description": "Reusable Vue and Tauri application platform.",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/ichichuang/ccd.git"
@@ -25,8 +25,8 @@
     "vite",
     "tauri",
     "monorepo",
-    "governance",
-    "architecture"
+    "application-platform",
+    "design-system"
   ],
   "engines": {
     "node": "24.x",

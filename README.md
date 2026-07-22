@@ -2,7 +2,7 @@
 
 ## Purpose
 
-CCD is a deterministic multi-runtime application platform that shares contracts and runtime-neutral core logic across web and Tauri desktop applications.
+CCD is a reusable Vue and Tauri application platform that shares contracts and runtime-neutral core logic across web and desktop applications.
 
 ## Stack
 

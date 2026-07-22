@@ -1,7 +1,7 @@
 [package]
 name = "ccd-desktop"
 version = "1.0.38"
-description = "Self-protecting deterministic multi-runtime platform architecture."
+description = "Reusable Vue and Tauri application platform."
 authors = ["Chi Chuang"]
 edition = "2021"
 build = "build.rs"

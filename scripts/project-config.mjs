@@ -15,7 +15,6 @@ const WEB_INDEX_PATH = join(ROOT, 'apps/web-demo/index.html')
 const DESKTOP_INDEX_PATH = join(ROOT, 'apps/desktop/index.html')
 const TAURI_CONF_PATH = join(ROOT, 'apps/desktop/src-tauri/tauri.conf.json')
 const CARGO_TOML_PATH = join(ROOT, 'apps/desktop/src-tauri/Cargo.toml')
-const GOVERNANCE_VERSION_PATH = join(ROOT, '.ai/governance/policies/version.json')
 
 const REQUIRED_FIELDS = [
   'schemaVersion',
@@ -27,7 +26,6 @@ const REQUIRED_FIELDS = [
   'product.identifier',
   'product.keywords',
   'release.version',
-  'governance.policyVersion',
 ]
 
 const COMMANDS = new Set(['print', 'validate', 'sync', 'doctor'])
@@ -65,9 +63,6 @@ function normalizeConfig(config) {
     release: {
       version: config.release.version,
     },
-    governance: {
-      policyVersion: config.governance.policyVersion,
-    },
   }
 }
 
@@ -92,7 +87,6 @@ function validateConfig(config) {
 
   const product = config.product ?? {}
   const release = config.release ?? {}
-  const governance = config.governance ?? {}
 
   for (const field of [
     'displayName',
@@ -136,12 +130,6 @@ function validateConfig(config) {
 
   if (release.version !== undefined && !SEMVER_RE.test(release.version)) {
     errors.push('release.version must be strict semver')
-  }
-
-  for (const field of ['policyVersion']) {
-    if (governance[field] !== undefined && typeof governance[field] !== 'string') {
-      errors.push(`governance.${field} must be a string`)
-    }
   }
 
   if (errors.length > 0) {
@@ -199,7 +187,7 @@ function syncWorkspacePackages(config) {
 }
 
 function syncBrand(config) {
-  const brand = `/**\n * Project brand metadata.\n * Source of truth: project.config.json. Run pnpm project:sync after edits.\n */\nexport const brand = {\n  /** Package, URL, browser-title, and og:title identifier. */\n  name: ${JSON.stringify(config.product.packageName)},\n  /** Header display title. */\n  displayName: ${JSON.stringify(config.product.displayName)},\n  /** Header display subtitle. */\n  subtitle: 'Platform',\n  /** package.json description and meta description. */\n  description: ${JSON.stringify(config.product.description)},\n  /** og:description slogan. */\n  slogan: 'Self-protecting deterministic multi-runtime platform architecture',\n  /** og:author and meta author. */\n  author: ${JSON.stringify(config.product.author)},\n} as const\n\nexport type Brand = typeof brand\n`
+  const brand = `/**\n * Project brand metadata.\n * Source of truth: project.config.json. Run pnpm project:sync after edits.\n */\nexport const brand = {\n  /** Package, URL, browser-title, and og:title identifier. */\n  name: ${JSON.stringify(config.product.packageName)},\n  /** Header display title. */\n  displayName: ${JSON.stringify(config.product.displayName)},\n  /** Header display subtitle. */\n  subtitle: 'Platform',\n  /** Product and meta description. */\n  description: ${JSON.stringify(config.product.description)},\n  /** Product positioning used for og:description. */\n  slogan: ${JSON.stringify(config.product.description)},\n  /** og:author and meta author. */\n  author: ${JSON.stringify(config.product.author)},\n} as const\n\nexport type Brand = typeof brand\n`
   writeFileSync(BRAND_PATH, brand, 'utf-8')
 }
 
@@ -212,6 +200,9 @@ function syncTauriConfig(config) {
   if (json.app?.windows?.[0]) {
     json.app.windows[0].title = config.product.desktopProductName
   }
+  json.bundle ??= {}
+  json.bundle.longDescription = config.product.description
+  json.bundle.shortDescription = config.product.description
   writeJson(TAURI_CONF_PATH, json)
 }
 
@@ -232,20 +223,12 @@ function syncCargoToml(config) {
   writeFileSync(CARGO_TOML_PATH, raw, 'utf-8')
 }
 
-function syncGovernanceVersion(config) {
-  const json = readJson(GOVERNANCE_VERSION_PATH)
-  json.policyVersion = config.governance.policyVersion
-  delete json.governancePhase
-  writeJson(GOVERNANCE_VERSION_PATH, json)
-}
-
 function sync(config) {
   syncRootPackage(config)
   syncWorkspacePackages(config)
   syncBrand(config)
   syncTauriConfig(config)
   syncCargoToml(config)
-  syncGovernanceVersion(config)
 }
 
 function row(file, field, expected, actual) {
@@ -328,7 +311,7 @@ function doctorRows(config) {
     row(
       'apps/web-demo/src/constants/brand.ts',
       'slogan',
-      'Self-protecting deterministic multi-runtime platform architecture',
+      config.product.description,
       readBrandValue('slogan')
     )
   )
@@ -439,6 +422,22 @@ function doctorRows(config) {
         tauri.app?.windows?.[0]?.title
       )
     )
+    rows.push(
+      row(
+        'apps/desktop/src-tauri/tauri.conf.json',
+        'bundle.longDescription',
+        config.product.description,
+        tauri.bundle?.longDescription
+      )
+    )
+    rows.push(
+      row(
+        'apps/desktop/src-tauri/tauri.conf.json',
+        'bundle.shortDescription',
+        config.product.description,
+        tauri.bundle?.shortDescription
+      )
+    )
   }
 
   if (existsSync(CARGO_TOML_PATH)) {
@@ -469,15 +468,6 @@ function doctorRows(config) {
     )
   }
 
-  const governanceVersion = readJson(GOVERNANCE_VERSION_PATH)
-  rows.push(
-    row(
-      '.ai/governance/policies/version.json',
-      'policyVersion',
-      config.governance.policyVersion,
-      governanceVersion.policyVersion
-    )
-  )
   return rows
 }
 

@@ -65,8 +65,5 @@ jobs:
             librsvg2-dev \
             patchelf
 
-      - name: Authorize GitHub CLI
-        run: echo "${{ github.token }}" | gh auth login --with-token
-
       - name: Core validation parity
         run: bash scripts/exec.sh pnpm build:ci
