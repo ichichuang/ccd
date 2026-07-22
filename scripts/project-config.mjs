@@ -15,7 +15,6 @@ const WEB_INDEX_PATH = join(ROOT, 'apps/web-demo/index.html')
 const DESKTOP_INDEX_PATH = join(ROOT, 'apps/desktop/index.html')
 const TAURI_CONF_PATH = join(ROOT, 'apps/desktop/src-tauri/tauri.conf.json')
 const CARGO_TOML_PATH = join(ROOT, 'apps/desktop/src-tauri/Cargo.toml')
-const RELEASE_MANIFEST_PATH = join(ROOT, '.release-please-manifest.json')
 const GOVERNANCE_VERSION_PATH = join(ROOT, '.ai/governance/policies/version.json')
 
 const REQUIRED_FIELDS = [
@@ -233,13 +232,6 @@ function syncCargoToml(config) {
   writeFileSync(CARGO_TOML_PATH, raw, 'utf-8')
 }
 
-function syncReleaseManifest(config) {
-  if (!existsSync(RELEASE_MANIFEST_PATH)) return
-  const json = readJson(RELEASE_MANIFEST_PATH)
-  json['.'] = config.release.version
-  writeJson(RELEASE_MANIFEST_PATH, json)
-}
-
 function syncGovernanceVersion(config) {
   const json = readJson(GOVERNANCE_VERSION_PATH)
   json.policyVersion = config.governance.policyVersion
@@ -253,7 +245,6 @@ function sync(config) {
   syncBrand(config)
   syncTauriConfig(config)
   syncCargoToml(config)
-  syncReleaseManifest(config)
   syncGovernanceVersion(config)
 }
 
@@ -475,13 +466,6 @@ function doctorRows(config) {
         JSON.stringify([config.product.author]),
         JSON.stringify(cargo.match(/^authors\s*=\s*\["([^"]*)"\]/m)?.slice(1) ?? [])
       )
-    )
-  }
-
-  if (existsSync(RELEASE_MANIFEST_PATH)) {
-    const releaseManifest = readJson(RELEASE_MANIFEST_PATH)
-    rows.push(
-      row('.release-please-manifest.json', '.', config.release.version, releaseManifest['.'])
     )
   }
 

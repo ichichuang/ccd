@@ -23,5 +23,8 @@
     "build": "node ../../scripts/clean-artifacts.mjs paths ../../node_modules/.tmp/packages-design-tokens.tsbuildinfo && tsc -p tsconfig.json",
     "type-check": "tsc -p tsconfig.json --noEmit",
     "typecheck": "pnpm type-check"
+  },
+  "dependencies": {
+    "zod": "catalog:"
   }
 }

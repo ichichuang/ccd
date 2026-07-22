@@ -19,5 +19,8 @@
   "dependencies": {
     "lodash-es": "catalog:",
     "uuid": "catalog:"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "catalog:"
   }
 }

@@ -25,6 +25,7 @@
     "vue-i18n": "catalog:"
   },
   "devDependencies": {
+    "@vitejs/plugin-vue": "catalog:",
     "@vue/tsconfig": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",

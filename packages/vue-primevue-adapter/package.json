@@ -20,6 +20,8 @@
     "@ccd/design-tokens": "workspace:*",
     "@primeuix/themes": "catalog:",
     "@primevue/core": "catalog:",
-    "primevue": "catalog:"
+    "@primevue/icons": "catalog:",
+    "primevue": "catalog:",
+    "vue": "catalog:"
   }
 }

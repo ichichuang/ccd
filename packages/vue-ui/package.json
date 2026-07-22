@@ -26,6 +26,7 @@
     "@ccd/design-tokens": "workspace:*",
     "@ccd/shared-utils": "workspace:*",
     "@ccd/vue-hooks": "workspace:*",
+    "@primevue/core": "catalog:",
     "@tanstack/match-sorter-utils": "catalog:",
     "@tanstack/vue-virtual": "catalog:",
     "@vueuse/core": "catalog:",
@@ -36,6 +37,7 @@
     "vue-i18n": "catalog:"
   },
   "devDependencies": {
+    "@vitejs/plugin-vue": "catalog:",
     "@vitejs/plugin-vue-jsx": "catalog:",
     "@vue/tsconfig": "catalog:",
     "typescript": "catalog:",

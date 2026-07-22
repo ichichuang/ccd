@@ -16,4 +16,3 @@
 # CI and release governance
 /.github/workflows/ @platform-architecture
 /.github/CODEOWNERS @platform-architecture
-/.changeset/ @platform-architecture
