@@ -1,3 +1,3 @@
 # AI Client Adapters
 
-These files map the shared repository protocol to Codex and Claude. They do not override `.ai/protocol/AGENTS.core.md`.
+These files map the shared repository protocol to Codex and Claude. They do not override `.ai/protocol/AGENTS.core.md`. For UI-related work, load `.ai/skills/project-ui/SKILL.md` before proceeding.

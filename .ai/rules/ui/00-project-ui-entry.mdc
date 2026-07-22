@@ -1,0 +1,23 @@
+---
+description: Canonical entry rule for CCD UI-related work.
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Project UI Entry
+
+## UI scope detection
+
+This rule applies before any UI implementation, modification, refactor, review, route or page creation, visual, layout, component, theme, responsive, accessibility, interaction, chart presentation, styling, or motion work.
+
+## Mandatory canonical loading
+
+Before UI-scoped work, load `.ai/skills/project-ui/SKILL.md`.
+
+## Precedence
+
+Repository architecture and safety rules remain mandatory. Within UI scope, `.ai/skills/project-ui/SKILL.md` is the highest UI-specific authority; framework and platform skills are supplemental only.
+
+## Non-duplication
+
+Do not duplicate detailed UI standards outside `.ai/skills/project-ui/SKILL.md` and `.ai/skills/project-ui/references/**`.

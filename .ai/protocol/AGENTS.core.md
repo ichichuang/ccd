@@ -26,11 +26,16 @@ Load these rules in order when relevant:
 3. `.ai/rules/core/01-global-preflight.mdc`
 4. `.ai/rules/core/10-ai-generation-workflow.mdc` for new routes, pages, or hooks
 5. Matching domain rules under `.ai/rules/**`
+6. `.ai/rules/ui/00-project-ui-entry.mdc` for UI-scoped work
 
 ## Skills and validation
 
-- Generic UI work routes to `project-ui`.
-- Explicit Vue, UnoCSS, Vite, desktop, or GitHub work routes to the matching skill.
+- Repository architecture and safety rules remain mandatory for every task.
+- Before any UI implementation, modification, refactor, review, route or page creation, visual, layout, component, theme, responsive, accessibility, interaction, chart presentation, styling, or motion work, load `.ai/skills/project-ui/SKILL.md`.
+- `.ai/skills/project-ui/SKILL.md` is the highest UI-specific authority. Framework and platform skills, including Vue, UnoCSS, Vite, and desktop skills, are supplemental only and do not override it.
+- Detailed UI guidance belongs only in `.ai/skills/project-ui/SKILL.md` and `.ai/skills/project-ui/references/**`; no other file may claim to be the UI source of truth.
+- Generated adapters and synchronized client copies are non-authoritative pointers to this protocol and UI authority.
+- Explicit GitHub work routes to the matching skill.
 - Use `node .ai/skills/codex/task-orchestrator/scripts/skill_router.mjs "<task>" --json` for deterministic routing.
 - Use `python3 .ai/skills/codex/task-orchestrator/scripts/skill_router.py "<task>" --json` only when Node is unavailable.
 
