@@ -1,65 +1,41 @@
 {
-  // === 文件嵌套：分层锚点（包与脚本 / 发版 / 格式化 / TS 工程 / 治理元数据 / 构建） ===
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
-    "AGENTS.md": "CLAUDE.md,.ai/README.md,.ai/config/cursor.settings.json,.ai/config/claude.settings.local.json,.ai/protocol/AI.entry.md,.ai/protocol/AGENTS.core.md,.ai/protocol/adapters/README.md,.ai/protocol/adapters/codex.md,.ai/protocol/adapters/claude.md,.ai/protocol/adapters/cursor.md",
-    "package.json": "pnpm-lock.yaml,.npmrc,pnpm-workspace.yaml,.editorconfig,.gitattributes,.gitignore,.prettierrc.json,commitlint.config.ts,README.md,LICENSE,CHANGELOG.md,lint-staged.config.mjs,stylelint.config.mjs",
-    "ai-doctor.mjs": "ai-sync.mjs,codex-preflight.mjs,lint-staged-safe.mjs,drift-check.mjs",
-    "vite.config.ts": "vite.config.*.ts,index.html",
-    "tsconfig.json": "tsconfig.*.json,tsconfig.tsbuildinfo",
-    "eslint.config.ts": ".eslintignore,eslint.config.js,eslint.config.mjs,.eslintrc-auto-import.json",
-    "uno.config.ts": "uno.config.*.ts,uno.theme.ts,uno.shortcuts.ts",
-    "release-please-config.json": ".release-please-manifest.json",
+    "AGENTS.md": "CLAUDE.md,.ai/README.md,.ai/protocol/AI.entry.md,.ai/protocol/AGENTS.core.md,.ai/protocol/adapters/README.md,.ai/protocol/adapters/codex.md,.ai/protocol/adapters/claude.md",
+    "package.json": "pnpm-lock.yaml,.npmrc,pnpm-workspace.yaml,.editorconfig,.gitattributes,.gitignore,.prettierrc.json,commitlint.config.ts,README.md,LICENSE,lint-staged.config.mjs,stylelint.config.mjs",
+    "tsconfig.json": "tsconfig.*.json",
+    "eslint.config.ts": ".eslintrc-auto-import.json",
     ".prettierrc.json": ".prettierignore",
     ".env": ".env.*"
   },
-
-  // === 编辑器基础行为 ===
   "editor.tabSize": 2,
   "editor.indentSize": 2,
   "editor.insertSpaces": true,
   "editor.detectIndentation": false,
   "editor.renderWhitespace": "selection",
-  "editor.fontFamily": "'JetBrains Mono', 'Fira Code', Consolas, 'Courier New', monospace",
-  "editor.fontLigatures": true,
-  "editor.fontSize": 14,
-  "editor.lineHeight": 1.5,
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "always", // 保存时自动修复 ESLint 错误（包含 Vue 模板换行）
-    "source.organizeImports": "never" // 交给 ESLint 处理，防止冲突
+    "source.fixAll.eslint": "always",
+    "source.organizeImports": "never"
   },
   "files.eol": "\n",
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
-
-  // === ESLint (Flat Config 适配) ===
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact",
-    "vue",
-    "html",
-    "markdown"
-  ],
-  "eslint.useFlatConfig": true, // 显式开启 Flat Config 支持
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "vue"],
+  "eslint.useFlatConfig": true,
   "eslint.run": "onType",
   "eslint.codeAction.showDocumentation": {
     "enable": true
   },
-
-  // === Prettier ===
   "prettier.requireConfig": true,
   "prettier.enable": true,
-
-  // === UnoCSS (核心配置) ===
-  "unocss.root": "./", // 确保扫描根目录
-  "unocss.enableIntelliSense": true, // 启用智能提示
-  "unocss.remToPxPreview": true, // Hover 显示 px 值
-  "unocss.colorPreview": true, // 显示颜色块
+  "stylelint.validate": ["css", "scss", "vue"],
+  "unocss.root": "./",
+  "unocss.enableIntelliSense": true,
+  "unocss.remToPxPreview": true,
+  "unocss.colorPreview": true,
   "html.customData": [".vscode/unocss-semantic-shortcuts.html-data.json"],
   "unocss.languageIds": [
     "vue",
@@ -69,13 +45,11 @@
     "typescriptreact",
     "javascriptreact"
   ],
-
-  // === 语言特定配置 ===
   "[vue]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true, // ✅ 恢复 Prettier 自动格式化
+    "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": "always" // ESLint 修复会在 Prettier 格式化后执行
+      "source.fixAll.eslint": "always"
     }
   },
   "[typescript]": {
@@ -99,17 +73,14 @@
   "[scss]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-
-  // === TypeScript 配置 ===
-  "typescript.tsdk": "node_modules/typescript/lib", // 使用项目内的 TS 版本
-  "typescript.preferences.importModuleSpecifier": "non-relative", // 优先使用别名 (@/...)
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.preferences.importModuleSpecifier": "non-relative",
   "typescript.updateImportsOnFileMove.enabled": "always",
   "typescript.suggest.autoImports": true,
-
-  // === i18n Ally (国际化插件) ===
   "i18n-ally.localesPaths": [
     "apps/web-demo/src/locales/lang/core",
-    "apps/web-demo/src/locales/lang/example"
+    "apps/web-demo/src/locales/lang/showcase",
+    "apps/web-demo/src/locales/lang/utils"
   ],
   "i18n-ally.keystyle": "nested",
   "i18n-ally.sortKeys": true,
@@ -124,8 +95,6 @@
   },
   "i18n-ally.extract.keyPrefix": "",
   "i18n-ally.usage.scanningDirs": ["apps/web-demo/src"],
-
-  // === 其他优化 ===
   "search.exclude": {
     "**/node_modules": true,
     "**/dist/**": true,
@@ -145,8 +114,7 @@
   },
   "files.associations": {
     "*.css": "postcss",
-    "*.mdc": "markdown" // 让 .mdc 文件高亮显示为 Markdown
+    "*.mdc": "markdown"
   },
-  "git.autofetch": true,
   "npm.packageManager": "pnpm"
 }

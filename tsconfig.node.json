@@ -1,22 +1,14 @@
 {
   "extends": "@tsconfig/node24/tsconfig.json",
   "include": [
-    // ✅ Node 侧仅负责工具链与构建脚本
     "uno.config.ts",
     "eslint.config.ts",
     "commitlint.config.ts",
     "apps/web-demo/build/**/*",
     "scripts/**/*.ts",
-
-    // ✅ Node 侧需要的全局类型声明
     "apps/web-demo/src/types/**/*.d.ts",
-
-    // ✅ 供 uno.config.ts 等工具链引用的浏览器常量与类型
     "apps/web-demo/src/constants/**/*.ts",
-    // dateFormats 再导出 DateFormatEnum（与 app 共用，无运行时代码）
     "apps/web-demo/src/utils/date/types.ts",
-    // ⚠️ engine.ts 的 applyTheme() 使用 document（DOM API），但 generateThemeVars() 被 build/html.ts 在 Node 侧引用
-    // 因此必须保留在 Node file list 中；DOM 类型由文件级 triple-slash directive 自行声明
     "apps/web-demo/src/utils/theme/engine.ts",
     "apps/web-demo/src/utils/theme/color.ts",
     "apps/web-demo/src/utils/theme/resolver.ts",
@@ -33,17 +25,11 @@
     "apps/web-demo/src/utils/theme/metrics.ts",
     "apps/web-demo/src/utils/theme/tokens.ts",
     "apps/web-demo/src/views/system-configuration/configs/shortcutGroups.ts",
-    // ⚠️ locales 模块使用 document（DOM API），但 src/constants/locale.ts 通过 type import 依赖 @/locales
-    // 因此必须保留在 Node file list 中；DOM 类型由文件级 triple-slash directive 自行声明
     "apps/web-demo/src/locales/**/*"
   ],
   "exclude": [
-    // 自动生成的类型声明文件，不参与 Node 编译（避免 DOM/browser 类型污染）
     "apps/web-demo/src/types/auto-imports.d.ts",
     "apps/web-demo/src/types/components.d.ts",
-    // router.ts 使用了 import.meta.env（Vite 浏览器专属 API），
-    // 在 Node 上下文中没有此 API，必须排除以防止类型冲突。
-    // 根本原因：src/constants/**/*.ts 通配包含了此文件，故需显式排除。
     "apps/web-demo/src/constants/router.ts"
   ],
   "compilerOptions": {

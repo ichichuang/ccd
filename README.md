@@ -55,7 +55,7 @@ scripts/          Production automation and architecture checks
 
 The committed `.env`, `.env.development`, and `.env.production` files define non-secret defaults. Use local overrides for secrets.
 
-- `VITE_APP_TITLE`, `VITE_APP_ENV`: application identity and environment
+- `VITE_APP_ENV`: application environment
 - `VITE_API_BASE_URL`, `VITE_API_TIMEOUT`, `VITE_PROXY_TIMEOUT`: API routing and timeouts
 - `VITE_PORT`, `VITE_DESKTOP_PORT`: development ports
 - `VITE_PUBLIC_PATH`, `VITE_ROUTER_MODE`, `VITE_ROOT_REDIRECT`: public URL and routing

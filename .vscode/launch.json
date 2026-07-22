@@ -2,23 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Chrome: Debug Frontend",
-      "type": "chrome",
+      "name": "Web Demo: Chrome",
+      "type": "pwa-chrome",
       "request": "launch",
-      "url": "http://localhost:5173", // 确保端口与 vite.config.ts 一致
-      "webRoot": "${workspaceFolder}/src",
+      "url": "http://localhost:8088",
+      "webRoot": "${workspaceFolder}/apps/web-demo",
       "sourceMaps": true,
-      "userDataDir": false,
-      "breakOnLoad": true
-    },
-    {
-      "name": "Node: Debug Build Scripts",
-      "type": "node",
-      "request": "launch",
-      "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["dev"],
-      "console": "integratedTerminal",
-      "env": { "VITE_DEBUG": "true" }
+      "userDataDir": false
     }
   ]
 }

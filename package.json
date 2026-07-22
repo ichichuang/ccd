@@ -12,6 +12,13 @@
   ],
   "author": "Chi Chuang",
   "description": "Self-protecting deterministic multi-runtime platform architecture.",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/ichichuang/ccd.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ichichuang/ccd/issues"
+  },
   "keywords": [
     "vue3",
     "typescript",

@@ -1,6 +1,5 @@
 /**
  * PrimeVue Theme Configuration Engine
- * Ported and adapted for this template from AUDS-new reference
  */
 
 /**

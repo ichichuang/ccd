@@ -6,7 +6,6 @@
     "tsBuildInfoFile": "../../node_modules/.tmp/apps-web-demo.tsbuildinfo",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
 
-    // ✅ 必须项：开启 JSX 支持
     "jsx": "preserve",
     "jsxImportSource": "vue",
 
@@ -19,13 +18,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      // API 目录为两级：src/api/<module>/<feature>.ts
-      // 需要同时支持 @!/module 与 @!/module/feature 两种引用形态
       "@!/*": ["./src/api/*"],
       "@&/*": ["./src/layouts/components/*"]
     },
-    // vite/client 提供 import.meta.env / import.meta.hot 等 Vite 专属类型。
-    // 不应包含 "node"（会将 process/Buffer/__dirname 等 Node 全局量暴露给浏览器编译上下文）。
     "types": ["vite/client"]
   },
   "vueCompilerOptions": {

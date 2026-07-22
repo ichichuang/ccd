@@ -23,7 +23,7 @@
     {
       "label": "lint",
       "type": "npm",
-      "script": "lint:eslint",
+      "script": "lint:check",
       "problemMatcher": ["$eslint-stylish"],
       "detail": "执行代码检查"
     }
