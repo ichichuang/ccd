@@ -7,7 +7,8 @@ import { fileURLToPath } from 'node:url'
 
 const aiRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..')
 const manifestPath = path.join(aiRoot, 'manifests/skill-routing.json')
-const uiOverlappingRoutes = new Set(['project-ui', 'unocss', 'vue'])
+const leadingPathTokenCharacterClass = 'A-Za-z0-9_.-'
+const terminalPathTokenCharacterClass = 'A-Za-z0-9_./-'
 
 function parseArgs(argv) {
   const json = argv.includes('--json')
@@ -20,29 +21,75 @@ function matchesKeyword(task, keyword) {
   return new RegExp(`(^|[^a-z0-9])${escaped}($|[^a-z0-9])`, 'i').test(task)
 }
 
+function matchesPath(task, candidate) {
+  const escaped = candidate.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const trailingBoundary = candidate.endsWith('/') || candidate.endsWith('-')
+    ? ''
+    : `(?![${terminalPathTokenCharacterClass}])`
+  return new RegExp(
+    `(?:^|[^${leadingPathTokenCharacterClass}])${escaped}${trailingBoundary}`,
+    'i'
+  ).test(task)
+}
+
+function globToRegExp(glob) {
+  let pattern = ''
+  for (let index = 0; index < glob.length; index += 1) {
+    const character = glob[index]
+    if (glob.startsWith('**/', index)) {
+      pattern += '(?:[^/\\s]+/)*'
+      index += 2
+    } else if (glob.startsWith('**', index)) {
+      pattern += '[^\\s]*'
+      index += 1
+    } else if (character === '*') {
+      pattern += '[^/\\s]*'
+    } else if (character === '?') {
+      pattern += '[^/\\s]'
+    } else {
+      pattern += character.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    }
+  }
+  const trailingBoundary = glob.endsWith('/**') || glob.endsWith('/') || glob.endsWith('-')
+    ? ''
+    : `(?![${terminalPathTokenCharacterClass}])`
+  return new RegExp(
+    `(?:^|[^${leadingPathTokenCharacterClass}])${pattern}${trailingBoundary}`,
+    'i'
+  )
+}
+
+function matchesGlob(task, glob) {
+  return globToRegExp(glob).test(task)
+}
+
 function route(task, manifest) {
   const normalized = task.toLowerCase()
+  const pathTask = normalized.replaceAll('\\', '/')
+  const skillOrder = new Map(manifest.skillOrder.map((skill, index) => [skill, index]))
   const matches = manifest.routes
     .map(item => {
       const keywordMatches = item.keywords.filter(keyword => matchesKeyword(normalized, keyword.toLowerCase()))
-      const pathMatches = item.paths.filter(candidate => normalized.includes(candidate.toLowerCase()))
+      const pathMatches = item.paths.filter(candidate => matchesPath(pathTask, candidate.toLowerCase()))
+      const globMatches = item.globs.filter(candidate => matchesGlob(pathTask, candidate))
       return {
         id: item.id,
         skills: item.skills,
         priority: item.priority,
-        evidence: [...keywordMatches, ...pathMatches],
+        evidence: [...keywordMatches, ...pathMatches, ...globMatches],
       }
     })
     .filter(item => item.evidence.length > 0)
     .sort((left, right) => right.priority - left.priority || left.id.localeCompare(right.id))
 
-  const selectedMatches = matches.some(item => item.id === 'project-ui')
-    ? matches.filter(item => item.id === 'project-ui' || !uiOverlappingRoutes.has(item.id))
-    : matches
-  const selectedSkills = [...new Set(selectedMatches.flatMap(item => item.skills))]
+  const selectedSkills = [...new Set(matches.flatMap(item => item.skills))].sort(
+    (left, right) =>
+      (skillOrder.get(left) ?? Number.MAX_SAFE_INTEGER) -
+        (skillOrder.get(right) ?? Number.MAX_SAFE_INTEGER) || left.localeCompare(right)
+  )
   return {
     task,
-    routes: selectedMatches.map(({ id, evidence }) => ({ id, evidence })),
+    routes: matches.map(({ id, evidence }) => ({ id, evidence })),
     skills: selectedSkills.length > 0 ? selectedSkills : manifest.fallback,
   }
 }

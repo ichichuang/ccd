@@ -1,11 +1,22 @@
 {
-  "version": 1,
+  "version": 2,
+  "skillOrder": [
+    "project-ui",
+    "desktop-tauri-guard",
+    "gsap-core",
+    "vue",
+    "unocss",
+    "vite",
+    "github-ops",
+    "task-orchestrator"
+  ],
   "fallback": ["task-orchestrator"],
   "routes": [
     {
       "id": "desktop",
       "keywords": ["desktop", "tauri", "rust", "invoke"],
       "paths": ["apps/desktop/"],
+      "globs": ["apps/desktop/**"],
       "skills": ["desktop-tauri-guard"],
       "priority": 700
     },
@@ -13,6 +24,7 @@
       "id": "github",
       "keywords": ["github", "workflow", "pull request", "branch protection"],
       "paths": [".github/"],
+      "globs": [".github/**"],
       "skills": ["github-ops"],
       "priority": 650
     },
@@ -20,27 +32,63 @@
       "id": "unocss",
       "keywords": ["unocss", "uno config", "utility class", "design token"],
       "paths": ["uno.config.ts", "packages/unocss-preset/", "packages/design-tokens/"],
+      "globs": ["uno.config.ts", "packages/unocss-preset/**", "packages/design-tokens/**"],
       "skills": ["unocss"],
       "priority": 600
     },
     {
+      "id": "gsap",
+      "keywords": ["gsap", "timeline", "scrolltrigger", "createscopedgsapcontext"],
+      "paths": [
+        "apps/web-demo/src/plugins/animation/",
+        "apps/web-demo/src/views/login/components/AuthShaderBackdrop.vue",
+        "apps/web-demo/src/views/login/components/LoginShell.vue",
+        "apps/web-demo/src/views/login/composables/useLoginPaletteTransition.ts"
+      ],
+      "globs": [
+        "apps/web-demo/src/plugins/animation/**",
+        "apps/web-demo/src/views/login/components/AuthShaderBackdrop.vue",
+        "apps/web-demo/src/views/login/components/LoginShell.vue",
+        "apps/web-demo/src/views/login/composables/useLoginPaletteTransition.ts"
+      ],
+      "skills": ["gsap-core"],
+      "priority": 575
+    },
+    {
       "id": "vite",
-      "keywords": ["vite", "vite plugin", "build config"],
+      "keywords": ["vite", "vite plugin", "vite config"],
       "paths": ["vite.config.ts", "apps/web-demo/build/"],
+      "globs": ["vite.config.ts", "apps/*/vite.config.ts", "apps/*/build/**"],
       "skills": ["vite"],
       "priority": 550
     },
     {
       "id": "vue",
-      "keywords": ["vue", "component", "composable", "pinia"],
+      "keywords": ["vue", "primevue", "component", "composable", "pinia"],
       "paths": ["apps/web-demo/src/", "packages/vue-"],
+      "globs": ["apps/*/src/**/*.vue", "packages/vue-*/src/**"],
       "skills": ["vue"],
       "priority": 500
     },
     {
       "id": "project-ui",
-      "keywords": ["ui", "ux", "layout", "page", "menu", "style", "styling", "visual", "responsive", "motion", "chart", "accessibility"],
+      "keywords": [
+        "ui",
+        "ux",
+        "layout",
+        "page",
+        "menu",
+        "style",
+        "styling",
+        "visual",
+        "responsive",
+        "motion",
+        "animation",
+        "chart",
+        "accessibility"
+      ],
       "paths": ["apps/web-demo/src/views/", "apps/web-demo/src/layouts/", "packages/vue-ui/"],
+      "globs": ["apps/*/src/**/*.vue", "apps/*/src/**/*.tsx", "packages/vue-ui/src/**"],
       "skills": ["project-ui"],
       "priority": 450
     },
@@ -48,6 +96,7 @@
       "id": "ai",
       "keywords": ["ai protocol", "skill routing", "codex", "claude"],
       "paths": [".ai/", "AGENTS.md", "CLAUDE.md"],
+      "globs": [".ai/**", "AGENTS.md", "CLAUDE.md"],
       "skills": ["task-orchestrator"],
       "priority": 400
     }
